@@ -21,7 +21,7 @@ class Character():
 
         self.level = 1
         self.max_level = 20
-        self.experience = 0
+        self.experience = 10
         self.experience_to_next_level = 20
 
     def is_alive(self):
@@ -65,7 +65,7 @@ class Character():
         if damage - defense > 0:
             alive = defender.character.take_damage(damage - defense)
             if not alive:
-                self.experience += defender.experience
+                self.experience += defender.character.experience
                 self.check_for_levelup()
 
     def defend(self):

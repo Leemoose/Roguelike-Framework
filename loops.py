@@ -5,6 +5,7 @@ import character as C
 import items as I
 import objects as O
 import monster as Mon
+import objects as O
 import random
 
 """
@@ -60,8 +61,7 @@ class Memory():
     Used to save the game
     """
     def __init__(self):
-        self.tile_maps = {}
-        self.monster_maps = {}
+        self.generated_maps = {}
         self.item_dicts = {}
         self.monster_dicts = {}
         self.explored_levels = 0
@@ -89,6 +89,7 @@ class Loops():
         self.monster_map = None
         self.item_dict = None
         self.monster_dict = None
+        self.generator = None #Dungeon Generator
         self.monster_ai =  Mon.Monster_AI() #I just realize there is a bug here and it actually creates a... wait... what's that noise... hello?... Nooo!!! Bluglaaaaaaaaaa     
 
     def action_loop(self, keyboard):
@@ -107,7 +108,7 @@ class Loops():
                 except:
                     break
                 if self.action == True:
-                    keyboard.key_action(self.player, self.tile_map, self.monster_dict, self.monster_map, self.item_dict, self.item_map, self, key)
+                    keyboard.key_action(self.player, self.generator.tile_map, self.monster_dict, self.monster_map, self.item_dict, self.item_map, self, key)
                 elif self.inventory == True:
                     keyboard.key_inventory(self, self.player, self.item_dict, self.item_map, key)
                 elif self.main == True:
@@ -154,7 +155,7 @@ class Loops():
         for monster_key in self.monster_dict.subjects:
             monster = self.monster_dict.subjects[monster_key]
             monster.character.energy += energy
-            monster.brain.rank_actions(monster, self.monster_map, self.tile_map, self.generator.flood_map, self.player)
+            monster.brain.rank_actions(monster, self.monster_map, self.generator.tile_map, self.generator.flood_map, self.player)
         """
         self.monster_ai.comprehend_the_universe(self.player.x, self.player.y, self.monster_map, self.tile_map)
         for monster_key in self.monster_dict.subjects:
@@ -165,7 +166,7 @@ class Loops():
 
     def change_screen(self, keyboard, display, colors, tileDict):
         if self.action == True:
-            display.update_display(colors, self.tile_map, tileDict, self.monster_dict, self.item_dict, self.monster_map, self.player)
+            display.update_display(colors, self.generator.tile_map, tileDict, self.monster_dict, self.item_dict, self.monster_map, self.player)
         elif self.inventory == True:
             display.update_inventory(self.player)
         elif self.main == True:
@@ -180,43 +181,43 @@ class Loops():
         self.update_screen = False
 
     def down_floor(self):
-        self.floor_level += 1
-        if self.floor_level > self.memory.explored_levels:
-            wid = 50
-            hei = 50
-            generator = M.DungeonGenerator(wid, hei)
-            generated_map = generator.get_map()
-            self.tile_map = M.TileMap(wid, hei, generated_map)
-            self.tile_map.stairs_x = generator.stairs_x
-            self.tile_map.stairs_y = generator.stairs_y
-            self.monster_map = generator.monster_map
-            self.item_dict = generator.item_dict
-            self.monster_dict = generator.monster_dict
-            self.player.x = self.tile_map.stairs_x
-            self.player.y = self.tile_map.stairs_y
-            self.memory.explored_levels += 1
-            self.memory.tile_maps[self.floor_level] = self.tile_map
-            self.memory.item_dicts[self.floor_level] = self.item_dict
-            self.memory.monster_dicts[self.floor_level] = self.monster_dict
-            self.memory.monster_maps[self.floor_level] = self.monster_map
-            self.generator = generator
-        else:
-            self.tile_map = self.memory.tile_maps[self.floor_level]
-            self.monster_map = self.memory.monster_maps[self.floor_level]
-            self.item_dict = self.memory.item_dicts[self.floor_level]
-            self.monster_dict = self.memory.monster_dicts[self.floor_level]
-            self.player.x = self.tile_map.stairs_x
-            self.player.y = self.tile_map.stairs_y
+        playerx, playery = self.player.get_location()
+        if self.floor_level == 0 or isinstance(self.generator.tile_map.track_map[playerx][playery], O.Stairs):
+            self.floor_level += 1
+            if self.floor_level > self.memory.explored_levels:
+                wid = 50
+                hei = 50
+                generator = M.DungeonGenerator(wid, hei)
+                generated_map = generator.get_map()
+                self.monster_map = generator.monster_map
+                self.item_dict = generator.item_dict
+                self.monster_dict = generator.monster_dict
+                stairsx, stairsy = generator.tile_map.get_stairs()[0]
+                self.player.x = stairsx
+                self.player.y = stairsy
+                self.memory.explored_levels += 1
+                self.memory.generated_maps[self.floor_level] = generator
+                self.memory.item_dicts[self.floor_level] = self.item_dict
+                self.memory.monster_dicts[self.floor_level] = self.monster_dict
+                self.generator = generator
+
+            else:
+                self.generator = self.memory.generated_maps[self.floor_level]
+                self.monster_map = self.memory.generated_maps[self.floor_level].monster_map
+                self.item_dict = self.memory.item_dicts[self.floor_level]
+                self.monster_dict = self.memory.monster_dicts[self.floor_level]
+                self.player.x, self.player.y = self.generator.tile_map.get_stairs()[0]
+
 
     def up_floor(self):
-        if self.floor_level != 1:
+        playerx, playery = self.player.get_location()
+        if self.floor_level != 1 and isinstance(self.generator.tile_map.track_map[playerx][playery], O.Stairs):
             self.floor_level -= 1
-            self.tile_map = self.memory.tile_maps[self.floor_level]
-            self.monster_map = self.memory.monster_maps[self.floor_level]
+            self.generator = self.memory.generated_maps[self.floor_level]
+            self.monster_map = self.memory.generated_maps[self.floor_level].monster_map
             self.item_dict = self.memory.item_dicts[self.floor_level]
             self.monster_dict = self.memory.monster_dicts[self.floor_level]
-            self.player.x = self.tile_map.stairs_x
-            self.player.y = self.tile_map.stairs_y
+            self.player.x, self.player.y = self.generator.tile_map.get_stairs()[0]
 
     def init_game(self, display):
         self.main_buttons = D.create_main_screen(display)

@@ -22,6 +22,8 @@ class Monster_AI():
         if distance < 1.5:
             monster.character.attack(player)
             monster.character.energy -= 100
+        elif 1 != 1:
+            return True
         else:
             options = [(0, 1), (1, 0), (-1, 0), (0, -1)]
             r = random.randint(0, 3)
@@ -43,15 +45,12 @@ class Monster(O.Objects):
     def __init__(self, number_tag, x, y):
         super().__init__(x, y, 0, number_tag, "Unknown")
         self.character = C.Character()
-        self.experience = 10
-        self.energy = 0
-        self.main_weapon = None
         self.brain = Monster_AI()
 
     def move(self, move_x, move_y, floormap, monster, monster_map):
         speed = 100
         if floormap.get_passable(monster.x + move_x, monster.y + move_y) and monster_map.get_passable(monster.x + move_x, monster.y + move_y):
-            self.energy -= 100
+            self.character.energy -= 100
             monster_map.track_map[monster.x][monster.y] = -1
             monster.y += move_y
             monster.x += move_x

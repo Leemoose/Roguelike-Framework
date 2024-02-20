@@ -44,24 +44,14 @@ class DungeonGenerator():
         self.height = height
         self.monster_map = TrackingMap(width, height) #Should I include items as well?
         self.flood_map = FloodMap(width,height)
+        self.tile_map = TileMap(width, height)
 
         self.monster_dict = L.ID() #Unique to this floor
         self.item_dict = L.ID() #Unique to this floor
 
-        self.tile_map = []  # Map of this floor
-        self.carve_rooms() #Should use an object for this
-        self.place_stairs()
-
         self.place_items()
         self.place_monsters()
 
-    def carve_rooms(self):
-        for x in range(self.width):
-            self.tile_map.append([O.Tile(x, y, 1, False) for y in range(self.height)])
-        for x in range(self.width - 2):
-            for y in range(self.height - 2):
-                tile = O.Tile(x+1, y+1, 0, True)
-                self.tile_map[x+1][y+1] = tile
 
         """
         for x in range(self.width):
@@ -136,16 +126,6 @@ class DungeonGenerator():
                     tile = O.Tile(startx + x, starty + y, 0, True)
                     self.tile_map[startx + x][starty + y] = tile
 
-    def place_stairs(self):
-        startx = random.randint(0, self.width-1)
-        starty = random.randint(0,self.height-1)
-        while (self.tile_map[startx][starty].passable == False):
-            startx = random.randint(0, self.width-1)
-            starty = random.randint(0,self.height-1)
-        tile = O.Stairs(startx, starty, 90, True) 
-        self.tile_map[startx][starty] = tile
-        self.stairs_x = startx
-        self.stairs_y = starty
 
 
     def place_monsters(self):
@@ -165,7 +145,7 @@ class DungeonGenerator():
             startx = random.randint(0, self.width-1)
             starty = random.randint(0,self.height-1)
 
-            while (self.tile_map[startx][starty].passable == False):
+            while (self.tile_map.get_passable(startx, starty)== False):
                 startx = random.randint(0, self.width-1)
                 starty = random.randint(0,self.height-1)
 
@@ -184,7 +164,7 @@ class DungeonGenerator():
             startx = random.randint(0, self.width-1)
             starty = random.randint(0,self.height-1)
 
-            while (self.tile_map[startx][starty].passable == False):
+            while (self.tile_map.get_passable(startx, starty)== False):
                 startx = random.randint(0, self.width-1)
                 starty = random.randint(0,self.height-1)
 
@@ -280,19 +260,43 @@ class FloodMap(Maps):
  """
 
 class TileMap(TrackingMap):
-    def __init__(self, width, height, generated_map):
+    def __init__(self, width, height):
         super().__init__(width, height)
-        self.tile_map = generated_map
+        self.track_map = []
+        self.stairs = []
+        for x in range(self.width):
+            self.track_map.append([O.Tile(x, y, 1, False) for y in range(self.height)])
+        self.carve_rooms()
+        self.place_stairs()
 
     def get_tag(self, x, y):
-        return self.tile_map[x][y].render_tag
+        return self.track_map[x][y].render_tag
+
+    def carve_rooms(self):
+        for x in range(self.width - 2):
+            for y in range(self.height - 2):
+                tile = O.Tile(x+1, y+1, 0, True)
+                self.track_map[x+1][y+1] = tile
+
+    def place_stairs(self):
+        startx = random.randint(0, self.width-1)
+        starty = random.randint(0,self.height-1)
+        while (self.track_map[startx][starty].passable == False):
+            startx = random.randint(0, self.width-1)
+            starty = random.randint(0,self.height-1)
+        tile = O.Stairs(startx, starty, 90, True)
+        self.track_map[startx][starty] = tile
+        self.stairs.append((startx, starty))
+
+    def get_stairs(self):
+        return self.stairs
 
     def place_tile(self, tile):
-        self.tile_map[tile.x][tile.y] = tile
+        self.track_map[tile.x][tile.y] = tile
 
     def get_passable(self, x, y):
         if (x>=0) & (y>=0) & (x < self.width) & (y < self.height):
-            return (self.tile_map[x][y].passable)
+            return (self.track_map[x][y].passable)
         else:
             return False
 
