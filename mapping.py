@@ -31,6 +31,7 @@ class TileDict():
         tiles[104] = image.load('assets/gentleman_eyeball.png')
         tiles[105] = image.load('assets/stone_golem.png')
         tiles[300] = image.load("assets/basic_ax.png")
+        tiles[301] = image.load("assets/hammer.png")
         self.tiles = tiles
 
     def tile_string(self, key):
@@ -157,8 +158,10 @@ class DungeonGenerator():
             self.monster_map.place_thing(creature)
 
     def place_items(self):
-        number_of_axes = random.randint(15,20)
+        number_of_axes = random.randint(5,10)
+        number_of_hammers = random.randint(5, 10)
         self.place_item_hoard(number_of_axes, 300)
+        self.place_item_hoard(number_of_hammers, 301)
 
     def place_item_hoard(self, number, render_tag):
         for i in range(number):
@@ -169,7 +172,7 @@ class DungeonGenerator():
                 startx = random.randint(0, self.width-1)
                 starty = random.randint(0,self.height-1)
 
-            ax = I.Ax(300, True, startx, starty)
+            ax = I.Ax(render_tag, True, startx, starty)
             self.item_dict.tag_subject(ax)
             self.item_map.place_thing(ax)
 
@@ -271,7 +274,6 @@ class TileMap(TrackingMap):
         self.cellular_caves()
         self.render_to_map()
         self.place_stairs()
-        print(self)
 
     def get_tag(self, x, y):
         return self.track_map[x][y].render_tag

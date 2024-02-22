@@ -31,7 +31,7 @@ class Stairs(Tile):
         self.stairs = True
 
 class Item(Objects):
-    def __init__(self, x, y, render_tag, id_tag, name, equipable):
+    def __init__(self, x, y, id_tag, render_tag, name, equipable):
         super().__init__(x, y, id_tag, render_tag, name)
         self.equipable = equipable 
         self.dropable = True

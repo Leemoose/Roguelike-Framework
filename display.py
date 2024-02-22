@@ -69,8 +69,7 @@ class Display():
             item = item_ID.get_subject(key)
             if (item.x >= x_start and item.x < x_end and item.y >= y_start and item.y < y_end):
                 item_tile = tileDict.tile_string(item.render_tag)
-    
-                self.win.blit(image.load("assets/basic_ax.png"), (self.textSize * (item.x - x_start), self.textSize * (item.y - y_start)))
+                self.win.blit(item_tile, (self.textSize * (item.x - x_start), self.textSize * (item.y - y_start)))
 
 
         dead_monsters = []
