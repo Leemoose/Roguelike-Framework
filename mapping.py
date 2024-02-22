@@ -5,6 +5,8 @@ import loops as L
 import items as I
 import monster as Mon
 import random
+import math
+from fractions import Fraction
 
 """
 Theme: Mapping is responsible for creating all maps at the start of the level, placing monsters, placing items,
@@ -245,25 +247,6 @@ class FloodMap(Maps):
             allrows = allrows + row + "\n"
         return allrows
 
-"""
-class FloodMap(Maps):
-    def __init__(self, width, height):
-        super().__init__(width, height)
-        center = width // 2
-
-    def update_flood_map(self, x, y, tilemap):
-        self.track_map = [x[:] for x in [[-1] * self.width] * self.height]
-        self.recursive_flood_map(x,y, width, width, 0, tilemap)
-
-    def recursive_flood_map(self, x, y,totalxdelta, totalydelta, count, tilemap):
-        self.track_map[totalxdelta][totalydelta] = count
-        options = [(0,1),(1,0),(-1,0),(0,-1)]
-        r = random.randint(0,3)
-        for i in range(3): #Does it have to be range 4?
-            xdelta, ydelta = options[(r + i) % 4]
-            if (self.in_map(x+totalxdelta+xdelta, y +totalydelta+ ydelta)):
- """
-
 class TileMap(TrackingMap):
     def __init__(self, width, height):
         super().__init__(width, height)
@@ -357,4 +340,7 @@ class TileMap(TrackingMap):
             return (self.track_map[x][y].passable)
         else:
             return False
+
+    def mark_visible(self,x,y):
+        self.track_map[x][y].seen = True
 

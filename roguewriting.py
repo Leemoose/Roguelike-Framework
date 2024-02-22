@@ -2,12 +2,11 @@ import sys, pygame, random
 import mapping as M
 import display as D
 import keyboard as K
-import items as I
 import loops as L
 
 #random.seed(420)
 pygame.init()
-pygame.font.init()
+pygame.font.init()1
 
 
 textSize = 32
