@@ -22,7 +22,7 @@ class Keyboard():
         return self.keys_to_string[key]
 
 #Any actions done in the battle screen
-    def key_action(self, player, floormap, monsterID, monster_map, item_ID, item_map, loop, key):
+    def key_action(self, player, floormap, monsterID, monster_map, item_ID, loop, key, generated_maps):
         if key == "w":
             player.character.attack_move(0, -1, floormap, player, monsterID, monster_map, item_ID)
         elif key == "a":
@@ -35,7 +35,7 @@ class Keyboard():
             for item_key in item_ID.subjects:
                 item = item_ID.subjects[item_key]
                 if item.x == player.x and item.y == player.y:
-                    player.character.grab(player, item_key, item_ID)
+                    player.character.grab(item_key, item_ID, generated_maps)
                     break
         elif key == "i":
             loop.action = False
@@ -46,7 +46,7 @@ class Keyboard():
         elif key == "<":
             loop.up_floor()
 
-    def key_inventory(self, loop, player, item_dict, item_map, key):
+    def key_inventory(self, loop, player, item_dict, key):
             if key == "esc":
                 loop.inventory = False
                 loop.action = True
@@ -85,7 +85,7 @@ class Keyboard():
             loop.update_screen = True
             loop.down_floor()
 
-    def key_item_screen(self, key, loop, item_dict, item_map, player, item):
+    def key_item_screen(self, key, loop, item_dict, player, item, item_map):
             if key == "esc":
                 loop.items = False
                 loop.inventory = True

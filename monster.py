@@ -15,15 +15,18 @@ class Monster_AI():
             monster.move(R.roll_dice(-1,1)[0], R.roll_dice(-1,1)[0], tile_map, monster, monster_map)
             monster.energy -= 100
 
-    def rank_actions(self, monster, monster_map, tile_map, flood_map, player):
+    def rank_actions(self, monster, monster_map, tile_map, flood_map, player, generated_maps, item_dict):
+        item_map = generated_maps.item_map
         playerx, playery = player.get_location()
         monsterx, monstery = monster.get_location()
         distance = monster.get_distance(playerx, playery)
         if distance < 1.5:
             monster.character.attack(player)
             monster.character.energy -= 100
-        elif 1 != 1:
-            return True
+        elif item_map.locate(monsterx, monstery) != -1:
+            item_key = item_map.locate(monsterx, monstery)
+            monster.character.grab(item_key, item_dict, generated_maps)
+            monster.character.equip(monster.character.inventory[0])
         else:
             options = [(0, 1), (1, 0), (-1, 0), (0, -1)]
             r = random.randint(0, 3)

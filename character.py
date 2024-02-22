@@ -72,10 +72,12 @@ class Character():
         defense = R.roll_dice(1, 1)[0]
         return defense
 
-    def grab(self, player, key, item_ID):
+    def grab(self, key, item_ID, generated_maps):
         item = item_ID.get_subject(key)
         self.inventory.append(item)
         item_ID.remove_subject(key)
+        itemx, itemy = item.get_location()
+        generated_maps.item_map.clear_location(itemx, itemy)
 
     def drop(self, item, item_dict, x, y, item_map):
         if len(self.inventory) != 0 and item.dropable:
@@ -87,6 +89,7 @@ class Character():
                 item_dict.add_subject(item)
                 item.x = x
                 item.y = y
+                item_map.place_thing(item)
 
 
     def equip(self, item):
@@ -112,7 +115,7 @@ class Character():
         self.intelligence += 1
         self.dexterity += 1
         self.strength += 1
-        self.experience -= self.experience_to_next_level
+        self.experience = 0
         self.experience_to_next_level += 20 + self.experience_to_next_level // 4
         self.health = self.max_health
 

@@ -82,7 +82,6 @@ class Loops():
         self.textSize = textSize
         self.items = False
         self.item_for_item_screen = None
-        self.item_map = []
         self.floor_level = 0
         self.memory = Memory()
         self.tile_map = None
@@ -108,9 +107,9 @@ class Loops():
                 except:
                     break
                 if self.action == True:
-                    keyboard.key_action(self.player, self.generator.tile_map, self.monster_dict, self.monster_map, self.item_dict, self.item_map, self, key)
+                    keyboard.key_action(self.player, self.generator.tile_map, self.monster_dict, self.monster_map, self.item_dict,self, key, self.generator)
                 elif self.inventory == True:
-                    keyboard.key_inventory(self, self.player, self.item_dict, self.item_map, key)
+                    keyboard.key_inventory(self, self.player, self.item_dict,key)
                 elif self.main == True:
                     keyboard.key_main_screen(key, self)
                 elif self.race == True:
@@ -118,7 +117,7 @@ class Loops():
                 elif self.classes == True:
                     keyboard.key_class_screen(key, self)
                 elif self.items == True:
-                    keyboard.key_item_screen(key, self, self.item_dict, self.item_map, self.player, self.item_for_item_screen)
+                    keyboard.key_item_screen(key, self, self.item_dict, self.player, self.item_for_item_screen, self.generator.item_map)
                 self.update_screen = True
 
             elif event.type == pygame.MOUSEBUTTONUP:
@@ -155,7 +154,7 @@ class Loops():
         for monster_key in self.monster_dict.subjects:
             monster = self.monster_dict.subjects[monster_key]
             monster.character.energy += energy
-            monster.brain.rank_actions(monster, self.monster_map, self.generator.tile_map, self.generator.flood_map, self.player)
+            monster.brain.rank_actions(monster, self.monster_map, self.generator.tile_map, self.generator.flood_map, self.player, self.generator, self.item_dict)
         """
         self.monster_ai.comprehend_the_universe(self.player.x, self.player.y, self.monster_map, self.tile_map)
         for monster_key in self.monster_dict.subjects:

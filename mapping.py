@@ -21,8 +21,8 @@ class TileDict():
         file = 'assets/P.png'
         player_image = image.load(file)
         tiles = {}
-        tiles[0] = image.load("assets/basic_floor.png")
-        tiles[1] = image.load("assets/basic_wall.png")
+        tiles[0] = image.load("assets/basic_wall.png")
+        tiles[1] = image.load("assets/basic_floor.png")
         tiles[90] = image.load("assets/stairs_up.png")
         tiles[200] = player_image
         tiles[101] = image.load("assets/orc.png")
@@ -45,6 +45,7 @@ class DungeonGenerator():
         self.monster_map = TrackingMap(width, height) #Should I include items as well?
         self.flood_map = FloodMap(width,height)
         self.tile_map = TileMap(width, height)
+        self.item_map = TrackingMap(width,height)
 
         self.monster_dict = L.ID() #Unique to this floor
         self.item_dict = L.ID() #Unique to this floor
@@ -170,6 +171,7 @@ class DungeonGenerator():
 
             ax = I.Ax(300, True, startx, starty)
             self.item_dict.tag_subject(ax)
+            self.item_map.place_thing(ax)
 
     def get_map(self):
         return self.tile_map
@@ -206,7 +208,7 @@ class TrackingMap(Maps):
     def __str__(self):
         allrows = ""
         for x in range(self.width):
-            row = ' '.join(str(self.track_map[x][y]) for y in range(self.height))
+            row = ' '.join(str(self.track_map[x][y].render_tag) for y in range(self.height))
             allrows = allrows + row + "\n"      
         return allrows
 
@@ -265,17 +267,71 @@ class TileMap(TrackingMap):
         self.track_map = []
         self.stairs = []
         for x in range(self.width):
-            self.track_map.append([O.Tile(x, y, 1, False) for y in range(self.height)])
-        self.carve_rooms()
+            self.track_map.append([O.Tile(x, y, 0, False) for y in range(self.height)])
+        self.cellular_caves()
+        self.render_to_map()
         self.place_stairs()
+        print(self)
 
     def get_tag(self, x, y):
         return self.track_map[x][y].render_tag
 
+    def cellular_caves(self):
+        iterations = 3
+        self.track_map_render = [x[:] for x in [[0] * self.width] * self.height]
+        survival_rate = 0.45
+        for x in range(1, self.width-1):
+            for y in range(1, self.height-1):
+                if (random.uniform(0,1) <= survival_rate):
+                    self.track_map_render[x][y] = 1
+        for i in range(iterations):
+            self.iterate_cellular_map()
+
+    def iterate_cellular_map(self):
+        temp_track_map_render = [x[:] for x in [[0] * self.width] * self.height]
+        birth_limit = 4
+        death_limit = 3
+        for x in range(1,self.width-1):
+            for y in range(1,self.height-1):
+                count = self.count_neighbors(x,y)
+                if count >= birth_limit and self.track_map_render[x][y] == 0:
+                    temp_track_map_render[x][y] = 1
+                elif count <= death_limit and self.track_map_render[x][y] == 1:
+                    temp_track_map_render[x][y] = 0
+                else:
+                    temp_track_map_render[x][y] = self.track_map_render[x][y]
+        self.track_map_render = temp_track_map_render
+    def count_neighbors(self, x, y):
+        count = 0
+        for i in range(-1,2,1):
+            for j in range(-1,2,1):
+                neighbor_x = x+ i
+                neighbor_y = y +j
+                if i == 0 and j == 0:
+                    pass
+                elif neighbor_y <= 0 or neighbor_x <= 0 or neighbor_x >= self.width-1 or neighbor_y >= self.height-1:
+                    count += 1
+                elif self.track_map_render[neighbor_x][neighbor_y] == 1:
+                    count += 1
+        return count
+
+
+    def render_to_map(self):
+        self.track_map = []
+        for x in range(self.width):
+            temp = []
+            for y in range(self.height):
+                if self.track_map_render[x][y] == 1:
+                    temp.append(O.Tile(x, y, 1, True))
+                else:
+                    temp.append(O.Tile(x, y, 0, False))
+            self.track_map.append(temp)
+
+
     def carve_rooms(self):
         for x in range(self.width - 2):
             for y in range(self.height - 2):
-                tile = O.Tile(x+1, y+1, 0, True)
+                tile = O.Tile(x+1, y+1, 1, True)
                 self.track_map[x+1][y+1] = tile
 
     def place_stairs(self):
