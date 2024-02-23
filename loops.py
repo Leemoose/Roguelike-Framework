@@ -6,6 +6,7 @@ import items as I
 import objects as O
 import monster as Mon
 import objects as O
+import shadowcasting
 
 import random
 
@@ -166,6 +167,7 @@ class Loops():
 
     def change_screen(self, keyboard, display, colors, tileDict):
         if self.action == True:
+            shadowcasting.compute_fov(self.player.get_location(), self.generator.tile_map.track_map)
             display.update_display(colors, self.generator.tile_map, tileDict, self.monster_dict, self.item_dict, self.monster_map, self.player)
         elif self.inventory == True:
             display.update_inventory(self.player)
@@ -185,8 +187,8 @@ class Loops():
         if self.floor_level == 0 or isinstance(self.generator.tile_map.track_map[playerx][playery], O.Stairs):
             self.floor_level += 1
             if self.floor_level > self.memory.explored_levels:
-                wid = 10
-                hei = 10
+                wid = 50
+                hei = 50
                 generator = M.DungeonGenerator(wid, hei)
                 generated_map = generator.get_map()
                 self.monster_map = generator.monster_map

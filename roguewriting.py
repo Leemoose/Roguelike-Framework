@@ -6,7 +6,7 @@ import loops as L
 
 #random.seed(420)
 pygame.init()
-pygame.font.init()1
+pygame.font.init()
 
 
 textSize = 32

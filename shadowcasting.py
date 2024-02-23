@@ -1,27 +1,28 @@
 import math
 from fractions import Fraction
-def compute_fov(origin, is_blocking, mark_visible, tile_map):
+#https://github.com/370417/symmetric-shadowcasting/blob/master/example.py
+def compute_fov(origin, tile_map):
     x,y = origin
-    mark_visible(x,y)
+    tile_map[x][y].seen = True
 
     for i in range(4):
         quadrant = Quadrant(i, origin)
 
         def reveal(tile):
             x, y = quadrant.transform(tile)
-            mark_visible(x,y)
+            tile_map[x][y].seen = True
 
         def is_wall(tile):
             if tile is None:
                 return False
             x, y = quadrant.transform(tile)
-            return is_blocking(x,y)
+            return not tile_map[x][y].passable
 
         def is_floor(tile):
             if tile is None:
                 return False
             x, y = quadrant.transform(tile)
-            return not is_blocking(x,y)
+            return tile_map[x][y].passable
 
         def scan(row):
             prev_tile = None

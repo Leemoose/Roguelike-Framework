@@ -37,7 +37,7 @@ is_visible = set()
 def reveal(x, y):
     tile_map[x][y].seen = True
 
-shadowcasting.compute_fov(player_location, is_blocking, reveal, tile_map)
+shadowcasting.compute_fov(player_location, tile_map)
 
 
 for y in range(height):
