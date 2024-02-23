@@ -105,6 +105,9 @@ class Character():
             item.dropable = True
             item.equipped = False
 
+    def wait(self):
+        self.energy -=  100
+
     def check_for_levelup(self):
         if self.level != self.max_level and self.experience >= self.experience_to_next_level:
             self.level_up()

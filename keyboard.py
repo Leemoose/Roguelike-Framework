@@ -14,12 +14,16 @@ class Keyboard():
         keys_to_string[pygame.K_e] = "e"
         keys_to_string[pygame.K_ESCAPE] = "esc"
         keys_to_string[pygame.K_1] = "1"
-        keys_to_string[46] = ">"
-        keys_to_string[44] = "<"
+        keys_to_string[pygame.K_PERIOD] = "."
+        keys_to_string[146] = ">"
+        keys_to_string[144] = "<"
         self.keys_to_string = keys_to_string
 
-    def key_string(self, key):
-        return self.keys_to_string[key]
+    def key_string(self, key, shift_pressed):
+        if not shift_pressed:
+            return self.keys_to_string[key]
+        else:
+            return self.keys_to_string[key + 100]
 
 #Any actions done in the battle screen
     def key_action(self, player, floormap, monsterID, monster_map, item_ID, loop, key, generated_maps):
@@ -45,6 +49,8 @@ class Keyboard():
             loop.down_floor()
         elif key == "<":
             loop.up_floor()
+        elif key == ".":
+            player.character.wait()
 
     def key_inventory(self, loop, player, item_dict, key):
             if key == "esc":

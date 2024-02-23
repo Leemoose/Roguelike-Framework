@@ -105,7 +105,10 @@ class Loops():
                 return False
             elif event.type == pygame.KEYDOWN:
                 try:
-                    key = keyboard.key_string(event.key)
+                    if event.mod & pygame.KMOD_SHIFT:
+                        key = keyboard.key_string(event.key, True)
+                    else:
+                        key = keyboard.key_string(event.key, False)
                 except:
                     break
                 if self.action == True:
@@ -155,8 +158,11 @@ class Loops():
     def monster_loop(self, energy):
         for monster_key in self.monster_dict.subjects:
             monster = self.monster_dict.subjects[monster_key]
-            monster.character.energy += energy
-            monster.brain.rank_actions(monster, self.monster_map, self.generator.tile_map, self.generator.flood_map, self.player, self.generator, self.item_dict)
+            if self.generator.tile_map.track_map[monster.x][monster.y].seen:
+                monster.brain.is_awake = True
+            if monster.brain.is_awake == True:
+                monster.character.energy += energy
+                monster.brain.rank_actions(monster, self.monster_map, self.generator.tile_map, self.generator.flood_map, self.player, self.generator, self.item_dict)
         """
         self.monster_ai.comprehend_the_universe(self.player.x, self.player.y, self.monster_map, self.tile_map)
         for monster_key in self.monster_dict.subjects:

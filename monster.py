@@ -7,6 +7,7 @@ import random
 class Monster_AI():
     def __init__(self):
         self.frontier = None
+        self.is_awake = False
 
     def move_my_poor_meatshield_of_a_pawn(self, monster, monster_map, tile_map):
         x = monster.x
