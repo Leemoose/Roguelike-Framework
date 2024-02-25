@@ -63,14 +63,18 @@ class Display():
                     pass
                 elif floormap.track_map[x][y].seen == False:
                     pass
+                elif floormap.track_map[x][y].visible == True:
+                    tag = tileDict.tile_string(floormap.get_tag(x, y))
+                    self.win.blit(tag, (self.textSize * (x - x_start), self.textSize * (y - y_start)))
                 else:
-                    tag = tileDict.tile_string(floormap.get_tag(x,y))
+                    tag = tileDict.tile_string(floormap.track_map[x][y].shaded_render_tag)
+
                     self.win.blit(tag, (self.textSize * (x - x_start), self.textSize * (y - y_start)))
 
         for key in item_ID.subjects:
             item = item_ID.get_subject(key)
             if (item.x >= x_start and item.x < x_end and item.y >= y_start and item.y < y_end):
-                if floormap.track_map[item.x][item.y].seen:
+                if floormap.track_map[item.x][item.y].visible:
                     item_tile = tileDict.tile_string(item.render_tag)
                     self.win.blit(item_tile, (self.textSize * (item.x - x_start), self.textSize * (item.y - y_start)))
 
@@ -80,7 +84,7 @@ class Display():
             monster = monsterID.get_subject(key)
             if monster.character.is_alive():
                 if (monster.x >= x_start and monster.x < x_end and monster.y >= y_start and monster.y < y_end):
-                    if floormap.track_map[monster.x][monster.y].seen:
+                    if floormap.track_map[monster.x][monster.y].visible:
                         monster_tile = tileDict.tile_string(monster.render_tag)
                         self.win.blit(monster_tile, (self.textSize*(monster.x - x_start), self.textSize*(monster.y - y_start)))
             else:

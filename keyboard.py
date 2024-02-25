@@ -8,6 +8,10 @@ class Keyboard():
         keys_to_string[pygame.K_a] = "a"
         keys_to_string[pygame.K_s] = "s"
         keys_to_string[pygame.K_d] = "d"
+        keys_to_string[pygame.K_UP] = "w"
+        keys_to_string[pygame.K_LEFT] = "a"
+        keys_to_string[pygame.K_DOWN] = "s"
+        keys_to_string[pygame.K_RIGHT] = "d"
         keys_to_string[pygame.K_i] = "i"
         keys_to_string[pygame.K_g] = "g"
         keys_to_string[pygame.K_u] = "u"
@@ -17,6 +21,7 @@ class Keyboard():
         keys_to_string[pygame.K_PERIOD] = "."
         keys_to_string[146] = ">"
         keys_to_string[144] = "<"
+
         self.keys_to_string = keys_to_string
 
     def key_string(self, key, shift_pressed):

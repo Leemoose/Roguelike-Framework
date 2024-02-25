@@ -3,6 +3,7 @@ class Objects():
     def __init__(self, x, y, id_tag, render_tag, name):
         self.id_tag = id_tag
         self.render_tag = render_tag
+        self.shaded_render_tag = -render_tag
         self.name = name
         self.x = x
         self.y = y
@@ -24,6 +25,7 @@ class Tile(Objects):
         super().__init__(x, y, id_tag, render_tag, "Tile")
         self.passable = passable
         self.seen = False
+        self.visible = False
 
 class Stairs(Tile):
     def __init__(self, x, y, render_tag = 0, passable = True, id_tag = 0):

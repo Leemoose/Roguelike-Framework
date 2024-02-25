@@ -23,9 +23,12 @@ class TileDict():
         file = 'assets/P.png'
         player_image = image.load(file)
         tiles = {}
-        tiles[0] = image.load("assets/basic_wall.png")
-        tiles[1] = image.load("assets/basic_floor.png")
+        tiles[1] = image.load("assets/basic_wall.png")
+        tiles[-1] = image.load("assets/basic_wall.png")
+        tiles[2] = image.load("assets/basic_floor.png")
+        tiles[-2] = image.load("assets/basic_floor_shaded.png")
         tiles[90] = image.load("assets/stairs_up.png")
+        tiles[-90] = image.load("assets/stairs_up.png")
         tiles[200] = player_image
         tiles[101] = image.load("assets/orc.png")
         tiles[102] = image.load("assets/slime.png")
@@ -127,7 +130,7 @@ class DungeonGenerator():
         for x in range(length):
             for y in range(depth):
                 if startx + x >= 0 and startx + x < self.width and starty+y >= 0 and starty + y < self.height:
-                    tile = O.Tile(startx + x, starty + y, 0, True)
+                    tile = O.Tile(startx + x, starty + y, 1, True)
                     self.tile_map[startx + x][starty + y] = tile
 
 
@@ -253,7 +256,7 @@ class TileMap(TrackingMap):
         self.track_map = []
         self.stairs = []
         for x in range(self.width):
-            self.track_map.append([O.Tile(x, y, 0, False) for y in range(self.height)])
+            self.track_map.append([O.Tile(x, y, 1, False) for y in range(self.height)])
         self.cellular_caves()
         self.render_to_map()
         self.place_stairs()
@@ -307,16 +310,16 @@ class TileMap(TrackingMap):
             temp = []
             for y in range(self.height):
                 if self.track_map_render[x][y] == 1:
-                    temp.append(O.Tile(x, y, 1, True))
+                    temp.append(O.Tile(x, y, 2, True))
                 else:
-                    temp.append(O.Tile(x, y, 0, False))
+                    temp.append(O.Tile(x, y, 1, False))
             self.track_map.append(temp)
 
 
     def carve_rooms(self):
         for x in range(self.width - 2):
             for y in range(self.height - 2):
-                tile = O.Tile(x+1, y+1, 1, True)
+                tile = O.Tile(x+1, y+1, 2, True)
                 self.track_map[x+1][y+1] = tile
 
     def place_stairs(self):

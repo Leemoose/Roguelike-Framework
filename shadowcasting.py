@@ -2,15 +2,25 @@ import math
 from fractions import Fraction
 #https://github.com/370417/symmetric-shadowcasting/blob/master/example.py
 def compute_fov(origin, tile_map):
-    x,y = origin
-    tile_map[x][y].seen = True
+    for x in range(len(tile_map[0])): #Maybe need a better place to put this and more effective way to do
+        for y in range(len(tile_map)):
+            tile_map[x][y].visible = False
+    x1,y1 = origin
+    tile_map[x1][y1].seen = True
+    tile_map[x1][y1].visible = True
 
     for i in range(4):
         quadrant = Quadrant(i, origin)
 
+        def distance(tile):
+            x, y = quadrant.transform(tile)
+            return ((x-x1)**2+(y-y1)**2)**(1/2)
+
         def reveal(tile):
             x, y = quadrant.transform(tile)
-            tile_map[x][y].seen = True
+            if (distance(tile) < 12): #Need a better place to put this shadowing number
+                tile_map[x][y].seen = True
+                tile_map[x][y].visible = True
 
         def is_wall(tile):
             if tile is None:
