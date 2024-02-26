@@ -9,13 +9,6 @@ class Monster_AI():
         self.frontier = None
         self.is_awake = False
 
-    def move_my_poor_meatshield_of_a_pawn(self, monster, monster_map, tile_map):
-        x = monster.x
-        y = monster.y
-        if ((x>=0) & (y>=0) & (x < tile_map.width) & (y < tile_map.height)):
-            monster.move(R.roll_dice(-1,1)[0], R.roll_dice(-1,1)[0], tile_map, monster, monster_map)
-            monster.energy -= 100
-
     def rank_actions(self, monster, monster_map, tile_map, flood_map, player, generated_maps, item_dict):
         item_map = generated_maps.item_map
         playerx, playery = player.get_location()

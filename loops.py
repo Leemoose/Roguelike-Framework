@@ -47,7 +47,7 @@ class ID():
     def tag_subject(self, subject):
         self.ID_count += 1
         subject.gain_ID(self.ID_count)
-        self.subjects[self.ID_count] = subject
+        self.add_subject(subject)
 
     def get_subject(self, key):
         return self.subjects[key]
@@ -163,14 +163,6 @@ class Loops():
             if monster.brain.is_awake == True:
                 monster.character.energy += energy
                 monster.brain.rank_actions(monster, self.monster_map, self.generator.tile_map, self.generator.flood_map, self.player, self.generator, self.item_dict)
-        """
-        self.monster_ai.comprehend_the_universe(self.player.x, self.player.y, self.monster_map, self.tile_map)
-        for monster_key in self.monster_dict.subjects:
-            monster = self.monster_dict.subjects[monster_key]
-            monster.energy += energy
-            self.monster_ai.mind_control_my_minion(monster, self.monster_map, self.tile_map, self.player)
-        """
-
     def change_screen(self, keyboard, display, colors, tileDict):
         if self.action == True:
             shadowcasting.compute_fov(self.player.get_location(), self.generator.tile_map.track_map)
