@@ -29,6 +29,8 @@ class TileDict():
         tiles[-2] = image.load("assets/basic_floor_shaded.png")
         tiles[90] = image.load("assets/stairs_up.png")
         tiles[-90] = image.load("assets/stairs_up.png")
+        tiles[91] = image.load("assets/stairs_down.png")
+        tiles[-91] = image.load("assets/stairs_down.png")
         tiles[200] = player_image
         tiles[101] = image.load("assets/orc.png")
         tiles[102] = image.load("assets/slime.png")
@@ -136,10 +138,10 @@ class DungeonGenerator():
 
 
     def place_monsters(self):
-        number_of_orcs = 5
-        number_of_slimes = 8
-        number_of_tentacles = 2
-        number_of_eyeballs = 3
+        number_of_orcs = 1
+        number_of_slimes = 3
+        number_of_tentacles = 1
+        number_of_eyeballs = 1
         number_of_stone_golems = 1
         self.place_monster_hoard(number_of_orcs, 101, 2)
         self.place_monster_hoard(number_of_slimes, 102, 1)
@@ -328,14 +330,23 @@ class TileMap(TrackingMap):
         while (self.track_map[startx][starty].passable == False):
             startx = random.randint(0, self.width-1)
             starty = random.randint(0,self.height-1)
-        tile = O.Stairs(startx, starty, 90, True)
+        tile = O.Stairs(startx, starty, 91, True, downward=True)
         self.track_map[startx][starty] = tile
-        self.stairs.append((startx, starty))
+        self.stairs.append(tile)
+
+        startx = random.randint(0, self.width - 1)
+        starty = random.randint(0, self.height - 1)
+        while (self.track_map[startx][starty].passable == False):
+            startx = random.randint(0, self.width - 1)
+            starty = random.randint(0, self.height - 1)
+        tile = O.Stairs(startx, starty, 90, True, downward=False)
+        self.track_map[startx][starty] = tile
+        self.stairs.append(tile)
 
     def get_stairs(self):
         return self.stairs
 
-    def place_tile(self, tile):
+    def place_tile(self, tfile):
         self.track_map[tile.x][tile.y] = tile
 
     def get_passable(self, x, y):

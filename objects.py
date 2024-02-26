@@ -28,9 +28,11 @@ class Tile(Objects):
         self.visible = False
 
 class Stairs(Tile):
-    def __init__(self, x, y, render_tag = 0, passable = True, id_tag = 0):
+    def __init__(self, x, y, render_tag = 0, passable = True, id_tag = 0, downward = False):
         super().__init__(x, y, render_tag, passable, id_tag)
         self.stairs = True
+        self.pair = None
+        self.downward = downward
 
 class Item(Objects):
     def __init__(self, x, y, id_tag, render_tag, name, equipable):
