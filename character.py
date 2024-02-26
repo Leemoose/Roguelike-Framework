@@ -126,4 +126,6 @@ class Player(O.Objects):
     def __init__(self, x, y):
         super().__init__(x, y, 1, 200, "Player")
         self.character = Character()
+        self.character.max_health = 200
+        self.character.health = 200
 

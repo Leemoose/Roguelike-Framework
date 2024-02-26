@@ -153,6 +153,10 @@ class Loops():
             self.generator.flood_map.update_flood_map(self.player)
             self.monster_loop(-self.player.character.energy)
             self.player.character.energy = 0
+
+        if not self.player.character.is_alive():
+            return False
+
         return True
 
     def monster_loop(self, energy):
@@ -176,7 +180,7 @@ class Loops():
         elif self.classes == True:
             display.update_class()
         elif self.items == True:
-            display.update_item(self.item_for_item_screen)
+            display.update_item(self.item_for_item_screen, tileDict)
         pygame.display.update()
         self.update_screen = False
 

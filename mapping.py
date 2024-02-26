@@ -139,10 +139,10 @@ class DungeonGenerator():
 
     def place_monsters(self):
         number_of_orcs = 1
-        number_of_slimes = 3
-        number_of_tentacles = 1
-        number_of_eyeballs = 1
-        number_of_stone_golems = 1
+        number_of_slimes = 0
+        number_of_tentacles = 0
+        number_of_eyeballs = 0
+        number_of_stone_golems = 0
         self.place_monster_hoard(number_of_orcs, 101, 2)
         self.place_monster_hoard(number_of_slimes, 102, 1)
         self.place_monster_hoard(number_of_eyeballs, 104, 3) #Gentlman eyeballs
@@ -167,10 +167,10 @@ class DungeonGenerator():
     def place_items(self):
         number_of_axes = random.randint(5,10)
         number_of_hammers = random.randint(5, 10)
-        self.place_item_hoard(number_of_axes, 300)
-        self.place_item_hoard(number_of_hammers, 301)
+        self.place_item_hoard(number_of_axes, 300, "ax")
+        self.place_item_hoard(number_of_hammers, 301, "hammer")
 
-    def place_item_hoard(self, number, render_tag):
+    def place_item_hoard(self, number, render_tag, weapon_type):
         for i in range(number):
             startx = random.randint(0, self.width-1)
             starty = random.randint(0,self.height-1)
@@ -179,9 +179,12 @@ class DungeonGenerator():
                 startx = random.randint(0, self.width-1)
                 starty = random.randint(0,self.height-1)
 
-            ax = I.Ax(render_tag, True, startx, starty)
-            self.item_dict.tag_subject(ax)
-            self.item_map.place_thing(ax)
+            if weapon_type == "ax":
+                weapon = I.Ax(render_tag, True, startx, starty)
+            elif weapon_type == "hammer":
+                weapon = I.Hammer(render_tag, True, startx, starty)
+            self.item_dict.tag_subject(weapon)
+            self.item_map.place_thing(weapon)
 
     def get_map(self):
         return self.tile_map
