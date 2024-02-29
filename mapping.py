@@ -39,6 +39,7 @@ class TileDict():
         tiles[105] = image.load('assets/stone_golem.png')
         tiles[300] = image.load("assets/basic_ax.png")
         tiles[301] = image.load("assets/hammer.png")
+        tiles[901] = image.load("assets/target.png")
         self.tiles = tiles
 
     def tile_string(self, key):

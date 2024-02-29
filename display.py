@@ -1,25 +1,24 @@
 import pygame
-from pygame import image
 
 
-class Buttons():
+class Buttons:
     def __init__(self):
         self.buttons = {}
 
     def add(self, button, name):
         self.buttons[name] = button
 
-class Button():
+class Button:
     # A button is anything in game that you could click
     def __init__(self, screen_width, screen_height, asset, modx, mody, action, positionx, positiony):
         self.width = screen_width * modx
         self.height = screen_height * mody
-        self.modx = modx #How large in fraction relative to the screen
-        self.mody = mody #How tall in fraction relative to the screen
-        self.img = pygame.transform.scale(pygame.image.load("assets/button.png"),(self.width, self.height))
-        self.action = action #See keyboard for list of actions
-        self.positionx = positionx #center of button
-        self.positiony = positiony #center of button
+        self.modx = modx  #How large in fraction relative to the screen
+        self.mody = mody  #How tall in fraction relative to the screen
+        self.img = pygame.transform.scale(pygame.image.load("assets/button.png"), (self.width, self.height))
+        self.action = action  #See keyboard for list of actions
+        self.positionx = positionx  #center of button
+        self.positiony = positiony  #center of button
 
     def scale(self, screen_width, screen_height):
         #rescaling the button size
@@ -27,17 +26,14 @@ class Button():
 
     def clicked(self, x, y):
         #x,y is position clicked
-        pressed = False
         cornerx, cornery = self.get_position()
-        if cornerx < x and x < cornerx + self.width:
-            return (cornerx < x and x < cornerx + self.width) and (cornery < y and y < cornery + self.height)
+        return (cornerx < x and x < cornerx + self.width) and (cornery < y and y < cornery + self.height)
 
     def get_position(self):
-        return (self.positionx - self.width // 2, self.positiony + self.height // 2)
+        return self.positionx - self.width // 2, self.positiony + self.height // 2
 
 
-
-class Display():
+class Display:
     def __init__(self, width, height, textSize, textWidth, textHeight):
         pygame.display.set_caption('Tiles')
         self.win = pygame.display.set_mode((width, height))
@@ -52,41 +48,41 @@ class Display():
         r_x = self.textWidth // 2
         r_y = self.textHeight // 2
 
-        x_start = player.x - r_x
-        x_end = player.x + r_x
-        y_start = player.y - r_y
-        y_end = player.y + r_y
+        self.x_start = player.x - r_x
+        self.x_end = player.x + r_x
+        self.y_start = player.y - r_y
+        self.y_end = player.y + r_y
 
-        for x in range(x_start, x_end):
-            for y in range(y_start, y_end):
+        for x in range(self.x_start, self.x_end):
+            for y in range(self.y_start, self.y_end):
                 if (x < 0 or x >= floormap.width or y < 0 or y >= floormap.height):
                     pass
                 elif floormap.track_map[x][y].seen == False:
                     pass
                 elif floormap.track_map[x][y].visible == True:
                     tag = tileDict.tile_string(floormap.get_tag(x, y))
-                    self.win.blit(tag, (self.textSize * (x - x_start), self.textSize * (y - y_start)))
+                    self.win.blit(tag, (self.textSize * (x - self.x_start), self.textSize * (y - self.y_start)))
                 else:
                     tag = tileDict.tile_string(floormap.track_map[x][y].shaded_render_tag)
 
-                    self.win.blit(tag, (self.textSize * (x - x_start), self.textSize * (y - y_start)))
+                    self.win.blit(tag, (self.textSize * (x - self.x_start), self.textSize * (y - self.y_start)))
 
         for key in item_ID.subjects:
             item = item_ID.get_subject(key)
-            if (item.x >= x_start and item.x < x_end and item.y >= y_start and item.y < y_end):
+            if (item.x >= self.x_start and item.x < self.x_end and item.y >= self.y_start and item.y < self.y_end):
                 if floormap.track_map[item.x][item.y].visible:
                     item_tile = tileDict.tile_string(item.render_tag)
-                    self.win.blit(item_tile, (self.textSize * (item.x - x_start), self.textSize * (item.y - y_start)))
+                    self.win.blit(item_tile, (self.textSize * (item.x - self.x_start), self.textSize * (item.y - self.y_start)))
 
 
         dead_monsters = []
         for key in monsterID.subjects:
             monster = monsterID.get_subject(key)
             if monster.character.is_alive():
-                if (monster.x >= x_start and monster.x < x_end and monster.y >= y_start and monster.y < y_end):
+                if (monster.x >= self.x_start and monster.x < self.x_end and monster.y >= self.y_start and monster.y < self.y_end):
                     if floormap.track_map[monster.x][monster.y].visible:
                         monster_tile = tileDict.tile_string(monster.render_tag)
-                        self.win.blit(monster_tile, (self.textSize*(monster.x - x_start), self.textSize*(monster.y - y_start)))
+                        self.win.blit(monster_tile, (self.textSize*(monster.x - self.x_start), self.textSize*(monster.y - self.y_start)))
             else:
                 dead_monsters.append(key)
                 monster_map.clear_location(monster.x, monster.y)
@@ -145,6 +141,12 @@ class Display():
         self.win.blit(item_background, (self.screen_width // 4, self.screen_height // 4))
         item_tile = tileDict.tile_string(item.render_tag)
         self.win.blit(item_tile, (self.screen_width // 2, self.screen_height // 2))
+
+    def update_target(self, targets, tileDict):
+        for location in targets:
+            x, y = location
+            tag = tileDict.tile_string(901)
+            self.win.blit(tag, (self.textSize * (x - self.x_start), self.textSize * (y - self.y_start)))
 
 def create_main_screen(scr):
     background = pygame.image.load("assets/homescreen.png")

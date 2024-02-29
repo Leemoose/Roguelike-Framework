@@ -2,13 +2,9 @@ import pygame
 import display as D
 import mapping as M
 import character as C
-import items as I
 import objects as O
-import monster as Mon
-import objects as O
+import targets as T
 import shadowcasting
-
-import random
 
 """
 Theme: Loops is the central brain of which part of the program it is choosing.
@@ -79,6 +75,8 @@ class Loops():
         self.update_screen = True
         self.main = True
         self.classes = False
+        self.targeting = False
+
         self.width = width
         self.height = height
         self.textSize = textSize
@@ -92,6 +90,7 @@ class Loops():
         self.monster_dict = None
         self.generator = None #Dungeon Generator
         self.messages = []
+        self.targets = T.Target()
     def action_loop(self, keyboard):
         """
         This is responsible for undergoing any inputs when screen is clicked
@@ -122,6 +121,8 @@ class Loops():
                     keyboard.key_class_screen(key, self)
                 elif self.items == True:
                     keyboard.key_item_screen(key, self, self.item_dict, self.player, self.item_for_item_screen, self.generator.item_map)
+                elif self.targeting == True:
+                    keyboard.key_targeting_screen(key, self)
                 self.update_screen = True
 
             elif event.type == pygame.MOUSEBUTTONUP:
@@ -180,6 +181,10 @@ class Loops():
             display.update_class()
         elif self.items == True:
             display.update_item(self.item_for_item_screen, tileDict)
+        elif self.targeting == True:
+            display.update_display(colors, self.generator.tile_map, tileDict, self.monster_dict, self.item_dict,
+                                   self.monster_map, self.player, self.messages)
+            display.update_target(self.targets.target_list, tileDict)
         pygame.display.update()
         self.update_screen = False
 

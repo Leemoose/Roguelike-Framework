@@ -16,6 +16,7 @@ class Keyboard():
         keys_to_string[pygame.K_g] = "g"
         keys_to_string[pygame.K_u] = "u"
         keys_to_string[pygame.K_e] = "e"
+        keys_to_string[pygame.K_f] = "f"
         keys_to_string[pygame.K_ESCAPE] = "esc"
         keys_to_string[pygame.K_1] = "1"
         keys_to_string[pygame.K_2] = "2"
@@ -47,7 +48,7 @@ class Keyboard():
             for item_key in item_ID.subjects:
                 item = item_ID.subjects[item_key]
                 if item.x == player.x and item.y == player.y:
-                    player.character.grab(item_key, item_ID, generated_maps)
+                    player.character.grab(item_key, item_ID, generated_maps, loop)
                     break
         elif key == "i":
             loop.action = False
@@ -59,6 +60,11 @@ class Keyboard():
             loop.up_floor()
         elif key == ".":
             player.character.wait()
+        elif key == 'f':
+            loop.action = False
+            loop.targeting = True
+            loop.update_screen = True
+            loop.targets.start_target(loop.player.get_location())
 
     def key_inventory(self, loop, player, item_dict, key):
             if key == "esc":
@@ -113,3 +119,19 @@ class Keyboard():
                 player.character.equip(item)
             elif key == "u":
                 player.character.unequip(item)
+
+    def key_targeting_screen(self, key, loop):
+        loop.update_screen = True
+        targets = loop.targets
+        if key == "w":
+            targets.adjust(0, -1)
+        elif key == "a":
+            targets.adjust(-1, 0)
+        elif key == "s":
+            targets.adjust(0, 1)
+        elif key == "d":
+            targets.adjust(1, 0)
+        elif key == "esc":
+            loop.targeting = False
+            loop.action = True
+            loop.update_screen = True

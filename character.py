@@ -37,12 +37,13 @@ class Character():
         defense = R.roll_dice(1, 1)[0]
         return defense
 
-    def grab(self, key, item_ID, generated_maps):
+    def grab(self, key, item_ID, generated_maps, loop):
         item = item_ID.get_subject(key)
         self.inventory.append(item)
         item_ID.remove_subject(key)
         itemx, itemy = item.get_location()
         generated_maps.item_map.clear_location(itemx, itemy)
+        loop.add_message("The player picked up an item!")
 
     def drop(self, item, item_dict, x, y, item_map):
         if len(self.inventory) != 0 and item.dropable:
