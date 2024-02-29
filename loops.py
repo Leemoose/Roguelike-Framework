@@ -49,7 +49,7 @@ class ID():
         return self.subjects[key]
 
     def remove_subject(self, key):
-        self.subjects.pop(key)
+        return self.subjects.pop(key)
 
     def add_subject(self, subject):
         self.subjects[subject.id_tag] = subject
@@ -166,9 +166,10 @@ class Loops():
                 monster.brain.is_awake = True
             if monster.brain.is_awake == True:
                 monster.character.energy += energy
-                monster.brain.rank_actions(monster, self.monster_map, self.generator.tile_map, self.generator.flood_map, self.player, self.generator, self.item_dict)
+                monster.brain.rank_actions(monster, self.monster_map, self.generator.tile_map, self.generator.flood_map, self.player, self.generator, self.item_dict, self)
     def change_screen(self, keyboard, display, colors, tileDict):
         if self.action == True:
+            self.clean_up()
             shadowcasting.compute_fov(self.player.get_location(), self.generator.tile_map.track_map)
             display.update_display(colors, self.generator.tile_map, tileDict, self.monster_dict, self.item_dict, self.monster_map, self.player, self.messages)
         elif self.inventory == True:
@@ -187,6 +188,16 @@ class Loops():
             display.update_target(self.targets.target_list, tileDict)
         pygame.display.update()
         self.update_screen = False
+
+    def clean_up(self):
+        destroyed_items = []
+        for key in (self.item_dict.subjects):
+            item = self.item_dict.get_subject(key)
+            if item.destroy:
+                destroyed_items.append(key)
+        for key in destroyed_items:
+            item = self.item_dict.remove_subject(key)
+            self.generator.item_map.clear_location(item.x, item.y)
 
     def down_floor(self):
         playerx, playery = self.player.get_location()

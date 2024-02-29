@@ -32,6 +32,11 @@ class Character():
         self.health -= damage
         return self.is_alive()
 
+    def gain_health(self, heal):
+        self.health += heal
+        if self.health > self.max_health:
+            self.health = self.max_health
+
 
     def defend(self):
         defense = R.roll_dice(1, 1)[0]
@@ -43,9 +48,9 @@ class Character():
         item_ID.remove_subject(key)
         itemx, itemy = item.get_location()
         generated_maps.item_map.clear_location(itemx, itemy)
-        loop.add_message("The player picked up an item!")
+        loop.add_message("The " + str(self.parent.name) + " picked up an item!")
 
-    def drop(self, item, item_dict, x, y, item_map):
+    def drop(self, item, item_dict,  item_map):
         if len(self.inventory) != 0 and item.dropable:
             i = 0
             while self.inventory[i].id_tag != item.id_tag and i < len(self.inventory):
@@ -53,16 +58,17 @@ class Character():
             if i < len(self.inventory):
                 self.inventory.pop(i)
                 item_dict.add_subject(item)
-                item.x = x
-                item.y = y
+                item.x = self.parent.x
+                item.y = self.parent.y
                 item_map.place_thing(item)
 
     def equip(self, item):
-        if self.main_weapon != None:
-            self.unequip(self.main_weapon)
-        self.main_weapon = item
-        item.equipped = True
-        item.dropable = False
+        if item.equipable:
+            if self.main_weapon != None:
+                self.unequip(self.main_weapon)
+            self.main_weapon = item
+            item.equipped = True
+            item.dropable = False
 
     def unequip(self, item):
         if item.equipped:
@@ -88,6 +94,12 @@ class Character():
         defense = defender.character.defend()
         defender.character.take_damage(damage - defense)
 
+    def quaff(self, potion, item_dict, item_map):
+        if potion.consumeable:
+            potion.activate(self)
+            self.drop(potion, item_dict, item_map)
+            potion.destroy = True
+            return True
 
 class Player(O.Objects):
     def __init__(self, x, y):

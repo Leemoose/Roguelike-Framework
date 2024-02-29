@@ -17,6 +17,7 @@ class Keyboard():
         keys_to_string[pygame.K_u] = "u"
         keys_to_string[pygame.K_e] = "e"
         keys_to_string[pygame.K_f] = "f"
+        keys_to_string[pygame.K_q] = "q"
         keys_to_string[pygame.K_ESCAPE] = "esc"
         keys_to_string[pygame.K_1] = "1"
         keys_to_string[pygame.K_2] = "2"
@@ -111,7 +112,7 @@ class Keyboard():
                 loop.inventory = True
                 loop.update_screen = True
             elif key == "d":
-                player.character.drop(item, item_dict, player.x, player.y, item_map)
+                player.character.drop(item, item_dict, item_map)
                 loop.items = False
                 loop.inventory = True
                 loop.update_screen = True
@@ -119,6 +120,11 @@ class Keyboard():
                 player.character.equip(item)
             elif key == "u":
                 player.character.unequip(item)
+            elif key == 'q':
+                if player.character.quaff(item, item_dict, item_map):
+                    loop.update_screen = True
+                    loop.inventory = True
+                    loop.items = False
 
     def key_targeting_screen(self, key, loop):
         loop.update_screen = True

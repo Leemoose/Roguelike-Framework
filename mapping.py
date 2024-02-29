@@ -39,6 +39,7 @@ class TileDict():
         tiles[105] = image.load('assets/stone_golem.png')
         tiles[300] = image.load("assets/basic_ax.png")
         tiles[301] = image.load("assets/hammer.png")
+        tiles[401] = image.load("assets/health_pot.png")
         tiles[901] = image.load("assets/target.png")
         self.tiles = tiles
 
@@ -168,10 +169,12 @@ class DungeonGenerator():
     def place_items(self):
         number_of_axes = random.randint(5,10)
         number_of_hammers = random.randint(5, 10)
+        number_of_potions = random.randint(5, 10)
         self.place_item_hoard(number_of_axes, 300, "ax")
         self.place_item_hoard(number_of_hammers, 301, "hammer")
+        self.place_item_hoard(number_of_potions, 401, "potion")
 
-    def place_item_hoard(self, number, render_tag, weapon_type):
+    def place_item_hoard(self, number, render_tag, type):
         for i in range(number):
             startx = random.randint(0, self.width-1)
             starty = random.randint(0,self.height-1)
@@ -180,12 +183,14 @@ class DungeonGenerator():
                 startx = random.randint(0, self.width-1)
                 starty = random.randint(0,self.height-1)
 
-            if weapon_type == "ax":
-                weapon = I.Ax(render_tag, True, startx, starty)
-            elif weapon_type == "hammer":
-                weapon = I.Hammer(render_tag, True, startx, starty)
-            self.item_dict.tag_subject(weapon)
-            self.item_map.place_thing(weapon)
+            if type == "ax":
+                item = I.Ax(render_tag, startx, starty)
+            elif type == "hammer":
+                item = I.Hammer(render_tag,  startx, starty)
+            elif type == "potion":
+                item = I.Potion(render_tag,startx, starty)
+            self.item_dict.tag_subject(item)
+            self.item_map.place_thing(item)
 
     def get_map(self):
         return self.tile_map
