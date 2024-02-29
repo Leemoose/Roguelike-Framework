@@ -140,11 +140,11 @@ class DungeonGenerator():
 
 
     def place_monsters(self):
-        number_of_orcs = 1
-        number_of_slimes = 0
-        number_of_tentacles = 0
-        number_of_eyeballs = 0
-        number_of_stone_golems = 0
+        number_of_orcs = 3
+        number_of_slimes = 10
+        number_of_tentacles = 5
+        number_of_eyeballs = 2
+        number_of_stone_golems = 1
         self.place_monster_hoard(number_of_orcs, 101, 2)
         self.place_monster_hoard(number_of_slimes, 102, 1)
         self.place_monster_hoard(number_of_eyeballs, 104, 3) #Gentlman eyeballs
@@ -355,7 +355,7 @@ class TileMap(TrackingMap):
     def get_stairs(self):
         return self.stairs
 
-    def place_tile(self, tfile):
+    def place_tile(self, tile):
         self.track_map[tile.x][tile.y] = tile
 
     def get_passable(self, x, y):

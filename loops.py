@@ -204,8 +204,8 @@ class Loops():
         if self.floor_level == 0 or (isinstance(self.generator.tile_map.track_map[playerx][playery], O.Stairs) and self.generator.tile_map.track_map[playerx][playery].downward):
             self.floor_level += 1
             if self.floor_level > self.memory.explored_levels:
-                wid = 20
-                hei = 20
+                wid = 50
+                hei = 50
                 generator = M.DungeonGenerator(wid, hei)
                 generated_map = generator.get_map()
                 self.monster_map = generator.monster_map
