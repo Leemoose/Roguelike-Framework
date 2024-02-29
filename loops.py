@@ -91,8 +91,7 @@ class Loops():
         self.item_dict = None
         self.monster_dict = None
         self.generator = None #Dungeon Generator
-        self.monster_ai =  Mon.Monster_AI() #I just realize there is a bug here and it actually creates a... wait... what's that noise... hello?... Nooo!!! Bluglaaaaaaaaaa     
-
+        self.messages = []
     def action_loop(self, keyboard):
         """
         This is responsible for undergoing any inputs when screen is clicked
@@ -170,7 +169,7 @@ class Loops():
     def change_screen(self, keyboard, display, colors, tileDict):
         if self.action == True:
             shadowcasting.compute_fov(self.player.get_location(), self.generator.tile_map.track_map)
-            display.update_display(colors, self.generator.tile_map, tileDict, self.monster_dict, self.item_dict, self.monster_map, self.player)
+            display.update_display(colors, self.generator.tile_map, tileDict, self.monster_dict, self.item_dict, self.monster_map, self.player, self.messages)
         elif self.inventory == True:
             display.update_inventory(self.player)
         elif self.main == True:
@@ -237,4 +236,10 @@ class Loops():
         self.race_buttons = D.create_race_screen(display)
         self.class_buttons = D.create_class_screen(display)
         self.player = C.Player(0,0)
+
+    def add_message(self, message):
+        if len(self.messages) >= 5:
+            self.messages.pop(0)
+        self.messages.append(message)
+
 

@@ -15,7 +15,7 @@ class Monster_AI():
         monsterx, monstery = monster.get_location()
         distance = monster.get_distance(playerx, playery)
         if distance < 1.5:
-            monster.character.attack(player)
+            monster.character.melee(player)
             monster.character.energy -= 100
         elif item_map.locate(monsterx, monstery) != -1:
             item_key = item_map.locate(monsterx, monstery)
@@ -41,8 +41,9 @@ class Monster_AI():
 class Monster(O.Objects):
     def __init__(self, number_tag, x, y):
         super().__init__(x, y, 0, number_tag, "Unknown")
-        self.character = C.Character()
+        self.character = C.Character(self)
         self.brain = Monster_AI()
+        self.experience_given = 10
 
     def move(self, move_x, move_y, floormap, monster, monster_map):
         speed = 100

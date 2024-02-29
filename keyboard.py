@@ -36,13 +36,13 @@ class Keyboard():
 #Any actions done in the battle screen
     def key_action(self, player, floormap, monsterID, monster_map, item_ID, loop, key, generated_maps):
         if key == "w":
-            player.character.attack_move(0, -1, floormap, player, monsterID, monster_map, item_ID)
+            player.attack_move(0, -1, loop)
         elif key == "a":
-            player.character.attack_move(-1, 0, floormap, player, monsterID, monster_map, item_ID)
+            player.attack_move(-1, 0, loop)
         elif key == "s":
-            player.character.attack_move(0, 1, floormap, player, monsterID, monster_map, item_ID)
+            player.attack_move(0, 1, loop)
         elif key == "d":
-            player.character.attack_move(1, 0, floormap, player, monsterID, monster_map, item_ID)
+            player.attack_move(1, 0, loop)
         elif key == "g":
             for item_key in item_ID.subjects:
                 item = item_ID.subjects[item_key]

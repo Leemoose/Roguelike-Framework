@@ -47,7 +47,7 @@ class Display():
         self.textHeight = textHeight
         self.textSize = textSize
 
-    def update_display(self, colorDict, floormap, tileDict, monsterID, item_ID, monster_map, player):
+    def update_display(self, colorDict, floormap, tileDict, monsterID, item_ID, monster_map, player, messages):
         self.win.fill(colorDict.getColor("black"))
         r_x = self.textWidth // 2
         r_y = self.textHeight // 2
@@ -98,10 +98,14 @@ class Display():
         font = pygame.font.Font('freesansbold.ttf', 12)
         text = font.render("Health: " + str(player.character.health), True, (255, 255, 255))
         self.win.blit(text, (0, self.screen_height // 100 * 85))
-        text = font.render("Experience: " + str(player.character.experience) + " / " + str(player.character.experience_to_next_level), True, (255, 255, 255))
+        text = font.render("Experience: " + str(player.experience) + " / " + str(player.experience_to_next_level), True, (255, 255, 255))
         self.win.blit(text, (0, self.screen_height // 100 * 90))
-        text = font.render("Level: " + str(player.character.level), True, (255, 255, 255))
+        text = font.render("Level: " + str(player.level), True, (255, 255, 255))
         self.win.blit(text, (0, self.screen_height // 100 * 95))
+
+        for i, message in enumerate(messages):
+            text = font.render(message, True, (255, 255, 255))
+            self.win.blit(text, (self.screen_width // 100 * 10, self.screen_height // 100 * (85 + i *3)))
 
         for key in dead_monsters:
             monsterID.subjects.pop(key)
