@@ -18,11 +18,16 @@ class Keyboard():
         keys_to_string[pygame.K_e] = "e"
         keys_to_string[pygame.K_f] = "f"
         keys_to_string[pygame.K_q] = "q"
+        keys_to_string[pygame.K_o] = "o"
         keys_to_string[pygame.K_ESCAPE] = "esc"
         keys_to_string[pygame.K_1] = "1"
         keys_to_string[pygame.K_2] = "2"
         keys_to_string[pygame.K_3] = "3"
         keys_to_string[pygame.K_4] = "4"
+        keys_to_string[pygame.K_5] = "5"
+        keys_to_string[pygame.K_6] = "6"
+        keys_to_string[pygame.K_7] = "7"
+        keys_to_string[pygame.K_8] = "8"
         keys_to_string[pygame.K_PERIOD] = "."
         keys_to_string[146] = ">"
         keys_to_string[144] = "<"
@@ -66,6 +71,8 @@ class Keyboard():
             loop.targeting = True
             loop.update_screen = True
             loop.targets.start_target(loop.player.get_location())
+        elif key == "o":
+            loop.add_message("You wish you could autoexplore.")
 
     def key_inventory(self, loop, player, item_dict, key):
             if key == "esc":

@@ -136,11 +136,26 @@ class Display:
         self.win.blit(class_background, (0,0))
 
     def update_item(self, item, tileDict):
-        item_background = pygame.image.load("assets/item_background.png")
-        item_background = pygame.transform.scale(item_background, (self.screen_width // 2, self.screen_height // 2))
-        self.win.blit(item_background, (self.screen_width // 4, self.screen_height // 4))
+        font2 = pygame.font.SysFont('didot.ttc', 32)
+        item_background = pygame.transform.scale(pygame.image.load("assets/item_background.png"),
+                                     (self.screen_width * 2 // 3, self.screen_height * 4 // 5))
+        self.win.blit(item_background, (self.screen_width // 6, self.screen_height // 10))
         item_tile = tileDict.tile_string(item.render_tag)
-        self.win.blit(item_tile, (self.screen_width // 2, self.screen_height // 2))
+        self.win.blit(item_tile, (self.screen_width * 17 // 100 , self.screen_height * 11 // 100))
+        text = font2.render(item.name, True, (255, 255, 255))
+        self.win.blit(text, ((self.screen_width * 22 // 100 , self.screen_height * 12 // 100)))
+
+        message = ""
+        if item.equipped:
+            message = "u: Unequip"
+        elif item.equipable:
+            message = "e: Equip"
+        elif item.consumeable:
+            message = "q: Quaff"
+
+        text = font2.render(message, True, (255, 255, 255))
+        self.win.blit(text, ((self.screen_width * 22 // 100, self.screen_height * 15 // 100)))
+
 
     def update_target(self, targets, tileDict):
         for location in targets:

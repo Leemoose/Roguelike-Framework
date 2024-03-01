@@ -20,7 +20,14 @@ class Monster_AI():
         elif item_map.locate(monsterx, monstery) != -1:
             item_key = item_map.locate(monsterx, monstery)
             monster.character.grab(item_key, item_dict, generated_maps, loop)
-            monster.character.equip(monster.character.inventory[0])
+        if len(monster.character.inventory) != 0:
+            stuff = monster.character.inventory
+            for i, item in enumerate(stuff):
+                if monster.character.main_weapon == None and item.equipable:
+                    monster.character.equip(item)
+                    break
+                elif monster.character.health < monster.character.max_health and item.consumeable:
+                    monster.character.quaff(item)
         else:
             options = [(0, 1), (1, 0), (-1, 0), (0, -1)]
             r = random.randint(0, 3)
