@@ -1,8 +1,13 @@
 import pygame
 
 class Keyboard():
+    """
+    Keyboard translates any player input into either a change of gamestate or an action. Any complicated checks
+    should be done in the action, not here.
+    First the player input or key is translated to a keyboard input (this allows inputs to change if we want).
+    Then, depending on which mode the game is in, it will do a series of if else statements to pick correct action.
+    """
     def __init__(self):
-        #Defining pygame keys to keyboard
         keys_to_string = {}
         keys_to_string[pygame.K_w] = "w"
         keys_to_string[pygame.K_a] = "a"
@@ -87,17 +92,18 @@ class Keyboard():
                     loop.item_for_item_screen = player.character.inventory[i]
 
     def key_main_screen(self, key, loop):
-        if key == "1":
-            loop.main = False
-            loop.race = True
-            loop.update_screen = True
+        if key == "esc":
+            return False
+        loop.main = False
+        loop.race = True
+        loop.update_screen = True
 
     def key_race_screen(self, key, loop):
         if key == "esc":
             loop.race = False
             loop.main = True
             loop.update_screen = True
-        elif key == "1":
+        else:
             loop.race = False
             loop.classes = True
             loop.update_screen = True
@@ -107,7 +113,7 @@ class Keyboard():
             loop.classes = False
             loop.race = True
             loop.update_screen = True        
-        elif key == "1":
+        else:
             loop.classes = False
             loop.action = True
             loop.update_screen = True
@@ -133,6 +139,7 @@ class Keyboard():
                     loop.inventory = True
                     loop.items = False
 
+#Not currently being used
     def key_targeting_screen(self, key, loop):
         loop.update_screen = True
         targets = loop.targets

@@ -24,6 +24,7 @@ class TileDict():
         player_image = image.load(file)
         tiles = {}
         tiles[1] = image.load("assets/basic_wall.png")
+        #Negative numbers are shaded versions
         tiles[-1] = image.load("assets/basic_wall.png")
         tiles[2] = image.load("assets/basic_floor.png")
         tiles[-2] = image.load("assets/basic_floor_shaded.png")
@@ -214,6 +215,9 @@ class Maps():
     def in_map(self, x, y):
        return x> 0 and x < self.width and y >0 and y < self.height
 
+"""
+This map will either track items or monsters.
+"""
 class TrackingMap(Maps):
     def __init__(self, width, height):
         super().__init__(width, height)
@@ -261,6 +265,9 @@ class FloodMap(Maps):
             allrows = allrows + row + "\n"
         return allrows
 
+"""
+This map is responsible for carving all tiles out.
+"""
 class TileMap(TrackingMap):
     def __init__(self, width, height):
         super().__init__(width, height)

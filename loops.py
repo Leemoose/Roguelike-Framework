@@ -33,7 +33,7 @@ class ColorDict():
 
 class ID():
     """
-    All unique entities are tagged with an ID and put into dictionary.
+    All unique entities (monsters and items) are tagged with an ID and put into dictionary.
     IDs are generally used in arrays and other places and then the ID can be used to get actual object
     """
     def __init__(self):
@@ -114,7 +114,8 @@ class Loops():
                 elif self.inventory == True:
                     keyboard.key_inventory(self, self.player, self.item_dict,key)
                 elif self.main == True:
-                    keyboard.key_main_screen(key, self)
+                    if keyboard.key_main_screen(key, self) == False:
+                        return False
                 elif self.race == True:
                     keyboard.key_race_screen(key, self)
                 elif self.classes == True:
@@ -198,6 +199,15 @@ class Loops():
         for key in destroyed_items:
             item = self.item_dict.remove_subject(key)
             self.generator.item_map.clear_location(item.x, item.y)
+
+        dead_monsters = []
+        for key in (self.monster_dict.subjects):
+            monster = self.monster_dict.get_subject(key)
+            if not monster.character.is_alive():
+                dead_monsters.append(key)
+        for key in dead_monsters:
+            monster = self.monster_dict.remove_subject(key)
+            self.generator.monster_map.clear_location(monster.x, monster.y)
 
     def down_floor(self):
         playerx, playery = self.player.get_location()

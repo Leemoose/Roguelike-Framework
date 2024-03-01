@@ -34,6 +34,10 @@ class Button:
 
 
 class Display:
+    """
+    Display is responsible for put images in the screen. Currently have it set that each function will update a
+    seperate part of the game.
+    """
     def __init__(self, width, height, textSize, textWidth, textHeight):
         pygame.display.set_caption('Tiles')
         self.win = pygame.display.set_mode((width, height))
@@ -155,7 +159,6 @@ class Display:
 
         text = font2.render(message, True, (255, 255, 255))
         self.win.blit(text, ((self.screen_width * 22 // 100, self.screen_height * 15 // 100)))
-
 
     def update_target(self, targets, tileDict):
         for location in targets:

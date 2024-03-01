@@ -1,6 +1,8 @@
 import dice as R
 import objects as O
-
+"""
+All detailed items are initialized here.
+"""
 class Weapon(O.Item):
     def __init__(self, x, y, id_tag, render_tag, name):
         super().__init__(x,y, id_tag, render_tag, name)

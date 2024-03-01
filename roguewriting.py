@@ -8,17 +8,21 @@ import loops as L
 pygame.init()
 pygame.font.init()
 
-
+#Size of tiles
 textSize = 32
 width = 1280
 height = 720
 textWidth = int(width / textSize)
 textHeight = int(height / textSize)
+#Haven't used yet
 colors = L.ColorDict()
+#dictionary mapping renderID to the image
 tileDict = M.TileDict(textSize, colors)
+#Responsible for game loops
 loop = L.Loops(width, height, textSize)
 
 display = D.Display(width, height, textSize, textWidth, textHeight)
+
 keyboard = K.Keyboard()
 
 player_turn = True

@@ -9,6 +9,10 @@ class Monster_AI():
         self.frontier = None
         self.is_awake = False
 
+    """
+    Think it would be better to first rank each action depending on the circumstances with a number between 1-100 and 
+    then pick the action that ranks the highest
+    """
     def rank_actions(self, monster, monster_map, tile_map, flood_map, player, generated_maps, item_dict, loop):
         item_map = generated_maps.item_map
         playerx, playery = player.get_location()
