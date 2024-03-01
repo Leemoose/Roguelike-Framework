@@ -199,7 +199,7 @@ class Loops():
         for key in destroyed_items:
             item = self.item_dict.remove_subject(key)
             self.generator.item_map.clear_location(item.x, item.y)
-
+    """
         dead_monsters = []
         for key in (self.monster_dict.subjects):
             monster = self.monster_dict.get_subject(key)
@@ -208,14 +208,15 @@ class Loops():
         for key in dead_monsters:
             monster = self.monster_dict.remove_subject(key)
             self.generator.monster_map.clear_location(monster.x, monster.y)
+            """
 
     def down_floor(self):
         playerx, playery = self.player.get_location()
         if self.floor_level == 0 or (isinstance(self.generator.tile_map.track_map[playerx][playery], O.Stairs) and self.generator.tile_map.track_map[playerx][playery].downward):
             self.floor_level += 1
             if self.floor_level > self.memory.explored_levels:
-                wid = 50
-                hei = 50
+                wid = 20
+                hei = 20
                 generator = M.DungeonGenerator(wid, hei)
                 generated_map = generator.get_map()
                 self.monster_map = generator.monster_map

@@ -90,6 +90,8 @@ class Display:
             else:
                 dead_monsters.append(key)
                 monster_map.clear_location(monster.x, monster.y)
+        for key in dead_monsters:
+            monsterID.subjects.pop(key)
 
         self.win.blit(tileDict.tile_string(200), (r_x * self.textSize, r_y * self.textSize))
 
@@ -107,8 +109,6 @@ class Display:
             text = font.render(message, True, (255, 255, 255))
             self.win.blit(text, (self.screen_width // 100 * 10, self.screen_height // 100 * (85 + i *3)))
 
-        for key in dead_monsters:
-            monsterID.subjects.pop(key)
 
     def update_inventory(self, player):
         font2 = pygame.font.SysFont('didot.ttc', 32)

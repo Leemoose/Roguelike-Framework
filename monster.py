@@ -31,7 +31,7 @@ class Monster_AI():
                     monster.character.equip(item)
                     break
                 elif monster.character.health < monster.character.max_health and item.consumeable:
-                    monster.character.quaff(item)
+                    pass #monster.character.quaff(item)
         else:
             options = [(0, 1), (1, 0), (-1, 0), (0, -1)]
             r = random.randint(0, 3)
@@ -45,7 +45,7 @@ class Monster_AI():
                         flood_count = flood_map.track_map[monsterx+xdelta][monstery+ydelta]
                         xmove = xdelta
                         ymove = ydelta
-            monster.move(xmove, ymove, tile_map, monster, monster_map)
+            monster.move(xmove, ymove, tile_map, monster, monster_map, player)
             monster.character.energy = 0
 
 
@@ -56,9 +56,9 @@ class Monster(O.Objects):
         self.brain = Monster_AI()
         self.experience_given = 10
 
-    def move(self, move_x, move_y, floormap, monster, monster_map):
+    def move(self, move_x, move_y, floormap, monster, monster_map, player):
         speed = 100
-        if floormap.get_passable(monster.x + move_x, monster.y + move_y) and monster_map.get_passable(monster.x + move_x, monster.y + move_y):
+        if floormap.get_passable(monster.x + move_x, monster.y + move_y) and monster_map.get_passable(monster.x + move_x, monster.y + move_y) and (monster.x + move_x != player.x and monster.y + move_y != player.y):
             self.character.energy -= 100
             monster_map.track_map[monster.x][monster.y] = -1
             monster.y += move_y
