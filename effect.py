@@ -57,12 +57,12 @@ class Might(StatusEffect):
         target.base_damage -= self.strength
 
 class Haste(StatusEffect):
-    def __init__(self, duration, speed):
-        super().__init__(804, "Haste", "feels fast", duration)
-        self.speed = speed
+    def __init__(self, duration, dexterity):
+        super().__init__(804, "Dexterity", "feels fast", duration)
+        self.dexterity = dexterity
 
     def apply_effect(self, target):
-        target.action_cost -= self.speed
+        target.dexterity -= self.dexterity
     
     def remove(self, target):
-        target.action_cost += self.speed
+        target.dexterity += self.dexterity

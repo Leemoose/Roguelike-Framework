@@ -49,13 +49,14 @@ class MightPotion(O.Item):
         entity.add_status_effect(effect)
         self.destroy = True
 
-class HastePotion(O.Item):
-    def __init__(self, render_tag):
-        super().__init__(-1, -1, 0, render_tag, "Haste Potion")
+
+class DexterityPotion(O.Item):
+    def __init__(self, render_tag, x, y):
+        super().__init__(x, y, 0, render_tag, "Dexterity Potion")
         self.consumeable = True
 
     def activate(self, entity):
-        effect = E.Haste(5, 50)
+        effect = E.Haste(5, 5)
         entity.add_status_effect(effect)
         self.destroy = True
 

@@ -51,6 +51,9 @@ class Monster_AI():
             called_function = self.do_skill
 
         print(max_utility)
+
+        self.parent.character.energy -= 1
+
         called_function(loop)
 
 
@@ -162,7 +165,10 @@ class Monster_AI():
                     xmove = xdelta
                     ymove = ydelta
         monster.move(xmove, ymove, tile_map, monster, monster_map, player)
+<<<<<<< HEAD
         monster.character.energy -= 100
+=======
+>>>>>>> Connor
 
     def do_nothing(self,loop):
         pass
