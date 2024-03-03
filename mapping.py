@@ -40,6 +40,7 @@ class TileDict():
         tiles[104] = image.load('assets/gentleman_eyeball.png')
         tiles[105] = image.load('assets/stone_golem.png')
         tiles[106] = pygame.transform.scale(image.load('assets/goblin.png'),(32,32))
+        tiles[107] = image.load('assets/kobold.png')
         tiles[300] = image.load("assets/basic_ax.png")
         tiles[301] = image.load("assets/hammer.png")
         tiles[401] = image.load("assets/health_pot.png")
@@ -149,12 +150,14 @@ class DungeonGenerator():
         number_of_eyeballs = 0
         number_of_stone_golems = 0
         number_of_goblins = 5
+        number_of_kobolds = 5
         self.place_monster_hoard(number_of_orcs, 101, 2)
         self.place_monster_hoard(number_of_slimes, 102, 1)
         self.place_monster_hoard(number_of_eyeballs, 104, 3) #Gentlman eyeballs
         self.place_monster_hoard(number_of_tentacles, 103, 5) #Floating tentacles
         self.place_monster_hoard(number_of_stone_golems, 105, 8)  # Floating tentacles
         self.place_monster_hoard(number_of_goblins, 106, 1)
+        self.place_monster_hoard(number_of_kobolds, 107, 1)
 
     def place_monster_hoard(self, number, render_tag, level):
         for i in range(number):
