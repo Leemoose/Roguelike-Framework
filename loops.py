@@ -60,22 +60,27 @@ class Memory():
     Used to save the game
     """
     def __init__(self):
-        self.generated_maps = {}
-        self.item_dicts = {}
-        self.monster_dicts = {}
         self.explored_levels = 0
+        self.floor_level = 0
+        self.generators = {}
+        self.player = None
 
     def save_objects(self):
+        save = [self.explored_levels, self.floor_level, self.generators, self.player]
         try:
             with open("data.pickle", "wb") as f:
-                pickle.dump(self.generated_maps, f, protocol=pickle.HIGHEST_PROTOCOL)
+                pickle.dump(save, f)
         except Exception as ex:
             print("Error during pickling object (Possibly unsupported):", ex)
 
     def load_objects(self):
-        with open('data.pickle', 'wb') as f:
+        with open('data.pickle', 'rb') as f:
             # Call load method to deserialze
-            self.generated_maps = pickle.load(f)
+            save = pickle.load(f)
+        self.explored_levels = save [0]
+        self.floor_level = save [1]
+        self.generators = save[2]
+        self.player = save[3]
 
 
 class Loops():
@@ -124,7 +129,7 @@ class Loops():
                 except:
                     break
                 if self.action == True:
-                    keyboard.key_action(self.player, self.generator.tile_map, self.monster_dict, self.monster_map, self.item_dict,self, key, self.generator)
+                    keyboard.key_action(self.player, self.generator.tile_map, self.monster_dict, self.monster_map, self.item_dict,self, key, self.generator, self.memory)
                 elif self.inventory == True:
                     keyboard.key_inventory(self, self.player, self.item_dict,key)
                 elif self.main == True:
@@ -247,18 +252,19 @@ class Loops():
                         break
                 self.player.x = temp_stair.x
                 self.player.y = temp_stair.y
+
                 self.memory.explored_levels += 1
-                self.memory.generated_maps[self.floor_level] = generator
-                self.memory.item_dicts[self.floor_level] = self.item_dict
-                self.memory.monster_dicts[self.floor_level] = self.monster_dict
                 self.generator = generator
+                self.memory.generators[self.floor_level] = generator
 
             else:
                 self.player.x, self.player.y = (self.generator.tile_map.track_map[playerx][playery]).pair.get_location()
-                self.generator = self.memory.generated_maps[self.floor_level]
-                self.monster_map = self.memory.generated_maps[self.floor_level].monster_map
-                self.item_dict = self.memory.item_dicts[self.floor_level]
-                self.monster_dict = self.memory.monster_dicts[self.floor_level]
+                self.generator = self.memory.generators[self.floor_level]
+                self.monster_map = self.generator.monster_map
+                self.item_dict = self.generator.item_dict
+                self.monster_dict = self.generator.monster_dict
+
+            self.memory.floor_level += 1
 
 
     def up_floor(self):
@@ -266,21 +272,44 @@ class Loops():
         tile = self.generator.tile_map.track_map[playerx][playery]
         if self.floor_level != 1 and isinstance(tile, O.Stairs) and not tile.downward:
             self.floor_level -= 1
+            self.memory.floor_level -= 1
             self.player.x, self.player.y = (self.generator.tile_map.track_map[playerx][playery]).pair.get_location()
-            self.generator = self.memory.generated_maps[self.floor_level]
-            self.monster_map = self.memory.generated_maps[self.floor_level].monster_map
-            self.item_dict = self.memory.item_dicts[self.floor_level]
-            self.monster_dict = self.memory.monster_dicts[self.floor_level]
+            self.generator = self.memory.generators[self.floor_level]
+            self.monster_map = self.generator.monster_map
+            self.item_dict = self.generator.item_dict
+            self.monster_dict = self.generator.monster_dict
 
     def init_game(self, display):
         self.main_buttons = D.create_main_screen(display)
         self.race_buttons = D.create_race_screen(display)
         self.class_buttons = D.create_class_screen(display)
         self.player = C.Player(0,0)
+        self.memory.player = self.player
 
     def add_message(self, message):
         if len(self.messages) >= 5:
             self.messages.pop(0)
         self.messages.append(message)
+
+    def load_game(self):
+        self.action = True
+        self.inventory = False
+        self.race = False
+        self.update_screen = False
+        self.main = True
+        self.classes = False
+        self.targeting = False
+
+#        self.items = False
+#        self.item_for_item_screen = None
+        self.floor_level = self.memory.floor_level
+
+        self.generator = self.memory.generators[self.floor_level]
+        self.tile_map = self.generator.tile_map
+        self.monster_map = self.generator.monster_map
+        self.item_dict = self.generator.item_dict
+        self.monster_dict = self.generator.monster_dict
+        self.player = self.memory.player
+
 
 

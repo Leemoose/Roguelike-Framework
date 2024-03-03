@@ -13,10 +13,10 @@ class Keyboard():
         keys_to_string[pygame.K_a] = "a"
         keys_to_string[pygame.K_s] = "s"
         keys_to_string[pygame.K_d] = "d"
-        keys_to_string[pygame.K_UP] = "w"
-        keys_to_string[pygame.K_LEFT] = "a"
-        keys_to_string[pygame.K_DOWN] = "s"
-        keys_to_string[pygame.K_RIGHT] = "d"
+        keys_to_string[pygame.K_UP] = "up"
+        keys_to_string[pygame.K_LEFT] = "left"
+        keys_to_string[pygame.K_DOWN] = "down"
+        keys_to_string[pygame.K_RIGHT] = "right"
         keys_to_string[pygame.K_i] = "i"
         keys_to_string[pygame.K_g] = "g"
         keys_to_string[pygame.K_u] = "u"
@@ -24,6 +24,7 @@ class Keyboard():
         keys_to_string[pygame.K_f] = "f"
         keys_to_string[pygame.K_q] = "q"
         keys_to_string[pygame.K_o] = "o"
+        keys_to_string[pygame.K_l] = "l"
         keys_to_string[pygame.K_ESCAPE] = "esc"
         keys_to_string[pygame.K_1] = "1"
         keys_to_string[pygame.K_2] = "2"
@@ -46,14 +47,14 @@ class Keyboard():
             return self.keys_to_string[key + 100]
 
 #Any actions done in the battle screen
-    def key_action(self, player, floormap, monsterID, monster_map, item_ID, loop, key, generated_maps):
-        if key == "w":
+    def key_action(self, player, floormap, monsterID, monster_map, item_ID, loop, key, generated_maps, memory):
+        if key == "up":
             player.attack_move(0, -1, loop)
-        elif key == "a":
+        elif key == "left":
             player.attack_move(-1, 0, loop)
-        elif key == "s":
+        elif key == "down":
             player.attack_move(0, 1, loop)
-        elif key == "d":
+        elif key == "right":
             player.attack_move(1, 0, loop)
         elif key == "g":
             for item_key in item_ID.subjects:
@@ -78,6 +79,9 @@ class Keyboard():
             loop.targets.start_target(loop.player.get_location())
         elif key == "o":
             loop.add_message("You wish you could autoexplore.")
+        elif key == "s":
+            memory.save_objects()
+
 
     def key_inventory(self, loop, player, item_dict, key):
             if key == "esc":
@@ -94,9 +98,13 @@ class Keyboard():
     def key_main_screen(self, key, loop):
         if key == "esc":
             return False
-        loop.main = False
-        loop.race = True
-        loop.update_screen = True
+        elif key == "l":
+            loop.memory.load_objects()
+            loop.load_game()
+        else:
+            loop.main = False
+            loop.race = True
+            loop.update_screen = True
 
     def key_race_screen(self, key, loop):
         if key == "esc":
