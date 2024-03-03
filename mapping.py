@@ -7,6 +7,7 @@ import items as I
 import monster as Mon
 import random
 import math
+import spawnparams as Spawns
 from fractions import Fraction
 
 class MapData():
@@ -107,7 +108,7 @@ class DungeonGenerator():
         self.monster_dict = L.ID() #Unique to this floor
         self.item_dict = L.ID() #Unique to this floor
 
-        self.place_items()
+        self.place_items(depth)
         self.place_monsters()
 
 
@@ -215,31 +216,27 @@ class DungeonGenerator():
             self.monster_dict.tag_subject(creature)
             self.monster_map.place_thing(creature)
 
-    def place_items(self):
-        number_of_axes = random.randint(5,10)
-        number_of_hammers = random.randint(5, 10)
-        number_of_potions = random.randint(5, 10)
-        self.place_item_hoard(number_of_axes, 300, "ax")
-        self.place_item_hoard(number_of_hammers, 301, "hammer")
-        self.place_item_hoard(number_of_potions, 401, "potion")
+    def place_items(self, depth):
+        for itemSpawn in Spawns.ItemSpawns:
+            if (itemSpawn.AllowedAtDepth(depth)):
+                #Want to spawn this!
+                num_to_spawn = itemSpawn.GetNumberToSpawn()
+                for count in range(num_to_spawn):
+                    self.place_item(itemSpawn.GetFreshCopy())
 
-    def place_item_hoard(self, number, render_tag, type):
-        for i in range(number):
+    def place_item(self, item):
+        startx = random.randint(0, self.width-1)
+        starty = random.randint(0,self.height-1)
+
+        while (self.tile_map.get_passable(startx, starty)== False):
             startx = random.randint(0, self.width-1)
             starty = random.randint(0,self.height-1)
 
-            while (self.tile_map.get_passable(startx, starty)== False):
-                startx = random.randint(0, self.width-1)
-                starty = random.randint(0,self.height-1)
+        item.x = startx
+        item.y = starty
 
-            if type == "ax":
-                item = I.Ax(render_tag, startx, starty)
-            elif type == "hammer":
-                item = I.Hammer(render_tag,  startx, starty)
-            elif type == "potion":
-                item = I.HealthPotion(render_tag, startx, starty)
-            self.item_dict.tag_subject(item)
-            self.item_map.place_thing(item)
+        self.item_dict.tag_subject(item)
+        self.item_map.place_thing(item)
 
     def get_map(self):
         return self.tile_map
