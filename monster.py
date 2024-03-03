@@ -2,12 +2,14 @@ import objects as O
 import character as C
 import dice as R
 import random
+import skills as S
 
 
 class Monster_AI():
-    def __init__(self):
+    def __init__(self, parent):
         self.frontier = None
         self.is_awake = False
+        self.parent = parent
 
     """
     Think it would be better to first rank each action depending on the circumstances with a number between 1-100 and 
@@ -15,12 +17,14 @@ class Monster_AI():
     """
     def rank_actions(self, monster, monster_map, tile_map, flood_map, player, generated_maps, item_dict, loop):
         item_map = generated_maps.item_map
-        playerx, playery = player.get_location()
-        monsterx, monstery = monster.get_location()
-        distance = monster.get_distance(playerx, playery)
-        if distance < 1.5:
-            monster.character.melee(player)
-            monster.character.energy -= 100
+        max_utility = 0
+        called_function = None
+
+        utility = self.rank_combat(player)
+        if utility > max_utility:
+            max_utility = utility
+            called_function = self.do_combat(player)
+        """
         elif item_map.locate(monsterx, monstery) != -1:
             item_key = item_map.locate(monsterx, monstery)
             monster.character.grab(item_key, item_dict, generated_maps, loop)
@@ -47,13 +51,32 @@ class Monster_AI():
                         ymove = ydelta
             monster.move(xmove, ymove, tile_map, monster, monster_map, player)
             monster.character.energy = 0
+        """
+        if called_function != None:
+            called_function(player)
+
+    def rank_combat(self, player):
+        playerx, playery = player.get_location()
+        monster = self.parent
+        monsterx, monstery = monster.get_location()
+        distance = self.parent.get_distance(playerx, playery)
+        if distance < 1.5:
+            return 90
+        else:
+            return -1
+
+    def do_combat(self, player):
+        monster = self.parent
+        monster.character.melee(player)
+        monster.character.energy -= 100
 
 
 class Monster(O.Objects):
     def __init__(self, number_tag, x, y):
         super().__init__(x, y, 0, number_tag, "Unknown monster")
         self.character = C.Character(self)
-        self.brain = Monster_AI()
+        self.brain = Monster_AI(self)
+        self.skills = S.Skills(self)
         self.experience_given = 10
 
     def move(self, move_x, move_y, floormap, monster, monster_map, player):

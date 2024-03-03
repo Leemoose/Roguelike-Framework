@@ -26,6 +26,7 @@ class Keyboard():
         keys_to_string[pygame.K_o] = "o"
         keys_to_string[pygame.K_l] = "l"
         keys_to_string[pygame.K_x] = "x"
+        keys_to_string[pygame.K_t] = "t"
         keys_to_string[pygame.K_ESCAPE] = "esc"
         keys_to_string[pygame.K_1] = "1"
         keys_to_string[pygame.K_2] = "2"
@@ -83,6 +84,9 @@ class Keyboard():
             loop.add_message("You wish you could autoexplore.")
         elif key == "s":
             memory.save_objects()
+        elif key == "t":
+            player.skills.teleport(loop.generator)
+            loop.update_screen = True
 
 
     def key_inventory(self, loop, player, item_dict, key):
