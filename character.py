@@ -2,6 +2,7 @@ import random
 import dice as R
 import objects as O
 import effect as E
+import skills as S
 
 class Character():
     def __init__(self, parent, endurance = 0, intelligence = 0, dexterity = 0, strength = 0, speed = 1, health = 100, mana = 0):
@@ -135,6 +136,7 @@ class Player(O.Objects):
     def __init__(self, x, y):
         super().__init__(x, y, 1, 200, "Player")
         self.character = Character(self)
+        self.skills = S.Skills(self)
 
         self.level = 1
         self.max_level = 20
