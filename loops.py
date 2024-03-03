@@ -5,6 +5,7 @@ import character as C
 import objects as O
 import targets as T
 import shadowcasting
+import pickle
 
 """
 Theme: Loops is the central brain of which part of the program it is choosing.
@@ -63,6 +64,19 @@ class Memory():
         self.item_dicts = {}
         self.monster_dicts = {}
         self.explored_levels = 0
+
+    def save_objects(self):
+        try:
+            with open("data.pickle", "wb") as f:
+                pickle.dump(self.generated_maps, f, protocol=pickle.HIGHEST_PROTOCOL)
+        except Exception as ex:
+            print("Error during pickling object (Possibly unsupported):", ex)
+
+    def load_objects(self):
+        with open('data.pickle', 'wb') as f:
+            # Call load method to deserialze
+            self.generated_maps = pickle.load(f)
+
 
 class Loops():
     """
