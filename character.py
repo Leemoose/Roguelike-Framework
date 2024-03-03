@@ -172,6 +172,8 @@ class Player(O.Objects):
         self.experience = 0
         self.experience_to_next_level = 20
 
+        self.invincible = True
+
     def attack_move(self, move_x, move_y, loop):
         if not self.character.movable:
             self.character.energy -= (self.character.move_cost - self.character.dexterity)
@@ -193,6 +195,12 @@ class Player(O.Objects):
             self.x += move_x
         loop.add_message("The player moved.")
 
+    def random_move(self, loop):
+        random_move = [(0,1),(1,0),(-1,0),(0,-1)]
+        rand_i = random.randint(0,3)
+        move_x,move_y = random_move[rand_i]
+        self.move(move_x,move_y, loop)
+
     def attack(self, defender, loop):
         self.character.energy -= (self.character.attack_cost - self.character.dexterity)
         if not self.character.dodge():
@@ -203,6 +211,15 @@ class Player(O.Objects):
             loop.add_message(f"The player attacked for {damage} damage")
         else:
             loop.add_message("The monster dodged the attack")
+
+    def autoexplore(self, loop):
+        monster_dict = loop.monster_dict
+        for monster_key in monster_dict.subjects:
+            if monster_dict.get_subject(monster_key).brain.is_awake:
+                return
+        print("moving")
+        self.random_move(loop)
+        loop.update_screen = True
 
 
     def check_for_levelup(self):

@@ -27,6 +27,12 @@ class Tile(Objects):
         self.seen = False
         self.visible = False
 
+    def __str__(self):
+        if self.passable:
+            print(".")
+        else:
+            print("#")
+
 class Stairs(Tile):
     def __init__(self, x, y, render_tag = 0, passable = True, id_tag = 0, downward = False):
         super().__init__(x, y, render_tag, passable, id_tag)
