@@ -38,7 +38,6 @@ class HealthPotion(O.Item):
     def activate(self, entity):
         entity.gain_health(20)
         self.destroy = True
-<<<<<<< HEAD
 
 class MightPotion(O.Item):
     def __init__(self, render_tag, x, y):
