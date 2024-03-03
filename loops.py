@@ -133,7 +133,6 @@ class Loops():
                 elif self.inventory == True:
                     keyboard.key_inventory(self, self.player, self.item_dict,key)
                 elif self.main == True:
-                    print("hi")
                     if keyboard.key_main_screen(key, self) == False:
                         return False
                 elif self.race == True:
@@ -152,7 +151,8 @@ class Loops():
                     for button in self.main_buttons.buttons:
                         if self.main_buttons.buttons[button].clicked(x, y):
                             key = self.main_buttons.buttons[button].action
-                            keyboard.key_main_screen(key, self)
+                            if keyboard.key_main_screen(key, self) == False:
+                                return False
                             break
 
                 elif self.race == True:

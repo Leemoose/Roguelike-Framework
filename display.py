@@ -7,6 +7,16 @@ class Buttons:
 
     def add(self, button, name):
         self.buttons[name] = button
+"""
+    def render_button(self, key):
+        font = pygame.font.Font('freesansbold.ttf', 32)
+
+        button = self.buttons[key]
+        text = font.render(key, True, (255, 255, 255))
+        text_width, text_height = font.size("Enter: Play!")
+        scr.win.blit(text, (scr.screen_width / 2 - text_width / 2, scr.screen_height * 85 / 100 + button.height / 2 - text_height / 2))
+        """
+
 
 class Button:
     # A button is anything in game that you could click
@@ -174,16 +184,34 @@ def create_main_screen(scr):
     background = pygame.image.load("assets/homescreen.png")
     background = pygame.transform.scale(background, (scr.screen_width, scr.screen_height))
     scr.win.blit(background, (0,0))
+    font = pygame.font.Font('freesansbold.ttf', 32)
 
     buttons = Buttons()
-    button = Button(scr.screen_width, scr.screen_height, "assets/button.png", 15/100, 11/100, "1", scr.screen_width / 2, scr.screen_height * 80/100)
-    buttons.add(button, "Play!")
-    scr.win.blit(button.img, (button.get_position()))
+    button = Button(scr.screen_width, scr.screen_height, "assets/button.png", 15/100, 11/100, "return", scr.screen_width / 2, scr.screen_height * 80/100)
+    buttons.add(button, "Enter: Play!")
+    button = Button(scr.screen_width, scr.screen_height, "assets/button.png", 15 / 100, 11 / 100, "l",
+                    scr.screen_width * 30 // 100, scr.screen_height * 80 / 100)
+    buttons.add(button, "l: Load")
+    button = Button(scr.screen_width, scr.screen_height, "assets/button.png", 15 / 100, 11 / 100, "esc",
+                    scr.screen_width * 70 // 100, scr.screen_height * 80 / 100)
+    buttons.add(button, "esc: Quit")
 
-    font = pygame.font.Font('freesansbold.ttf', 32)
-    text = font.render('Play!', True, (255, 255, 255))
-    text_width, text_height = font.size("Play!")
+    for key in buttons.buttons:
+        button = buttons.buttons[key]
+        scr.win.blit(button.img, (button.get_position()))
+
+    text = font.render('Enter: Play!', True, (255, 255, 255))
+    text_width, text_height = font.size("Enter: Play!")
     scr.win.blit(text, (scr.screen_width / 2 - text_width / 2, scr.screen_height * 85/100 + button.height / 2 - text_height / 2))
+
+    text = font.render('l: Load!', True, (255, 255, 255))
+    text_width, text_height = font.size("l: Load!")
+    scr.win.blit(text, (scr.screen_width * 30 // 100 - text_width / 2, scr.screen_height * 85/100+ button.height / 2 - text_height / 2))
+
+    text = font.render('esc: Quit!', True, (255, 255, 255))
+    text_width, text_height = font.size("esc: Quit!")
+    scr.win.blit(text, (scr.screen_width * 70 // 100 - text_width / 2, scr.screen_height * 85/100+ button.height / 2 - text_height / 2))
+
 
     pygame.image.save(scr.win, "assets/main_screen.png")
     return buttons

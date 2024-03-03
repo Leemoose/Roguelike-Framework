@@ -8,7 +8,6 @@ class Weapon(O.Item):
         super().__init__(x,y, id_tag, render_tag, name)
         self.equipable = True
 
-
 class Ax(Weapon):
     def __init__(self, render_tag, x, y):
         super().__init__(x, y, 0, render_tag, "Ax")
