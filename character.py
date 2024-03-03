@@ -3,7 +3,7 @@ import dice as R
 import objects as O
 
 class Character():
-    def __init__(self, parent, endurance = 0, intelligence = 0, dexterity = 0, strength = 0, speed = 100, health = 100, mana = 0):
+    def __init__(self, parent, endurance = 0, intelligence = 0, dexterity = 0, strength = 0, speed = 1, health = 100, mana = 0):
         self.endurance = endurance
         self.intelligence = intelligence
         self.dexterity = dexterity
