@@ -20,42 +20,31 @@ class Monster_AI():
         max_utility = 0
         called_function = None
 
-        utility = self.rank_combat(player)
+        utility = self.rank_combat(loop)
         if utility > max_utility:
             max_utility = utility
-            called_function = self.do_combat(player)
-        """
-        elif item_map.locate(monsterx, monstery) != -1:
-            item_key = item_map.locate(monsterx, monstery)
-            monster.character.grab(item_key, item_dict, generated_maps, loop)
-        if len(monster.character.inventory) != 0:
-            stuff = monster.character.inventory
-            for i, item in enumerate(stuff):
-                if monster.character.main_weapon == None and item.equipable:
-                    monster.character.equip(item)
-                    break
-                elif monster.character.health < monster.character.max_health and item.consumeable:
-                    pass #monster.character.quaff(item)
-        else:
-            options = [(0, 1), (1, 0), (-1, 0), (0, -1)]
-            r = random.randint(0, 3)
-            xmove = 0
-            ymove = 0
-            flood_count = 100
-            for i in range(3):
-                xdelta, ydelta = options[(r + i) % 4]
-                if tile_map.get_passable(monsterx+xdelta,monstery+ydelta):
-                    if flood_count > flood_map.track_map[monsterx+xdelta][monstery+ydelta]:
-                        flood_count = flood_map.track_map[monsterx+xdelta][monstery+ydelta]
-                        xmove = xdelta
-                        ymove = ydelta
-            monster.move(xmove, ymove, tile_map, monster, monster_map, player)
-            monster.character.energy = 0
-        """
-        if called_function != None:
-            called_function(player)
+            called_function = self.do_combat(loop)
 
-    def rank_combat(self, player):
+        utility = self.rank_pickup(loop)
+        if utility > max_utility:
+            max_utility = utility
+            called_function = self.do_item_pickup(loop)
+
+        utility = self.rank_use_item(loop)
+        if utility > max_utility:
+            max_utility = utility
+            called_function = self.do_use_item(loop)
+
+        utility = self.rank_move(loop)
+        if utility > max_utility:
+            max_utility = utility
+            called_function = self.do_move(loop)
+
+        if called_function != None:
+            called_function(loop)
+
+    def rank_combat(self, loop):
+        player=loop.player
         playerx, playery = player.get_location()
         monster = self.parent
         monsterx, monstery = monster.get_location()
@@ -65,10 +54,68 @@ class Monster_AI():
         else:
             return -1
 
-    def do_combat(self, player):
+    def rank_pickup(self, loop):
+        item_map = loop.generator.item_map
+        monster = self.parent
+        if item_map.locate(monster.x, monster.y) != -1:
+            return 60
+        else:
+            return -1
+
+    def rank_use_item(self, loop):
+        return -1
+
+    def rank_move(self, loop):
+        return 20
+
+    def do_item_pickup(self, loop):
+        item_map = loop.item_map
+        item_dict = loop.item_dict
+        generated_maps = loop.generator
+        monster = self.parent
+        item_key = item_map.locate(monster.x, monster.y)
+        monster.character.grab(item_key, item_dict, generated_maps, loop)
+
+    def do_combat(self, loop):
+        player=loop.player
         monster = self.parent
         monster.character.melee(player)
         monster.character.energy -= 100
+
+    def do_use_item(self, loop):
+        monster = self.parent
+        if len(monster.character.inventory) != 0:
+            stuff = monster.character.inventory
+            for i, item in enumerate(stuff):
+                if monster.character.main_weapon == None and item.equipable:
+                    monster.character.equip(item)
+                    break
+                elif monster.character.health < monster.character.max_health and item.consumeable:
+                    pass #monster.character.quaff(item)
+
+    def do_move(self, loop):
+        tile_map = loop.generator.tile_map
+        monster = self.parent
+        monsterx, monstery = monster.x, monster.y
+        flood_map = loop.generator.flood_map
+        monster_map = loop.monster_map
+        player = loop.player
+
+        options = [(0, 1), (1, 0), (-1, 0), (0, -1)]
+        r = random.randint(0, 3)
+        xmove = 0
+        ymove = 0
+        flood_count = 100
+        for i in range(3):
+            xdelta, ydelta = options[(r + i) % 4]
+            if tile_map.get_passable(monsterx + xdelta, monstery + ydelta):
+                if flood_count > flood_map.track_map[monsterx + xdelta][monstery + ydelta]:
+                    flood_count = flood_map.track_map[monsterx + xdelta][monstery + ydelta]
+                    xmove = xdelta
+                    ymove = ydelta
+        monster.move(xmove, ymove, tile_map, monster, monster_map, player)
+        monster.character.energy = 0
+
 
 
 class Monster(O.Objects):
