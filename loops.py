@@ -174,6 +174,12 @@ class Loops():
             self.generator.flood_map.update_flood_map(self.player)
             self.monster_loop(-self.player.character.energy)
             self.player.character.energy = 0
+            
+            # do status effect stuff
+            self.player.character.apply_all_status_effects()
+            status_messages = ["Player " + mes for mes in self.player.character.status_messages()]
+            for message in status_messages:
+                self.add_message(message)
 
         if not self.player.character.is_alive():
             self.clear_data()
@@ -184,6 +190,14 @@ class Loops():
     def monster_loop(self, energy):
         for monster_key in self.monster_dict.subjects:
             monster = self.monster_dict.subjects[monster_key]
+            
+            # do status effect stuff
+            monster.character.apply_all_status_effects()
+            status_messages = [monster.name + " " + mes for mes in monster.character.status_messages()]
+            for message in status_messages:
+                self.add_message(message)
+
+            # do action stuff
             if self.generator.tile_map.track_map[monster.x][monster.y].seen:
                 monster.brain.is_awake = True
             if monster.brain.is_awake == True:
