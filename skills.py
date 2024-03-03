@@ -1,13 +1,44 @@
 import random
 import monster as M
+import effect as E
 
-class Skills():
-    def __init__(self, parent):
+class Skill():
+    def __init__(self, name, parent, cooldown, cost, range=-1):
         self.parent = parent
+        self.cooldown = cooldown
+        self.cost = cost
+        self.ready = 0 # keeps track of how long before we can cast, ready = 0 means we can cast
+        self.name = name
+        self.range = range
+
+    def activate(self, target, generator):
+        pass
+
+    def try_to_activate(self, target, generator):
+        # check cooldowns and costs
+        if self.castable(target):
+            self.activate(target, generator)
+            self.ready = self.cooldown
+            return True
+        return False
+
+    def castable(self, target):
+        # is it castable on target
+        if self.ready == 0:
+            return True
+        return False
+
+    def __str__(self) -> str:
+        return self.name
+
+class Teleport(Skill):
+    def __init__(self, parent, cooldown, cost):
+        super().__init__("Teleport", parent, cooldown, cost)
         self.can_teleport = True
 
-    def teleport(self, generator):
-        if self.can_teleport ==True:
+    def activate(self, target, generator):
+        # teleport is assumed to be self-targetting for now, so target does nothing
+        if self.can_teleport:
             tile_map = generator.tile_map
             width = generator.width
             height = generator.height
@@ -28,3 +59,48 @@ class Skills():
             else:
                 self.parent.x = startx
                 self.parent.y = starty
+
+class BurningAttack(Skill):
+    def __init__(self, parent, cooldown, cost, damage, burn_damage, burn_duration, range):
+        super().__init__("Burning attack", parent, cooldown, cost, range)
+        self.damage = damage
+        self.burn_damage = burn_damage
+        self.burn_duration = burn_duration
+
+    def activate(self, defender, generator):
+        defender.character.take_damage(self.damage)
+        effect = E.Burn(self.burn_duration, self.burn_damage)
+        defender.character.add_status_effect(effect)
+
+    def castable(self, target):
+        player = target
+        playerx, playery = player.get_location()
+        monster = self.parent
+        monsterx, monstery = monster.get_location()
+        distance = self.parent.get_distance(playerx, playery)
+        if distance < self.range:
+            if self.ready == 0:
+                return True
+        return False
+    
+class Petrify(Skill):
+    def __init__(self, parent, cooldown, cost, duration, activation_chance, range):
+        super().__init__("Petrify", parent, cooldown, cost, range)
+        self.duration = duration
+        self.activation_chance = activation_chance
+
+    def activate(self, defender, generator):
+        if random.random() < self.activation_chance:
+            effect = E.Petrify(self.duration)
+            defender.character.add_status_effect(effect)
+
+    def castable(self, target):
+        player = target
+        playerx, playery = player.get_location()
+        monster = self.parent
+        monsterx, monstery = monster.get_location()
+        distance = self.parent.get_distance(playerx, playery)
+        if distance < self.range:
+            if self.ready == 0:
+                return True
+        return False

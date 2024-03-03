@@ -5,13 +5,12 @@ import effect as E
 import skills as S
 
 class Character():
-    def __init__(self, parent, endurance = 0, intelligence = 0, dexterity = 0, strength = 0, speed = 1, health = 100, mana = 0):
+    def __init__(self, parent, endurance = 0, intelligence = 0, dexterity = 0, strength = 0, health = 100, mana = 0):
         self.endurance = endurance
         self.intelligence = intelligence
         self.dexterity = dexterity
         self.strength = strength
 
-        self.speed = speed
         self.health = health
         self.max_health = health
         self.mana = mana
@@ -20,7 +19,11 @@ class Character():
         self.movable = True
 
         self.energy = 0
-        self.action_cost = 100
+        self.move_cost = 100
+        self.equip_cost = 20
+        self.quaff_cost = 10
+        self.attack_cost = 100
+
         self.alive = True
         self.inventory = []
         self.main_weapon = None
@@ -28,7 +31,6 @@ class Character():
         self.base_damage = 0
 
         self.parent = parent
-
         self.status_effects = []
 
     def is_alive(self):
@@ -52,7 +54,7 @@ class Character():
             self.mana = self.max_mana
 
     def defend(self):
-        defense = R.roll_dice(1, 1)[0]
+        defense = self.endurance
         return defense
 
     def grab(self, key, item_ID, generated_maps, loop):
@@ -82,6 +84,7 @@ class Character():
             self.main_weapon = item
             item.equipped = True
             item.dropable = False
+            self.energy -= self.equip_cost
 
     def unequip(self, item):
         if item.equipped:
@@ -90,7 +93,7 @@ class Character():
             item.equipped = False
 
     def wait(self):
-        self.energy -=  self.action_cost
+        self.energy -=  self.move_cost
 
     def level_up(self):
         self.endurance += 1
@@ -105,14 +108,23 @@ class Character():
         else:
             damage = self.main_weapon.attack()
         defense = defender.character.defend()
-        defender.character.take_damage(self.base_damage + damage - defense)
-        return (self.base_damage + damage - defense)
+        defender.character.take_damage(self.base_damage + self.strength+ damage - defense)
+        self.energy -= self.attack_cost
+        return (self.base_damage + damage +self.strength - defense)
+
+    def dodge(self):
+        dodge_chance = random.randint(1,100)
+        if dodge_chance <= self.dexterity:
+            return True
+        else:
+            return False
 
     def quaff(self, potion, item_dict, item_map):
         if potion.consumeable:
             potion.activate(self)
             self.drop(potion, item_dict, item_map)
             potion.destroy = True
+            self.energy -= self.quaff_cost
             return True
     
     def apply_all_status_effects(self):
@@ -143,7 +155,7 @@ class Player(O.Objects):
     def __init__(self, x, y):
         super().__init__(x, y, 1, 200, "Player")
         self.character = Character(self)
-        self.skills = S.Skills(self)
+        self.skills = []
 
         self.level = 1
         self.max_level = 20
@@ -152,7 +164,7 @@ class Player(O.Objects):
 
     def attack_move(self, move_x, move_y, loop):
         if not self.character.movable:
-            self.character.energy -= (self.character.action_cost - self.character.speed)
+            self.character.energy -= (self.character.move_cost - self.character.dexterity)
             loop.add_message("The player is petrified and cannot move.")
             return
         x = self.x + move_x
@@ -165,21 +177,23 @@ class Player(O.Objects):
                 self.move(move_x, move_y, loop)
 
     def move(self, move_x, move_y, loop):
-       # speed = self.speed + self.dexterity // 10
         if loop.generator.tile_map.get_passable(self.x + move_x, self.y + move_y) and loop.generator.monster_map.get_passable(self.x + move_x, self.y + move_y):
-            self.character.energy -= (self.character.action_cost - self.character.speed)
+            self.character.energy -= (self.character.move_cost - self.character.dexterity)
             self.y += move_y
             self.x += move_x
         loop.add_message("The player moved.")
 
-
     def attack(self, defender, loop):
-        self.character.energy -= (self.character.action_cost - self.character.speed)
-        damage = self.character.melee(defender)
-        if not defender.character.is_alive():
-            self.experience += defender.experience_given
-            self.check_for_levelup()
-        loop.add_message(f"The player attacked for {damage} damage")
+        self.character.energy -= (self.character.attack_cost - self.character.dexterity)
+        if not self.character.dodge():
+            damage = self.character.melee(defender)
+            if not defender.character.is_alive():
+                self.experience += defender.experience_given
+                self.check_for_levelup()
+            loop.add_message(f"The player attacked for {damage} damage")
+        else:
+            loop.add_message("The monster dodged the attack")
+
 
     def check_for_levelup(self):
         if self.level != self.max_level and self.experience >= self.experience_to_next_level:

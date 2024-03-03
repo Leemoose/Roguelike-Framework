@@ -203,7 +203,8 @@ class Loops():
                 monster.brain.is_awake = True
             if monster.brain.is_awake == True:
                 monster.character.energy += energy
-                monster.brain.rank_actions(monster, self.monster_map, self.generator.tile_map, self.generator.flood_map, self.player, self.generator, self.item_dict, self)
+                while monster.character.energy > 0:
+                    monster.brain.rank_actions(monster, self.monster_map, self.generator.tile_map, self.generator.flood_map, self.player, self.generator, self.item_dict, self)
     def change_screen(self, keyboard, display, colors, tileDict):
         if self.action == True:
             self.clean_up()

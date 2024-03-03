@@ -92,7 +92,6 @@ class Display:
                     item_tile = tileDict.tile_string(item.render_tag)
                     self.win.blit(item_tile, (self.textSize * (item.x - self.x_start), self.textSize * (item.y - self.y_start)))
 
-
         dead_monsters = []
         for key in monsterID.subjects:
             monster = monsterID.get_subject(key)
@@ -212,7 +211,7 @@ def create_main_screen(scr):
 
 
 def create_race_screen(scr):
-    background = pygame.image.load("assets/race_background.png")
+    background = pygame.image.load("assets/class_background.png")
     background = pygame.transform.scale(background, (scr.screen_width, scr.screen_height))
     scr.win.blit(background, (0,0))
     buttons = Buttons()
@@ -225,7 +224,7 @@ def create_race_screen(scr):
     text_width, text_height = font.size("Human")
     scr.win.blit(text, (scr.screen_width / 2 - text_width / 2, scr.screen_height * 85/100 + button.height / 2 - text_height / 2))
 
-    pygame.image.save(scr.win, "assets/race_screen.png")
+    #pygame.image.save(scr.win, "assets/race_screen.png")
     return buttons
 
 def create_class_screen(scr):
@@ -242,5 +241,5 @@ def create_class_screen(scr):
     text_width, text_height = font.size("Warrior")
     scr.win.blit(text, (scr.screen_width / 2 - text_width / 2, scr.screen_height * 85/100 + button.height / 2 - text_height / 2))
 
-    pygame.image.save(scr.win, "assets/class_screen.png")
+    # pygame.image.save(scr.win, "assets/class_screen.png")
     return buttons
