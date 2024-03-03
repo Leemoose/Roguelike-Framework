@@ -69,8 +69,8 @@ class Monster_AI():
         return 20
 
     def do_item_pickup(self, loop):
-        item_map = loop.item_map
-        item_dict = loop.item_dict
+        item_map = loop.generator.item_map
+        item_dict = loop.generator.item_dict
         generated_maps = loop.generator
         monster = self.parent
         item_key = item_map.locate(monster.x, monster.y)
