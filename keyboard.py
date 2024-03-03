@@ -81,13 +81,13 @@ class Keyboard():
             loop.update_screen = True
             loop.targets.start_target(loop.player.get_location())
         elif key == "o":
-            loop.add_message("You wish you could autoexplore.")
+            loop.autoexplore = True
+            loop.action = False
         elif key == "s":
             memory.save_objects()
         elif key == "t":
             player.skills.teleport(loop.generator)
             loop.update_screen = True
-
 
     def key_inventory(self, loop, player, item_dict, key):
             if key == "esc":

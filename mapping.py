@@ -85,6 +85,7 @@ class TileDict():
         tiles[106] = pygame.transform.scale(image.load('assets/goblin.png'),(32,32))
         tiles[107] = image.load('assets/kobold.png')
         tiles[108] = pygame.transform.scale(image.load('assets/gargoyle.png'),(32,32))
+        tiles[109] = pygame.transform.scale(image.load('assets/raptor.png'),(32,24))
         tiles[300] = image.load("assets/basic_ax.png")
         tiles[301] = image.load("assets/hammer.png")
         tiles[401] = image.load("assets/health_orb_bigger.png")

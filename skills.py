@@ -3,7 +3,7 @@ import monster as M
 import effect as E
 
 class Skill():
-    def __init__(self, name, parent, cooldown, cost, range=-1):
+    def __init__(self, name, parent, cooldown, cost, range=-1, action_cost=100):
         self.parent = parent
         self.cooldown = cooldown
         self.cost = cost
@@ -21,6 +21,10 @@ class Skill():
             self.ready = self.cooldown
             return True
         return False
+    
+    def tick_cooldown(self):
+        if self.ready > 0:
+            self.ready -= 1
 
     def castable(self, target):
         # is it castable on target
@@ -103,4 +107,20 @@ class Petrify(Skill):
         if distance < self.range:
             if self.ready == 0:
                 return True
+        return False
+    
+class ShrugOff(Skill):
+    def __init__(self, parent, cooldown, cost, activation_chance, action_cost):
+        super().__init__("Shrug off", parent, cooldown, cost, -1, action_cost)
+        self.activation_chance = activation_chance
+
+    def activate(self, defender, generator):
+        if len(self.parent.character.status_effects) > 0:
+            if random.random() < self.activation_chance:
+                random_effect = random.choice(self.parent.character.status_effects)
+                self.parent.character.remove_status_effect(random_effect)
+
+    def castable(self, target):
+        if self.ready == 0 and len(self.parent.character.status_effects) > 0:
+            return True
         return False
