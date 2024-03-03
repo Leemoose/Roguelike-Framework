@@ -114,7 +114,7 @@ class DungeonGenerator():
         self.item_dict = L.ID() #Unique to this floor
 
         self.place_items(depth)
-        self.place_monsters()
+        self.place_monsters(depth)
 
 
         """
@@ -190,44 +190,26 @@ class DungeonGenerator():
                     tile = O.Tile(startx + x, starty + y, 1, True)
                     self.tile_map[startx + x][starty + y] = tile
 
-    def place_monsters(self):
-        number_of_orcs = 0
-        number_of_slimes = 0
-        number_of_tentacles = 0
-        number_of_eyeballs = 0
-        number_of_stone_golems = 0
-        number_of_goblins = 0#5
-        number_of_kobolds = 0#5
-        number_of_gargoyles = 5
-        self.place_monster_hoard(number_of_orcs, 101, 2)
-        self.place_monster_hoard(number_of_slimes, 102, 1)
-        self.place_monster_hoard(number_of_eyeballs, 104, 3) #Gentlman eyeballs
-        self.place_monster_hoard(number_of_tentacles, 103, 5) #Floating tentacles
-        self.place_monster_hoard(number_of_stone_golems, 105, 8)  # Floating tentacles
-        self.place_monster_hoard(number_of_goblins, 106, 1)
-        self.place_monster_hoard(number_of_kobolds, 107, 1, "Kobold")
-        self.place_monster_hoard(number_of_gargoyles, 108, 1, "Gargoyle")
+    def place_monsters(self, depth):
+        for monsterSpawn in Spawns.MonsterSpawns:
+            if (monsterSpawn.AllowedAtDepth(depth)):
+                num_to_spawn = monsterSpawn.GetNumberToSpawn()
+                for count in range(num_to_spawn):
+                    self.place_monster(monsterSpawn.GetLeveledCopy(depth))
 
-    def place_monster_hoard(self, number, render_tag, level, name="Unknown"):
-        for i in range(number):
+    def place_monster(self, creature):
+        startx = random.randint(0, self.width-1)
+        starty = random.randint(0,self.height-1)
+
+        while (self.tile_map.get_passable(startx, starty)== False):
             startx = random.randint(0, self.width-1)
             starty = random.randint(0,self.height-1)
+        
+        creature.x = startx
+        creature.y = starty
 
-            while (self.tile_map.get_passable(startx, starty)== False):
-                startx = random.randint(0, self.width-1)
-                starty = random.randint(0,self.height-1)
-            
-            # add elifs for each monster type
-            if name == "Kobold":
-                creature = Mon.Kobold(startx, starty)
-            elif name == "Gargoyle":
-                creature = Mon.Gargoyle(startx, starty)
-            else:
-                creature = Mon.Monster(render_tag, startx, starty)
-            for _ in range(level):
-                creature.character.level_up()
-            self.monster_dict.tag_subject(creature)
-            self.monster_map.place_thing(creature)
+        self.monster_dict.tag_subject(creature)
+        self.monster_map.place_thing(creature)
     
     
 

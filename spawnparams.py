@@ -1,4 +1,5 @@
 import items as I
+import monster as M
 import copy
 import random
 
@@ -20,7 +21,7 @@ class ItemSpawnParams:
         return copy.copy(self.item)
     
 #Spawn lists!
-ItemSpawns = []                                              # minFloor    maxFloor(incl)  minAmount   maxAmount(incl)
+ItemSpawns = []                                                         # minFloor    maxFloor(incl)  minAmount   maxAmount(incl)
 
 ItemSpawns.append(ItemSpawnParams( I.Ax(300),                 1,               5,          0,              3))
 ItemSpawns.append(ItemSpawnParams( I.Hammer(301),             1,               5,          0,              3))
@@ -30,3 +31,34 @@ ItemSpawns.append(ItemSpawnParams( I.CurePotion(403),         1,               1
 ItemSpawns.append(ItemSpawnParams( I.MightPotion(404),        1,               10,          0,              2))
 ItemSpawns.append(ItemSpawnParams( I.DexterityPotion(405, -1, -1),        1,               10,          0,              2))
 
+
+class MonsterSpawnParams:
+    def __init__(self, monster, minFloor, maxFloor, minNumber, maxNumber, levelVariance = 0):
+        self.monster = monster
+        self.minFloor = minFloor
+        self.maxFloor = maxFloor
+        self.minNumber = minNumber
+        self.maxNumber = maxNumber
+        self.levelVariance = levelVariance
+
+    def AllowedAtDepth(self, depth):
+        return (depth >= self.minFloor and depth <= self.maxFloor)
+    
+    def GetNumberToSpawn(self):
+        return random.randint(self.minNumber, self.maxNumber)
+
+    def GetLeveledCopy(self, depth):
+        copied = copy.copy(self.monster)
+
+        level = depth + random.randint(-self.levelVariance, self.levelVariance)
+
+        for i in range(level):
+            copied.character.level_up()
+
+        return copied
+    
+MonsterSpawns = []
+
+MonsterSpawns.append(MonsterSpawnParams(M.Gargoyle(-1, -1), 1, 5, 0, 0))
+MonsterSpawns.append(MonsterSpawnParams(M.Kobold(-1, -1), 1, 5, 1, 5))
+MonsterSpawns.append(MonsterSpawnParams(M.Gargoyle(-1, -1), 1, 5, 0, 0))
