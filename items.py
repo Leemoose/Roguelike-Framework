@@ -11,8 +11,8 @@ class Weapon(O.Item):
         self.equipable = True
 
 class Ax(Weapon):
-    def __init__(self, render_tag, x, y):
-        super().__init__(x, y, 0, render_tag, "Ax")
+    def __init__(self, render_tag):
+        super().__init__(-1, -1, 0, render_tag, "Ax")
         self.melee = True
         self.name = "Ax"
 
@@ -21,8 +21,8 @@ class Ax(Weapon):
         return damage
 
 class Hammer(Weapon):
-    def __init__(self, render_tag, x, y):
-        super().__init__(x, y, 0, render_tag, "Hammer")
+    def __init__(self, render_tag):
+        super().__init__(-1, -1, 0, render_tag, "Hammer")
         self.melee = True
         self.name = "Hammer"
 
@@ -31,8 +31,8 @@ class Hammer(Weapon):
         return damage
 
 class HealthPotion(O.Item):
-    def __init__(self, render_tag, x, y):
-        super().__init__(x, y, 0, render_tag, "Health Potion")
+    def __init__(self, render_tag):
+        super().__init__(-1, -1, 0, render_tag, "Health Potion")
         self.consumeable = True
 
     def activate(self, entity):
@@ -40,8 +40,8 @@ class HealthPotion(O.Item):
         self.destroy = True
 
 class MightPotion(O.Item):
-    def __init__(self, render_tag, x, y):
-        super().__init__(x, y, 0, render_tag, "Might Potion")
+    def __init__(self, render_tag):
+        super().__init__(-1, -1, 0, render_tag, "Might Potion")
         self.consumeable = True
 
     def activate(self, entity):
@@ -50,8 +50,8 @@ class MightPotion(O.Item):
         self.destroy = True
 
 class HastePotion(O.Item):
-    def __init__(self, render_tag, x, y):
-        super().__init__(x, y, 0, render_tag, "Haste Potion")
+    def __init__(self, render_tag):
+        super().__init__(-1, -1, 0, render_tag, "Haste Potion")
         self.consumeable = True
 
     def activate(self, entity):
@@ -60,8 +60,8 @@ class HastePotion(O.Item):
         self.destroy = True
 
 class CurePotion(O.Item):
-    def __init__(self, render_tag, x, y):
-        super().__init__(x, y, 0, render_tag, "Cure Potion")
+    def __init__(self, render_tag):
+        super().__init__(-1, -1, 0, render_tag, "Cure Potion")
         self.consumeable = True
 
     def activate(self, entity):
@@ -71,8 +71,8 @@ class CurePotion(O.Item):
         self.destroy = True
 
 class ManaPotion(O.Item):
-    def __init__(self, render_tag, x, y):
-        super().__init__(x, y, 0, render_tag, "Mana Potion")
+    def __init__(self, render_tag):
+        super().__init__(-1, -1, 0, render_tag, "Mana Potion")
         self.consumeable = True
 
     def activate(self, entity):
