@@ -33,6 +33,8 @@ class Character():
         self.parent = parent
         self.status_effects = []
 
+        self.skills = []
+
     def is_alive(self):
         if self.health <= 0:
             self.alive = False
@@ -132,10 +134,14 @@ class Character():
             effect.tick(self)
         for effect in self.status_effects:
             if not effect.active:
-                effect.remove(self)
-                self.status_effects.remove(effect)
+                self.remove_status_effect(effect)
 
-    def add_status_effect(self, effect : E.StatusEffect):
+    def remove_status_effect(self, effect):
+        if not effect.active:
+            effect.remove(self)
+            self.status_effects.remove(effect)
+
+    def add_status_effect(self, effect):
         if effect.id_tag not in [x.id_tag for x in self.status_effects]:
             effect.apply_effect(self)
             self.status_effects.append(effect)
@@ -150,12 +156,16 @@ class Character():
         for effect in self.status_effects:
             messages.append(effect.message)
         return messages
+    
+    def tick_cooldowns(self):
+        for skill in self.skills:
+            skill.tick_cooldown()
 
 class Player(O.Objects):
     def __init__(self, x, y):
         super().__init__(x, y, 1, 200, "Player")
         self.character = Character(self)
-        self.skills = []
+        self.character.skills = []
 
         self.level = 1
         self.max_level = 20

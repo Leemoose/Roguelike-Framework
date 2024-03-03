@@ -179,6 +179,9 @@ class Loops():
             for message in status_messages:
                 self.add_message(message)
 
+            # tick skill cooldowns
+            self.player.character.tick_cooldowns()
+
         if not self.player.character.is_alive():
             self.clear_data()
             self.init_game(display)
@@ -197,6 +200,9 @@ class Loops():
             status_messages = [monster.name + " " + mes for mes in monster.character.status_messages()]
             for message in status_messages:
                 self.add_message(message)
+            
+            # tick skill cooldowns
+            monster.character.tick_cooldowns()
 
             # do action stuff
             if self.generator.tile_map.track_map[monster.x][monster.y].seen:

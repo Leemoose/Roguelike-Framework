@@ -124,7 +124,7 @@ class Monster_AI():
         for skill in monster.skills:
             if skill.castable(loop.player):
                 skill.try_to_activate(loop.player, loop.generator)
-                monster.character.energy -= 100
+                monster.character.energy -= skill.action_cost
                 loop.add_message(f"{monster} used {skill} on you")
                 break
 
@@ -197,7 +197,7 @@ class Kobold(Monster):
         self.character = C.Character(self)
         self.brain = Monster_AI(self)
         self.skills = []
-        self.skills.append(S.BurningAttack(self, 10, 0, 10, 5, 5, 1.5))
+        self.character.skills.append(S.BurningAttack(self, 10, 0, 10, 5, 5, 1.5))
         self.experience_given = 10
     
     def move(self, move_x, move_y, floormap, monster, monster_map, player):
@@ -216,7 +216,7 @@ class Gargoyle(Monster):
         self.brain = Monster_AI(self)
         self.skills = []
         # 20% chance to petrify for 2 turns
-        self.skills.append(S.Petrify(self, 10, 0, 2, 0.2, 3))
+        self.character.skills.append(S.Petrify(self, 10, 0, 2, 0.2, 3))
         self.experience_given = 10
     
     def move(self, move_x, move_y, floormap, monster, monster_map, player):
@@ -235,9 +235,25 @@ class Raptor(Monster):
         self.character.move_cost = 100
         self.character.attack_cost = 100
         self.brain = Monster_AI(self)
-        self.skills = []
         self.experience_given = 10
     
+    def move(self, move_x, move_y, floormap, monster, monster_map, player):
+        if floormap.get_passable(monster.x + move_x, monster.y + move_y) and monster_map.get_passable(monster.x + move_x, monster.y + move_y) and (monster.x + move_x != player.x and monster.y + move_y != player.y):
+            self.character.energy -= self.character.move_cost
+            monster_map.track_map[monster.x][monster.y] = -1
+            monster.y += move_y
+            monster.x += move_x
+            monster_map.track_map[monster.x][monster.y] = monster.id_tag
+
+class Minotaur(Monster):
+    def __init__(self, x, y):
+        super().__init__(110, x, y, "Minotaur")
+        self.character = C.Character(self)
+        self.brain = Monster_AI(self)
+        self.character.skills = []
+        self.character.skills.append(S.ShrugOff(self, 3, 0, 0.3, 0))
+        self.experience_given = 10
+
     def move(self, move_x, move_y, floormap, monster, monster_map, player):
         if floormap.get_passable(monster.x + move_x, monster.y + move_y) and monster_map.get_passable(monster.x + move_x, monster.y + move_y) and (monster.x + move_x != player.x and monster.y + move_y != player.y):
             self.character.energy -= self.character.move_cost
