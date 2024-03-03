@@ -18,7 +18,7 @@ class ItemSpawnParams:
         return random.randint(self.minNumber, self.maxNumber)
 
     def GetFreshCopy(self):
-        return copy.copy(self.item)
+        return copy.deepcopy(self.item)
     
 #Spawn lists!
 ItemSpawns = []                                                         # minFloor    maxFloor(incl)  minAmount   maxAmount(incl)
@@ -48,7 +48,7 @@ class MonsterSpawnParams:
         return random.randint(self.minNumber, self.maxNumber)
 
     def GetLeveledCopy(self, depth):
-        copied = copy.copy(self.monster)
+        copied = copy.deepcopy(self.monster)
 
         level = depth + random.randint(-self.levelVariance, self.levelVariance)
 
