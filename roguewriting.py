@@ -1,4 +1,4 @@
-import pygame, random
+import pygame, random, pygame_gui
 import mapping as M
 import display as D
 import keyboard as K

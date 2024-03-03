@@ -111,7 +111,8 @@ class Keyboard():
             loop.main = False
             loop.race = True
             loop.update_screen = True
-
+        return True
+    
     def key_race_screen(self, key, loop):
         if key == "esc":
             loop.race = False

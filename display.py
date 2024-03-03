@@ -1,4 +1,5 @@
 import pygame
+import pygame_gui
 
 
 class Buttons:
@@ -56,6 +57,9 @@ class Display:
         self.textWidth = textWidth
         self.textHeight = textHeight
         self.textSize = textSize
+        self.uiManager = pygame_gui.UIManager((width, height))
+        self.clock = pygame.time.Clock()
+        self.buttons = []
 
     def update_display(self, colorDict, floormap, tileDict, monsterID, item_ID, monster_map, player, messages):
         self.win.fill(colorDict.getColor("black"))
@@ -137,9 +141,7 @@ class Display:
 
     def update_main(self):
     #Main Screen
-        main_background = pygame.image.load("assets/main_screen.png")
-        main_background = pygame.transform.scale(main_background, (self.screen_width, self.screen_height))
-        self.win.blit(main_background, (0,0))
+        self.uiManager.draw_ui(self.win)
 
     def update_race(self):
     #Race Screen
@@ -180,41 +182,34 @@ class Display:
         self.win.blit(tag, (self.textSize * (x - self.x_start), self.textSize * (y - self.y_start)))
         self.write_messages(messages)
 
+    def update_ui(self):
+        deltaTime = self.clock.tick() / 1000
+        self.uiManager.update(deltaTime)
+
 def create_main_screen(scr):
-    background = pygame.image.load("assets/homescreen.png")
-    background = pygame.transform.scale(background, (scr.screen_width, scr.screen_height))
-    scr.win.blit(background, (0,0))
-    font = pygame.font.Font('freesansbold.ttf', 32)
-
     buttons = Buttons()
-    button = Button(scr.screen_width, scr.screen_height, "assets/button.png", 15/100, 11/100, "return", scr.screen_width / 2, scr.screen_height * 80/100)
-    buttons.add(button, "Enter: Play!")
-    button = Button(scr.screen_width, scr.screen_height, "assets/button.png", 15 / 100, 11 / 100, "l",
-                    scr.screen_width * 30 // 100, scr.screen_height * 80 / 100)
-    buttons.add(button, "l: Load")
-    button = Button(scr.screen_width, scr.screen_height, "assets/button.png", 15 / 100, 11 / 100, "esc",
-                    scr.screen_width * 70 // 100, scr.screen_height * 80 / 100)
-    buttons.add(button, "esc: Quit")
+    button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((350, 275), (100, 50)),
+                                             text='Play',
+                                             manager=scr.uiManager)
+    button.action = "return"
+    buttons.add(button, "play")
+    
 
-    for key in buttons.buttons:
-        button = buttons.buttons[key]
-        scr.win.blit(button.img, (button.get_position()))
+    
+    button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((450, 275), (100, 50)),
+                                             text='Load',
+                                             manager=scr.uiManager)
+    button.action = "l"
+    buttons.add(button, "load")
 
-    text = font.render('Enter: Play!', True, (255, 255, 255))
-    text_width, text_height = font.size("Enter: Play!")
-    scr.win.blit(text, (scr.screen_width / 2 - text_width / 2, scr.screen_height * 85/100 + button.height / 2 - text_height / 2))
-
-    text = font.render('l: Load!', True, (255, 255, 255))
-    text_width, text_height = font.size("l: Load!")
-    scr.win.blit(text, (scr.screen_width * 30 // 100 - text_width / 2, scr.screen_height * 85/100+ button.height / 2 - text_height / 2))
-
-    text = font.render('esc: Quit!', True, (255, 255, 255))
-    text_width, text_height = font.size("esc: Quit!")
-    scr.win.blit(text, (scr.screen_width * 70 // 100 - text_width / 2, scr.screen_height * 85/100+ button.height / 2 - text_height / 2))
-
-
-    pygame.image.save(scr.win, "assets/main_screen.png")
+    button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((550, 275), (100, 50)),
+                                             text='Quit',
+                                             manager=scr.uiManager)
+    button.action = "esc"
+    buttons.add(button, "quit")
+    
     return buttons
+
 
 def create_race_screen(scr):
     background = pygame.image.load("assets/race_background.png")

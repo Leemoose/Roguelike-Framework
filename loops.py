@@ -1,4 +1,4 @@
-import pygame
+import pygame, pygame_gui
 import display as D
 import mapping as M
 import character as C
@@ -145,17 +145,13 @@ class Loops():
                     keyboard.key_targeting_screen(key, self)
                 self.update_screen = True
 
+            elif event.type == pygame_gui.UI_BUTTON_PRESSED:
+                return keyboard.key_main_screen(event.ui_element.action, self)
+
             elif event.type == pygame.MOUSEBUTTONUP:
                 x,y = pygame.mouse.get_pos()
-                if self.main == True:
-                    for button in self.main_buttons.buttons:
-                        if self.main_buttons.buttons[button].clicked(x, y):
-                            key = self.main_buttons.buttons[button].action
-                            if keyboard.key_main_screen(key, self) == False:
-                                return False
-                            break
 
-                elif self.race == True:
+                if self.race == True:
                     for button in self.race_buttons.buttons:
                         if self.race_buttons.buttons[button].clicked(x, y):
                             key = self.race_buttons.buttons[button].action
@@ -169,6 +165,8 @@ class Loops():
                             keyboard.key_class_screen(key, self)
                             break
                 self.update_screen = True
+
+            display.uiManager.process_events(event)
 
         if self.action == True and self.player.character.energy < 0:
             self.generator.flood_map.update_flood_map(self.player)
@@ -184,6 +182,9 @@ class Loops():
         if not self.player.character.is_alive():
             self.clear_data()
             self.init_game(display)
+
+        #After everything, update the display clock
+        display.update_ui()
 
         return True
 
