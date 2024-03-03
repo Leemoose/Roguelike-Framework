@@ -95,6 +95,7 @@ class Loops():
         self.main = True
         self.classes = False
         self.examine = False
+        self.autoexplore = False
 
         self.width = width
         self.height = height
@@ -116,6 +117,9 @@ class Loops():
         :param keyboard:
         :return: None (will do a keyboard action)
         """
+
+        if self.autoexplore == True:
+            self.player.autoexplore(self)
         action = None
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -143,6 +147,9 @@ class Loops():
                     keyboard.key_item_screen(key, self, self.item_dict, self.player, self.item_for_item_screen, self.generator.item_map)
                 elif self.examine == True:
                     keyboard.key_targeting_screen(key, self)
+                elif self.autoexplore == True:
+                    self.player.autoexplore(self)
+
                 self.update_screen = True
 
             elif event.type == pygame_gui.UI_BUTTON_PRESSED:
@@ -179,7 +186,7 @@ class Loops():
             for message in status_messages:
                 self.add_message(message)
 
-        if not self.player.character.is_alive():
+        if not self.player.character.is_alive() and not self.player.invincible:
             self.clear_data()
             self.init_game(display)
 
@@ -206,7 +213,7 @@ class Loops():
                 while monster.character.energy > 0:
                     monster.brain.rank_actions(monster, self.monster_map, self.generator.tile_map, self.generator.flood_map, self.player, self.generator, self.item_dict, self)
     def change_screen(self, keyboard, display, colors, tileDict):
-        if self.action == True:
+        if self.action == True or self.autoexplore == True:
             self.clean_up()
             shadowcasting.compute_fov(self.player.get_location(), self.generator.tile_map.track_map)
             display.update_display(colors, self.generator.tile_map, tileDict, self.monster_dict, self.item_dict, self.monster_map, self.player, self.messages)

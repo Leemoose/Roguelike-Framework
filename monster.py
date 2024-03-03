@@ -194,8 +194,6 @@ class Monster(O.Objects):
 class Kobold(Monster):
     def __init__(self, x, y):
         super().__init__(107, x, y, "Kobold")
-        self.character = C.Character(self)
-        self.brain = Monster_AI(self)
         self.skills = []
         self.skills.append(S.BurningAttack(self, 10, 0, 10, 5, 5, 1.5))
         self.experience_given = 10
