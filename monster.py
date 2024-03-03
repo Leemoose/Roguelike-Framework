@@ -50,8 +50,6 @@ class Monster_AI():
             max_utility = utility
             called_function = self.do_skill
 
-        print(max_utility)
-
         self.parent.character.energy -= 1
 
         called_function(loop)
@@ -100,7 +98,7 @@ class Monster_AI():
     def rank_skill(self, loop):
         for skill in self.parent.skills:
             if skill.castable(loop):
-                return 150
+                return 95
         return -1        
 
 
@@ -115,9 +113,11 @@ class Monster_AI():
     def do_combat(self, loop):
         player=loop.player
         monster = self.parent
-        damage = monster.character.melee(player)
-        monster.character.energy -= 100
-        loop.add_message(f"{monster} attacked you for {damage} damage")
+        if not player.character.dodge():
+            damage = monster.character.melee(player)
+            loop.add_message(f"{monster} attacked you for {damage} damage")
+        else:
+            loop.add_message("You dodged the monsters attack")
 
     def do_skill(self, loop):
         monster = self.parent
@@ -165,10 +165,6 @@ class Monster_AI():
                     xmove = xdelta
                     ymove = ydelta
         monster.move(xmove, ymove, tile_map, monster, monster_map, player)
-<<<<<<< HEAD
-        monster.character.energy -= 100
-=======
->>>>>>> Connor
 
     def do_nothing(self,loop):
         pass

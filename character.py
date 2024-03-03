@@ -112,6 +112,13 @@ class Character():
         self.energy -= self.attack_cost
         return (self.base_damage + damage +self.strength - defense)
 
+    def dodge(self):
+        dodge_chance = random.randint(1,100)
+        if dodge_chance <= self.dexterity:
+            return True
+        else:
+            return False
+
     def quaff(self, potion, item_dict, item_map):
         if potion.consumeable:
             potion.activate(self)
@@ -178,11 +185,15 @@ class Player(O.Objects):
 
     def attack(self, defender, loop):
         self.character.energy -= (self.character.attack_cost - self.character.dexterity)
-        damage = self.character.melee(defender)
-        if not defender.character.is_alive():
-            self.experience += defender.experience_given
-            self.check_for_levelup()
-        loop.add_message(f"The player attacked for {damage} damage")
+        if not self.character.dodge():
+            damage = self.character.melee(defender)
+            if not defender.character.is_alive():
+                self.experience += defender.experience_given
+                self.check_for_levelup()
+            loop.add_message(f"The player attacked for {damage} damage")
+        else:
+            loop.add_message("The monster dodged the attack")
+
 
     def check_for_levelup(self):
         if self.level != self.max_level and self.experience >= self.experience_to_next_level:
