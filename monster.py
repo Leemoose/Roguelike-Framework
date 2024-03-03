@@ -227,3 +227,21 @@ class Gargoyle(Monster):
             monster.y += move_y
             monster.x += move_x
             monster_map.track_map[monster.x][monster.y] = monster.id_tag
+
+class Raptor(Monster):
+    def __init__(self, x, y):
+        super().__init__(109, x, y, "Velociraptor")
+        self.character = C.Character(self)
+        self.character.move_cost = 100
+        self.character.attack_cost = 100
+        self.brain = Monster_AI(self)
+        self.skills = []
+        self.experience_given = 10
+    
+    def move(self, move_x, move_y, floormap, monster, monster_map, player):
+        if floormap.get_passable(monster.x + move_x, monster.y + move_y) and monster_map.get_passable(monster.x + move_x, monster.y + move_y) and (monster.x + move_x != player.x and monster.y + move_y != player.y):
+            self.character.energy -= self.character.move_cost
+            monster_map.track_map[monster.x][monster.y] = -1
+            monster.y += move_y
+            monster.x += move_x
+            monster_map.track_map[monster.x][monster.y] = monster.id_tag

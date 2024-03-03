@@ -85,6 +85,7 @@ class TileDict():
         tiles[106] = pygame.transform.scale(image.load('assets/goblin.png'),(32,32))
         tiles[107] = image.load('assets/kobold.png')
         tiles[108] = pygame.transform.scale(image.load('assets/gargoyle.png'),(32,32))
+        tiles[109] = pygame.transform.scale(image.load('assets/raptor.png'),(32,24))
         tiles[300] = image.load("assets/basic_ax.png")
         tiles[301] = image.load("assets/hammer.png")
         tiles[401] = image.load("assets/health_orb_bigger.png")
@@ -198,7 +199,8 @@ class DungeonGenerator():
         number_of_stone_golems = 0
         number_of_goblins = 0#5
         number_of_kobolds = 0#5
-        number_of_gargoyles = 5
+        number_of_gargoyles = 0
+        number_of_raptors = 5
         self.place_monster_hoard(number_of_orcs, 101, 2)
         self.place_monster_hoard(number_of_slimes, 102, 1)
         self.place_monster_hoard(number_of_eyeballs, 104, 3) #Gentlman eyeballs
@@ -207,6 +209,7 @@ class DungeonGenerator():
         self.place_monster_hoard(number_of_goblins, 106, 1)
         self.place_monster_hoard(number_of_kobolds, 107, 1, "Kobold")
         self.place_monster_hoard(number_of_gargoyles, 108, 1, "Gargoyle")
+        self.place_monster_hoard(number_of_raptors, 109, 1, "Raptor")
 
     def place_monster_hoard(self, number, render_tag, level, name="Unknown"):
         for i in range(number):
@@ -222,6 +225,8 @@ class DungeonGenerator():
                 creature = Mon.Kobold(startx, starty)
             elif name == "Gargoyle":
                 creature = Mon.Gargoyle(startx, starty)
+            elif name == "Raptor":
+                creature = Mon.Raptor(startx, starty)
             else:
                 creature = Mon.Monster(render_tag, startx, starty)
             for _ in range(level):
