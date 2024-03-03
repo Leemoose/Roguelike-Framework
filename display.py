@@ -105,6 +105,10 @@ class Display:
         text = font.render("Level: " + str(player.level), True, (255, 255, 255))
         self.win.blit(text, (0, self.screen_height // 100 * 95))
 
+        self.write_messages(messages)
+
+    def write_messages(self, messages):
+        font = pygame.font.Font('freesansbold.ttf', 12)
         for i, message in enumerate(messages):
             text = font.render(message, True, (255, 255, 255))
             self.win.blit(text, (self.screen_width // 100 * 10, self.screen_height // 100 * (85 + i *3)))
@@ -160,11 +164,11 @@ class Display:
         text = font2.render(message, True, (255, 255, 255))
         self.win.blit(text, ((self.screen_width * 22 // 100, self.screen_height * 15 // 100)))
 
-    def update_target(self, targets, tileDict):
-        for location in targets:
-            x, y = location
-            tag = tileDict.tile_string(901)
-            self.win.blit(tag, (self.textSize * (x - self.x_start), self.textSize * (y - self.y_start)))
+    def update_examine(self, target, tileDict, messages):
+        x, y = target
+        tag = tileDict.tile_string(901)
+        self.win.blit(tag, (self.textSize * (x - self.x_start), self.textSize * (y - self.y_start)))
+        self.write_messages(messages)
 
 def create_main_screen(scr):
     background = pygame.image.load("assets/homescreen.png")

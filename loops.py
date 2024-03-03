@@ -94,7 +94,7 @@ class Loops():
         self.update_screen = True
         self.main = True
         self.classes = False
-        self.targeting = False
+        self.examine = False
 
         self.width = width
         self.height = height
@@ -142,7 +142,7 @@ class Loops():
                     keyboard.key_class_screen(key, self)
                 elif self.items == True:
                     keyboard.key_item_screen(key, self, self.item_dict, self.player, self.item_for_item_screen, self.generator.item_map)
-                elif self.targeting == True:
+                elif self.examine == True:
                     keyboard.key_targeting_screen(key, self)
                 self.update_screen = True
 
@@ -204,10 +204,10 @@ class Loops():
             display.update_class()
         elif self.items == True:
             display.update_item(self.item_for_item_screen, tileDict)
-        elif self.targeting == True:
+        elif self.examine == True:
             display.update_display(colors, self.generator.tile_map, tileDict, self.monster_dict, self.item_dict,
                                    self.monster_map, self.player, self.messages)
-            display.update_target(self.targets.target_list, tileDict)
+            display.update_examine(self.targets.target_list, tileDict, self.messages)
         pygame.display.update()
         self.update_screen = False
 

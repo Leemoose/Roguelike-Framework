@@ -20,8 +20,6 @@ class Character():
         self.main_weapon = None
 
         self.parent = parent
-
-
     def is_alive(self):
         if self.health <= 0:
             self.alive = False
@@ -36,8 +34,6 @@ class Character():
         self.health += heal
         if self.health > self.max_health:
             self.health = self.max_health
-
-
     def defend(self):
         defense = R.roll_dice(1, 1)[0]
         return defense
@@ -105,8 +101,6 @@ class Player(O.Objects):
     def __init__(self, x, y):
         super().__init__(x, y, 1, 200, "Player")
         self.character = Character(self)
-        self.character.max_health = 200
-        self.character.health = 200
 
         self.level = 1
         self.max_level = 20
@@ -126,14 +120,14 @@ class Player(O.Objects):
     def move(self, move_x, move_y, loop):
        # speed = self.speed + self.dexterity // 10
         if loop.generator.tile_map.get_passable(self.x + move_x, self.y + move_y) and loop.generator.monster_map.get_passable(self.x + move_x, self.y + move_y):
-            self.character.energy -= 100
+            self.character.energy -= (100-self.character.speed)
             self.y += move_y
             self.x += move_x
         loop.add_message("The player moved.")
 
 
     def attack(self, defender, loop):
-        self.character.energy -= 100
+        self.character.energy -= (100-self.character.speed)
         self.character.melee(defender)
         if not defender.character.is_alive():
             self.experience += defender.experience_given

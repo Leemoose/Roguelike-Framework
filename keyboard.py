@@ -25,6 +25,7 @@ class Keyboard():
         keys_to_string[pygame.K_q] = "q"
         keys_to_string[pygame.K_o] = "o"
         keys_to_string[pygame.K_l] = "l"
+        keys_to_string[pygame.K_x] = "x"
         keys_to_string[pygame.K_ESCAPE] = "esc"
         keys_to_string[pygame.K_1] = "1"
         keys_to_string[pygame.K_2] = "2"
@@ -35,6 +36,7 @@ class Keyboard():
         keys_to_string[pygame.K_7] = "7"
         keys_to_string[pygame.K_8] = "8"
         keys_to_string[pygame.K_PERIOD] = "."
+        keys_to_string[pygame.K_RETURN] = "return"
         keys_to_string[146] = ">"
         keys_to_string[144] = "<"
 
@@ -72,9 +74,9 @@ class Keyboard():
             loop.up_floor()
         elif key == ".":
             player.character.wait()
-        elif key == 'f':
+        elif key == 'x':
             loop.action = False
-            loop.targeting = True
+            loop.examine = True
             loop.update_screen = True
             loop.targets.start_target(loop.player.get_location())
         elif key == "o":
@@ -151,15 +153,17 @@ class Keyboard():
     def key_targeting_screen(self, key, loop):
         loop.update_screen = True
         targets = loop.targets
-        if key == "w":
+        if key == "up":
             targets.adjust(0, -1)
-        elif key == "a":
+        elif key == "left":
             targets.adjust(-1, 0)
-        elif key == "s":
+        elif key == "down":
             targets.adjust(0, 1)
-        elif key == "d":
+        elif key == "right":
             targets.adjust(1, 0)
         elif key == "esc":
             loop.targeting = False
             loop.action = True
             loop.update_screen = True
+        elif key == "return":
+            targets.explain_target(loop)
