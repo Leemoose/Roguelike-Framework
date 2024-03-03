@@ -196,7 +196,7 @@ class DungeonGenerator():
             elif type == "hammer":
                 item = I.Hammer(render_tag,  startx, starty)
             elif type == "potion":
-                item = I.Potion(render_tag,startx, starty)
+                item = I.HealthPotion(render_tag, startx, starty)
             self.item_dict.tag_subject(item)
             self.item_map.place_thing(item)
 
