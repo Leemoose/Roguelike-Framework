@@ -9,6 +9,48 @@ import random
 import math
 from fractions import Fraction
 
+class MapData():
+    def __init__(self, width, height, numRooms, roomSize, circularity):
+        self.width = width
+        self.height = height
+        self.numRooms = numRooms
+        self.roomSize = roomSize
+        self.circularity = circularity
+
+# Config data!
+MapOptions = {}
+MapOptions[1]  = MapData(20, 20, 5, 4, 1.0 )
+MapOptions[2]  = MapData(25, 25, 5, 4, 0.05)
+MapOptions[3]  = MapData(25, 25, 6, 5, 0.1 )
+MapOptions[4]  = MapData(30, 30, 6, 5, 0.0 )   #Square floor!
+MapOptions[5]  = MapData(35, 35, 7, 6, 0.2 )
+MapOptions[6]  = MapData(35, 35, 8, 7, 0.3 )
+MapOptions[7]  = MapData(40, 40, 9, 7, 0.5 )
+MapOptions[8]  = MapData(40, 40, 10, 8, .6  )
+MapOptions[9]  = MapData(45, 45, 11, 9, 0.0 ) #Square floor!
+MapOptions[10] = MapData(50, 50, 12, 10, 1.0 )
+
+
+MaxTries = 100
+
+class Room():
+    def __init__(self, x : int, y : int, width : int, height: int):
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+
+    def intersects(self, other):
+        xPositive = min(self.x + self.width + 1, other.x + other.width + 1) > max(self.x, other.x)
+        yPositive = min(self.y + self.height + 1, other.y + other.height + 1) > max(self.y, other.y)
+        return xPositive and yPositive
+    
+    def GetCenterX(self):
+        return (self.x + self.width // 2)
+    
+    def GetCenterY(self):
+        return (self.y + self.height // 2)
+
 """
 Theme: Mapping is responsible for creating all maps at the start of the level, placing monsters, placing items,
  as well as providing basic information about those maps.
@@ -53,13 +95,14 @@ class TileDict():
 class DungeonGenerator():
     #Generates a width by height 2d array of tiles. Each type of tile has a unique tile
     #tag ranging from 0 to 99
-    def __init__(self, width, height):
-        self.width = width
-        self.height = height
-        self.monster_map = TrackingMap(width, height) #Should I include items as well?
-        self.flood_map = FloodMap(width,height)
-        self.tile_map = TileMap(width, height)
-        self.item_map = TrackingMap(width,height)
+    def __init__(self, depth):
+        self.mapData = MapOptions[depth]
+        self.width = self.mapData.width
+        self.height = self.mapData.height
+        self.monster_map = TrackingMap(self.width, self.height) #Should I include items as well?
+        self.flood_map = FloodMap(self.width, self.height)
+        self.tile_map = TileMap(self.mapData)
+        self.item_map = TrackingMap(self.width, self.height)
 
         self.monster_dict = L.ID() #Unique to this floor
         self.item_dict = L.ID() #Unique to this floor
@@ -142,13 +185,13 @@ class DungeonGenerator():
                     self.tile_map[startx + x][starty + y] = tile
 
     def place_monsters(self):
-        number_of_orcs = 1
+        number_of_orcs = 0#1
         number_of_slimes = 0
         number_of_tentacles = 0
         number_of_eyeballs = 0
         number_of_stone_golems = 0
-        number_of_goblins = 5
-        number_of_kobolds = 5
+        number_of_goblins = 0#5
+        number_of_kobolds = 0#5
         self.place_monster_hoard(number_of_orcs, 101, 2)
         self.place_monster_hoard(number_of_slimes, 102, 1)
         self.place_monster_hoard(number_of_eyeballs, 104, 3) #Gentlman eyeballs
@@ -274,13 +317,27 @@ class FloodMap(Maps):
 This map is responsible for carving all tiles out.
 """
 class TileMap(TrackingMap):
-    def __init__(self, width, height):
-        super().__init__(width, height)
+    def __init__(self, mapData):
+        super().__init__(mapData.width, mapData.height)
+        self.mapData = mapData
         self.track_map = []
         self.stairs = []
-        for x in range(self.width):
-            self.track_map.append([O.Tile(x, y, 1, False) for y in range(self.height)])
-        self.cellular_caves()
+        self.rooms = []
+        # Add an empty map
+        self.track_map_render = [x[:] for x in [[0] * self.width] * self.height]
+
+        #Add rooms
+        for roomNum in range(mapData.numRooms):
+            size = random.randint(4, mapData.roomSize)
+            self.place_room(size, size, mapData.circularity)
+            
+        #Connect Rooms
+        for i in range(len(self.rooms) - 1):
+            self.connect_rooms(self.rooms[i], self.rooms[i + 1])
+            
+        #Apply smoothing
+        
+        #self.cellular_caves()
         self.render_to_map()
         self.place_stairs()
 
@@ -357,7 +414,7 @@ class TileMap(TrackingMap):
 
         startx = random.randint(0, self.width - 1)
         starty = random.randint(0, self.height - 1)
-        while (self.track_map[startx][starty].passable == False):
+        while (self.track_map[startx][starty].passable == False and self.track_map[startx][starty].render_tag != 91):
             startx = random.randint(0, self.width - 1)
             starty = random.randint(0, self.height - 1)
         tile = O.Stairs(startx, starty, 90, True, downward=False)
@@ -378,4 +435,87 @@ class TileMap(TrackingMap):
 
     def mark_visible(self,x,y):
         self.track_map[x][y].seen = True
+
+    def overlaps_any(self, room):
+        for other in self.rooms:
+            if (room.intersects(other)):
+                return True
+        return False
+    
+    def point_in_squircle(self, x, y, circularity):
+        originX = 1.0 * (self.width - 1) / 2
+        originY = 1.0 * (self.height - 1) / 2
+        radius = max(self.width, self.height) / 2
+
+        radiusSqrd = radius**2
+        squircConst = ((1 - circularity)/radius)**2
+        localX = x - originX
+        localY = y - originY
+
+        xSqrd = localX**2
+        ySqrd = localY**2
+
+        squircleVal = xSqrd + ySqrd - squircConst * xSqrd * ySqrd
+                
+        return (squircleVal < radiusSqrd)
+    
+    def in_squircle(self, room, circularity):
+        return self.point_in_squircle(room.x, room.y, circularity) and self.point_in_squircle(room.x + room.width - 1, room.y + room.width - 1, circularity)
+
+    def place_room(self, rWidth, rHeight, circularity):
+        startX = random.randint(1, self.width - rWidth - 1)
+        startY = random.randint(1,self.height - rHeight - 1)
+        room = Room(startX, startY, rWidth, rHeight)
+        tries = 0
+        while (self.overlaps_any(room) and self.in_squircle(room, circularity) and tries < MaxTries):
+            room.x = random.randint(1, self.width - rWidth - 1)
+            room.y = random.randint(1, self.height - rHeight - 1)
+            tries += 1
+        if (tries < MaxTries):
+            self.rooms.append(room)
+            self.carve_room(room, circularity)
+
+    def carve_room(self, room, circularity):
+        originX = 1.0 * (room.width - 1) / 2
+        originY = 1.0 * (room.height - 1) / 2
+        radius = max(room.width, room.height) / 2
+
+        radiusSqrd = radius**2
+        squircConst = ((1 - circularity)/radius)**2
+
+        for x in range(room.width):
+            for y in range(room.height):
+                localX = x - originX
+                localY = y - originY
+
+                xSqrd = localX**2
+                ySqrd = localY**2
+
+                squircleVal = xSqrd + ySqrd - squircConst * xSqrd * ySqrd
+                
+                if (squircleVal < radiusSqrd):
+                    self.track_map_render[x + room.x][y + room.y] = 1
+
+
+    def connect_rooms(self, room1, room2):
+        cornerX : int = room1.GetCenterX()
+        cornerY : int = room2.GetCenterY()
+
+        lower1X = min(room1.GetCenterX(), cornerX)
+        upper1X = max(room1.GetCenterX(), cornerX) + 1
+        lower1Y = min(room1.GetCenterY(), cornerY)
+        upper1Y = max(room1.GetCenterY(), cornerY) + 1
+
+        for x in range(lower1X, upper1X):
+            for y in range(lower1Y, upper1Y):
+                self.track_map_render[x][y] = 1
+
+        lower2X = min(room2.GetCenterX(), cornerX)
+        upper2X = max(room2.GetCenterX(), cornerX) + 1
+        lower2Y = min(room2.GetCenterY(), cornerY)
+        upper2Y = max(room2.GetCenterY(), cornerY) + 1
+
+        for x in range(lower2X, upper2X):
+            for y in range(lower2Y, upper2Y):
+                self.track_map_render[x][y] = 1
 
