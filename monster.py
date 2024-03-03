@@ -45,7 +45,7 @@ class Monster_AI():
             max_utility = utility
             called_function = self.do_move
 
-        print(max_utility)
+        self.parent.character.energy -= 1
         called_function(loop)
 
 
@@ -140,7 +140,6 @@ class Monster_AI():
                     xmove = xdelta
                     ymove = ydelta
         monster.move(xmove, ymove, tile_map, monster, monster_map, player)
-        monster.character.energy = 0
 
     def do_nothing(self,loop):
         pass

@@ -196,7 +196,7 @@ class DungeonGenerator():
         number_of_eyeballs = 0
         number_of_stone_golems = 0
         number_of_goblins = 0#5
-        number_of_kobolds = 0#5
+        number_of_kobolds = 5
         self.place_monster_hoard(number_of_orcs, 101, 2)
         self.place_monster_hoard(number_of_slimes, 102, 1)
         self.place_monster_hoard(number_of_eyeballs, 104, 3) #Gentlman eyeballs
