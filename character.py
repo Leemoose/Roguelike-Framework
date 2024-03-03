@@ -14,6 +14,7 @@ class Character():
         self.health = health
         self.max_health = health
         self.mana = mana
+        self.max_mana = mana
 
         self.movable = True
 
@@ -43,6 +44,12 @@ class Character():
         self.health += heal
         if self.health > self.max_health:
             self.health = self.max_health
+
+    def gain_mana(self, mana):
+        self.mana += mana
+        if self.mana > self.max_mana:
+            self.mana = self.max_mana
+
     def defend(self):
         defense = R.roll_dice(1, 1)[0]
         return defense
@@ -143,7 +150,7 @@ class Player(O.Objects):
 
     def attack_move(self, move_x, move_y, loop):
         if not self.character.movable:
-            self.character.energy -= self.character.action_cost
+            self.character.energy -= (self.character.action_cost - self.character.speed)
             loop.add_message("The player is petrified and cannot move.")
             return
         x = self.x + move_x
@@ -158,14 +165,14 @@ class Player(O.Objects):
     def move(self, move_x, move_y, loop):
        # speed = self.speed + self.dexterity // 10
         if loop.generator.tile_map.get_passable(self.x + move_x, self.y + move_y) and loop.generator.monster_map.get_passable(self.x + move_x, self.y + move_y):
-            self.character.energy -= (100-self.character.speed)
+            self.character.energy -= (self.character.action_cost - self.character.speed)
             self.y += move_y
             self.x += move_x
         loop.add_message("The player moved.")
 
 
     def attack(self, defender, loop):
-        self.character.energy -= (self.character.action_cost-self.character.speed)
+        self.character.energy -= (self.character.action_cost - self.character.speed)
         damage = self.character.melee(defender)
         if not defender.character.is_alive():
             self.experience += defender.experience_given

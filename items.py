@@ -58,3 +58,23 @@ class HastePotion(O.Item):
         effect = E.Haste(5, 50)
         entity.add_status_effect(effect)
         self.destroy = True
+
+class CurePotion(O.Item):
+    def __init__(self, render_tag, x, y):
+        super().__init__(x, y, 0, render_tag, "Cure Potion")
+        self.consumeable = True
+
+    def activate(self, entity):
+        for effect in entity.status_effects:
+            effect.remove(entity)
+        entity.status_effects = []
+        self.destroy = True
+
+class ManaPotion(O.Item):
+    def __init__(self, render_tag, x, y):
+        super().__init__(x, y, 0, render_tag, "Mana Potion")
+        self.consumeable = True
+
+    def activate(self, entity):
+        entity.gain_mana(20)
+        self.destroy = True
