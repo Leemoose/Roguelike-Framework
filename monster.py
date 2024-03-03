@@ -45,6 +45,11 @@ class Monster_AI():
             max_utility = utility
             called_function = self.do_move
 
+        utility = self.rank_skill(loop)
+        if utility > max_utility:
+            max_utility = utility
+            called_function = self.do_skill
+
         print(max_utility)
         called_function(loop)
 
@@ -88,6 +93,13 @@ class Monster_AI():
 
     def rank_move(self, loop):
         return 20
+    
+    def rank_skill(self, loop):
+        for skill in self.parent.skills:
+            if skill.castable(loop):
+                return 150
+        return -1        
+
 
     def do_item_pickup(self, loop):
         item_map = loop.generator.item_map
@@ -100,8 +112,18 @@ class Monster_AI():
     def do_combat(self, loop):
         player=loop.player
         monster = self.parent
-        monster.character.melee(player)
+        damage = monster.character.melee(player)
         monster.character.energy -= 100
+        loop.add_message(f"{monster} attacked you for {damage} damage")
+
+    def do_skill(self, loop):
+        monster = self.parent
+        for skill in monster.skills:
+            if skill.castable(loop):
+                skill.try_to_activate(loop.player, loop.generator, loop)
+                monster.character.energy -= 100
+                loop.add_message(str(monster) + " used " + str(skill) + "!")
+                break
 
     def do_equip(self, loop):
         monster = self.parent
@@ -140,7 +162,7 @@ class Monster_AI():
                     xmove = xdelta
                     ymove = ydelta
         monster.move(xmove, ymove, tile_map, monster, monster_map, player)
-        monster.character.energy = 0
+        monster.character.energy -= 100
 
     def do_nothing(self,loop):
         pass
@@ -148,13 +170,34 @@ class Monster_AI():
 
 
 class Monster(O.Objects):
-    def __init__(self, number_tag, x, y):
-        super().__init__(x, y, 0, number_tag, "Unknown monster")
+    def __init__(self, number_tag, x, y, name="Unknown monster"):
+        super().__init__(x, y, 0, number_tag, name)
         self.character = C.Character(self)
         self.brain = Monster_AI(self)
-        self.skills = S.Skills(self)
+        self.skills = []
         self.experience_given = 10
 
+    def move(self, move_x, move_y, floormap, monster, monster_map, player):
+        speed = 100
+        if floormap.get_passable(monster.x + move_x, monster.y + move_y) and monster_map.get_passable(monster.x + move_x, monster.y + move_y) and (monster.x + move_x != player.x and monster.y + move_y != player.y):
+            self.character.energy -= 100
+            monster_map.track_map[monster.x][monster.y] = -1
+            monster.y += move_y
+            monster.x += move_x
+            monster_map.track_map[monster.x][monster.y] = monster.id_tag
+    
+    def __str__(self):
+        return self.name
+
+class Kobold(Monster):
+    def __init__(self, x, y):
+        super().__init__(107, x, y, "Kobold")
+        self.character = C.Character(self)
+        self.brain = Monster_AI(self)
+        self.skills = []
+        self.skills.append(S.BurningAttack(self, 10, 0, 10, 5, 5))
+        self.experience_given = 10
+    
     def move(self, move_x, move_y, floormap, monster, monster_map, player):
         speed = 100
         if floormap.get_passable(monster.x + move_x, monster.y + move_y) and monster_map.get_passable(monster.x + move_x, monster.y + move_y) and (monster.x + move_x != player.x and monster.y + move_y != player.y):

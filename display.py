@@ -213,7 +213,7 @@ def create_main_screen(scr):
     scr.win.blit(text, (scr.screen_width * 70 // 100 - text_width / 2, scr.screen_height * 85/100+ button.height / 2 - text_height / 2))
 
 
-    pygame.image.save(scr.win, "assets/main_screen.png")
+    # pygame.image.save(scr.win, "assets/main_screen.png")
     return buttons
 
 def create_race_screen(scr):
@@ -230,7 +230,7 @@ def create_race_screen(scr):
     text_width, text_height = font.size("Human")
     scr.win.blit(text, (scr.screen_width / 2 - text_width / 2, scr.screen_height * 85/100 + button.height / 2 - text_height / 2))
 
-    pygame.image.save(scr.win, "assets/race_screen.png")
+    # pygame.image.save(scr.win, "assets/race_screen.png")
     return buttons
 
 def create_class_screen(scr):
@@ -247,5 +247,5 @@ def create_class_screen(scr):
     text_width, text_height = font.size("Warrior")
     scr.win.blit(text, (scr.screen_width / 2 - text_width / 2, scr.screen_height * 85/100 + button.height / 2 - text_height / 2))
 
-    pygame.image.save(scr.win, "assets/class_screen.png")
+    # pygame.image.save(scr.win, "assets/class_screen.png")
     return buttons

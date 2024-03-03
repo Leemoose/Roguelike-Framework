@@ -143,7 +143,7 @@ class Player(O.Objects):
     def __init__(self, x, y):
         super().__init__(x, y, 1, 200, "Player")
         self.character = Character(self)
-        self.skills = S.Skills(self)
+        self.skills = []
 
         self.level = 1
         self.max_level = 20
