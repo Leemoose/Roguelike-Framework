@@ -7,6 +7,16 @@ class Buttons:
 
     def add(self, button, name):
         self.buttons[name] = button
+"""
+    def render_button(self, key):
+        font = pygame.font.Font('freesansbold.ttf', 32)
+
+        button = self.buttons[key]
+        text = font.render(key, True, (255, 255, 255))
+        text_width, text_height = font.size("Enter: Play!")
+        scr.win.blit(text, (scr.screen_width / 2 - text_width / 2, scr.screen_height * 85 / 100 + button.height / 2 - text_height / 2))
+        """
+
 
 class Button:
     # A button is anything in game that you could click
@@ -105,6 +115,10 @@ class Display:
         text = font.render("Level: " + str(player.level), True, (255, 255, 255))
         self.win.blit(text, (0, self.screen_height // 100 * 95))
 
+        self.write_messages(messages)
+
+    def write_messages(self, messages):
+        font = pygame.font.Font('freesansbold.ttf', 12)
         for i, message in enumerate(messages):
             text = font.render(message, True, (255, 255, 255))
             self.win.blit(text, (self.screen_width // 100 * 10, self.screen_height // 100 * (85 + i *3)))
@@ -160,26 +174,44 @@ class Display:
         text = font2.render(message, True, (255, 255, 255))
         self.win.blit(text, ((self.screen_width * 22 // 100, self.screen_height * 15 // 100)))
 
-    def update_target(self, targets, tileDict):
-        for location in targets:
-            x, y = location
-            tag = tileDict.tile_string(901)
-            self.win.blit(tag, (self.textSize * (x - self.x_start), self.textSize * (y - self.y_start)))
+    def update_examine(self, target, tileDict, messages):
+        x, y = target
+        tag = tileDict.tile_string(901)
+        self.win.blit(tag, (self.textSize * (x - self.x_start), self.textSize * (y - self.y_start)))
+        self.write_messages(messages)
 
 def create_main_screen(scr):
     background = pygame.image.load("assets/homescreen.png")
     background = pygame.transform.scale(background, (scr.screen_width, scr.screen_height))
     scr.win.blit(background, (0,0))
+    font = pygame.font.Font('freesansbold.ttf', 32)
 
     buttons = Buttons()
-    button = Button(scr.screen_width, scr.screen_height, "assets/button.png", 15/100, 11/100, "1", scr.screen_width / 2, scr.screen_height * 80/100)
-    buttons.add(button, "Play!")
-    scr.win.blit(button.img, (button.get_position()))
+    button = Button(scr.screen_width, scr.screen_height, "assets/button.png", 15/100, 11/100, "return", scr.screen_width / 2, scr.screen_height * 80/100)
+    buttons.add(button, "Enter: Play!")
+    button = Button(scr.screen_width, scr.screen_height, "assets/button.png", 15 / 100, 11 / 100, "l",
+                    scr.screen_width * 30 // 100, scr.screen_height * 80 / 100)
+    buttons.add(button, "l: Load")
+    button = Button(scr.screen_width, scr.screen_height, "assets/button.png", 15 / 100, 11 / 100, "esc",
+                    scr.screen_width * 70 // 100, scr.screen_height * 80 / 100)
+    buttons.add(button, "esc: Quit")
 
-    font = pygame.font.Font('freesansbold.ttf', 32)
-    text = font.render('Play!', True, (255, 255, 255))
-    text_width, text_height = font.size("Play!")
+    for key in buttons.buttons:
+        button = buttons.buttons[key]
+        scr.win.blit(button.img, (button.get_position()))
+
+    text = font.render('Enter: Play!', True, (255, 255, 255))
+    text_width, text_height = font.size("Enter: Play!")
     scr.win.blit(text, (scr.screen_width / 2 - text_width / 2, scr.screen_height * 85/100 + button.height / 2 - text_height / 2))
+
+    text = font.render('l: Load!', True, (255, 255, 255))
+    text_width, text_height = font.size("l: Load!")
+    scr.win.blit(text, (scr.screen_width * 30 // 100 - text_width / 2, scr.screen_height * 85/100+ button.height / 2 - text_height / 2))
+
+    text = font.render('esc: Quit!', True, (255, 255, 255))
+    text_width, text_height = font.size("esc: Quit!")
+    scr.win.blit(text, (scr.screen_width * 70 // 100 - text_width / 2, scr.screen_height * 85/100+ button.height / 2 - text_height / 2))
+
 
     pygame.image.save(scr.win, "assets/main_screen.png")
     return buttons

@@ -184,8 +184,6 @@ class DungeonGenerator():
                     tile = O.Tile(startx + x, starty + y, 1, True)
                     self.tile_map[startx + x][starty + y] = tile
 
-
-
     def place_monsters(self):
         number_of_orcs = 0#1
         number_of_slimes = 0
@@ -239,7 +237,7 @@ class DungeonGenerator():
             elif type == "hammer":
                 item = I.Hammer(render_tag,  startx, starty)
             elif type == "potion":
-                item = I.Potion(render_tag,startx, starty)
+                item = I.HealthPotion(render_tag, startx, starty)
             self.item_dict.tag_subject(item)
             self.item_map.place_thing(item)
 

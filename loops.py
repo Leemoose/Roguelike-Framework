@@ -94,7 +94,7 @@ class Loops():
         self.update_screen = True
         self.main = True
         self.classes = False
-        self.targeting = False
+        self.examine = False
 
         self.width = width
         self.height = height
@@ -110,7 +110,7 @@ class Loops():
         self.generator = None #Dungeon Generator
         self.messages = []
         self.targets = T.Target()
-    def action_loop(self, keyboard):
+    def action_loop(self, keyboard, display):
         """
         This is responsible for undergoing any inputs when screen is clicked
         :param keyboard:
@@ -141,7 +141,7 @@ class Loops():
                     keyboard.key_class_screen(key, self)
                 elif self.items == True:
                     keyboard.key_item_screen(key, self, self.item_dict, self.player, self.item_for_item_screen, self.generator.item_map)
-                elif self.targeting == True:
+                elif self.examine == True:
                     keyboard.key_targeting_screen(key, self)
                 self.update_screen = True
 
@@ -151,7 +151,8 @@ class Loops():
                     for button in self.main_buttons.buttons:
                         if self.main_buttons.buttons[button].clicked(x, y):
                             key = self.main_buttons.buttons[button].action
-                            keyboard.key_main_screen(key, self)
+                            if keyboard.key_main_screen(key, self) == False:
+                                return False
                             break
 
                 elif self.race == True:
@@ -175,7 +176,8 @@ class Loops():
             self.player.character.energy = 0
 
         if not self.player.character.is_alive():
-            return False
+            self.clear_data()
+            self.init_game(display)
 
         return True
 
@@ -202,10 +204,10 @@ class Loops():
             display.update_class()
         elif self.items == True:
             display.update_item(self.item_for_item_screen, tileDict)
-        elif self.targeting == True:
+        elif self.examine == True:
             display.update_display(colors, self.generator.tile_map, tileDict, self.monster_dict, self.item_dict,
                                    self.monster_map, self.player, self.messages)
-            display.update_target(self.targets.target_list, tileDict)
+            display.update_examine(self.targets.target_list, tileDict, self.messages)
         pygame.display.update()
         self.update_screen = False
 
@@ -308,6 +310,22 @@ class Loops():
         self.item_dict = self.generator.item_dict
         self.monster_dict = self.generator.monster_dict
         self.player = self.memory.player
+
+    def clear_data(self):
+        self.action = False
+        self.update_screen = True
+        self.main = True
+
+        self.items = False
+        self.item_for_item_screen = None
+        self.floor_level = 0
+        self.memory = Memory()
+        self.tile_map = None
+        self.monster_map = None
+        self.item_dict = None
+        self.monster_dict = None
+        self.generator = None
+        self.messages = []
 
 
 
