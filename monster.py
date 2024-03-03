@@ -18,30 +18,36 @@ class Monster_AI():
     def rank_actions(self, monster, monster_map, tile_map, flood_map, player, generated_maps, item_dict, loop):
         item_map = generated_maps.item_map
         max_utility = 0
-        called_function = None
+        called_function = self.do_nothing
 
         utility = self.rank_combat(loop)
         if utility > max_utility:
             max_utility = utility
-            called_function = self.do_combat(loop)
+            called_function = self.do_combat
 
         utility = self.rank_pickup(loop)
         if utility > max_utility:
             max_utility = utility
-            called_function = self.do_item_pickup(loop)
+            called_function = self.do_item_pickup
 
-        utility = self.rank_use_item(loop)
+        utility = self.rank_equip_item(loop)
         if utility > max_utility:
             max_utility = utility
-            called_function = self.do_use_item(loop)
+            called_function = self.do_equip
+
+        utility = self.rank_use_consumeable(loop)
+        if utility > max_utility:
+            max_utility = utility
+            called_function = self.do_use_consumeable
 
         utility = self.rank_move(loop)
         if utility > max_utility:
             max_utility = utility
-            called_function = self.do_move(loop)
+            called_function = self.do_move
 
-        if called_function != None:
-            called_function(loop)
+        print(max_utility)
+        called_function(loop)
+
 
     def rank_combat(self, loop):
         player=loop.player
@@ -50,7 +56,7 @@ class Monster_AI():
         monsterx, monstery = monster.get_location()
         distance = self.parent.get_distance(playerx, playery)
         if distance < 1.5:
-            return 90
+            return 75
         else:
             return -1
 
@@ -62,7 +68,22 @@ class Monster_AI():
         else:
             return -1
 
-    def rank_use_item(self, loop):
+    def rank_equip_item(self, loop):
+        monster = self.parent
+        if len(monster.character.inventory) != 0:
+            stuff = monster.character.inventory
+            for i, item in enumerate(stuff):
+                if item.equipable and monster.character.main_weapon == None:
+                    return 80
+        return -1
+
+    def rank_use_consumeable(self, loop):
+        monster = self.parent
+        if len(monster.character.inventory) != 0:
+            stuff = monster.character.inventory
+            for i, item in enumerate(stuff):
+                if item.consumeable:
+                    return 30
         return -1
 
     def rank_move(self, loop):
@@ -82,16 +103,21 @@ class Monster_AI():
         monster.character.melee(player)
         monster.character.energy -= 100
 
-    def do_use_item(self, loop):
+    def do_equip(self, loop):
         monster = self.parent
         if len(monster.character.inventory) != 0:
             stuff = monster.character.inventory
             for i, item in enumerate(stuff):
                 if monster.character.main_weapon == None and item.equipable:
                     monster.character.equip(item)
-                    break
-                elif monster.character.health < monster.character.max_health and item.consumeable:
-                    pass #monster.character.quaff(item)
+
+    def do_use_consumeable(self, loop):
+        monster = self.parent
+        if len(monster.character.inventory) != 0:
+            stuff = monster.character.inventory
+            for i, item in enumerate(stuff):
+                if item.consumeable:
+                    item.activate(monster.character)
 
     def do_move(self, loop):
         tile_map = loop.generator.tile_map
@@ -115,6 +141,9 @@ class Monster_AI():
                     ymove = ydelta
         monster.move(xmove, ymove, tile_map, monster, monster_map, player)
         monster.character.energy = 0
+
+    def do_nothing(self,loop):
+        pass
 
 
 
