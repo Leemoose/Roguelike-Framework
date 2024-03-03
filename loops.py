@@ -110,7 +110,7 @@ class Loops():
         self.generator = None #Dungeon Generator
         self.messages = []
         self.targets = T.Target()
-    def action_loop(self, keyboard):
+    def action_loop(self, keyboard, display):
         """
         This is responsible for undergoing any inputs when screen is clicked
         :param keyboard:
@@ -133,6 +133,7 @@ class Loops():
                 elif self.inventory == True:
                     keyboard.key_inventory(self, self.player, self.item_dict,key)
                 elif self.main == True:
+                    print("hi")
                     if keyboard.key_main_screen(key, self) == False:
                         return False
                 elif self.race == True:
@@ -175,7 +176,8 @@ class Loops():
             self.player.character.energy = 0
 
         if not self.player.character.is_alive():
-            return False
+            self.clear_data()
+            self.init_game(display)
 
         return True
 
@@ -310,6 +312,22 @@ class Loops():
         self.item_dict = self.generator.item_dict
         self.monster_dict = self.generator.monster_dict
         self.player = self.memory.player
+
+    def clear_data(self):
+        self.action = False
+        self.update_screen = True
+        self.main = True
+
+        self.items = False
+        self.item_for_item_screen = None
+        self.floor_level = 0
+        self.memory = Memory()
+        self.tile_map = None
+        self.monster_map = None
+        self.item_dict = None
+        self.monster_dict = None
+        self.generator = None
+        self.messages = []
 
 
 

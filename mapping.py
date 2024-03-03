@@ -141,8 +141,6 @@ class DungeonGenerator():
                     tile = O.Tile(startx + x, starty + y, 1, True)
                     self.tile_map[startx + x][starty + y] = tile
 
-
-
     def place_monsters(self):
         number_of_orcs = 1
         number_of_slimes = 0
