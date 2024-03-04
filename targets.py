@@ -1,8 +1,8 @@
 
-
 class Target:
     def __init__(self):
         self.target_list= ()
+        self.skill = None
 
     def start_target(self, starting_target):
         self.target_list = (starting_target)
@@ -10,6 +10,23 @@ class Target:
     def adjust(self, xdelta, ydelta):
         x, y = self.target_list
         self.target_list = (x+xdelta, y + ydelta)
+
+    def store_skill(self, skill):
+        self.skill = skill
+
+    def void_skill(self):
+        self.skill = None
+
+    def cast_on_target(self, loop):
+        x, y = self.target_list
+        monster_map = loop.generator.monster_map
+        monster_dict = loop.generator.monster_dict
+        if not monster_map.get_passable(x,y):
+            monster = monster_dict.get_subject(monster_map.locate(x,y))
+            self.skill(monster, loop)
+            self.void_skill()
+        else:
+            loop.add_message("Not a valid target there")
 
     def explain_target(self, loop):
         x, y = self.target_list

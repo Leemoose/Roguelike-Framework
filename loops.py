@@ -95,6 +95,7 @@ class Loops():
         self.main = True
         self.classes = False
         self.examine = False
+        self.targeting = False
         self.autoexplore = False
 
         self.width = width
@@ -147,7 +148,7 @@ class Loops():
                     keyboard.key_class_screen(key, self)
                 elif self.items == True:
                     keyboard.key_item_screen(key, self, self.item_dict, self.player, self.item_for_item_screen, self.generator.item_map)
-                elif self.examine == True:
+                elif self.examine == True or self.targeting:
                     keyboard.key_targeting_screen(key, self)
                 elif self.autoexplore == True:
                     keyboard.key_autoexplore(key, self)
@@ -236,7 +237,7 @@ class Loops():
             display.update_class()
         elif self.items == True:
             display.update_item(self.item_for_item_screen, tileDict)
-        elif self.examine == True:
+        elif self.examine == True or self.targeting == True:
             display.update_display(colors, self.generator.tile_map, tileDict, self.monster_dict, self.item_dict,
                                    self.monster_map, self.player, self.messages)
             display.update_examine(self.targets.target_list, tileDict, self.messages)

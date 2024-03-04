@@ -37,14 +37,21 @@ class Character():
 
         self.skills = []
 
+        self.experience_given = 0 # monsters will overwrite this attribute, it just makes some class stuff easier if its stored in character
+        self.experience = None
+
     def is_alive(self):
         if self.health <= 0:
             self.alive = False
             return False
         return True
 
-    def take_damage(self, damage):
+    def take_damage(self, dealer, damage):
         self.health -= damage
+        if not self.is_alive():
+            if hasattr(dealer, "experience"): # acts as a check for it its a player
+                dealer.experience += self.experience_given
+                dealer.check_for_levelup()
         return self.is_alive()
 
     def gain_health(self, heal):
@@ -110,7 +117,7 @@ class Character():
         else:
             damage = self.main_weapon.attack()
         defense = defender.character.defend()
-        defender.character.take_damage(self.base_damage + self.strength+ damage - defense)
+        defender.character.take_damage(self.parent, self.base_damage + self.strength+ damage - defense)
         self.energy -= self.attack_cost
         return (self.base_damage + damage +self.strength - defense)
 
@@ -216,9 +223,9 @@ class Player(O.Objects):
         self.character.energy -= (self.character.attack_cost - self.character.dexterity)
         if not self.character.dodge():
             damage = self.character.melee(defender)
-            if not defender.character.is_alive():
-                self.experience += defender.experience_given
-                self.check_for_levelup()
+            # if not defender.character.is_alive():
+            #     self.experience += defender.experience_given
+            #     self.check_for_levelup()
             loop.add_message(f"The player attacked for {damage} damage")
         else:
             loop.add_message("The monster dodged the attack")

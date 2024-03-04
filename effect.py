@@ -17,9 +17,10 @@ class StatusEffect():
             self.active = False
 
 class Burn(StatusEffect):
-    def __init__(self, duration, damage):
+    def __init__(self, duration, damage, inflictor):
         super().__init__(801, "Burn", "is Burning", duration)
         self.damage = damage
+        self.inflictor = inflictor
 
     def apply_effect(self, target):
         pass
@@ -29,7 +30,7 @@ class Burn(StatusEffect):
         if self.duration <= 0:
             self.active = False
         else:
-            target.take_damage(self.damage)
+            target.take_damage(self.inflictor, self.damage)
             self.duration -= 1
 
     def remove(self, target):
