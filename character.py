@@ -31,6 +31,7 @@ class Character():
         self.inventory = []
         self.main_weapon = None
         self.main_shield = None
+        self.main_rings = []
 
         self.base_damage = 0
 
