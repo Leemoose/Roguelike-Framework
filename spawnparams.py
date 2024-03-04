@@ -25,6 +25,7 @@ ItemSpawns = []                                                         # minFlo
 
 ItemSpawns.append(ItemSpawnParams( I.Ax(300),                 1,               5,          0,              3))
 ItemSpawns.append(ItemSpawnParams( I.Hammer(301),             1,               5,          0,              3))
+ItemSpawns.append(ItemSpawnParams( I.Shield(311),             1,               5,          1,              3))
 ItemSpawns.append(ItemSpawnParams( I.HealthPotion(401),       1,               10,          0,              5))
 ItemSpawns.append(ItemSpawnParams( I.ManaPotion(402),         1,               10,          0,              5))
 ItemSpawns.append(ItemSpawnParams( I.CurePotion(403),         1,               10,          0,              3))

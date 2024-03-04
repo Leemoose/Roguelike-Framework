@@ -5,10 +5,21 @@ import effect as E
 """
 All detailed items are initialized here.
 """
-class Weapon(O.Item):
+class Equipment(O.Item):
     def __init__(self, x, y, id_tag, render_tag, name):
         super().__init__(x,y, id_tag, render_tag, name)
         self.equipable = True
+
+class Weapon(Equipment):
+    def __init__(self, x, y, id_tag, render_tag, name):
+        super().__init__(x,y, id_tag, render_tag, name)
+    def equip(self, entity):
+        if entity.main_weapon != None:
+            entity.unequip(entity.main_weapon)
+        entity.main_weapon = self
+
+    def unequip(self, entity):
+        entity.main_weapon = None
 
 class Ax(Weapon):
     def __init__(self, render_tag):
@@ -30,6 +41,23 @@ class Hammer(Weapon):
         damage = R.roll_dice(5, 60)[0]
         return damage
 
+class Shield(Equipment):
+    def __init__(self, render_tag):
+        super().__init__(-1, -1, 0, render_tag, "Shield")
+        self.shield = True
+        self.defense = 5
+
+    def defend(self):
+        return self.defense
+
+    def equip(self, entity):
+        if entity.main_shield != None:
+            entity.unequip(entity.main_shield)
+        entity.main_shield = self
+
+    def unequip(self, entity):
+        entity.main_shield = None
+
 class HealthPotion(O.Item):
     def __init__(self, render_tag):
         super().__init__(-1, -1, 0, render_tag, "Health Potion")
@@ -45,7 +73,7 @@ class MightPotion(O.Item):
         self.consumeable = True
 
     def activate(self, entity):
-        effect = E.Might(5, 50)
+        effect = E.Might(5, 5)
         entity.add_status_effect(effect)
         self.destroy = True
 
@@ -79,3 +107,4 @@ class ManaPotion(O.Item):
     def activate(self, entity):
         entity.gain_mana(20)
         self.destroy = True
+
