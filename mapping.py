@@ -89,6 +89,7 @@ class TileDict():
         tiles[110] = pygame.transform.scale(image.load('assets/minotaur.png'), (32, 32))
         tiles[300] = image.load("assets/basic_ax.png")
         tiles[301] = image.load("assets/hammer.png")
+        tiles[311] = image.load("assets/shield.png")
         tiles[401] = image.load("assets/health_orb_bigger.png")
         tiles[402] = image.load("assets/mana_orb_bigger.png")
         tiles[403] = image.load("assets/curing_orb_bigger.png")

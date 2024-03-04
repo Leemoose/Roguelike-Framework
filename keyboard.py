@@ -9,22 +9,27 @@ class Keyboard():
     """
     def __init__(self):
         keys_to_string = {}
-        keys_to_string[pygame.K_w] = "w"
         keys_to_string[pygame.K_a] = "a"
-        keys_to_string[pygame.K_s] = "s"
+        keys_to_string[pygame.K_b] = "b"
+        keys_to_string[pygame.K_c] = "c"
         keys_to_string[pygame.K_d] = "d"
+        keys_to_string[pygame.K_e] = "e"
+        keys_to_string[pygame.K_f] = "f"
+        keys_to_string[pygame.K_g] = "g"
+        keys_to_string[pygame.K_h] = "h"
+        keys_to_string[pygame.K_i] = "i"
+
+        keys_to_string[pygame.K_w] = "w"
+        keys_to_string[pygame.K_s] = "s"
         keys_to_string[pygame.K_UP] = "up"
         keys_to_string[pygame.K_LEFT] = "left"
         keys_to_string[pygame.K_DOWN] = "down"
         keys_to_string[pygame.K_RIGHT] = "right"
+
         keys_to_string[pygame.K_y] = "y"
-        keys_to_string[pygame.K_b] = "b"
         keys_to_string[pygame.K_n] = "n"
-        keys_to_string[pygame.K_i] = "i"
-        keys_to_string[pygame.K_g] = "g"
+
         keys_to_string[pygame.K_u] = "u"
-        keys_to_string[pygame.K_e] = "e"
-        keys_to_string[pygame.K_f] = "f"
         keys_to_string[pygame.K_q] = "q"
         keys_to_string[pygame.K_o] = "o"
         keys_to_string[pygame.K_l] = "l"
@@ -124,7 +129,7 @@ class Keyboard():
                 loop.update_screen = True
 
             for i in range(len(player.character.inventory)):
-                if str(i + 1) == key:
+                if chr(ord("a")+i) == key:
                     loop.inventory = False
                     loop.items = True
                     loop.item_for_item_screen = player.character.inventory[i]

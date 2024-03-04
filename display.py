@@ -134,7 +134,7 @@ class Display:
         for i, item in enumerate(player.character.inventory):
         #Need to create list of buttons for items
             text = font2.render(item.name, True, (0,255,0))
-            num = font2.render(str(i+1) + ".", True, (0,255,0))
+            num = font2.render(chr(i + ord("a")) + ".", True, (0,255,0))
             self.win.blit(num, (self.screen_width // 6 + 15, self.screen_height // 5 +10+ 20 * i))
             self.win.blit(text, (self.screen_width // 6 + 35, self.screen_height // 5+10+ 20* i))
 
