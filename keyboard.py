@@ -35,6 +35,7 @@ class Keyboard():
         keys_to_string[pygame.K_l] = "l"
         keys_to_string[pygame.K_x] = "x"
         keys_to_string[pygame.K_t] = "t"
+        keys_to_string[pygame.K_z] = "z"
         keys_to_string[pygame.K_ESCAPE] = "esc"
         keys_to_string[pygame.K_1] = "1"
         keys_to_string[pygame.K_2] = "2"
@@ -113,6 +114,9 @@ class Keyboard():
             loop.action = False
             print("Paused")
             display.open_pause_screen()
+        elif key == "z":
+            loop.rest = True
+            loop.action = False
         elif key.isdigit():
             # cast a skill
             skill_num = int(key) - 1
@@ -232,6 +236,18 @@ class Keyboard():
             loop.add_target(targets.target_list)
         elif key == "right":
             targets.adjust(1, 0)
+            loop.add_target(targets.target_list)
+        elif key == "y":
+            targets.adjust(-1, -1)
+            loop.add_target(targets.target_list)
+        elif key == "u":
+            targets.adjust(1, -1)
+            loop.add_target(targets.target_list)
+        elif key == "b":
+            targets.adjust(-1, 1)
+            loop.add_target(targets.target_list)
+        elif key == "n":
+            targets.adjust(1, 1)
             loop.add_target(targets.target_list)
         elif key == "esc":
             targets.void_skill()

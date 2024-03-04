@@ -198,7 +198,10 @@ class Character():
         if self.mana_partial >= 1:
             self.gain_mana(1)
             self.mana_partial -= 1
-
+    
+    def rest(self):
+        self.health = self.max_health
+        self.mana = self.max_mana
         
 
 

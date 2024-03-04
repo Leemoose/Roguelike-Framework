@@ -97,6 +97,7 @@ class Loops():
         self.examine = False
         self.targeting = False
         self.autoexplore = False
+        self.rest = False
         self.paused = False
 
         self.width = width
@@ -126,6 +127,22 @@ class Loops():
         if self.autoexplore == True:
             self.player.autoexplore(self)
             self.monster_loop(0)
+        
+        if self.rest == True:
+            monster_present = False
+            for monster_key in self.monster_dict.subjects:
+                if self.monster_dict.get_subject(monster_key).brain.is_awake:
+                    self.add_message("You can't rest while enemies are near")
+                    self.rest = False
+                    self.action = True
+                    monster_present = True
+            if not monster_present:
+                self.player.character.rest()
+                self.rest = False
+                self.action = True
+                self.add_message("You rest for a while")
+                self.monster_loop(0)
+            
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -152,7 +169,7 @@ class Loops():
                 elif self.items == True:
                     keyboard.key_item_screen(key, self, self.item_dict, self.player, self.item_for_item_screen, self.generator.item_map)
                 elif self.examine == True or self.targeting:
-                    keyboard.key_targeting_screen(key, self, display)
+                    keyboard.key_targeting_screen(key, self)
                 elif self.autoexplore == True:
                     keyboard.key_autoexplore(key, self)
                 elif self.paused == True:
@@ -269,6 +286,8 @@ class Loops():
         for key in self.monster_dict.subjects:
             monster = self.monster_dict.get_subject(key)
             if not monster.character.is_alive():
+                if monster.get_location() == self.target_to_display: # on kill stop observing a space
+                    self.target_to_display = None
                 dead_monsters.append(key)
                 for item in monster.character.inventory:
                     if item.equipped:
@@ -345,7 +364,7 @@ class Loops():
     def void_target(self):
         if self.target_to_display == None:
             return
-        if self.monster_map.get_passable(self.target_to_display[0], self.target_to_display[1]): # don't void if its a monster, cuz its a good QOL to keep monster health up
+        if self.monster_map.get_passable(self.target_to_display[0], self.target_to_display[1]): # don't void if its a monster, cuz its a good QOL to keep monster health on screen
             self.target_to_display = None
 
     def init_new_game(self):
