@@ -132,7 +132,7 @@ class ShrugOff(Skill):
         return False
 
     def castable(self, target):
-        if self.ready == 0 and self.parent.character.has_negative_effect():
+        if self.ready == 0 and self.parent.character.has_negative_effects():
             return True
         return False
 

@@ -111,12 +111,17 @@ class Display:
         black_screen = pygame.transform.scale(pygame.image.load("assets/black_screen.png"), (self.screen_width // 5, self.screen_height // 5))
         self.win.blit(black_screen, (0, self.screen_height // 5 * 4))
         font = pygame.font.Font('freesansbold.ttf', 12)
-        text = font.render("Health: " + str(player.character.health), True, (255, 255, 255))
-        self.win.blit(text, (0, self.screen_height // 100 * 85))
+        text = font.render("Health: " + str(player.character.health) + "/" + str(player.character.max_health), True, (255, 255, 255))
+        self.win.blit(text, (0, self.screen_height // 100 * 80))
+        text = font.render("Mana: " + str(player.character.mana) + "/" + str(player.character.max_mana), True, (255, 255, 255))
+        self.win.blit(text, (0, self.screen_height // 100 * 83))
+        status = self.get_status_text(player)
+        text = font.render("Status: " + status, True, (255, 255, 255))
+        self.win.blit(text, (0, self.screen_height // 100 * 86))
         text = font.render("Experience: " + str(player.experience) + " / " + str(player.experience_to_next_level), True, (255, 255, 255))
-        self.win.blit(text, (0, self.screen_height // 100 * 90))
+        self.win.blit(text, (0, self.screen_height // 100 * 89))
         text = font.render("Level: " + str(player.level), True, (255, 255, 255))
-        self.win.blit(text, (0, self.screen_height // 100 * 95))
+        self.win.blit(text, (0, self.screen_height // 100 * 92))
 
         self.write_messages(messages)
 
@@ -130,6 +135,15 @@ class Display:
             text = font.render(message, True, (255, 255, 255))
             self.win.blit(text, (self.screen_width // 100 * 10, self.screen_height // 100 * (85 + i *3)))
 
+    def get_status_text(self, entity):
+        status = "Healthy"
+        if entity.character.health < entity.character.max_health // 3 * 2:
+            status = "Wounded"
+        effects = entity.character.status_effects
+        for effect in effects:
+            status += ", " + effect.description()
+        return status
+
     def draw_examine_window(self, target, tileDict, floormap, monster_map, monster_dict, item_dict, player):
         x, y = target
         if not floormap.track_map[x][y].visible:
@@ -142,24 +156,27 @@ class Display:
         # find monster at target
         if not monster_map.get_passable(x,y):
             monster = monster_dict.get_subject(monster_map.locate(x,y))
+
+            # draw monster
             to_draw = monster.render_tag
             tag = tileDict.tile_string(to_draw)
             self.win.blit(tag, (self.screen_width  // 10, self.screen_height // 10))
             font = pygame.font.Font('freesansbold.ttf', 12)
+
+            # name
             text = font.render(monster.name, True, (255, 255, 255))
             self.win.blit(text, (self.screen_width // 10, self.screen_height // 10 + 50))
-            if monster.character.is_alive():
-                text = font.render("Health: " + str(monster.character.health) + "/" + str(monster.character.max_health), True, (255, 255, 255))
-                monster_status = "Healthy"
-                if monster.character.health < monster.character.max_health // 2:
-                    monster_status = "Wounded"
-                monster_effects = monster.character.status_effects
-                for effect in monster_effects:
-                    monster_status += ", " + effect.message
-                text2 = font.render("Status: " + monster_status, True, (255, 255, 255))
             
+            # health
+            text = font.render("Health: " + str(monster.character.health) + "/" + str(monster.character.max_health), True, (255, 255, 255))
             self.win.blit(text, (self.screen_width // 10, self.screen_height // 10 + 65))
-            self.win.blit(text2, (self.screen_width // 10, self.screen_height // 10 + 80))
+                
+            # status
+            status = self.get_status_text(monster)
+            text = font.render("Status: " + status, True, (255, 255, 255))
+            self.win.blit(text, (self.screen_width // 10, self.screen_height // 10 + 80))
+
+            # description
             text = font.render(monster.description(), True, (255, 255, 255))
             self.win.blit(text, (self.screen_width // 10, self.screen_height // 10 + 95))
         else:
@@ -167,15 +184,22 @@ class Display:
             for key in item_dict.subjects:
                 item = item_dict.get_subject(key)
                 if item.x == x and item.y == y:
+                    # draw item
                     to_draw = item.render_tag
                     tag = tileDict.tile_string(to_draw)
                     self.win.blit(tag, (self.screen_width // 10, self.screen_height // 10))
                     font = pygame.font.Font('freesansbold.ttf', 12)
+
+                    # name
                     text = font.render(item.name, True, (255, 255, 255))
                     self.win.blit(text, (self.screen_width // 10, self.screen_height // 10 + 50))
+
+                    # description 
                     text = font.render(item.description, True, (255, 255, 255))
                     self.win.blit(text, (self.screen_width // 10, self.screen_height // 10 + 65))
                     any_item_found = True
+
+                    # stats (if present)
                     next_text = 80
                     if hasattr(item, "damage_min"):
                         text = font.render("Damage: " + str(item.damage_min) + " - " + str(item.damage_max), True, (255, 255, 255))
@@ -196,6 +220,8 @@ class Display:
                 tag = tileDict.tile_string(to_draw)
                 self.win.blit(tag, (self.screen_width  // 10, self.screen_height // 10))
                 font = pygame.font.Font('freesansbold.ttf', 12)
+
+                # random flavor text since detailed player info is elsewhere
                 text = font.render("You", True, (255, 255, 255))
                 self.win.blit(text, (self.screen_width // 10, self.screen_height // 10 + 50))
                 text = font.render("You are here", True, (255, 255, 255))

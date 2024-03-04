@@ -12,6 +12,11 @@ class StatusEffect():
     def apply_effect(self, target):
         pass
 
+    def description(self):
+        if self.duration == -100:
+            return self.name + " (permanent)"
+        return self.name + " (" + str(self.duration) + ")"
+
     def tick(self, target):
         if self.duration == -100: # -100 is a special value that means the effect lasts forever, -1 probably works too but made it larger just in case
             return
