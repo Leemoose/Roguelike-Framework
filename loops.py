@@ -264,16 +264,19 @@ class Loops():
         for key in destroyed_items:
             item = self.item_dict.remove_subject(key)
             self.generator.item_map.clear_location(item.x, item.y)
-    """
+
         dead_monsters = []
-        for key in (self.monster_dict.subjects):
+        for key in self.monster_dict.subjects:
             monster = self.monster_dict.get_subject(key)
             if not monster.character.is_alive():
                 dead_monsters.append(key)
+                for item in monster.character.inventory:
+                    if item.equipped:
+                        monster.character.unequip(item)
+                    monster.character.drop(item, self.item_dict, self.generator.item_map)
+                self.monster_map.clear_location(monster.x, monster.y)
         for key in dead_monsters:
-            monster = self.monster_dict.remove_subject(key)
-            self.generator.monster_map.clear_location(monster.x, monster.y)
-            """
+            self.monster_dict.subjects.pop(key)
 
     def down_floor(self):
         playerx, playery = self.player.get_location()
@@ -353,7 +356,7 @@ class Loops():
         self.inventory = False
         self.race = False
         self.update_screen = False
-        self.main = True
+        self.main = False
         self.classes = False
         self.targeting = False
 

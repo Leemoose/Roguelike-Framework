@@ -93,19 +93,12 @@ class Display:
                     item_tile = tileDict.tile_string(item.render_tag)
                     self.win.blit(item_tile, (self.textSize * (item.x - self.x_start), self.textSize * (item.y - self.y_start)))
 
-        dead_monsters = []
         for key in monsterID.subjects:
             monster = monsterID.get_subject(key)
-            if monster.character.is_alive():
-                if (monster.x >= self.x_start and monster.x < self.x_end and monster.y >= self.y_start and monster.y < self.y_end):
-                    if floormap.track_map[monster.x][monster.y].visible:
-                        monster_tile = tileDict.tile_string(monster.render_tag)
-                        self.win.blit(monster_tile, (self.textSize*(monster.x - self.x_start), self.textSize*(monster.y - self.y_start)))
-            else:
-                dead_monsters.append(key)
-                monster_map.clear_location(monster.x, monster.y)
-        for key in dead_monsters:
-            monsterID.subjects.pop(key)
+            if (monster.x >= self.x_start and monster.x < self.x_end and monster.y >= self.y_start and monster.y < self.y_end):
+                if floormap.track_map[monster.x][monster.y].visible:
+                    monster_tile = tileDict.tile_string(monster.render_tag)
+                    self.win.blit(monster_tile, (self.textSize*(monster.x - self.x_start), self.textSize*(monster.y - self.y_start)))
 
         self.win.blit(tileDict.tile_string(200), (r_x * self.textSize, r_y * self.textSize))
 
