@@ -119,6 +119,10 @@ class Loops():
         """
 
         action = None
+        if self.autoexplore == True:
+            self.player.autoexplore(self)
+            self.monster_loop(0)
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 return False
@@ -208,13 +212,15 @@ class Loops():
             # tick skill cooldowns
             monster.character.tick_cooldowns()
 
-            # do action stuff
             if self.generator.tile_map.track_map[monster.x][monster.y].seen:
                 monster.brain.is_awake = True
+
+            # do action stuff
             if monster.brain.is_awake == True:
                 monster.character.energy += energy
                 while monster.character.energy > 0:
                     monster.brain.rank_actions(monster, self.monster_map, self.generator.tile_map, self.generator.flood_map, self.player, self.generator, self.item_dict, self)
+
     def change_screen(self, keyboard, display, colors, tileDict):
         if self.action == True or self.autoexplore == True:
             self.clean_up()

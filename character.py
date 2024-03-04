@@ -229,13 +229,24 @@ class Player(O.Objects):
         for monster_key in monster_dict.subjects:
             if monster_dict.get_subject(monster_key).brain.is_awake:
                 return
-        while len(self.path) <= 3:
+        while len(self.path) <= 1:
             start = (self.x, self.y)
             endx = random.randint(0, tile_map.width - 1)
             endy = random.randint(0, tile_map.height - 1)
-            while (tile_map.get_passable(endx, endy) == False) and (endx != self.x and endy != self.y):
-                endx = random.randint(0, tile_map.width - 1)
-                endy = random.randint(0, tile_map.height - 1)
+            while (not tile_map.get_passable(endx, endy)) and not (tile_map.track_map[endx][endy].seen):
+                if self.x == endx and self.y == endy:
+                    loop.action = True
+                    loop.autoexplore = False
+                    loop.update_screen = True
+                    return
+                if endx != tile_map.width - 1:
+                    endx += 1
+                else:
+                    endx = 0
+                    if endy == tile_map.height - 1:
+                        endy = 0
+                    else:
+                        endy += 1
             end = (endx, endy)
             self.path = pathfinding.astar(tile_map.track_map, start, end)
         x, y = self.path.pop(0)

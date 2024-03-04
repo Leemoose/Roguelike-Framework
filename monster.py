@@ -2,6 +2,8 @@ import objects as O
 import character as C
 import dice as R
 import random
+
+import pathfinding
 import skills as S
 
 
@@ -30,7 +32,7 @@ class Monster_AI():
             max_utility = utility
             called_function = self.do_item_pickup
 
-        utility = self.rank_equip_item(loop)
+        utility = self.rank_equip_item(loop) #Needs to be fixed so that works with shields and swords
         if utility > max_utility:
             max_utility = utility
             called_function = self.do_equip
@@ -50,6 +52,7 @@ class Monster_AI():
             max_utility = utility
             called_function = self.do_skill
 
+        print(max_utility)
         self.parent.character.energy -= 1
 
         called_function(loop)
@@ -74,7 +77,7 @@ class Monster_AI():
         else:
             return -1
 
-    def rank_equip_item(self, loop):
+    def rank_equip_item(self, loop): #Needs to be fixed
         monster = self.parent
         if len(monster.character.inventory) != 0:
             stuff = monster.character.inventory
@@ -159,31 +162,20 @@ class Monster_AI():
         # print("Moving")
         tile_map = loop.generator.tile_map
         monster = self.parent
+        monster_map = loop.generator.monster_map
+        player = loop.player
 
         if not monster.character.movable:
             monster.character.energy -= (monster.character.move_cost - monster.character.dexterity)
             loop.add_message(f"{monster} is petrified and cannot move.")
             return
-        
-        monsterx, monstery = monster.x, monster.y
-        flood_map = loop.generator.flood_map
-        print(str(flood_map))
-        monster_map = loop.monster_map
-        player = loop.player
 
-        options = [(0, 1), (1, 0), (-1, 0), (0, -1)]
-        r = random.randint(0, 3)
-        xmove = 0
-        ymove = 0
-        flood_count = 100
-        for i in range(3):
-            xdelta, ydelta = options[(r + i) % 4]
-            if tile_map.get_passable(monsterx + xdelta, monstery + ydelta):
-                if flood_count > flood_map.track_map[monsterx + xdelta][monstery + ydelta]:
-                    flood_count = flood_map.track_map[monsterx + xdelta][monstery + ydelta]
-                    xmove = xdelta
-                    ymove = ydelta
-        monster.move(xmove, ymove, tile_map, monster, monster_map, player)
+        start = (monster.x, monster.y)
+        end = (player.x, player.y)
+        moves = pathfinding.astar(tile_map.track_map, start, end)
+        if len(moves) > 1:
+            xmove, ymove = moves.pop(1)
+            monster.move(xmove - monster.x, ymove-monster.y, tile_map, monster, monster_map, player)
 
     def do_nothing(self,loop):
         # print("doing nothing")
@@ -206,7 +198,10 @@ class Monster(O.Objects):
         if not self.character.movable:
             self.character.energy -= (self.character.move_cost - self.character.dexterity)
             return
-        if floormap.get_passable(monster.x + move_x, monster.y + move_y) and monster_map.get_passable(monster.x + move_x, monster.y + move_y) and (monster.x + move_x != player.x and monster.y + move_y != player.y):
+
+        self.character.energy -= (self.character.move_cost - self.character.dexterity)
+        #Monsters can move ontop of players
+        if floormap.get_passable(monster.x + move_x, monster.y + move_y) and monster_map.get_passable(monster.x + move_x, monster.y + move_y):
             self.character.energy -= self.character.move_cost
             monster_map.track_map[monster.x][monster.y] = -1
             monster.y += move_y
