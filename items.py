@@ -50,6 +50,15 @@ class Hammer(Weapon):
         self.damage_min = 5
         self.damage_max = 60
 
+class Dagger(Weapon):
+    def __init__(self, render_tag):
+        super().__init__(-1, -1, 0, render_tag, "Dagger")
+        self.melee = True
+        self.name = "Dagger"
+        self.description = "I swear that tip is getting rounder... Larry!"
+        self.damage_min = 3
+        self.damage_max = 20
+
 class Shield(Equipment):
     def __init__(self, render_tag):
         super().__init__(-1, -1, 0, render_tag, "Shield")
