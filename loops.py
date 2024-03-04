@@ -181,15 +181,14 @@ class Loops():
             self.player.character.energy = 0
             
             # do status effect stuff
-            self.player.character.apply_all_status_effects()
+            self.player.character.tick_all_status_effects()
             status_messages = ["Player " + mes for mes in self.player.character.status_messages()]
             for message in status_messages:
                 self.add_message(message)
-
-            # tick skill cooldowns
+            
             self.player.character.tick_cooldowns()
 
-        if not self.player.character.is_alive():
+        if not self.player.character.is_alive() and not self.player.invincible:
             self.clear_data()
             self.init_game(display)
 
@@ -203,7 +202,7 @@ class Loops():
             monster = self.monster_dict.subjects[monster_key]
             
             # do status effect stuff
-            monster.character.apply_all_status_effects()
+            monster.character.tick_all_status_effects()
             status_messages = [monster.name + " " + mes for mes in monster.character.status_messages()]
             for message in status_messages:
                 self.add_message(message)

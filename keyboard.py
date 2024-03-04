@@ -17,6 +17,9 @@ class Keyboard():
         keys_to_string[pygame.K_LEFT] = "left"
         keys_to_string[pygame.K_DOWN] = "down"
         keys_to_string[pygame.K_RIGHT] = "right"
+        keys_to_string[pygame.K_y] = "y"
+        keys_to_string[pygame.K_b] = "b"
+        keys_to_string[pygame.K_n] = "n"
         keys_to_string[pygame.K_i] = "i"
         keys_to_string[pygame.K_g] = "g"
         keys_to_string[pygame.K_u] = "u"
@@ -59,6 +62,14 @@ class Keyboard():
             player.attack_move(0, 1, loop)
         elif key == "right":
             player.attack_move(1, 0, loop)
+        elif key == "y":
+            player.attack_move(-1, -1, loop)
+        elif key == "u":
+            player.attack_move(1, -1, loop)
+        elif key == "b":
+            player.attack_move(-1, 1, loop)
+        elif key == "n":
+            player.attack_move(1, 1, loop)
         elif key == "g":
             for item_key in item_ID.subjects:
                 item = item_ID.subjects[item_key]
@@ -75,6 +86,7 @@ class Keyboard():
             loop.up_floor()
         elif key == ".":
             player.character.wait()
+            loop.add_message("The player waits.")
         elif key == 'x':
             loop.action = False
             loop.examine = True
@@ -88,6 +100,22 @@ class Keyboard():
         elif key == "t":
             player.skills.teleport(loop.generator)
             loop.update_screen = True
+        elif key.isdigit():
+            # cast a skill
+            skill_num = int(key) - 1
+            if skill_num < len(player.character.skills):
+                # !!! TEMPORARY TARGETS CLOSEST MONSTER, ADD ACTUAL TARGETTING !!!
+                closest_dist = 100000
+                closest_monster = None
+                for monster_key in monsterID.subjects:
+                    monster = monsterID.subjects[monster_key]
+                    dist = player.get_distance(monster.x, monster.y)
+                    if dist < closest_dist:
+                        closest_dist = dist
+                        closest_monster = monster
+                # change closest_monster to targetted monster, maybe start at closest monster and let targetting begin
+                if closest_monster:
+                    player.character.cast_skill(skill_num, closest_monster, loop)
 
     def key_inventory(self, loop, player, item_dict, key):
             if key == "esc":

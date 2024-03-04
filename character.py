@@ -129,7 +129,7 @@ class Character():
             self.energy -= self.quaff_cost
             return True
     
-    def apply_all_status_effects(self):
+    def tick_all_status_effects(self):
         for effect in self.status_effects:
             effect.tick(self)
         for effect in self.status_effects:
@@ -161,11 +161,20 @@ class Character():
         for skill in self.skills:
             skill.tick_cooldown()
 
+    def cast_skill(self, skill_num, target, loop):
+        skill = self.skills[skill_num]
+        self.energy -= skill.action_cost
+        return skill.try_to_activate(target, loop.generator)
+        
+
+
 class Player(O.Objects):
     def __init__(self, x, y):
         super().__init__(x, y, 1, 200, "Player")
         self.character = Character(self)
         self.character.skills = []
+        self.character.skills.append(S.BurningAttack(self, cooldown=0, cost=10, damage=20, burn_damage=5, burn_duration=3, range=10))
+        self.character.skills.append(S.Petrify(self, cooldown=0, cost=10, duration=3, activation_chance=1, range=10))
 
         self.level = 1
         self.max_level = 20
