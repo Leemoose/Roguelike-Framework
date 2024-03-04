@@ -167,6 +167,7 @@ class Monster_AI():
         
         monsterx, monstery = monster.x, monster.y
         flood_map = loop.generator.flood_map
+        print(str(flood_map))
         monster_map = loop.monster_map
         player = loop.player
 

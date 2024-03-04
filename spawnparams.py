@@ -60,5 +60,6 @@ class MonsterSpawnParams:
 MonsterSpawns = []
 
 MonsterSpawns.append(MonsterSpawnParams(M.Gargoyle(-1, -1), 1, 5, 0, 0))
-MonsterSpawns.append(MonsterSpawnParams(M.Kobold(-1, -1), 1, 5, 1, 5))
-MonsterSpawns.append(MonsterSpawnParams(M.Gargoyle(-1, -1), 1, 5, 0, 0))
+MonsterSpawns.append(MonsterSpawnParams(M.Kobold(-1, -1), 1, 5, 0, 0))
+MonsterSpawns.append(MonsterSpawnParams(M.Raptor(-1, -1), 1, 5, 0, 0))
+MonsterSpawns.append(MonsterSpawnParams(M.Minotaur(-1, -1), 1, 5, 0, 0))

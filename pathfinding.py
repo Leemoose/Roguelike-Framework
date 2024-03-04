@@ -14,6 +14,9 @@ class Node():
     def __eq__(self, other):
         return self.position == other.position
 
+    def __str__(self):
+        return str(self.position)
+
 
 def astar(maze, start, end):
     """Returns a list of tuples as a path from the given start to the given end in the given maze"""
@@ -84,52 +87,48 @@ def astar(maze, start, end):
         for child in children:
 
             # Child is on the closed list
-            for closed_child in closed_list:
-                if child == closed_child:
-                    continue
-
-            # Create the f, g, and h values
-            child.g = current_node.g + 1
-            child.h = ((child.position[0] - end_node.position[0]) ** 2) + ((child.position[1] - end_node.position[1]) ** 2)
-            child.f = child.g + child.h
+            if child in closed_list:
+                continue
 
             # Child is already in the open list
-            for open_node in open_list:
-                if child == open_node and child.g > open_node.g:
-                    continue
+            if child in open_list:
+                if current_node.g + 1 < child.g:
+                    child.g = current_node.g + 1
+                    child.parent = current_node
+            else:
+                # Create the f, g, and h values
+                child.g = current_node.g + 1
+                child.h = ((child.position[0] - end_node.position[0]) ** 2) + ((child.position[1] - end_node.position[1]) ** 2)
+                child.f = child.g + child.h
 
-            # Add the child to the open list
-            open_list.append(child)
+                # Add the child to the open list
+                open_list.append(child)
+    return []
 
 
 def main():
-    maze = [[0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
-
     maze= []
     for x in range(10):
         temp = []
         for y in range(10):
             if x == 4 and y == 4:
-                temp.append(O.Tile(x, y, 2, False))
-
+                temp.append(O.Tile(x, y, 1, False))
             else:
                 temp.append(O.Tile(x, y, 1, True))
 
         maze.append(temp)
 
-
+    for n in maze:
+        line = ""
+        for m in n:
+            line += str(m)
+        print(line)
 
     start = (0,0)
     end = (7, 6)
 
     path = astar(maze, start, end)
     print(path)
+
+if __name__=="__main__":
+    main()
