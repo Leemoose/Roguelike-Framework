@@ -28,6 +28,7 @@ class Character():
         self.alive = True
         self.inventory = []
         self.main_weapon = None
+        self.main_shield = None
 
         self.base_damage = 0
 
@@ -82,16 +83,14 @@ class Character():
 
     def equip(self, item):
         if item.equipable:
-            if self.main_weapon != None:
-                self.unequip(self.main_weapon)
-            self.main_weapon = item
+            item.equip(self)
             item.equipped = True
             item.dropable = False
             self.energy -= self.equip_cost
 
     def unequip(self, item):
         if item.equipped:
-            self.main_weapon = None
+            item.unequip(self)
             item.dropable = True
             item.equipped = False
 

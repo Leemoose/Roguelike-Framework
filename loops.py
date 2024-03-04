@@ -187,7 +187,7 @@ class Loops():
             # tick skill cooldowns
             self.player.character.tick_cooldowns()
 
-        if not self.player.character.is_alive():
+        if not self.player.character.is_alive() and not self.player.invincible:
             self.clear_data()
             self.init_game(display)
 
