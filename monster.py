@@ -137,7 +137,7 @@ class Monster_AI():
                 skill_cast = monster.character.cast_skill(i, loop.player, loop)
                 message_addition = "" if skill_cast else ". But it failed."
                 loop.add_message(f"{monster} used {skill.name}" + message_addition)
-                print(f"{monster} used {skill.name}")
+                # print(f"{monster} used {skill.name}")
                 break
 
     def do_equip(self, loop):
@@ -222,15 +222,18 @@ class Monster(O.Objects):
         return self.name
 
 class Kobold(Monster):
-    def __init__(self, x, y):
-        super().__init__(107, x, y, "Kobold")
+    def __init__(self, x, y, render_tag=107, name="Kobold"):
+        super().__init__(render_tag, x, y, name)
         self.skills = []
         self.character.skills.append(S.BurningAttack(self, 10, 0, 10, 5, 5, 1.5))
         self.character.experience_given = 10
+    
+    def description(self):
+        return "A small, scaly creature with a penchant for setting things on fire. Including you."
 
 class Gargoyle(Monster):
-    def __init__(self, x, y):
-        super().__init__(108, x, y, "Gargoyle")
+    def __init__(self, x, y, render_tag=108, name="Gargoyle"):
+        super().__init__(render_tag, x, y, name)
         self.character = C.Character(self)
         self.brain = Monster_AI(self)
         self.skills = []
@@ -238,20 +241,43 @@ class Gargoyle(Monster):
         self.character.skills.append(S.Petrify(self, 10, 0, 2, 0.2, 3))
         self.character.experience_given = 10
 
+    def description(self):
+        return "A stone creature that can petrify you with its gaze."
+
 class Raptor(Monster):
-    def __init__(self, x, y):
-        super().__init__(109, x, y, "Velociraptor")
+    def __init__(self, x, y, render_tag=109, name="Velociraptor"):
+        super().__init__(render_tag, x, y, name)
         self.character = C.Character(self)
         self.character.move_cost = 100
         self.character.attack_cost = 100
+        self.character.dexterity += 5
         self.brain = Monster_AI(self)
         self.character.experience_given = 10
 
+    def description(self):
+        return "A very fast and very angry dinosaur."
+
 class Minotaur(Monster):
-    def __init__(self, x, y):
-        super().__init__(110, x, y, "Minotaur")
+    def __init__(self, x, y, render_tag=110, name="Minotaur"):
+        super().__init__(render_tag, x, y, name)
         self.character = C.Character(self)
         self.brain = Monster_AI(self)
         self.character.skills = []
         self.character.skills.append(S.ShrugOff(self, cooldown=3, cost=0, activation_chance=0.75, action_cost=1))
         self.character.experience_given = 10
+
+    def description(self):
+        return "A large, angry bull that can shrug off your status effects"
+
+class Orc(Monster):
+    def __init__(self, x, y, render_tag=101, name="Orc"):
+        super().__init__(render_tag, x, y, name)
+        self.character = C.Character(self)
+        self.brain = Monster_AI(self)
+        self.character.skills = []
+        # below 25% health, gains 25 strength
+        self.character.skills.append(S.Berserk(self, 0, 0, 0.25, 25, 1))
+        self.character.experience_given = 10
+
+    def description(self):
+        return "A strong humanoid with an axe and anger issues."

@@ -99,6 +99,7 @@ class Keyboard():
             loop.examine = True
             loop.update_screen = True
             loop.targets.start_target(loop.player.get_location())
+            loop.add_target(loop.player.get_location())
         elif key == "o":
             loop.autoexplore = True
             loop.action = False
@@ -116,23 +117,28 @@ class Keyboard():
             # cast a skill
             skill_num = int(key) - 1
             if skill_num < len(player.character.skills):
-                loop.action = False
-                loop.targeting = True
-                loop.update_screen = True
-                loop.examine = False
-                closest_dist = 100000
-                closest_monster = player
-                for monster_key in monsterID.subjects:
-                    monster = monsterID.subjects[monster_key]
-                    dist = player.get_distance(monster.x, monster.y)
-                    if dist < closest_dist:
-                        closest_dist = dist
-                        closest_monster = monster
-                # change closest_monster to targetted monster, maybe start at closest monster and let targetting begin
-                loop.targets.start_target(closest_monster.get_location())
-                loop.add_target(closest_monster.get_location())
-                skill_to_cast = (lambda target, loop_new : player.character.cast_skill(skill_num, target, loop_new))
-                loop.targets.store_skill(skill_to_cast)
+                if not player.character.skills[skill_num].targetted:
+                    player.character.cast_skill(skill_num, loop.player, loop)
+                    loop.add_message("You cast " + player.character.skills[skill_num].name)
+                else:
+                    loop.action = False
+                    loop.targeting = True
+                    loop.update_screen = True
+                    loop.examine = False
+                    closest_dist = 100000
+                    closest_monster = player
+                    for monster_key in monsterID.subjects:
+                        monster = monsterID.subjects[monster_key]
+                        dist = player.get_distance(monster.x, monster.y)
+                        
+                        if dist < closest_dist and loop.generator.tile_map.track_map[monster.x][monster.y].visible:
+                            closest_dist = dist
+                            closest_monster = monster
+                    # change closest_monster to targetted monster, maybe start at closest monster and let targetting begin
+                    loop.targets.start_target(closest_monster.get_location())
+                    loop.add_target(closest_monster.get_location())
+                    skill_to_cast = (lambda target, loop_new : player.character.cast_skill(skill_num, target, loop_new))
+                    loop.targets.store_skill(skill_to_cast, player.character.skills[skill_num].name)
 
     def key_inventory(self, loop, player, item_dict, key):
             if key == "esc":
@@ -228,6 +234,7 @@ class Keyboard():
             loop.add_target(targets.target_list)
         elif key == "esc":
             targets.void_skill()
+            loop.void_target()
             loop.targeting = False
             loop.action = True
             loop.update_screen = True
@@ -239,6 +246,7 @@ class Keyboard():
                 loop.targeting = False
                 loop.action = True
                 loop.update_screen = True
+                loop.void_target()
 
     def key_autoexplore(self, key, loop):
         if key == "o":

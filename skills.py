@@ -10,6 +10,7 @@ class Skill():
         self.ready = 0 # keeps track of how long before we can cast, ready = 0 means we can cast
         self.name = name
         self.range = range
+        self.targetted = False
         self.action_cost = action_cost
 
     def activate(self, target, generator):
@@ -69,6 +70,7 @@ class BurningAttack(Skill):
         super().__init__("Burning attack", parent, cooldown, cost, range)
         self.damage = damage
         self.burn_damage = burn_damage
+        self.targetted = True
         self.burn_duration = burn_duration
 
     def activate(self, defender, generator):
@@ -82,6 +84,7 @@ class BurningAttack(Skill):
         playerx, playery = player.get_location()
         monster = self.parent
         monsterx, monstery = monster.get_location()
+
         distance = self.parent.get_distance(playerx, playery)
         if distance < self.range:
             if self.ready == 0:
@@ -92,6 +95,7 @@ class Petrify(Skill):
     def __init__(self, parent, cooldown, cost, duration, activation_chance, range):
         super().__init__("Petrify", parent, cooldown, cost, range)
         self.duration = duration
+        self.targetted = True
         self.activation_chance = activation_chance
 
     def activate(self, defender, generator):
@@ -118,16 +122,33 @@ class ShrugOff(Skill):
         self.activation_chance = activation_chance
 
     def activate(self, defender, generator):
-        if len(self.parent.character.status_effects) > 0:
+        if self.parent.character.has_negative_effects():
             if random.random() < self.activation_chance:
-                random_effect = random.choice(self.parent.character.status_effects)
+                negative_effects = [effect for effect in self.parent.character.status_effects if not effect.positive]
+                random_effect = random.choice(negative_effects)
                 random_effect.active = False
                 self.parent.character.remove_status_effect(random_effect)
-                print(self.parent.character.status_effects)
                 return True
         return False
 
     def castable(self, target):
-        if self.ready == 0 and len(self.parent.character.status_effects) > 0:
+        if self.ready == 0 and self.parent.character.has_negative_effects():
             return True
+        return False
+
+class Berserk(Skill):
+    # self-might if below certain health percent
+    def __init__(self, parent, cooldown, cost, activation_threshold, strength_increase, action_cost):
+        super().__init__("Berserk", parent, cooldown, cost, -1, action_cost)
+        self.threshold = activation_threshold
+        self.strength_increase = strength_increase
+    
+    def activate(self, defender, generator):
+        effect = E.Might(-100, self.strength_increase)
+        self.parent.character.add_status_effect(effect)
+        return True
+
+    def castable(self, target):
+        if self.ready == 0 and self.parent.character.health < self.parent.character.max_health * self.threshold:
+            return (not self.parent.character.has_effect("Might"))
         return False
