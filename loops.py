@@ -319,7 +319,7 @@ class Loops():
             self.monster_dict = self.generator.monster_dict
 
     def init_game(self, display):
-        self.main_buttons = D.create_main_screen(display)
+        self.main_buttons = D.create_main_screen(display, self.width, self.height)
         self.race_buttons = D.create_race_screen(display)
         self.class_buttons = D.create_class_screen(display)
         self.player = C.Player(0,0)
