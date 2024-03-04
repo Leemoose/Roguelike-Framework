@@ -328,6 +328,12 @@ class Loops():
 
     def add_target(self, target):
         self.target_to_display = target
+    
+    def void_target(self):
+        if self.target_to_display == None:
+            return
+        if self.monster_map.get_passable(self.target_to_display[0], self.target_to_display[1]): # don't void if its a monster, cuz its a good QOL to keep monster health up
+            self.target_to_display = None
 
     def load_game(self):
         self.action = True

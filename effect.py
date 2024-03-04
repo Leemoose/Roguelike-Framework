@@ -63,6 +63,17 @@ class Haste(StatusEffect):
         self.dexterity = dexterity
 
     def apply_effect(self, target):
+        target.dexterity += self.dexterity
+    
+    def remove(self, target):
+        target.dexterity -= self.dexterity
+
+class Slow(StatusEffect):
+    def __init__(self, duration, dexterity):
+        super().__init__(805, "Slow", "feels slow", duration)
+        self.dexterity = dexterity
+
+    def apply_effect(self, target):
         target.dexterity -= self.dexterity
     
     def remove(self, target):

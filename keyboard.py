@@ -97,6 +97,7 @@ class Keyboard():
             loop.examine = True
             loop.update_screen = True
             loop.targets.start_target(loop.player.get_location())
+            loop.add_target(loop.player.get_location())
         elif key == "o":
             loop.autoexplore = True
             loop.action = False
@@ -118,7 +119,8 @@ class Keyboard():
                 for monster_key in monsterID.subjects:
                     monster = monsterID.subjects[monster_key]
                     dist = player.get_distance(monster.x, monster.y)
-                    if dist < closest_dist:
+                    
+                    if dist < closest_dist and loop.generator.tile_map.track_map[monster.x][monster.y].visible:
                         closest_dist = dist
                         closest_monster = monster
                 # change closest_monster to targetted monster, maybe start at closest monster and let targetting begin
@@ -210,6 +212,7 @@ class Keyboard():
             loop.add_target(targets.target_list)
         elif key == "esc":
             targets.void_skill()
+            loop.void_target()
             loop.targeting = False
             loop.action = True
             loop.update_screen = True
@@ -221,6 +224,7 @@ class Keyboard():
                 loop.targeting = False
                 loop.action = True
                 loop.update_screen = True
+                loop.void_target()
 
     def key_autoexplore(self, key, loop):
         if key == "o":

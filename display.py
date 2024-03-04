@@ -121,7 +121,7 @@ class Display:
         self.write_messages(messages)
 
         if target_to_display != None:
-            defeated = self.draw_examine_window(target_to_display, tileDict, monster_map, monsterID, item_ID, player)
+            defeated = self.draw_examine_window(target_to_display, tileDict, floormap, monster_map, monsterID, item_ID, player)
         
 
     def write_messages(self, messages):
@@ -130,8 +130,10 @@ class Display:
             text = font.render(message, True, (255, 255, 255))
             self.win.blit(text, (self.screen_width // 100 * 10, self.screen_height // 100 * (85 + i *3)))
 
-    def draw_examine_window(self, target, tileDict, monster_map, monster_dict, item_dict, player):
+    def draw_examine_window(self, target, tileDict, floormap, monster_map, monster_dict, item_dict, player):
         x, y = target
+        if not floormap.track_map[x][y].visible:
+            return
         black_screen = pygame.transform.scale(pygame.image.load("assets/black_screen.png"), (self.screen_width // 5, self.screen_height // 5))
         self.win.blit(black_screen, (0, 0))
         

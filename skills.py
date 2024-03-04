@@ -82,6 +82,7 @@ class BurningAttack(Skill):
         playerx, playery = player.get_location()
         monster = self.parent
         monsterx, monstery = monster.get_location()
+
         distance = self.parent.get_distance(playerx, playery)
         if distance < self.range:
             if self.ready == 0:
@@ -129,5 +130,22 @@ class ShrugOff(Skill):
 
     def castable(self, target):
         if self.ready == 0 and len(self.parent.character.status_effects) > 0:
+            return True
+        return False
+
+class Berserk(Skill):
+    # self-might if below certain health percent
+    def __init__(self, parent, cooldown, cost, activation_threshold, strength_increase, action_cost):
+        super().__init__("Berserk", parent, cooldown, cost, -1, action_cost)
+        self.threshold = activation_threshold
+        self.strength_increase = strength_increase
+    
+    def activate(self, defender, generator):
+        effect = E.Might(3, self.strength_increase)
+        self.parent.character.add_status_effect(effect)
+        return True
+
+    def castable(self, target):
+        if self.ready == 0 and self.parent.character.health < self.parent.character.max_health * self.threshold:
             return True
         return False

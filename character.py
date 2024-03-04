@@ -260,6 +260,8 @@ class Player(O.Objects):
         self.move(x-self.x, y-self.y, loop)
         loop.update_screen = True
 
+        self.character.energy = 0
+
 
     def check_for_levelup(self):
         if self.level != self.max_level and self.experience >= self.experience_to_next_level:
