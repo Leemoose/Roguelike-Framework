@@ -72,8 +72,8 @@ class BurningAttack(Skill):
         self.burn_duration = burn_duration
 
     def activate(self, defender, generator):
-        defender.character.take_damage(self.damage)
-        effect = E.Burn(self.burn_duration, self.burn_damage)
+        defender.character.take_damage(self.parent, self.damage)
+        effect = E.Burn(self.burn_duration, self.burn_damage, self.parent)
         defender.character.add_status_effect(effect)
         return True # return true if successfully cast, burningAttack cannot fail
 

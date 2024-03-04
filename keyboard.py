@@ -109,9 +109,12 @@ class Keyboard():
             # cast a skill
             skill_num = int(key) - 1
             if skill_num < len(player.character.skills):
-                # !!! TEMPORARY TARGETS CLOSEST MONSTER, ADD ACTUAL TARGETTING !!!
+                loop.action = False
+                loop.targeting = True
+                loop.update_screen = True
+                loop.examine = False
                 closest_dist = 100000
-                closest_monster = None
+                closest_monster = player
                 for monster_key in monsterID.subjects:
                     monster = monsterID.subjects[monster_key]
                     dist = player.get_distance(monster.x, monster.y)
@@ -119,8 +122,9 @@ class Keyboard():
                         closest_dist = dist
                         closest_monster = monster
                 # change closest_monster to targetted monster, maybe start at closest monster and let targetting begin
-                if closest_monster:
-                    player.character.cast_skill(skill_num, closest_monster, loop)
+                loop.targets.start_target(closest_monster.get_location())
+                skill_to_cast = (lambda target, loop_new : player.character.cast_skill(skill_num, target, loop_new))
+                loop.targets.store_skill(skill_to_cast)
 
     def key_inventory(self, loop, player, item_dict, key):
             if key == "esc":
@@ -199,11 +203,18 @@ class Keyboard():
         elif key == "right":
             targets.adjust(1, 0)
         elif key == "esc":
+            targets.void_skill()
             loop.targeting = False
             loop.action = True
             loop.update_screen = True
         elif key == "return":
-            targets.explain_target(loop)
+            if loop.examine:
+                targets.explain_target(loop)
+            else:
+                targets.cast_on_target(loop)
+                loop.targeting = False
+                loop.action = True
+                loop.update_screen = True
 
     def key_autoexplore(self, key, loop):
         if key == "o":

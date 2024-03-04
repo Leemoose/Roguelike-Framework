@@ -52,7 +52,7 @@ class Monster_AI():
             max_utility = utility
             called_function = self.do_skill
 
-        print(max_utility)
+        # print(max_utility)
         self.parent.character.energy -= 1
 
         called_function(loop)
@@ -187,9 +187,9 @@ class Monster(O.Objects):
     def __init__(self, number_tag, x, y, name="Unknown monster"):
         super().__init__(x, y, 0, number_tag, name)
         self.character = C.Character(self)
+        self.character.experience_given = 10
         self.brain = Monster_AI(self)
         self.skills = []
-        self.experience_given = 10
 
     def move(self, move_x, move_y, floormap, monster, monster_map, player):
         # print(self.character.movable)
@@ -216,7 +216,7 @@ class Kobold(Monster):
         super().__init__(107, x, y, "Kobold")
         self.skills = []
         self.character.skills.append(S.BurningAttack(self, 10, 0, 10, 5, 5, 1.5))
-        self.experience_given = 10
+        self.character.experience_given = 10
 
 class Gargoyle(Monster):
     def __init__(self, x, y):
@@ -226,7 +226,7 @@ class Gargoyle(Monster):
         self.skills = []
         # 20% chance to petrify for 2 turns
         self.character.skills.append(S.Petrify(self, 10, 0, 2, 0.2, 3))
-        self.experience_given = 10
+        self.character.experience_given = 10
 
 class Raptor(Monster):
     def __init__(self, x, y):
@@ -235,7 +235,7 @@ class Raptor(Monster):
         self.character.move_cost = 100
         self.character.attack_cost = 100
         self.brain = Monster_AI(self)
-        self.experience_given = 10
+        self.character.experience_given = 10
 
 class Minotaur(Monster):
     def __init__(self, x, y):
@@ -244,4 +244,4 @@ class Minotaur(Monster):
         self.brain = Monster_AI(self)
         self.character.skills = []
         self.character.skills.append(S.ShrugOff(self, cooldown=3, cost=0, activation_chance=0.75, action_cost=1))
-        self.experience_given = 10
+        self.character.experience_given = 10
