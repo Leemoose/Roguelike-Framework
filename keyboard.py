@@ -154,7 +154,6 @@ class Keyboard():
                     loop.inventory = True
                     loop.items = False
 
-#Not currently being used
     def key_targeting_screen(self, key, loop):
         loop.update_screen = True
         targets = loop.targets
@@ -172,3 +171,11 @@ class Keyboard():
             loop.update_screen = True
         elif key == "return":
             targets.explain_target(loop)
+
+    def key_autoexplore(self, key, loop):
+        if key == "o":
+            loop.player.autoexplore(loop)
+        else:
+            loop.action = True
+            loop.autoexplore = False
+

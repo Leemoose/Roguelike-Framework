@@ -2,6 +2,7 @@ import random
 import dice as R
 import objects as O
 import effect as E
+import pathfinding
 import skills as S
 
 class Character():
@@ -162,6 +163,8 @@ class Player(O.Objects):
         self.experience = 0
         self.experience_to_next_level = 20
 
+        self.path = []
+
         self.invincible = True
 
     def attack_move(self, move_x, move_y, loop):
@@ -204,11 +207,21 @@ class Player(O.Objects):
 
     def autoexplore(self, loop):
         monster_dict = loop.monster_dict
+        tile_map = loop.generator.tile_map
         for monster_key in monster_dict.subjects:
             if monster_dict.get_subject(monster_key).brain.is_awake:
                 return
-        print("moving")
-        self.random_move(loop)
+        while len(self.path) <= 3:
+            start = (self.x, self.y)
+            endx = random.randint(0, tile_map.width - 1)
+            endy = random.randint(0, tile_map.height - 1)
+            while (tile_map.get_passable(endx, endy) == False) and (endx != self.x and endy != self.y):
+                endx = random.randint(0, tile_map.width - 1)
+                endy = random.randint(0, tile_map.height - 1)
+            end = (endx, endy)
+            self.path = pathfinding.astar(tile_map.track_map, start, end)
+        x, y = self.path.pop(0)
+        self.move(x-self.x, y-self.y, loop)
         loop.update_screen = True
 
 

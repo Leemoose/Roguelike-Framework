@@ -29,9 +29,9 @@ class Tile(Objects):
 
     def __str__(self):
         if self.passable:
-            print(".")
+            return(".")
         else:
-            print("#")
+            return("#")
 
 class Stairs(Tile):
     def __init__(self, x, y, render_tag = 0, passable = True, id_tag = 0, downward = False):

@@ -118,8 +118,6 @@ class Loops():
         :return: None (will do a keyboard action)
         """
 
-        if self.autoexplore == True:
-            self.player.autoexplore(self)
         action = None
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -148,7 +146,7 @@ class Loops():
                 elif self.examine == True:
                     keyboard.key_targeting_screen(key, self)
                 elif self.autoexplore == True:
-                    self.player.autoexplore(self)
+                    keyboard.key_autoexplore(key, self)
 
                 self.update_screen = True
 

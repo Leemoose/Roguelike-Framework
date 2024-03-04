@@ -24,6 +24,10 @@ def astar(maze, start, end):
     end_node = Node(None, end)
     end_node.g = end_node.h = end_node.f = 0
 
+    print(start_node.position)
+    print(end_node.position)
+    print("Nodes")
+
     # Initialize both open and closed list
     open_list = []
     closed_list = []
@@ -33,9 +37,9 @@ def astar(maze, start, end):
 
     # Loop until you find the end
     while len(open_list) > 0:
-
         # Get the current node
         current_node = open_list[0]
+        print(current_node.position)
         current_index = 0
         for index, item in enumerate(open_list):
             if item.f < current_node.f:
@@ -68,7 +72,6 @@ def astar(maze, start, end):
 
             # Make sure walkable terrain
             if not maze[node_position[0]][node_position[1]].passable:
-                print(node_position[0],node_position[1])
                 continue
 
             # Create new node

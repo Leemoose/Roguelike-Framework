@@ -200,7 +200,7 @@ class DungeonGenerator():
         number_of_goblins = 0#5
         number_of_kobolds = 0#5
         number_of_gargoyles = 0
-        number_of_raptors = 5
+        number_of_raptors = 0#5
 
         self.place_monster_hoard(number_of_orcs, 101, 2)
         self.place_monster_hoard(number_of_slimes, 102, 1)
