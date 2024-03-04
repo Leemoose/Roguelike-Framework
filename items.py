@@ -50,10 +50,18 @@ class Hammer(Weapon):
         self.damage_min = 5
         self.damage_max = 60
 
+class Dagger(Weapon):
+    def __init__(self, render_tag):
+        super().__init__(-1, -1, 0, render_tag, "Dagger")
+        self.melee = True
+        self.name = "Dagger"
+        self.description = "I swear that tip is getting rounder... Larry!"
+        self.damage_min = 3
+        self.damage_max = 20
+
 class Shield(Equipment):
     def __init__(self, render_tag):
         super().__init__(-1, -1, 0, render_tag, "Shield")
-        
         self.shield = True
         self.defense = 5
         self.description = "A shield that you can use to block things."
@@ -68,6 +76,21 @@ class Shield(Equipment):
 
     def unequip(self, entity):
         entity.main_shield = None
+
+class Ring(Equipment):
+    def __init__(self, render_tag):
+        super().__init__(-1,-1, 0, render_tag, "Ring")
+
+    def equip(self, entity):
+        if len(entity.main_rings) >= 2 :
+            entity.unequip(entity.main_rings[0])
+        entity.main_rings.append(self)
+        entity.move_cost -= 20
+
+    def unequip(self, entity):
+        entity.main_rings.pop(0)
+        entity.move_cost += 20
+
 
 class HealthPotion(O.Item):
     def __init__(self, render_tag):

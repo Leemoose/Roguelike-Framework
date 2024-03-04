@@ -348,6 +348,7 @@ def create_main_screen(scr, width, height):
     return buttons
 
 
+"""
 def create_race_screen(scr):
     background = pygame.image.load("assets/class_background.png")
     background = pygame.transform.scale(background, (scr.screen_width, scr.screen_height))
@@ -381,3 +382,4 @@ def create_class_screen(scr):
 
     # pygame.image.save(scr.win, "assets/class_screen.png")
     return buttons
+"""

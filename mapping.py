@@ -90,11 +90,13 @@ class TileDict():
         tiles[300] = image.load("assets/basic_ax.png")
         tiles[301] = image.load("assets/hammer.png")
         tiles[311] = image.load("assets/shield.png")
+        tiles[321] = image.load("assets/dagger.png")
         tiles[401] = image.load("assets/health_orb_bigger.png")
         tiles[402] = image.load("assets/mana_orb_bigger.png")
         tiles[403] = image.load("assets/curing_orb_bigger.png")
         tiles[404] = image.load("assets/might_orb_bigger.png")
         tiles[405] = image.load("assets/haste_orb_bigger.png")
+        tiles[500] = image.load("assets/green_ring.png")
         tiles[901] = image.load("assets/target.png")
         self.tiles = tiles
 

@@ -347,11 +347,13 @@ class Loops():
 
     def init_game(self, display):
         self.main_buttons = D.create_main_screen(display, self.width, self.height)
-        self.race_buttons = D.create_race_screen(display)
-        self.class_buttons = D.create_class_screen(display)
-        self.player = C.Player(0,0)
+        self.player = C.Player(0, 0)
         self.memory.player = self.player
         self.display = display
+        """
+        self.race_buttons = D.create_race_screen(display)
+        self.class_buttons = D.create_class_screen(display)
+        """
 
     def add_message(self, message):
         if len(self.messages) >= 5:
