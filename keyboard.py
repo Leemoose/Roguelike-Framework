@@ -147,8 +147,9 @@ class Keyboard():
             loop.load_game()
         else:
             loop.main = False
-            loop.race = True
+            loop.action = True
             loop.update_screen = True
+            loop.down_floor()
         return True
     
     def key_race_screen(self, key, loop):

@@ -57,7 +57,7 @@ class Display:
         self.textWidth = textWidth
         self.textHeight = textHeight
         self.textSize = textSize
-        self.uiManager = pygame_gui.UIManager((width, height))
+        self.uiManager = pygame_gui.UIManager((width, height), "theme.json")
         self.clock = pygame.time.Clock()
         self.buttons = []
 
@@ -179,6 +179,7 @@ class Display:
 
     def update_main(self):
     #Main Screen
+        self.win.fill((0,0,0))
         self.uiManager.draw_ui(self.win)
 
     def update_race(self):
@@ -226,7 +227,7 @@ class Display:
 
 def create_main_screen(scr):
     buttons = Buttons()
-    button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((350, 275), (100, 50)),
+    button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((20, 600), (400, 100)),
                                              text='Play',
                                              manager=scr.uiManager)
     button.action = "return"
@@ -234,17 +235,22 @@ def create_main_screen(scr):
     
 
     
-    button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((450, 275), (100, 50)),
+    button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((440, 600), (400, 100)),
                                              text='Load',
                                              manager=scr.uiManager)
     button.action = "l"
     buttons.add(button, "load")
 
-    button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((550, 275), (100, 50)),
+    button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((860, 600), (400, 100)),
                                              text='Quit',
                                              manager=scr.uiManager)
     button.action = "esc"
     buttons.add(button, "quit")
+
+    pygame_gui.elements.UILabel(relative_rect=pygame.Rect((20, 20), (1240, 580)),
+                                text="Orbworld: The Orb of Destiny",
+                                manager=scr.uiManager,
+                                object_id='#title_label')
     
     return buttons
 
