@@ -225,7 +225,7 @@ class Kobold(Monster):
     def __init__(self, x, y, render_tag=107, name="Kobold"):
         super().__init__(render_tag, x, y, name)
         self.skills = []
-        self.character.skills.append(S.BurningAttack(self, 10, 0, 10, 5, 5, 1.5))
+        self.character.skills.append(S.BurningAttack(self, cooldown=10, cost=0, damage=10, burn_damage=5, burn_duration=5, range=1.5))
         self.character.experience_given = 10
     
     def description(self):
@@ -238,7 +238,7 @@ class Gargoyle(Monster):
         self.brain = Monster_AI(self)
         self.skills = []
         # 20% chance to petrify for 2 turns
-        self.character.skills.append(S.Petrify(self, 10, 0, 2, 0.2, 3))
+        self.character.skills.append(S.Petrify(self, cooldown=10, cost=0, duration=2, activation_chance=0.2, range=3))
         self.character.experience_given = 10
 
     def description(self):
@@ -276,7 +276,7 @@ class Orc(Monster):
         self.brain = Monster_AI(self)
         self.character.skills = []
         # below 25% health, gains 25 strength
-        self.character.skills.append(S.Berserk(self, 0, 0, 0.25, 25, 1))
+        self.character.skills.append(S.Berserk(self, cooldown=0, cost=0, activation_threshold=0.25, strength_increase=25, action_cost=1))
         self.character.experience_given = 10
 
     def description(self):

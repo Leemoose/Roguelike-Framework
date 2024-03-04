@@ -6,7 +6,7 @@ import pathfinding
 import skills as S
 
 class Character():
-    def __init__(self, parent, endurance = 0, intelligence = 0, dexterity = 0, strength = 0, health = 100, mana = 0):
+    def __init__(self, parent, endurance = 0, intelligence = 0, dexterity = 0, strength = 0, health = 100, mana = 0, health_regen=0.1, mana_regen=0.1):
         self.endurance = endurance
         self.intelligence = intelligence
         self.dexterity = dexterity
@@ -16,6 +16,8 @@ class Character():
         self.max_health = health
         self.mana = mana
         self.max_mana = mana
+        self.health_regen = health_regen
+        self.mana_regen = mana_regen
 
         self.movable = True
 
@@ -39,6 +41,9 @@ class Character():
 
         self.experience_given = 0 # monsters will overwrite this attribute, it just makes some class stuff easier if its stored in character
         self.experience = None
+
+        self.health_partial = 0.0
+        self.mana_partial = 0.0
 
     def is_alive(self):
         if self.health <= 0:
@@ -183,13 +188,24 @@ class Character():
         skill = self.skills[skill_num]
         self.energy -= skill.action_cost
         return skill.try_to_activate(target, loop.generator)
+
+    def tick_regen(self):
+        self.health_partial += self.health_regen
+        self.mana_partial += self.mana_regen
+        if self.health_partial >= 1:
+            self.gain_health(1)
+            self.health_partial -= 1
+        if self.mana_partial >= 1:
+            self.gain_mana(1)
+            self.mana_partial -= 1
+
         
 
 
 class Player(O.Objects):
     def __init__(self, x, y):
         super().__init__(x, y, 1, 200, "Player")
-        self.character = Character(self)
+        self.character = Character(self, mana=50)
         self.character.skills = []
         self.character.skills.extend([
             S.BurningAttack(self, cooldown=0, cost=10, damage=20, burn_damage=10, burn_duration=10, range=10),

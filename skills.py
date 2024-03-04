@@ -14,7 +14,7 @@ class Skill():
         self.action_cost = action_cost
 
     def activate(self, target, generator):
-        pass
+        self.parent.character.mana -= self.cost
 
     def try_to_activate(self, target, generator):
         # check cooldowns and costs
@@ -28,10 +28,18 @@ class Skill():
             self.ready -= 1
 
     def castable(self, target):
-        # is it castable on target
-        if self.ready == 0:
+        self.basic_requirements()
+    
+    def basic_requirements(self):
+        if self.ready == 0 and self.parent.character.mana >= self.cost:
             return True
         return False
+    
+    def in_range(self, target):
+        targetx, targety = target.get_location()
+        distance = self.parent.get_distance(targetx, targety)
+        if distance < self.range:
+            return True
 
     def __str__(self) -> str:
         return self.name
@@ -74,22 +82,14 @@ class BurningAttack(Skill):
         self.burn_duration = burn_duration
 
     def activate(self, defender, generator):
+        self.parent.character.mana -= self.cost
         defender.character.take_damage(self.parent, self.damage)
         effect = E.Burn(self.burn_duration, self.burn_damage, self.parent)
         defender.character.add_status_effect(effect)
         return True # return true if successfully cast, burningAttack cannot fail
 
     def castable(self, target):
-        player = target
-        playerx, playery = player.get_location()
-        monster = self.parent
-        monsterx, monstery = monster.get_location()
-
-        distance = self.parent.get_distance(playerx, playery)
-        if distance < self.range:
-            if self.ready == 0:
-                return True
-        return False
+        return self.basic_requirements() and self.in_range(target)
     
 class Petrify(Skill):
     def __init__(self, parent, cooldown, cost, duration, activation_chance, range):
@@ -99,6 +99,7 @@ class Petrify(Skill):
         self.activation_chance = activation_chance
 
     def activate(self, defender, generator):
+        self.parent.character.mana -= self.cost
         if random.random() < self.activation_chance:
             effect = E.Petrify(self.duration)
             defender.character.add_status_effect(effect)
@@ -106,15 +107,7 @@ class Petrify(Skill):
         return False
 
     def castable(self, target):
-        player = target
-        playerx, playery = player.get_location()
-        monster = self.parent
-        monsterx, monstery = monster.get_location()
-        distance = self.parent.get_distance(playerx, playery)
-        if distance < self.range:
-            if self.ready == 0:
-                return True
-        return False
+        return self.basic_requirements() and self.in_range(target) and not target.character.has_effect("Petrify")
     
 class ShrugOff(Skill):
     def __init__(self, parent, cooldown, cost, activation_chance, action_cost):
@@ -122,6 +115,7 @@ class ShrugOff(Skill):
         self.activation_chance = activation_chance
 
     def activate(self, defender, generator):
+        self.parent.character.mana -= self.cost
         if self.parent.character.has_negative_effects():
             if random.random() < self.activation_chance:
                 negative_effects = [effect for effect in self.parent.character.status_effects if not effect.positive]
@@ -132,9 +126,7 @@ class ShrugOff(Skill):
         return False
 
     def castable(self, target):
-        if self.ready == 0 and self.parent.character.has_negative_effects():
-            return True
-        return False
+        return self.basic_requirements() and self.parent.character.has_negative_effects()
 
 class Berserk(Skill):
     # self-might if below certain health percent
@@ -144,11 +136,13 @@ class Berserk(Skill):
         self.strength_increase = strength_increase
     
     def activate(self, defender, generator):
+        self.parent.character.mana -= self.cost
         effect = E.Might(-100, self.strength_increase)
         self.parent.character.add_status_effect(effect)
         return True
 
+    def below_threshold(self):
+        return self.parent.character.health < self.threshold * self.parent.character.max_health
+
     def castable(self, target):
-        if self.ready == 0 and self.parent.character.health < self.parent.character.max_health * self.threshold:
-            return (not self.parent.character.has_effect("Might"))
-        return False
+        return self.basic_requirements and self.below_threshold() and not self.parent.character.has_effect("Might")

@@ -111,8 +111,10 @@ class Keyboard():
             skill_num = int(key) - 1
             if skill_num < len(player.character.skills):
                 if not player.character.skills[skill_num].targetted:
-                    player.character.cast_skill(skill_num, loop.player, loop)
-                    loop.add_message("You cast " + player.character.skills[skill_num].name)
+                    if player.character.skills[skill_num].castable(player):
+                        player.character.cast_skill(skill_num, loop.player, loop)
+                    else:
+                        loop.add_message("You can't cast " + player.character.skills[skill_num].name + " right now.")
                 else:
                     loop.action = False
                     loop.targeting = True
@@ -130,8 +132,7 @@ class Keyboard():
                     # change closest_monster to targetted monster, maybe start at closest monster and let targetting begin
                     loop.targets.start_target(closest_monster.get_location())
                     loop.add_target(closest_monster.get_location())
-                    skill_to_cast = (lambda target, loop_new : player.character.cast_skill(skill_num, target, loop_new))
-                    loop.targets.store_skill(skill_to_cast, player.character.skills[skill_num].name)
+                    loop.targets.store_skill(skill_num, player.character.skills[skill_num], player.character)
 
     def key_inventory(self, loop, player, item_dict, key):
             if key == "esc":

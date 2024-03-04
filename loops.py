@@ -193,6 +193,8 @@ class Loops():
             
             self.player.character.tick_cooldowns()
 
+            self.player.character.tick_regen()
+
         if not self.player.character.is_alive() and not self.player.invincible:
             self.clear_data()
             self.init_game(display)
@@ -214,6 +216,9 @@ class Loops():
             
             # tick skill cooldowns
             monster.character.tick_cooldowns()
+
+            # tick regen
+            monster.character.tick_regen()
 
             if self.generator.tile_map.track_map[monster.x][monster.y].seen:
                 monster.brain.is_awake = True

@@ -126,14 +126,15 @@ class Display:
         self.write_messages(messages)
 
         if target_to_display != None:
-            defeated = self.draw_examine_window(target_to_display, tileDict, floormap, monster_map, monsterID, item_ID, player)
-        
+            clear_target = self.draw_examine_window(target_to_display, tileDict, floormap, monster_map, monsterID, item_ID, player)
+            if clear_target:
+                target_to_display = None
 
     def write_messages(self, messages):
         font = pygame.font.Font('freesansbold.ttf', 12)
         for i, message in enumerate(messages):
             text = font.render(message, True, (255, 255, 255))
-            self.win.blit(text, (self.screen_width // 100 * 10, self.screen_height // 100 * (85 + i *3)))
+            self.win.blit(text, (self.screen_width // 100 * 12, self.screen_height // 100 * (85 + i * 3)))
 
     def get_status_text(self, entity):
         status = "Healthy"
@@ -153,6 +154,8 @@ class Display:
         
         any_item_found = False
         
+        nothing_at_target = True
+
         # find monster at target
         if not monster_map.get_passable(x,y):
             monster = monster_dict.get_subject(monster_map.locate(x,y))
@@ -179,6 +182,7 @@ class Display:
             # description
             text = font.render(monster.description(), True, (255, 255, 255))
             self.win.blit(text, (self.screen_width // 10, self.screen_height // 10 + 95))
+            nothing_at_target = False
         else:
             # find item at target
             for key in item_dict.subjects:
@@ -197,7 +201,7 @@ class Display:
                     # description 
                     text = font.render(item.description, True, (255, 255, 255))
                     self.win.blit(text, (self.screen_width // 10, self.screen_height // 10 + 65))
-                    any_item_found = True
+                    nothing_at_target = False
 
                     # stats (if present)
                     next_text = 80
@@ -214,8 +218,10 @@ class Display:
                         self.win.blit(text, (self.screen_width // 10, self.screen_height // 10 + next_text))
                         next_text += 15
         # find player at target
-        if not any_item_found:
+        if nothing_at_target:
             if player.x == x and player.y == y:
+                nothing_at_target = False
+
                 to_draw = player.render_tag
                 tag = tileDict.tile_string(to_draw)
                 self.win.blit(tag, (self.screen_width  // 10, self.screen_height // 10))
@@ -226,6 +232,7 @@ class Display:
                 self.win.blit(text, (self.screen_width // 10, self.screen_height // 10 + 50))
                 text = font.render("You are here", True, (255, 255, 255))
                 self.win.blit(text, (self.screen_width // 10, self.screen_height // 10 + 65))
+        return nothing_at_target
             
 
     def update_inventory(self, player):

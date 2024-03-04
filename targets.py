@@ -2,8 +2,9 @@
 class Target:
     def __init__(self):
         self.target_list= ()
-        self.skill = None
-        self.skill_name = ""
+        self.index_to_cast = None
+        self.skill_to_cast = None
+        self.caster = None
 
     def start_target(self, starting_target):
         self.target_list = (starting_target)
@@ -12,13 +13,15 @@ class Target:
         x, y = self.target_list
         self.target_list = (x+xdelta, y + ydelta)
 
-    def store_skill(self, skill, skill_name):
-        self.skill = skill
-        self.skill_name = skill_name
+    def store_skill(self, index_to_cast, skill_to_cast, caster):
+        self.index_to_cast = index_to_cast
+        self.skill_to_cast = skill_to_cast
+        self.caster = caster
 
     def void_skill(self):
-        self.skill = None
-        self.skill_name = ""
+        self.index_to_cast = None
+        self.skill_to_cast = None
+        self.caster = None
 
     def cast_on_target(self, loop):
         x, y = self.target_list
@@ -26,9 +29,13 @@ class Target:
         monster_dict = loop.generator.monster_dict
         if not monster_map.get_passable(x,y):
             monster = monster_dict.get_subject(monster_map.locate(x,y))
-            self.skill(monster, loop)
-            loop.add_message("You cast " + str(self.skill_name) + " on " + monster.name)
-            self.void_skill()
+            if self.skill_to_cast.castable(monster):
+                self.caster.cast_skill(self.index_to_cast, monster, loop)
+                loop.add_message("You cast " + str(self.skill_to_cast.name) + " on " + monster.name)
+                self.void_skill()
+            else:
+                loop.add_message("You can't cast " + self.skill_to_cast.name + " on " + monster.name + " right now")
+                self.void_skill()
         else:
             loop.add_message("Not a valid target there")
 
