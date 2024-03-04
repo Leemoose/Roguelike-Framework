@@ -122,7 +122,7 @@ class ShrugOff(Skill):
         self.activation_chance = activation_chance
 
     def activate(self, defender, generator):
-        if self.parent.character.has_negative_effect():
+        if self.parent.character.has_negative_effects():
             if random.random() < self.activation_chance:
                 negative_effects = [effect for effect in self.parent.character.status_effects if not effect.positive]
                 random_effect = random.choice(negative_effects)
@@ -144,11 +144,11 @@ class Berserk(Skill):
         self.strength_increase = strength_increase
     
     def activate(self, defender, generator):
-        effect = E.Might(3, self.strength_increase)
+        effect = E.Might(-100, self.strength_increase)
         self.parent.character.add_status_effect(effect)
         return True
 
     def castable(self, target):
         if self.ready == 0 and self.parent.character.health < self.parent.character.max_health * self.threshold:
-            return True
+            return (not self.parent.character.has_effect("Might"))
         return False

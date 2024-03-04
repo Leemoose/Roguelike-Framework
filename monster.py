@@ -137,7 +137,7 @@ class Monster_AI():
                 skill_cast = monster.character.cast_skill(i, loop.player, loop)
                 message_addition = "" if skill_cast else ". But it failed."
                 loop.add_message(f"{monster} used {skill.name}" + message_addition)
-                print(f"{monster} used {skill.name}")
+                # print(f"{monster} used {skill.name}")
                 break
 
     def do_equip(self, loop):
@@ -254,4 +254,14 @@ class Minotaur(Monster):
         self.brain = Monster_AI(self)
         self.character.skills = []
         self.character.skills.append(S.ShrugOff(self, cooldown=3, cost=0, activation_chance=0.75, action_cost=1))
+        self.character.experience_given = 10
+
+class Orc(Monster):
+    def __init__(self, x, y):
+        super().__init__(101, x, y, "Orc")
+        self.character = C.Character(self)
+        self.brain = Monster_AI(self)
+        self.character.skills = []
+        # below 25% health, gains 25 strength
+        self.character.skills.append(S.Berserk(self, 0, 0, 0.25, 25, 1))
         self.character.experience_given = 10

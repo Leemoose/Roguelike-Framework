@@ -148,14 +148,19 @@ class Character():
             effect.remove(self)
             self.status_effects.remove(effect)
 
-    def has_negative_effect(self):
+    def has_negative_effects(self):
         for x in self.status_effects:
             if not x.positive:
                 return True
         return False
 
+    def has_effect(self, effect_name):
+        if effect_name in [x.name for x in self.status_effects]:
+            return True
+        return False
+
     def add_status_effect(self, effect):
-        if effect.id_tag not in [x.id_tag for x in self.status_effects]:
+        if not self.has_effect(effect.name):
             effect.apply_effect(self)
             self.status_effects.append(effect)
         else:
