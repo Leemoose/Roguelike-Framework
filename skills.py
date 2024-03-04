@@ -10,6 +10,7 @@ class Skill():
         self.ready = 0 # keeps track of how long before we can cast, ready = 0 means we can cast
         self.name = name
         self.range = range
+        self.action_cost = action_cost
 
     def activate(self, target, generator):
         pass
@@ -17,9 +18,8 @@ class Skill():
     def try_to_activate(self, target, generator):
         # check cooldowns and costs
         if self.castable(target):
-            self.activate(target, generator)
             self.ready = self.cooldown
-            return True
+            return self.activate(target, generator)
         return False
     
     def tick_cooldown(self):
@@ -75,6 +75,7 @@ class BurningAttack(Skill):
         defender.character.take_damage(self.damage)
         effect = E.Burn(self.burn_duration, self.burn_damage)
         defender.character.add_status_effect(effect)
+        return True # return true if successfully cast, burningAttack cannot fail
 
     def castable(self, target):
         player = target
@@ -97,6 +98,8 @@ class Petrify(Skill):
         if random.random() < self.activation_chance:
             effect = E.Petrify(self.duration)
             defender.character.add_status_effect(effect)
+            return True
+        return False
 
     def castable(self, target):
         player = target
@@ -118,7 +121,11 @@ class ShrugOff(Skill):
         if len(self.parent.character.status_effects) > 0:
             if random.random() < self.activation_chance:
                 random_effect = random.choice(self.parent.character.status_effects)
+                random_effect.active = False
                 self.parent.character.remove_status_effect(random_effect)
+                print(self.parent.character.status_effects)
+                return True
+        return False
 
     def castable(self, target):
         if self.ready == 0 and len(self.parent.character.status_effects) > 0:

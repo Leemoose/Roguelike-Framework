@@ -89,20 +89,21 @@ class Monster_AI():
             stuff = monster.character.inventory
             for i, item in enumerate(stuff):
                 if item.consumeable:
-                    return 30
+                    return 10
         return -1
 
     def rank_move(self, loop):
         return 20
     
     def rank_skill(self, loop):
-        for skill in self.parent.skills:
+        for skill in self.parent.character.skills:
             if skill.castable(loop.player):
                 return 95
         return -1        
 
 
     def do_item_pickup(self, loop):
+        # print("Picking up item")
         item_map = loop.generator.item_map
         item_dict = loop.generator.item_dict
         generated_maps = loop.generator
@@ -111,8 +112,13 @@ class Monster_AI():
         monster.character.grab(item_key, item_dict, generated_maps, loop)
 
     def do_combat(self, loop):
+        # print("Attacking player")
         player=loop.player
         monster = self.parent
+        if not monster.character.movable:
+            monster.character.energy -= (monster.character.move_cost - monster.character.dexterity)
+            loop.add_message(f"{monster} is petrified and cannot attack.")
+            return
         if not player.character.dodge():
             damage = monster.character.melee(player)
             loop.add_message(f"{monster} attacked you for {damage} damage")
@@ -121,14 +127,18 @@ class Monster_AI():
 
     def do_skill(self, loop):
         monster = self.parent
-        for skill in monster.skills:
-            if skill.castable(loop.player):
-                skill.try_to_activate(loop.player, loop.generator)
-                monster.character.energy -= skill.action_cost
-                loop.add_message(f"{monster} used {skill} on you")
+        for i in range(len(monster.character.skills)):
+            # use first castable skill
+            if monster.character.skills[i].castable(loop.player):
+                skill = monster.character.skills[i]
+                skill_cast = monster.character.cast_skill(i, loop.player, loop)
+                message_addition = "" if skill_cast else ". But it failed."
+                loop.add_message(f"{monster} used {skill.name}" + message_addition)
+                print(f"{monster} used {skill.name}")
                 break
 
     def do_equip(self, loop):
+        # print("Equipping item")
         monster = self.parent
         if len(monster.character.inventory) != 0:
             stuff = monster.character.inventory
@@ -137,6 +147,7 @@ class Monster_AI():
                     monster.character.equip(item)
 
     def do_use_consumeable(self, loop):
+        # print("Using consumeable")
         monster = self.parent
         if len(monster.character.inventory) != 0:
             stuff = monster.character.inventory
@@ -145,8 +156,15 @@ class Monster_AI():
                     item.activate(monster.character)
 
     def do_move(self, loop):
+        # print("Moving")
         tile_map = loop.generator.tile_map
         monster = self.parent
+
+        if not monster.character.movable:
+            monster.character.energy -= (monster.character.move_cost - monster.character.dexterity)
+            loop.add_message(f"{monster} is petrified and cannot move.")
+            return
+        
         monsterx, monstery = monster.x, monster.y
         flood_map = loop.generator.flood_map
         monster_map = loop.monster_map
@@ -167,6 +185,7 @@ class Monster_AI():
         monster.move(xmove, ymove, tile_map, monster, monster_map, player)
 
     def do_nothing(self,loop):
+        # print("doing nothing")
         pass
 
 
@@ -180,9 +199,14 @@ class Monster(O.Objects):
         self.experience_given = 10
 
     def move(self, move_x, move_y, floormap, monster, monster_map, player):
-        speed = 100
+        # print(self.character.movable)
+        # print(move_x)
+        # print(move_y)
+        if not self.character.movable:
+            self.character.energy -= (self.character.move_cost - self.character.dexterity)
+            return
         if floormap.get_passable(monster.x + move_x, monster.y + move_y) and monster_map.get_passable(monster.x + move_x, monster.y + move_y) and (monster.x + move_x != player.x and monster.y + move_y != player.y):
-            self.character.energy -= 100
+            self.character.energy -= self.character.move_cost
             monster_map.track_map[monster.x][monster.y] = -1
             monster.y += move_y
             monster.x += move_x
@@ -197,15 +221,6 @@ class Kobold(Monster):
         self.skills = []
         self.character.skills.append(S.BurningAttack(self, 10, 0, 10, 5, 5, 1.5))
         self.experience_given = 10
-    
-    def move(self, move_x, move_y, floormap, monster, monster_map, player):
-        speed = 100
-        if floormap.get_passable(monster.x + move_x, monster.y + move_y) and monster_map.get_passable(monster.x + move_x, monster.y + move_y) and (monster.x + move_x != player.x and monster.y + move_y != player.y):
-            self.character.energy -= 100
-            monster_map.track_map[monster.x][monster.y] = -1
-            monster.y += move_y
-            monster.x += move_x
-            monster_map.track_map[monster.x][monster.y] = monster.id_tag
 
 class Gargoyle(Monster):
     def __init__(self, x, y):
@@ -216,15 +231,6 @@ class Gargoyle(Monster):
         # 20% chance to petrify for 2 turns
         self.character.skills.append(S.Petrify(self, 10, 0, 2, 0.2, 3))
         self.experience_given = 10
-    
-    def move(self, move_x, move_y, floormap, monster, monster_map, player):
-        speed = 100
-        if floormap.get_passable(monster.x + move_x, monster.y + move_y) and monster_map.get_passable(monster.x + move_x, monster.y + move_y) and (monster.x + move_x != player.x and monster.y + move_y != player.y):
-            self.character.energy -= 100
-            monster_map.track_map[monster.x][monster.y] = -1
-            monster.y += move_y
-            monster.x += move_x
-            monster_map.track_map[monster.x][monster.y] = monster.id_tag
 
 class Raptor(Monster):
     def __init__(self, x, y):
@@ -234,14 +240,6 @@ class Raptor(Monster):
         self.character.attack_cost = 100
         self.brain = Monster_AI(self)
         self.experience_given = 10
-    
-    def move(self, move_x, move_y, floormap, monster, monster_map, player):
-        if floormap.get_passable(monster.x + move_x, monster.y + move_y) and monster_map.get_passable(monster.x + move_x, monster.y + move_y) and (monster.x + move_x != player.x and monster.y + move_y != player.y):
-            self.character.energy -= self.character.move_cost
-            monster_map.track_map[monster.x][monster.y] = -1
-            monster.y += move_y
-            monster.x += move_x
-            monster_map.track_map[monster.x][monster.y] = monster.id_tag
 
 class Minotaur(Monster):
     def __init__(self, x, y):
@@ -249,13 +247,5 @@ class Minotaur(Monster):
         self.character = C.Character(self)
         self.brain = Monster_AI(self)
         self.character.skills = []
-        self.character.skills.append(S.ShrugOff(self, 3, 0, 0.3, 0))
+        self.character.skills.append(S.ShrugOff(self, cooldown=3, cost=0, activation_chance=0.75, action_cost=1))
         self.experience_given = 10
-
-    def move(self, move_x, move_y, floormap, monster, monster_map, player):
-        if floormap.get_passable(monster.x + move_x, monster.y + move_y) and monster_map.get_passable(monster.x + move_x, monster.y + move_y) and (monster.x + move_x != player.x and monster.y + move_y != player.y):
-            self.character.energy -= self.character.move_cost
-            monster_map.track_map[monster.x][monster.y] = -1
-            monster.y += move_y
-            monster.x += move_x
-            monster_map.track_map[monster.x][monster.y] = monster.id_tag
