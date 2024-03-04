@@ -97,6 +97,7 @@ class Loops():
         self.examine = False
         self.targeting = False
         self.autoexplore = False
+        self.paused = False
 
         self.width = width
         self.height = height
@@ -138,7 +139,7 @@ class Loops():
                 except:
                     break
                 if self.action == True:
-                    keyboard.key_action(self.player, self.generator.tile_map, self.monster_dict, self.monster_map, self.item_dict,self, key, self.generator, self.memory)
+                    keyboard.key_action(self.player, self.generator.tile_map, self.monster_dict, self.monster_map, self.item_dict,self, key, self.generator, display, self.memory)
                 elif self.inventory == True:
                     keyboard.key_inventory(self, self.player, self.item_dict,key)
                 elif self.main == True:
@@ -151,9 +152,12 @@ class Loops():
                 elif self.items == True:
                     keyboard.key_item_screen(key, self, self.item_dict, self.player, self.item_for_item_screen, self.generator.item_map)
                 elif self.examine == True or self.targeting:
-                    keyboard.key_targeting_screen(key, self)
+                    keyboard.key_targeting_screen(key, self, display)
                 elif self.autoexplore == True:
                     keyboard.key_autoexplore(key, self)
+                elif self.paused == True:
+                    if (keyboard.key_paused(key, self, display) == False):
+                        return False
 
                 self.update_screen = True
 
@@ -325,6 +329,7 @@ class Loops():
         self.class_buttons = D.create_class_screen(display)
         self.player = C.Player(0,0)
         self.memory.player = self.player
+        self.display = display
 
     def add_message(self, message):
         if len(self.messages) >= 5:
@@ -339,6 +344,9 @@ class Loops():
             return
         if self.monster_map.get_passable(self.target_to_display[0], self.target_to_display[1]): # don't void if its a monster, cuz its a good QOL to keep monster health up
             self.target_to_display = None
+
+    def init_new_game(self):
+        self.display.create_game_ui(self.player)
 
     def load_game(self):
         self.action = True

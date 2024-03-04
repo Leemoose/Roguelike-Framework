@@ -58,7 +58,7 @@ class Keyboard():
             return self.keys_to_string[key + 100]
 
 #Any actions done in the battle screen
-    def key_action(self, player, floormap, monsterID, monster_map, item_ID, loop, key, generated_maps, memory):
+    def key_action(self, player, floormap, monsterID, monster_map, item_ID, loop, key, generated_maps, display, memory):
         if key == "up":
             player.attack_move(0, -1, loop)
         elif key == "left":
@@ -85,6 +85,8 @@ class Keyboard():
             loop.action = False
             loop.inventory = True
             loop.update_screen = True
+        elif key == "p":
+            loop.display.set_visual_debug_mode(True)
         elif key == ">":
             loop.down_floor()
         elif key == "<":
@@ -106,6 +108,11 @@ class Keyboard():
         elif key == "t":
             player.skills.teleport(loop.generator)
             loop.update_screen = True
+        elif key == "esc":
+            loop.paused = True
+            loop.action = False
+            print("Paused")
+            display.open_pause_screen()
         elif key.isdigit():
             # cast a skill
             skill_num = int(key) - 1
@@ -156,6 +163,7 @@ class Keyboard():
             loop.main = False
             loop.action = True
             loop.update_screen = True
+            loop.init_new_game()
             loop.down_floor()
         return True
     
@@ -199,6 +207,16 @@ class Keyboard():
                     loop.update_screen = True
                     loop.inventory = True
                     loop.items = False
+
+    def key_paused(self, key, loop, display):
+        if key == "esc":
+            loop.paused = False
+            loop.action = True
+            display.close_pause_screen()
+        elif key == "q":
+            return False
+
+        return True
 
     def key_targeting_screen(self, key, loop):
         loop.update_screen = True
