@@ -198,6 +198,7 @@ class DungeonGenerator():
                 for count in range(num_to_spawn):
                     self.place_monster(monsterSpawn.GetLeveledCopy(depth))
 
+
     def place_monster(self, creature):
         startx = random.randint(0, self.width-1)
         starty = random.randint(0,self.height-1)
