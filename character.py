@@ -148,6 +148,12 @@ class Character():
             effect.remove(self)
             self.status_effects.remove(effect)
 
+    def has_negative_effect(self):
+        for x in self.status_effects:
+            if not x.positive:
+                return True
+        return False
+
     def add_status_effect(self, effect):
         if effect.id_tag not in [x.id_tag for x in self.status_effects]:
             effect.apply_effect(self)
@@ -180,8 +186,12 @@ class Player(O.Objects):
         super().__init__(x, y, 1, 200, "Player")
         self.character = Character(self)
         self.character.skills = []
-        self.character.skills.append(S.BurningAttack(self, cooldown=0, cost=10, damage=20, burn_damage=10, burn_duration=10, range=10))
-        self.character.skills.append(S.Petrify(self, cooldown=0, cost=10, duration=3, activation_chance=1, range=10))
+        self.character.skills.extend([
+            S.BurningAttack(self, cooldown=0, cost=10, damage=20, burn_damage=10, burn_duration=10, range=10),
+            S.Petrify(self, cooldown=0, cost=10, duration=3, activation_chance=1, range=10),
+            S.ShrugOff(self, cooldown=0, cost=10, activation_chance=1.0, action_cost=1),
+            S.Berserk(self, cooldown=0, cost=10, activation_threshold=50, strength_increase=10, action_cost=1)
+        ])
 
         self.level = 1
         self.max_level = 20

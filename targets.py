@@ -3,6 +3,7 @@ class Target:
     def __init__(self):
         self.target_list= ()
         self.skill = None
+        self.skill_name = ""
 
     def start_target(self, starting_target):
         self.target_list = (starting_target)
@@ -11,11 +12,13 @@ class Target:
         x, y = self.target_list
         self.target_list = (x+xdelta, y + ydelta)
 
-    def store_skill(self, skill):
+    def store_skill(self, skill, skill_name):
         self.skill = skill
+        self.skill_name = skill_name
 
     def void_skill(self):
         self.skill = None
+        self.skill_name = ""
 
     def cast_on_target(self, loop):
         x, y = self.target_list
@@ -24,6 +27,7 @@ class Target:
         if not monster_map.get_passable(x,y):
             monster = monster_dict.get_subject(monster_map.locate(x,y))
             self.skill(monster, loop)
+            loop.add_message("You cast " + str(self.skill_name) + " on " + monster.name)
             self.void_skill()
         else:
             loop.add_message("Not a valid target there")

@@ -10,6 +10,7 @@ class Skill():
         self.ready = 0 # keeps track of how long before we can cast, ready = 0 means we can cast
         self.name = name
         self.range = range
+        self.targetted = False
         self.action_cost = action_cost
 
     def activate(self, target, generator):
@@ -69,6 +70,7 @@ class BurningAttack(Skill):
         super().__init__("Burning attack", parent, cooldown, cost, range)
         self.damage = damage
         self.burn_damage = burn_damage
+        self.targetted = True
         self.burn_duration = burn_duration
 
     def activate(self, defender, generator):
@@ -93,6 +95,7 @@ class Petrify(Skill):
     def __init__(self, parent, cooldown, cost, duration, activation_chance, range):
         super().__init__("Petrify", parent, cooldown, cost, range)
         self.duration = duration
+        self.targetted = True
         self.activation_chance = activation_chance
 
     def activate(self, defender, generator):
@@ -119,17 +122,17 @@ class ShrugOff(Skill):
         self.activation_chance = activation_chance
 
     def activate(self, defender, generator):
-        if len(self.parent.character.status_effects) > 0:
+        if self.parent.character.has_negative_effect():
             if random.random() < self.activation_chance:
-                random_effect = random.choice(self.parent.character.status_effects)
+                negative_effects = [effect for effect in self.parent.character.status_effects if not effect.positive]
+                random_effect = random.choice(negative_effects)
                 random_effect.active = False
                 self.parent.character.remove_status_effect(random_effect)
-                print(self.parent.character.status_effects)
                 return True
         return False
 
     def castable(self, target):
-        if self.ready == 0 and len(self.parent.character.status_effects) > 0:
+        if self.ready == 0 and self.parent.character.has_negative_effect():
             return True
         return False
 
