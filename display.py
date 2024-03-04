@@ -1,6 +1,6 @@
 import pygame
 import pygame_gui
-
+import ui
 
 class Buttons:
     def __init__(self):
@@ -58,6 +58,7 @@ class Display:
         self.textHeight = textHeight
         self.textSize = textSize
         self.uiManager = pygame_gui.UIManager((width, height), "theme.json")
+        self.windows = []
         self.clock = pygame.time.Clock()
         self.buttons = []
 
@@ -123,6 +124,7 @@ class Display:
         if target_to_display != None:
             defeated = self.draw_examine_window(target_to_display, tileDict, monster_map, monsterID, item_ID, player)
         
+        self.uiManager.draw_ui(self.win)
 
     def write_messages(self, messages):
         font = pygame.font.Font('freesansbold.ttf', 12)
@@ -259,7 +261,24 @@ class Display:
         deltaTime = self.clock.tick() / 1000
         self.uiManager.update(deltaTime)
 
+    def create_game_ui(self, player):
+        self.uiManager.clear_and_reset()
+
+        healthBar = ui.HealthBar(pygame.Rect((20,400), (120,40)), self.uiManager, player)
+        manaBar = ui.ManaBar(pygame.Rect((20,450), (120,40)), self.uiManager, player)
+
+    def open_pause_screen(self):
+        #self.pauseWindow = pygame_gui.core.UIContainer(pygame.Rect((0, 0), (self.screen_width, self.screen_height)),
+        #                                  manager=self.uiManager, starting_height=1)
+        #self.uiManager.get_window_stack().add_new_window(self.pauseWindow)\
+        print("Pause screen opens here!")
+    
+    def close_pause_screen(self):
+        #self.uiManager.get_window_stack().remove_window(self.pauseWindow)
+        print("Pause screen closes here!")
+
 def create_main_screen(scr):
+    scr.uiManager.clear_and_reset()
     buttons = Buttons()
     button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((20, 600), (400, 100)),
                                              text='Play',
