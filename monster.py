@@ -170,12 +170,18 @@ class Monster_AI():
             loop.add_message(f"{monster} is petrified and cannot move.")
             return
 
+        update_target = False
+        if loop.target_to_display == (monster.x, monster.y):
+            update_target = True
+
         start = (monster.x, monster.y)
         end = (player.x, player.y)
         moves = pathfinding.astar(tile_map.track_map, start, end)
         if len(moves) > 1:
             xmove, ymove = moves.pop(1)
             monster.move(xmove - monster.x, ymove-monster.y, tile_map, monster, monster_map, player)
+        if update_target:
+            loop.add_target((monster.x, monster.y))
 
     def do_nothing(self,loop):
         # print("doing nothing")
@@ -208,6 +214,10 @@ class Monster(O.Objects):
             monster.x += move_x
             monster_map.track_map[monster.x][monster.y] = monster.id_tag
     
+    def description(self):
+        # default description for a monster is just its name
+        return f"This is a {self.name}. It wants to eat you."
+
     def __str__(self):
         return self.name
 

@@ -123,6 +123,7 @@ class Keyboard():
                         closest_monster = monster
                 # change closest_monster to targetted monster, maybe start at closest monster and let targetting begin
                 loop.targets.start_target(closest_monster.get_location())
+                loop.add_target(closest_monster.get_location())
                 skill_to_cast = (lambda target, loop_new : player.character.cast_skill(skill_num, target, loop_new))
                 loop.targets.store_skill(skill_to_cast)
 
@@ -196,12 +197,16 @@ class Keyboard():
         targets = loop.targets
         if key == "up":
             targets.adjust(0, -1)
+            loop.add_target(targets.target_list)
         elif key == "left":
             targets.adjust(-1, 0)
+            loop.add_target(targets.target_list)
         elif key == "down":
             targets.adjust(0, 1)
+            loop.add_target(targets.target_list)
         elif key == "right":
             targets.adjust(1, 0)
+            loop.add_target(targets.target_list)
         elif key == "esc":
             targets.void_skill()
             loop.targeting = False

@@ -61,7 +61,7 @@ class Display:
         self.clock = pygame.time.Clock()
         self.buttons = []
 
-    def update_display(self, colorDict, floormap, tileDict, monsterID, item_ID, monster_map, player, messages):
+    def update_display(self, colorDict, floormap, tileDict, monsterID, item_ID, monster_map, player, messages, target_to_display):
         self.win.fill(colorDict.getColor("black"))
         r_x = self.textWidth // 2
         r_y = self.textHeight // 2
@@ -120,12 +120,51 @@ class Display:
 
         self.write_messages(messages)
 
+        if target_to_display != None:
+            defeated = self.draw_examine_window(target_to_display, tileDict, monster_map, monsterID)
+        
+
     def write_messages(self, messages):
         font = pygame.font.Font('freesansbold.ttf', 12)
         for i, message in enumerate(messages):
             text = font.render(message, True, (255, 255, 255))
             self.win.blit(text, (self.screen_width // 100 * 10, self.screen_height // 100 * (85 + i *3)))
 
+    def draw_examine_window(self, target, tileDict, monster_map, monster_dict):
+        x, y = target
+        black_screen = pygame.transform.scale(pygame.image.load("assets/black_screen.png"), (self.screen_width // 5, self.screen_height // 5))
+        self.win.blit(black_screen, (0, 0))
+        monster_defeated = False
+        # find monster at target
+        if not monster_map.get_passable(x,y):
+            monster = monster_dict.get_subject(monster_map.locate(x,y))
+            to_draw = monster.render_tag
+            tag = tileDict.tile_string(to_draw)
+            self.win.blit(tag, (self.screen_width  // 10, self.screen_height // 10))
+            font = pygame.font.Font('freesansbold.ttf', 12)
+            text = font.render(monster.name, True, (255, 255, 255))
+            self.win.blit(text, (self.screen_width // 10, self.screen_height // 10 + 50))
+            if monster.character.is_alive():
+                text = font.render("Health: " + str(monster.character.health) + "/" + str(monster.character.max_health), True, (255, 255, 255))
+                monster_status = "Healthy"
+                if monster.character.health < monster.character.max_health // 2:
+                    monster_status = "Wounded"
+                monster_effects = monster.character.status_effects
+                for effect in monster_effects:
+                    monster_status += ", " + effect.message
+                text2 = font.render("Status: " + monster_status, True, (255, 255, 255))
+            else:
+                text = font.render(f"Exp gained: {monster.experience_given} exp", True, (255, 255, 255))
+                monster_status = "Dead"
+                text2 = font.render("Status: " + monster_status, True, (255, 255, 255))
+                monster_defeated = True
+            
+            self.win.blit(text, (self.screen_width // 10, self.screen_height // 10 + 65))
+            self.win.blit(text2, (self.screen_width // 10, self.screen_height // 10 + 80))
+            text = font.render(monster.description(), True, (255, 255, 255))
+            self.win.blit(text, (self.screen_width // 10, self.screen_height // 10 + 95))
+        return monster_defeated
+            
 
     def update_inventory(self, player):
         font2 = pygame.font.SysFont('didot.ttc', 32)

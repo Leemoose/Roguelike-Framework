@@ -112,6 +112,8 @@ class Loops():
         self.generator = None #Dungeon Generator
         self.messages = []
         self.targets = T.Target()
+        self.target_to_display = None
+
     def action_loop(self, keyboard, display):
         """
         This is responsible for undergoing any inputs when screen is clicked
@@ -226,7 +228,7 @@ class Loops():
         if self.action == True or self.autoexplore == True:
             self.clean_up()
             shadowcasting.compute_fov(self.player.get_location(), self.generator.tile_map.track_map)
-            display.update_display(colors, self.generator.tile_map, tileDict, self.monster_dict, self.item_dict, self.monster_map, self.player, self.messages)
+            display.update_display(colors, self.generator.tile_map, tileDict, self.monster_dict, self.item_dict, self.monster_map, self.player, self.messages, self.target_to_display)
         elif self.inventory == True:
             display.update_inventory(self.player)
         elif self.main == True:
@@ -239,7 +241,7 @@ class Loops():
             display.update_item(self.item_for_item_screen, tileDict)
         elif self.examine == True or self.targeting == True:
             display.update_display(colors, self.generator.tile_map, tileDict, self.monster_dict, self.item_dict,
-                                   self.monster_map, self.player, self.messages)
+                                   self.monster_map, self.player, self.messages, self.target_to_display)
             display.update_examine(self.targets.target_list, tileDict, self.messages)
         pygame.display.update()
         self.update_screen = False
@@ -323,6 +325,9 @@ class Loops():
         if len(self.messages) >= 5:
             self.messages.pop(0)
         self.messages.append(message)
+
+    def add_target(self, target):
+        self.target_to_display = target
 
     def load_game(self):
         self.action = True

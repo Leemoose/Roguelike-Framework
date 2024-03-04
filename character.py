@@ -180,7 +180,7 @@ class Player(O.Objects):
         super().__init__(x, y, 1, 200, "Player")
         self.character = Character(self)
         self.character.skills = []
-        self.character.skills.append(S.BurningAttack(self, cooldown=0, cost=10, damage=20, burn_damage=5, burn_duration=3, range=10))
+        self.character.skills.append(S.BurningAttack(self, cooldown=0, cost=10, damage=20, burn_damage=10, burn_duration=10, range=10))
         self.character.skills.append(S.Petrify(self, cooldown=0, cost=10, duration=3, activation_chance=1, range=10))
 
         self.level = 1
