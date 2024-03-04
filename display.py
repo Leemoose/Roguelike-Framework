@@ -121,7 +121,7 @@ class Display:
         self.write_messages(messages)
 
         if target_to_display != None:
-            defeated = self.draw_examine_window(target_to_display, tileDict, monster_map, monsterID)
+            defeated = self.draw_examine_window(target_to_display, tileDict, monster_map, monsterID, item_ID, player)
         
 
     def write_messages(self, messages):
@@ -130,11 +130,13 @@ class Display:
             text = font.render(message, True, (255, 255, 255))
             self.win.blit(text, (self.screen_width // 100 * 10, self.screen_height // 100 * (85 + i *3)))
 
-    def draw_examine_window(self, target, tileDict, monster_map, monster_dict):
+    def draw_examine_window(self, target, tileDict, monster_map, monster_dict, item_dict, player):
         x, y = target
         black_screen = pygame.transform.scale(pygame.image.load("assets/black_screen.png"), (self.screen_width // 5, self.screen_height // 5))
         self.win.blit(black_screen, (0, 0))
-        monster_defeated = False
+        
+        any_item_found = False
+        
         # find monster at target
         if not monster_map.get_passable(x,y):
             monster = monster_dict.get_subject(monster_map.locate(x,y))
@@ -153,17 +155,49 @@ class Display:
                 for effect in monster_effects:
                     monster_status += ", " + effect.message
                 text2 = font.render("Status: " + monster_status, True, (255, 255, 255))
-            else:
-                text = font.render(f"Exp gained: {monster.experience_given} exp", True, (255, 255, 255))
-                monster_status = "Dead"
-                text2 = font.render("Status: " + monster_status, True, (255, 255, 255))
-                monster_defeated = True
             
             self.win.blit(text, (self.screen_width // 10, self.screen_height // 10 + 65))
             self.win.blit(text2, (self.screen_width // 10, self.screen_height // 10 + 80))
             text = font.render(monster.description(), True, (255, 255, 255))
             self.win.blit(text, (self.screen_width // 10, self.screen_height // 10 + 95))
-        return monster_defeated
+        else:
+            # find item at target
+            for key in item_dict.subjects:
+                item = item_dict.get_subject(key)
+                if item.x == x and item.y == y:
+                    to_draw = item.render_tag
+                    tag = tileDict.tile_string(to_draw)
+                    self.win.blit(tag, (self.screen_width // 10, self.screen_height // 10))
+                    font = pygame.font.Font('freesansbold.ttf', 12)
+                    text = font.render(item.name, True, (255, 255, 255))
+                    self.win.blit(text, (self.screen_width // 10, self.screen_height // 10 + 50))
+                    text = font.render(item.description, True, (255, 255, 255))
+                    self.win.blit(text, (self.screen_width // 10, self.screen_height // 10 + 65))
+                    any_item_found = True
+                    next_text = 80
+                    if hasattr(item, "damage_min"):
+                        text = font.render("Damage: " + str(item.damage_min) + " - " + str(item.damage_max), True, (255, 255, 255))
+                        self.win.blit(text, (self.screen_width // 10, self.screen_height // 10 + next_text))
+                        next_text += 15
+                    if hasattr(item, "defense"):
+                        text = font.render("Defense: " + str(item.defense), True, (255, 255, 255))
+                        self.win.blit(text, (self.screen_width // 10, self.screen_height // 10 + next_text))
+                        next_text += 15
+                    if hasattr(item, "consumable"):
+                        text = font.render("Consumable", True, (255, 255, 255))
+                        self.win.blit(text, (self.screen_width // 10, self.screen_height // 10 + next_text))
+                        next_text += 15
+        # find player at target
+        if not any_item_found:
+            if player.x == x and player.y == y:
+                to_draw = player.render_tag
+                tag = tileDict.tile_string(to_draw)
+                self.win.blit(tag, (self.screen_width  // 10, self.screen_height // 10))
+                font = pygame.font.Font('freesansbold.ttf', 12)
+                text = font.render("You", True, (255, 255, 255))
+                self.win.blit(text, (self.screen_width // 10, self.screen_height // 10 + 50))
+                text = font.render("You are here", True, (255, 255, 255))
+                self.win.blit(text, (self.screen_width // 10, self.screen_height // 10 + 65))
             
 
     def update_inventory(self, player):

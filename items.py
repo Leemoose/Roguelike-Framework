@@ -13,6 +13,9 @@ class Equipment(O.Item):
 class Weapon(Equipment):
     def __init__(self, x, y, id_tag, render_tag, name):
         super().__init__(x,y, id_tag, render_tag, name)
+        self.damage_min = 0
+        self.damage_max = 0
+
     def equip(self, entity):
         if entity.main_weapon != None:
             entity.unequip(entity.main_weapon)
@@ -21,11 +24,18 @@ class Weapon(Equipment):
     def unequip(self, entity):
         entity.main_weapon = None
 
+    def attack(self):
+        damage = R.roll_dice(self.damage_min, self.damage_max)[0]
+        return damage
+
 class Ax(Weapon):
     def __init__(self, render_tag):
         super().__init__(-1, -1, 0, render_tag, "Ax")
         self.melee = True
         self.name = "Ax"
+        self.description = "An ax with a round edge (could be rounder)"
+        self.damage_min = 20
+        self.damage_max = 40
 
     def attack(self):
         damage = R.roll_dice(20, 40)[0]
@@ -36,16 +46,17 @@ class Hammer(Weapon):
         super().__init__(-1, -1, 0, render_tag, "Hammer")
         self.melee = True
         self.name = "Hammer"
-
-    def attack(self):
-        damage = R.roll_dice(5, 60)[0]
-        return damage
+        self.description = "A hammer that you wish was more spherical."
+        self.damage_min = 5
+        self.damage_max = 60
 
 class Shield(Equipment):
     def __init__(self, render_tag):
         super().__init__(-1, -1, 0, render_tag, "Shield")
+        
         self.shield = True
         self.defense = 5
+        self.description = "A shield that you can use to block things."
 
     def defend(self):
         return self.defense
@@ -60,8 +71,9 @@ class Shield(Equipment):
 
 class HealthPotion(O.Item):
     def __init__(self, render_tag):
-        super().__init__(-1, -1, 0, render_tag, "Health Potion")
+        super().__init__(-1, -1, 0, render_tag, "Health Potiorb")
         self.consumeable = True
+        self.description = "A potiorb that heals you."
 
     def activate(self, entity):
         entity.gain_health(20)
@@ -69,8 +81,9 @@ class HealthPotion(O.Item):
 
 class MightPotion(O.Item):
     def __init__(self, render_tag):
-        super().__init__(-1, -1, 0, render_tag, "Might Potion")
+        super().__init__(-1, -1, 0, render_tag, "Might Potiorb")
         self.consumeable = True
+        self.description = "A potiorb that makes you stronger for a few turns."
 
     def activate(self, entity):
         effect = E.Might(5, 5)
@@ -80,8 +93,9 @@ class MightPotion(O.Item):
 
 class DexterityPotion(O.Item):
     def __init__(self, render_tag, x, y):
-        super().__init__(x, y, 0, render_tag, "Dexterity Potion")
+        super().__init__(x, y, 0, render_tag, "Dexterity Potiorb")
         self.consumeable = True
+        self.description = "A potiorb that makes you more dexterous for a few turns."
 
     def activate(self, entity):
         effect = E.Haste(5, 5)
@@ -90,8 +104,9 @@ class DexterityPotion(O.Item):
 
 class CurePotion(O.Item):
     def __init__(self, render_tag):
-        super().__init__(-1, -1, 0, render_tag, "Cure Potion")
+        super().__init__(-1, -1, 0, render_tag, "Cure Potiorb")
         self.consumeable = True
+        self.description = "A potiorb that cures you of all status effects."
 
     def activate(self, entity):
         for effect in entity.status_effects:
@@ -101,8 +116,9 @@ class CurePotion(O.Item):
 
 class ManaPotion(O.Item):
     def __init__(self, render_tag):
-        super().__init__(-1, -1, 0, render_tag, "Mana Potion")
+        super().__init__(-1, -1, 0, render_tag, "Mana Potiorb")
         self.consumeable = True
+        self.description = "A potiorb that restores your mana."
 
     def activate(self, entity):
         entity.gain_mana(20)
