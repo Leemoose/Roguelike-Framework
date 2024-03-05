@@ -64,8 +64,6 @@ Classes:
 """
 class TileDict():
     def __init__(self, textSize, colors):
-        file = 'assets/P.png'
-        player_image = image.load(file)
         tiles = {}
         tiles[1] = image.load("assets/basic_wall.png")
         #Negative numbers are shaded versions
@@ -76,7 +74,7 @@ class TileDict():
         tiles[-90] = image.load("assets/stairs_up.png")
         tiles[91] = image.load("assets/stairs_down.png")
         tiles[-91] = image.load("assets/stairs_down.png")
-        tiles[200] = player_image
+        tiles[200] = image.load("assets/Player.png")
         tiles[101] = image.load("assets/orc.png")
         tiles[102] = image.load("assets/slime.png")
         tiles[103] = image.load('assets/floatingtentacles.png')

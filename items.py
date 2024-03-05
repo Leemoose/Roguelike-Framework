@@ -110,10 +110,14 @@ class Ring(Equipment):
         if len(entity.main_rings) >= 2 :
             entity.unequip(entity.main_rings[0])
         entity.main_rings.append(self)
-        entity.move_cost -= 20
 
     def unequip(self, entity):
         entity.main_rings.pop(0)
+
+    def activate(self, entity):
+        entity.move_cost -= 20
+
+    def deactivate(self, entity):
         entity.move_cost += 20
 
 class Chestarmor(Armor):
