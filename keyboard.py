@@ -18,6 +18,7 @@ class Keyboard():
         keys_to_string[pygame.K_g] = "g"
         keys_to_string[pygame.K_h] = "h"
         keys_to_string[pygame.K_i] = "i"
+        keys_to_string[pygame.K_e] = "e"
 
         keys_to_string[pygame.K_w] = "w"
         keys_to_string[pygame.K_s] = "s"
@@ -85,6 +86,10 @@ class Keyboard():
         elif key == "i":
             loop.action = False
             loop.inventory = True
+            loop.update_screen = True
+        elif key == "e":
+            loop.action = False
+            loop.equipment = True
             loop.update_screen = True
         elif key == "p":
             loop.display.set_visual_debug_mode(True)
@@ -156,6 +161,12 @@ class Keyboard():
                     loop.inventory = False
                     loop.items = True
                     loop.item_for_item_screen = player.character.inventory[i]
+
+    def key_equipment(self, loop, player, item_dict, key):
+            if key == "esc":
+                loop.equipment = False
+                loop.action = True
+                loop.update_screen = True
 
     def key_main_screen(self, key, loop):
         if key == "esc":

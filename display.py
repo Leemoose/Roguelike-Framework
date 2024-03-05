@@ -274,6 +274,104 @@ class Display:
 
         self.uiManager.draw_ui(self.win)
         return buttons
+    
+    def update_equipment(self, player, tileMap):
+        equipment_screen_width = self.screen_width // 3 * 2
+        equipment_screen_height = self.screen_height
+        equipment_offset_from_left = self.screen_width // 3
+        equipment_offset_from_top = 0
+
+        equipment_message_width = self.screen_width // 2
+        equipment_message_height = self.screen_height // 10
+        equipment_message_offset_from_left = self.screen_width // 4
+        equipment_message_offset_from_top = self.screen_height // 30
+
+        # 8 buttons, for helmet, armor, gloves, boots, ring 1, ring 2, weapon, shield
+        # equipment is across three columns
+        medium_button_width = self.screen_width // 8
+        medium_button_height = self.screen_height // 5
+        first_col_offset_from_left = self.screen_width // 4
+        outer_cols_offset_from_top = self.screen_height // 5 * 2
+        middle_col_offset_from_top = self.screen_height // 5
+        small_button_width = self.screen_width // 16 - self.screen_width // 120
+        small_button_height = self.screen_height // 8
+        margin_between_buttons_height = self.screen_height // 30
+        small_margin_between_buttons_width = self.screen_width // 60
+        margin_between_buttons_width = self.screen_width // 30
+
+        self.uiManager.clear_and_reset()
+        pygame.draw.rect(self.win, (0,0,0), pygame.Rect(equipment_offset_from_left, equipment_offset_from_top, equipment_screen_width, equipment_screen_height))
+
+
+        pygame_gui.elements.UILabel(relative_rect=pygame.Rect((equipment_message_offset_from_left, equipment_message_offset_from_top),
+                                                              (equipment_message_width, equipment_message_height)),
+                                    text="Equipment",
+                                    manager=self.uiManager,
+                                    object_id='#title_label')
+
+        # equipment_slots = ["shield", "ring", "ring", "helmet", "armor", "boots", "weapon", "gloves"]:
+        button = pygame_gui.elements.UIButton(
+                        relative_rect=pygame.Rect((first_col_offset_from_left, 
+                                                   outer_cols_offset_from_top),
+                                                  (medium_button_width, medium_button_height)),
+                        text = "shield",
+                        manager=self.uiManager)
+        # img = pygame.transform.scale(tileMap.tiles[806], (medium_button_width, medium_button_height))
+        # self.win.blit(tileMap.tiles[806], (first_col_offset_from_left, outer_cols_offset_from_top))
+        
+        button = pygame_gui.elements.UIButton(
+                    relative_rect=pygame.Rect((first_col_offset_from_left, 
+                                               outer_cols_offset_from_top + (medium_button_height + margin_between_buttons_height)),
+                                               (small_button_width, small_button_height)),
+                    text = "ring 1",
+                    manager=self.uiManager)
+        
+        button = pygame_gui.elements.UIButton(
+                    relative_rect=pygame.Rect((first_col_offset_from_left + small_button_width + small_margin_between_buttons_width, 
+                                               outer_cols_offset_from_top + (medium_button_height + margin_between_buttons_height)),
+                                              (small_button_width, small_button_height)),
+                    text = "ring 2",
+                    manager=self.uiManager)
+        
+        button = pygame_gui.elements.UIButton(
+                    relative_rect=pygame.Rect((first_col_offset_from_left + medium_button_width + margin_between_buttons_width, 
+                                               middle_col_offset_from_top),
+                                               (medium_button_width, medium_button_height)),
+                    text = "helmet",
+                    manager=self.uiManager)
+        
+        button = pygame_gui.elements.UIButton(
+                    relative_rect=pygame.Rect((first_col_offset_from_left + medium_button_width + margin_between_buttons_width, 
+                                               middle_col_offset_from_top + (medium_button_height + margin_between_buttons_height)),
+                                               (medium_button_width, medium_button_height)),
+                    text = "armor",
+                    manager=self.uiManager)
+    
+        button = pygame_gui.elements.UIButton(
+                    relative_rect=pygame.Rect((first_col_offset_from_left + medium_button_width + margin_between_buttons_width, 
+                                               middle_col_offset_from_top + 2 * (medium_button_height + margin_between_buttons_height)),
+                                               (medium_button_width, medium_button_height)),
+                    text = "boots",
+                    manager=self.uiManager)
+        
+        button = pygame_gui.elements.UIButton(
+                    relative_rect=pygame.Rect((first_col_offset_from_left + 2 * (medium_button_width + margin_between_buttons_width), 
+                                               outer_cols_offset_from_top),
+                                               (medium_button_width, medium_button_height)),
+                    text = "weapon",
+                    manager=self.uiManager)
+
+        button = pygame_gui.elements.UIButton(
+                    relative_rect=pygame.Rect((first_col_offset_from_left + 2 * (medium_button_width + margin_between_buttons_width), 
+                                               outer_cols_offset_from_top + (medium_button_height + margin_between_buttons_height)),
+                                               (medium_button_width, medium_button_height)),
+                    text = "gloves",
+                    manager=self.uiManager)
+        
+        self.uiManager.draw_ui(self.win)
+
+
+
 
     def update_main(self):
     #Main Screen

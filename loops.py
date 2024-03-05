@@ -90,6 +90,7 @@ class Loops():
     def __init__(self, width, height, textSize):
         self.action = False
         self.inventory = False
+        self.equipment = False
         self.race = False
         self.update_screen = True
         self.main = True
@@ -167,6 +168,8 @@ class Loops():
                     keyboard.key_action(self.player, self.generator.tile_map, self.monster_dict, self.monster_map, self.item_dict,self, key, self.generator, display, self.memory)
                 elif self.inventory == True:
                     keyboard.key_inventory(self, self.player, self.item_dict,key)
+                elif self.equipment:
+                    keyboard.key_equipment(self, self.player, self.item_dict, key)
                 elif self.main == True:
                     if keyboard.key_main_screen(key, self) == False:
                         return False
@@ -257,6 +260,8 @@ class Loops():
             display.update_display(colors, self.generator.tile_map, tileDict, self.monster_dict, self.item_dict, self.monster_map, self.player, self.messages, self.target_to_display)
         elif self.inventory == True:
             self.inventory_buttons = display.update_inventory(self.player)
+        elif self.equipment == True:
+            self.equipment_buttons = display.update_equipment(self.player, tileDict)
         elif self.main == True:
             display.update_main()
         elif self.race == True:
@@ -375,6 +380,7 @@ class Loops():
     def load_game(self):
         self.action = True
         self.inventory = False
+        self.equipment = False
         self.race = False
         self.update_screen = False
         self.main = False
