@@ -87,7 +87,7 @@ class Keyboard():
             loop.action = False
             loop.inventory = True
             loop.update_screen = True
-        elif key == "e":
+        elif key == "e" or key == "c":
             loop.action = False
             loop.equipment = True
             loop.update_screen = True
@@ -152,10 +152,16 @@ class Keyboard():
 
     def key_inventory(self, loop, player, item_dict, key):
             if key == "esc":
-                loop.inventory = False
-                loop.action = True
-                loop.update_screen = True
-                loop.limit_inventory = None
+                if loop.limit_inventory:
+                    loop.inventory = False
+                    loop.equipment = True
+                    loop.update_screen = True
+                    loop.limit_inventory = None
+                else:
+                    loop.inventory = False
+                    loop.action = True
+                    loop.update_screen = True
+                    loop.limit_inventory = None
 
             for i in range(len(player.character.inventory)):
                 if chr(ord("a")+i) == key:

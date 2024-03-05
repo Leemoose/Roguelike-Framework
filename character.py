@@ -80,8 +80,15 @@ class Character():
             self.mana = self.max_mana
 
     def defend(self):
-        defense = self.armor
+        defense = self.armor + (self.endurance // 3)
         return defense
+
+    def skill_damage_increase(self):
+        return int((self.intelligence * 1.5) // 2)
+
+    def skill_duration_increase(self):
+        return (self.intelligence // 4)
+
 
     def grab(self, key, item_ID, generated_maps, loop):
         item = item_ID.get_subject(key)
@@ -132,7 +139,20 @@ class Character():
         self.intelligence += 1
         self.dexterity += 1
         self.strength += 1
+        self.max_health += self.endurance - 1
         self.health = self.max_health
+
+    def get_damage_min(self):
+        return self.get_damage()[0]
+    
+    def get_damage_max(self):
+        return self.get_damage()[1]
+
+    def get_damage(self):
+        if self.main_weapon == None:
+            return self.base_damage + 1, self.base_damage + 20
+        else:
+            return self.base_damage + self.main_weapon.damage_min, self.base_damage + self.main_weapon.damage_max
 
     def melee(self, defender):
         if self.main_weapon == None:
@@ -140,7 +160,7 @@ class Character():
         else:
             damage = self.main_weapon.attack()
         defense = defender.character.defend()
-        defender.character.take_damage(self.parent, self.base_damage + self.strength+ damage - defense)
+        defender.character.take_damage(self.parent, self.base_damage + self.strength + damage - defense)
         self.energy -= self.attack_cost
         return (self.base_damage + damage +self.strength - defense)
 
