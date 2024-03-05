@@ -61,8 +61,11 @@ class Display:
         self.windows = []
         self.clock = pygame.time.Clock()
         self.buttons = []
+        self.colorDict = None
 
     def update_display(self, colorDict, floormap, tileDict, monsterID, item_ID, monster_map, player, messages, target_to_display):
+        if self.colorDict == None:
+            self.colorDict = colorDict
         self.uiManager.clear_and_reset()
         self.win.fill(colorDict.getColor("black"))
         r_x = self.textWidth // 2
@@ -235,6 +238,8 @@ class Display:
             
 
     def update_inventory(self, player, equipment_type=None):
+        self.uiManager.clear_and_reset()
+        self.win.fill(self.colorDict.getColor("black"))
         inventory_screen_width = self.screen_width // 2
         inventory_screen_height = self.screen_height
         inventory_offset_from_left = self.screen_width // 4
@@ -291,6 +296,9 @@ class Display:
         # button.drawable_shape.redraw_all_states()
 
     def update_equipment(self, player, tileMap):
+        self.uiManager.clear_and_reset()
+        self.win.fill(self.colorDict.getColor("black"))
+
         equipment_screen_width = self.screen_width // 3 * 2
         equipment_screen_height = self.screen_height
         equipment_offset_from_left = self.screen_width // 3
@@ -452,9 +460,37 @@ class Display:
                     object_id='#equipment_button')
         
         self.draw_on_button(button, img, "c", (medium_button_width, medium_button_height))
-        
+
+        self.draw_character_stats(player, 
+                                  margin_from_left = first_col_offset_from_left + 3 * (medium_button_width + margin_between_buttons_width),
+                                  margin_from_top = middle_col_offset_from_top,
+                                  width = medium_button_width * 2,
+                                  height = medium_button_height * 3 + margin_between_buttons_height * 2)       
         self.uiManager.draw_ui(self.win)
 
+
+    def draw_character_stats(self, player, margin_from_left, margin_from_top, width, height):
+        text_box = pygame_gui.elements.UITextBox(
+            relative_rect=pygame.Rect((margin_from_left, margin_from_top), (width, height)),
+            html_text = "Player<br><br>"
+                        "Stats<br>"
+                        "Strength: " + str(player.character.strength) + "<br>"
+                        "Dexterity: " + str(player.character.dexterity) + "<br>"
+                        "Endurance: " + str(player.character.endurance) + "<br>"
+                        "Intelligence: " + str(player.character.intelligence) + "<br>"
+                        "<br>"
+                        "Health: " + str(player.character.health) + " / " + str(player.character.max_health) + "<br>"
+                        "Mana: " + str(player.character.mana) + " / " + str(player.character.max_mana) + "<br>"
+                        "<br>"
+                        "Damage: " + str(player.character.get_damage_min()) + " - " + str(player.character.get_damage_max()) + " (+" + str(player.character.strength) + ") <br>"
+                        "Defense: " + str(player.character.armor) + " (+" + str(player.character.endurance // 3) + ") <br>"
+                        "Movement Delay: " + str(player.character.move_cost) + "<br>"
+                        "Skill Damage Bonus: " + str(player.character.skill_damage_increase()) + "<br>"
+                        "Effect Duration Bonus: " + str(player.character.skill_duration_increase()) + "<br>"
+                        ,
+
+            manager=self.uiManager
+        )
 
 
 

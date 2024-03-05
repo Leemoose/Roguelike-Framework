@@ -87,8 +87,9 @@ class BurningAttack(Skill):
 
     def activate(self, defender, generator):
         self.parent.character.mana -= self.cost
-        defender.character.take_damage(self.parent, self.damage)
-        effect = E.Burn(self.burn_duration, self.burn_damage, self.parent)
+        defender.character.take_damage(self.parent, self.damage + self.parent.character.intelligence)
+        effect = E.Burn(self.burn_duration + self.parent.character.skill_duration_increase(), 
+                        self.burn_damage + self.parent.character.skill_damage_increase(), self.parent)
         defender.character.add_status_effect(effect)
         return True # return true if successfully cast, burningAttack cannot fail
 
@@ -105,7 +106,7 @@ class Petrify(Skill):
     def activate(self, defender, generator):
         self.parent.character.mana -= self.cost
         if random.random() < self.activation_chance:
-            effect = E.Petrify(self.duration)
+            effect = E.Petrify(self.duration + self.parent.character.skill_duration_increase())
             defender.character.add_status_effect(effect)
             return True
         return False
@@ -173,7 +174,7 @@ class Terrify(Skill):
     def activate(self, defender, generator):
         self.parent.character.mana -= self.cost
         if random.random() < self.activation_chance:
-            effect = E.Fear(self.duration, self.parent)
+            effect = E.Fear(self.duration + self.parent.skill_duration_increase(), self.parent)
             defender.character.add_status_effect(effect)
             return True
         return False
