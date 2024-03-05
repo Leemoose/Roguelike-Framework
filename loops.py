@@ -100,6 +100,8 @@ class Loops():
         self.rest = False
         self.paused = False
 
+        self.inventory_buttons = None
+
         self.width = width
         self.height = height
         self.textSize = textSize
@@ -189,20 +191,13 @@ class Loops():
 
             elif event.type == pygame.MOUSEBUTTONUP:
                 x,y = pygame.mouse.get_pos()
-
-                if self.race == True:
-                    for button in self.race_buttons.buttons:
-                        if self.race_buttons.buttons[button].clicked(x, y):
-                            key = self.race_buttons.buttons[button].action
+                if self.inventory == True:
+                    for button in self.inventory_buttons.buttons:
+                        if self.inventory_buttons.buttons[button].clicked(x, y):
+                            key = self.inventory_buttons.buttons[button].action
                             keyboard.key_race_screen(key, self)
                             break
 
-                elif self.classes == True:
-                    for button in self.class_buttons.buttons:
-                        if self.class_buttons.buttons[button].clicked(x, y):
-                            key = self.class_buttons.buttons[button].action
-                            keyboard.key_class_screen(key, self)
-                            break
                 self.update_screen = True
 
             display.uiManager.process_events(event)
@@ -262,7 +257,7 @@ class Loops():
             shadowcasting.compute_fov(self.player.get_location(), self.generator.tile_map.track_map)
             display.update_display(colors, self.generator.tile_map, tileDict, self.monster_dict, self.item_dict, self.monster_map, self.player, self.messages, self.target_to_display)
         elif self.inventory == True:
-            display.update_inventory(self.player)
+            self.inventory_buttons = display.update_inventory(self.player)
         elif self.main == True:
             display.update_main()
         elif self.race == True:

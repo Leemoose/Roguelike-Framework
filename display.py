@@ -231,15 +231,44 @@ class Display:
             
 
     def update_inventory(self, player):
-        font2 = pygame.font.SysFont('didot.ttc', 32)
-        inv = pygame.transform.scale(pygame.image.load("assets/inventory.png"), (self.screen_width * 2//3, self.screen_height * 4 //5))
-        self.win.blit(inv, (self.screen_width // 6, self.screen_height // 10))
+        inventory_screen_width = self.screen_width // 2
+        inventory_screen_height = self.screen_height
+        inventory_offset_from_left = self.screen_width // 4
+        inventory_offset_from_top = 0
+
+        inventory_message_width = self.screen_width // 2
+        inventory_message_height = self.screen_height // 10
+        inventory_message_offset_from_left = self.screen_width // 4
+        inventory_message_offset_from_top = self.screen_height // 30
+
+        inventory_button_width = self.screen_width // 5
+        inventory_button_height = self.screen_height // 30
+        inventory_button_offset_from_left = self.screen_width *2 //5
+        inventory_button_offset_from_top = self.screen_height // 10 + self.screen_height // 30+ self.screen_height // 30
+        inventory_button_offset_from_each_other = self.screen_height // 100
+
+        self.uiManager.clear_and_reset()
+        pygame.draw.rect(self.win, (0,0,0), pygame.Rect(inventory_offset_from_left, inventory_offset_from_top, inventory_screen_width, inventory_screen_height))
+
+
+        pygame_gui.elements.UILabel(relative_rect=pygame.Rect((inventory_message_offset_from_left, inventory_message_offset_from_top),
+                                                              (inventory_message_width, inventory_message_height)),
+                                    text="Inventory",
+                                    manager=self.uiManager,
+                                    object_id='#title_label')
+
+        buttons = Buttons()
         for i, item in enumerate(player.character.inventory):
-        #Need to create list of buttons for items
-            text = font2.render(item.name, True, (0,255,0))
-            num = font2.render(chr(i + ord("a")) + ".", True, (0,255,0))
-            self.win.blit(num, (self.screen_width // 6 + 15, self.screen_height // 5 +10+ 20 * i))
-            self.win.blit(text, (self.screen_width // 6 + 35, self.screen_height // 5+10+ 20* i))
+            button = pygame_gui.elements.UIButton(
+                relative_rect=pygame.Rect((inventory_button_offset_from_left, inventory_button_offset_from_top + inventory_button_offset_from_each_other * i + inventory_button_height * i),
+                                                              (inventory_button_width, inventory_button_height)),
+                text= chr(ord("a") + i) + ". " + item.name,
+                manager=self.uiManager)
+            button.action = chr(ord("a") + i)
+            buttons.add(button, chr(ord("a") + i))
+
+        self.uiManager.draw_ui(self.win)
+        return buttons
 
     def update_main(self):
     #Main Screen
