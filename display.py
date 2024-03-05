@@ -284,8 +284,8 @@ class Display:
         return self.buttons     
 
     def update_inventory(self, player, equipment_type=None):
+        self.win.fill(self.colorDict.getColor("black"))
         self.uiManager.draw_ui(self.win)
-        return self.buttons
     
     def draw_on_button(self, button, img, letter="", button_size=None):
         button.drawable_shape.states['normal'].surface.blit(img, (0, 0))
@@ -297,7 +297,7 @@ class Display:
         button.drawable_shape.active_state.has_fresh_surface = True
         # button.drawable_shape.redraw_all_states()
 
-    def update_equipment(self, player, tileMap):
+    def create_equipment(self, player, tileMap):
         self.uiManager.clear_and_reset()
         self.win.fill(self.colorDict.getColor("black"))
 
@@ -349,6 +349,7 @@ class Display:
                         manager=self.uiManager,
                         object_id='#equipment_button')
         self.draw_on_button(button, img, "q", (medium_button_width, medium_button_height))
+        button.action = 'q'
 
         if len(player.character.main_rings) == 0:
             pre_text = "equip "
@@ -364,6 +365,7 @@ class Display:
                     manager=self.uiManager,
                     object_id='#equipment_button')
         self.draw_on_button(button, img, "a", (small_button_width, small_button_height))
+        button.action = 'a'
         
         if len(player.character.main_rings) != 2:
             pre_text = "equip "
@@ -379,6 +381,7 @@ class Display:
                     manager=self.uiManager,
                     object_id='#equipment_button')
         self.draw_on_button(button, img, "z", (small_button_width, small_button_height))
+        button.action = 'z'
         
         if player.character.helmet == None:
             pre_text = "equip "
@@ -394,6 +397,7 @@ class Display:
                     manager=self.uiManager,
                     object_id='#equipment_button')
         self.draw_on_button(button, img, "w", (medium_button_width, medium_button_height))
+        button.action = 'w'
         
         
         if player.character.main_armor == None:
@@ -411,6 +415,7 @@ class Display:
                     object_id='#equipment_button')
         
         self.draw_on_button(button, img, "s", (medium_button_width, medium_button_height))
+        button.action = 's'
     
         if player.character.boots == None:
             pre_text = "equip "
@@ -428,6 +433,7 @@ class Display:
                     object_id='#equipment_button')
 
         self.draw_on_button(button, img, "x", (medium_button_width, medium_button_height))
+        button.action = 'x'
         
         if player.character.main_weapon == None:
             pre_text = "equip "
@@ -445,6 +451,7 @@ class Display:
                     object_id='#equipment_button')
         
         self.draw_on_button(button, img, "d", (medium_button_width, medium_button_height))
+        button.action = 'd'
 
         if player.character.gloves == None:
             pre_text = "equip "
@@ -462,12 +469,17 @@ class Display:
                     object_id='#equipment_button')
         
         self.draw_on_button(button, img, "c", (medium_button_width, medium_button_height))
+        button.action = 'c'
 
         self.draw_character_stats(player, 
                                   margin_from_left = first_col_offset_from_left + 3 * (medium_button_width + margin_between_buttons_width),
                                   margin_from_top = middle_col_offset_from_top,
                                   width = medium_button_width * 2,
                                   height = medium_button_height * 3 + margin_between_buttons_height * 2)       
+        self.uiManager.draw_ui(self.win)
+
+    def update_equipment(self, player, tileMap):       
+        self.win.fill(self.colorDict.getColor("black"))
         self.uiManager.draw_ui(self.win)
 
 

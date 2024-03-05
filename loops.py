@@ -103,7 +103,7 @@ class Loops():
     """
     This is the brains of the game and after accepting an input from keyboard, will decide what needs to be done
     """
-    def __init__(self, width, height, textSize):
+    def __init__(self, width, height, textSize, tileDict):
         self.update_screen = True
         self.limit_inventory = None
 
@@ -124,6 +124,7 @@ class Loops():
         self.messages = []
         self.targets = T.Target()
         self.target_to_display = None
+        self.tileDict = tileDict
 
         #Start the game by going to the main screen
         self.change_loop(LoopType.main)
@@ -141,7 +142,7 @@ class Loops():
         elif newLoop == LoopType.inventory:
             self.display.create_inventory(self.player, self.limit_inventory)
         elif newLoop == LoopType.equipment:
-            pass
+            self.display.create_equipment(self.player, self.tileDict)
         elif newLoop == LoopType.main:
             pass
         elif newLoop == LoopType.race:
@@ -228,6 +229,9 @@ class Loops():
                 elif (self.currentLoop == LoopType.inventory):
                     key = event.ui_element.action
                     keyboard.key_inventory(self, self.player, self.item_dict, key)
+                elif (self.currentLoop == LoopType.equipment):
+                    key = event.ui_element.action
+                    keyboard.key_equipment(self, self.player, self.item_dict, key)
 
             elif event.type == pygame.MOUSEBUTTONUP:
                 x,y = pygame.mouse.get_pos()

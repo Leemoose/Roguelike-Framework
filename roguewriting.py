@@ -19,7 +19,7 @@ colors = L.ColorDict()
 #dictionary mapping renderID to the image
 tileDict = M.TileDict(textSize, colors)
 #Responsible for game loops
-loop = L.Loops(width, height, textSize)
+loop = L.Loops(width, height, textSize, tileDict)
 
 display = D.Display(width, height, textSize, textWidth, textHeight)
 
