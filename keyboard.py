@@ -144,7 +144,10 @@ class Keyboard():
 
     def key_inventory(self, loop, player, item_dict, key):
             if key == "esc":
-                loop.change_loop(LoopType.action)
+                if loop.limit_inventory == None:
+                    loop.change_loop(LoopType.action)
+                else:
+                    loop.change_loop(LoopType.equipment)
                 loop.limit_inventory = None
 
             for i in range(len(player.character.inventory)):
@@ -208,7 +211,10 @@ class Keyboard():
 
     def key_item_screen(self, key, loop, item_dict, player, item, item_map):
             if key == "esc":
-                loop.change_loop(LoopType.inventory)
+                if loop.limit_inventory == None:
+                    loop.change_loop(LoopType.inventory)
+                else:
+                    loop.change_loop(LoopType.equipment)
             elif key == "d":
                 player.character.drop(item, item_dict, item_map)
                 loop.change_loop(LoopType.inventory)
@@ -261,7 +267,7 @@ class Keyboard():
             loop.void_target()
             loop.change_loop(LoopType.action)
         elif key == "return":
-            if loop.examine:
+            if loop.currentLoop == LoopType.examine:
                 targets.explain_target(loop)
             else:
                 targets.cast_on_target(loop)
