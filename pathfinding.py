@@ -20,6 +20,7 @@ class Node():
 
 def astar(maze, start, end):
     """Returns a list of tuples as a path from the given start to the given end in the given maze"""
+    # reverse is a flag that determines if we're moving towards end or away from it
 
     # Create start and end node
     start_node = Node(None, start)
@@ -93,8 +94,9 @@ def astar(maze, start, end):
             else:
                 # Create the f, g, and h values
                 child.g = current_node.g + 1
-                child.h = ((child.position[0] - end_node.position[0]) ** 2) + ((child.position[1] - end_node.position[1]) ** 2)
+                child.h = ((child.position[0] - end_node.position[0]) ** 2) + ((child.position[1] - end_node.position[1]) ** 2) ** 0.5
                 child.f = child.g + child.h
+                
 
                 # Add the child to the open list
                 open_list.append(child)

@@ -52,11 +52,20 @@ class Monster_AI():
             max_utility = utility
             called_function = self.do_skill
 
+        utility = self.rank_flee(loop)
+        if utility > max_utility:
+            max_utility = utility
+            called_function = self.do_flee
+
         # print(max_utility)
         self.parent.character.energy -= 1
 
         called_function(loop)
 
+    def rank_flee(self, loop):
+        if self.parent.character.flee:
+            return 1000 # must flee if flag is set
+        return -1
 
     def rank_combat(self, loop):
         player=loop.player
@@ -92,7 +101,7 @@ class Monster_AI():
             stuff = monster.character.inventory
             for i, item in enumerate(stuff):
                 if item.consumeable:
-                    return 10
+                    return 25
         return -1
 
     def rank_move(self, loop):
@@ -180,6 +189,41 @@ class Monster_AI():
         if len(moves) > 1:
             xmove, ymove = moves.pop(1)
             monster.move(xmove - monster.x, ymove-monster.y, tile_map, monster, monster_map, player)
+        if update_target:
+            loop.add_target((monster.x, monster.y))
+
+    def do_flee(self, loop):
+        # print("Fleeing")
+        tile_map = loop.generator.tile_map
+        monster = self.parent
+        monster_map = loop.generator.monster_map
+        player = loop.player
+
+        if not monster.character.movable:
+            monster.character.energy -= (monster.character.move_cost - monster.character.dexterity)
+            loop.add_message(f"{monster} is petrified and cannot move.")
+            return
+
+        update_target = False
+        if loop.target_to_display == (monster.x, monster.y):
+            update_target = True
+
+        start = (monster.x, monster.y)
+        end = (player.x, player.y)
+        moves = pathfinding.astar(tile_map.track_map, start, end)
+        if len(moves) > 1:
+            xmove, ymove = moves.pop(1)
+            # if one direciton is blocked, still move in the other
+            opposite_move = (-xmove + monster.x, -ymove + monster.y)
+            if tile_map.get_passable(monster.x + opposite_move[0], monster.y + opposite_move[1]):
+                monster.move(opposite_move[0], opposite_move[1], tile_map, monster, monster_map, player)
+            elif tile_map.get_passable(monster.x, monster.y + opposite_move[1]):
+                monster.move(0, opposite_move[1], tile_map, monster, monster_map, player)
+            elif tile_map.get_passable(monster.x + opposite_move[0], monster.y):
+                monster.move(opposite_move[0], 0, tile_map, monster, monster_map, player)
+            else:
+                monster.character.energy -= (monster.character.move_cost - monster.character.dexterity)
+                loop.add_message(f"{monster} is backed into a corner and cannot flee.")
         if update_target:
             loop.add_target((monster.x, monster.y))
 
@@ -281,3 +325,15 @@ class Orc(Monster):
 
     def description(self):
         return "A strong humanoid with an axe and anger issues."
+    
+class Goblin(Monster):
+    def __init__(self, x, y, render_tag=106, name="Goblin"):
+        super().__init__(render_tag, x, y, name)
+        self.character = C.Character(self)
+        self.brain = Monster_AI(self)
+        self.character.skills = []
+        self.character.skills.append(S.Escape(self, cooldown=100, cost=0, self_fear=True, activation_threshold=0.4, action_cost=1))
+        self.character.experience_given = 10
+
+    def description(self):
+        return "A cowardly creature that will flee when things get tough."

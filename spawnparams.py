@@ -32,7 +32,7 @@ ItemSpawns.append(ItemSpawnParams( I.Ring(500),               1,               1
 ItemSpawns.append(ItemSpawnParams( I.ManaPotion(402),         1,               10,          0,              5))
 ItemSpawns.append(ItemSpawnParams( I.CurePotion(403),         1,               10,          0,              3))
 ItemSpawns.append(ItemSpawnParams( I.MightPotion(404),        1,               10,          0,              2))
-ItemSpawns.append(ItemSpawnParams( I.DexterityPotion(405, -1, -1),        1,               10,          0,              2))
+ItemSpawns.append(ItemSpawnParams( I.DexterityPotion(405),    1,               10,          0,              2))
 
 
 class MonsterSpawnParams:
@@ -63,8 +63,9 @@ class MonsterSpawnParams:
 MonsterSpawns = []
 
 
-MonsterSpawns.append(MonsterSpawnParams(M.Gargoyle(-1, -1), 1, 5, 0, 1))
-MonsterSpawns.append(MonsterSpawnParams(M.Kobold(-1, -1), 1, 5, 0, 1))
-MonsterSpawns.append(MonsterSpawnParams(M.Raptor(-1, -1), 1, 5, 0, 1))
-MonsterSpawns.append(MonsterSpawnParams(M.Minotaur(-1, -1), 1, 5, 0, 1))
-MonsterSpawns.append(MonsterSpawnParams(M.Orc(-1, -1), 1, 5, 0, 1))
+MonsterSpawns.append(MonsterSpawnParams(M.Gargoyle(-1, -1), 1, 5, 0, 0))
+MonsterSpawns.append(MonsterSpawnParams(M.Kobold(-1, -1), 1, 5, 0, 0))
+MonsterSpawns.append(MonsterSpawnParams(M.Raptor(-1, -1), 1, 5, 0, 0))
+MonsterSpawns.append(MonsterSpawnParams(M.Minotaur(-1, -1), 1, 5, 0, 0))
+MonsterSpawns.append(MonsterSpawnParams(M.Orc(-1, -1), 1, 5, 0, 0))
+MonsterSpawns.append(MonsterSpawnParams(M.Goblin(-1, -1), 1, 5, 1, 1))

@@ -116,8 +116,8 @@ class MightPotion(O.Item):
 
 
 class DexterityPotion(O.Item):
-    def __init__(self, render_tag, x, y):
-        super().__init__(x, y, 0, render_tag, "Dexterity Potiorb")
+    def __init__(self, render_tag):
+        super().__init__(-1, 1, 0, render_tag, "Dexterity Potiorb")
         self.consumeable = True
         self.description = "A potiorb that makes you more dexterous for a few turns."
 

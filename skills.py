@@ -12,6 +12,7 @@ class Skill():
         self.range = range
         self.targetted = False
         self.action_cost = action_cost
+        self.threshold = 0.0
 
     def activate(self, target, generator):
         self.parent.character.mana -= self.cost
@@ -34,6 +35,9 @@ class Skill():
         if self.ready == 0 and self.parent.character.mana >= self.cost:
             return True
         return False
+    
+    def below_threshold(self):
+        return self.parent.character.health < self.threshold * self.parent.character.max_health
     
     def in_range(self, target):
         targetx, targety = target.get_location()
@@ -141,9 +145,6 @@ class Berserk(Skill):
         self.parent.character.add_status_effect(effect)
         return True
 
-    def below_threshold(self):
-        return self.parent.character.health < self.threshold * self.parent.character.max_health
-
     def castable(self, target):
         return self.basic_requirements and self.below_threshold() and not self.parent.character.has_effect("Might")
 
@@ -161,3 +162,54 @@ class Gun(Skill):
 
     def castable(self, target):
         return self.basic_requirements() and self.in_range(target)
+    
+class Terrify(Skill):
+    def __init__(self, parent, cooldown, cost, duration, activation_chance, range):
+        super().__init__("Terrify", parent, cooldown, cost, range)
+        self.duration = duration
+        self.activation_chance = activation_chance
+        self.targetted = True
+
+    def activate(self, defender, generator):
+        self.parent.character.mana -= self.cost
+        if random.random() < self.activation_chance:
+            effect = E.Fear(self.duration, self.parent)
+            defender.character.add_status_effect(effect)
+            return True
+        return False
+
+    def castable(self, target):
+        return self.basic_requirements() and self.in_range(target) and not target.character.has_effect("Fear")
+    
+class Escape(Skill):
+    def __init__(self, parent, cooldown, cost, self_fear, activation_threshold, action_cost):
+        super().__init__("Escape", parent, cooldown, cost, -1, action_cost)
+        self.threshold = activation_threshold
+        self.self_fear = self_fear
+
+
+    def activate(self, target, generator):
+        exit = generator.nearest_exit(self.parent)
+        if exit == None:
+            return False
+        exitx, exity = exit
+        dest = generator.nearest_empty_tile((exitx, exity))
+        if dest == None:
+            return False
+        destx, desty = dest
+        if isinstance(self.parent, M.Monster):
+            monster_map = generator.monster_map
+            x, y = self.parent.x, self.parent.y
+            monster_map.clear_location(x, y)
+            self.parent.x = destx
+            self.parent.y = desty
+            monster_map.place_thing(self.parent)
+        else:
+            self.parent.x = destx
+            self.parent.y = desty
+        if self.self_fear:
+            effect = E.Fear(-100, self.parent)
+            self.parent.character.add_status_effect(effect)
+
+    def castable(self, target):
+        return self.basic_requirements() and self.below_threshold()

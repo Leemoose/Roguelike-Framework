@@ -19,7 +19,9 @@ class Character():
         self.health_regen = health_regen
         self.mana_regen = mana_regen
 
+        # flags altered by status conditions
         self.movable = True
+        self.flee = False
 
         self.energy = 0
         self.move_cost = 100
@@ -212,11 +214,13 @@ class Player(O.Objects):
         self.character = Character(self, mana=50)
         self.character.skills = []
         self.character.skills.extend([
-            S.Gun(self),
-            S.BurningAttack(self, cooldown=0, cost=10, damage=20, burn_damage=10, burn_duration=10, range=10),
-            S.Petrify(self, cooldown=0, cost=10, duration=3, activation_chance=1, range=10),
-            S.ShrugOff(self, cooldown=0, cost=10, activation_chance=1.0, action_cost=1),
-            S.Berserk(self, cooldown=0, cost=10, activation_threshold=50, strength_increase=10, action_cost=1)
+            S.Gun(self), # 1
+            S.BurningAttack(self, cooldown=0, cost=10, damage=20, burn_damage=10, burn_duration=10, range=10), #2
+            S.Petrify(self, cooldown=0, cost=10, duration=3, activation_chance=1, range=10), #3
+            S.ShrugOff(self, cooldown=0, cost=10, activation_chance=1.0, action_cost=1), #4
+            S.Berserk(self, cooldown=0, cost=10, activation_threshold=50, strength_increase=10, action_cost=1), #5
+            S.Terrify(self, cooldown=0, cost=0, duration=5, activation_chance=1, range=15), #6
+            S.Escape(self, cooldown=0, cost=0, self_fear=False, activation_threshold=1.1, action_cost=1) #7
         ])
 
         self.level = 1

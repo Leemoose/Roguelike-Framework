@@ -155,6 +155,51 @@ class DungeonGenerator():
                         return False, (x, y)
         return True, (-1, -1)
 
+    def count_passable_neighbors(self, x, y):
+        count = 0
+        for direction in [(0, -1), (0, 1), (-1, 0), (1, 0), (-1, -1), (-1, 1), (1, -1), (1, 1)]:
+            if self.tile_map.get_passable(x + direction[0], y + direction[1]):
+                count += 1
+        return count
+
+    def nearest_exit (self, entity):
+        # find the nearest exit to some entity, exit is adjacent to a tile with only tiles adjacent to it that are passable
+        # if no such tile exists, return None
+        list_of_exits = []
+        for x in range(self.width):
+            for y in range(self.height):
+                if self.tile_map.track_map[x][y].passable:
+                    if self.count_passable_neighbors(x, y) == 2:
+                        list_of_exits.append((x, y))
+        entityx, entityy = entity.get_location()
+        closest_exit = None
+        closest_distance = 100000
+        for exit in list_of_exits:
+            distance = ((entityx - exit[0]) ** 2 + (entityy - exit[1]) ** 2) ** 0.5
+            if distance < closest_distance:
+                closest_distance = distance
+                closest_exit = exit
+        adjacent_to_exit = None
+        for direction in [(0, -1), (0, 1), (-1, 0), (1, 0), (-1, -1), (-1, 1), (1, -1), (1, 1)]:
+            # check all directions to find tile adjacent to exit that isnt an exit
+            if self.tile_map.get_passable(closest_exit[0] + direction[0], closest_exit[1] + direction[1]):
+                if self.count_passable_neighbors(closest_exit[0] + direction[0], closest_exit[1] + direction[1]) > 2:
+                    # if tile has a character on it already
+                    adjacent_to_exit = (closest_exit[0] + direction[0], closest_exit[1] + direction[1])
+                    break
+        return adjacent_to_exit
+
+    def nearest_empty_tile(self, location):
+        if location == None:
+            return None
+        if self.monster_map.get_passable(location[0], location[1]) and self.tile_map.get_tag(location[0], location[1]) != 200:
+            return location
+        for direction in [(0, -1), (0, 1), (-1, 0), (1, 0), (-1, -1), (-1, 1), (1, -1), (1, 1)]:
+            if self.monster_map.get_passable(location[0] + direction[0], location[1] + direction[1]) and self.tile_map.get_tag(location[0] + direction[0], location[1] + direction[1]) != 200:
+                return (location[0] + direction[0], location[1] + direction[1])
+        return None
+
+
     def in_map(self, x, y):
        return x> 0 and x < self.width and y >0 and y < self.height
 

@@ -90,3 +90,14 @@ class Slow(StatusEffect):
     
     def remove(self, target):
         target.dexterity += self.dexterity
+
+class Fear(StatusEffect):
+    def __init__(self, duration, inflictor):
+        super().__init__(806, "Fear", "is scared", duration)
+        self.inflictor = inflictor
+    
+    def apply_effect(self, target):
+        target.flee = True
+    
+    def remove(self, target):
+        target.flee = False
