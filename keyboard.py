@@ -113,8 +113,6 @@ class Keyboard():
             loop.update_screen = True
         elif key == "esc":
             loop.change_loop(LoopType.paused)
-            print("Paused")
-            display.open_pause_screen()
         elif key == "z":
             loop.change_loop(LoopType.rest)
         elif key.isdigit():
@@ -229,7 +227,8 @@ class Keyboard():
     def key_paused(self, key, loop, display):
         if key == "esc":
             loop.change_loop(LoopType.action)
-            display.close_pause_screen()
+        elif key == "m":
+            loop.change_loop(LoopType.main)
         elif key == "q":
             return False
 

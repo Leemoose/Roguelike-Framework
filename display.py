@@ -482,6 +482,50 @@ class Display:
         self.win.fill(self.colorDict.getColor("black"))
         self.uiManager.draw_ui(self.win)
 
+    def create_pause_screen(self):
+        self.uiManager.clear_and_reset()
+
+        width = 700
+        height = 300
+        startX = (self.screen_width - width) / 2
+        startY = (self.screen_height - height) / 2
+
+        numButtons = 3
+
+        offset = 10
+        self.draw_empty_box(startX, startY, width, height)
+
+        startX += offset
+        startY += offset
+        width -= 2 * offset
+        buttonHeight = ((height - offset) / numButtons) - offset
+        
+        unpause = pygame_gui.elements.UIButton(
+                    relative_rect=pygame.Rect((startX, startY, width, buttonHeight)),
+                    text = "Unpause",
+                    manager=self.uiManager,
+                    starting_height=1000) #Important! Need this to be high so it's above the panel.
+        unpause.action = "esc"
+
+        startY += buttonHeight + offset
+        menu = pygame_gui.elements.UIButton(
+                    relative_rect=pygame.Rect((startX, startY, width, buttonHeight)),
+                    text = "Return to (m)enu",
+                    manager=self.uiManager,
+                    starting_height=1000) #Important! Need this to be high so it's above the panel.
+        menu.action = 'm'
+
+        startY += buttonHeight + offset
+        quit = pygame_gui.elements.UIButton(
+                    relative_rect=pygame.Rect((startX, startY, width, buttonHeight)),
+                    text = "(Q)uit",
+                    manager=self.uiManager,
+                    starting_height=1000)
+        quit.action = 'q'
+
+    def update_pause_screen(self):
+        self.uiManager.draw_ui(self.win)
+
 
     def draw_character_stats(self, player, margin_from_left, margin_from_top, width, height):
         text_box = pygame_gui.elements.UITextBox(
@@ -503,6 +547,12 @@ class Display:
                         "Effect Duration Bonus: " + str(player.character.skill_duration_increase()) + "<br>"
                         ,
 
+            manager=self.uiManager
+        )
+
+    def draw_empty_box(self, margin_from_left, margin_from_top, width, height):
+        box = pygame_gui.elements.UIPanel(
+            relative_rect=pygame.Rect((margin_from_left, margin_from_top), (width, height)),
             manager=self.uiManager
         )
 
@@ -561,16 +611,6 @@ class Display:
 
         healthBar = ui.HealthBar(pygame.Rect((20,400), (120,40)), self.uiManager, player)
         manaBar = ui.ManaBar(pygame.Rect((20,450), (120,40)), self.uiManager, player)
-
-    def open_pause_screen(self):
-        #self.pauseWindow = pygame_gui.core.UIContainer(pygame.Rect((0, 0), (self.screen_width, self.screen_height)),
-        #                                  manager=self.uiManager, starting_height=1)
-        #self.uiManager.get_window_stack().add_new_window(self.pauseWindow)\
-        print("Pause screen opens here!")
-    
-    def close_pause_screen(self):
-        #self.uiManager.get_window_stack().remove_window(self.pauseWindow)
-        print("Pause screen closes here!")
 
 def create_main_screen(scr, width, height):
     button_width = width // 6

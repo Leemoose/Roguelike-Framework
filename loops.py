@@ -153,6 +153,8 @@ class Loops():
             pass
         elif newLoop == LoopType.examine:
             pass
+        elif newLoop == LoopType.paused:
+            self.display.create_pause_screen()
 
     def action_loop(self, keyboard, display):
         """
@@ -232,6 +234,10 @@ class Loops():
                 elif (self.currentLoop == LoopType.equipment):
                     key = event.ui_element.action
                     keyboard.key_equipment(self, self.player, self.item_dict, key)
+                elif (self.currentLoop == LoopType.paused):
+                    key = event.ui_element.action
+                    if (keyboard.key_paused(key, self, display) == False):
+                        return False
 
             elif event.type == pygame.MOUSEBUTTONUP:
                 x,y = pygame.mouse.get_pos()
@@ -309,6 +315,8 @@ class Loops():
             display.update_display(colors, self.generator.tile_map, tileDict, self.monster_dict, self.item_dict,
                                    self.monster_map, self.player, self.messages, self.target_to_display)
             display.update_examine(self.targets.target_list, tileDict, self.messages)
+        elif self.currentLoop == LoopType.paused:
+            display.update_pause_screen()
         pygame.display.update()
         self.update_screen = False
 
