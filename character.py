@@ -34,7 +34,9 @@ class Character():
         self.inventory = []
         self.main_weapon = None
         self.main_shield = None
+
         self.chestarmor = None
+        self.main_armor = None
         self.boots = None
         self.gloves = None
         self.helmet = None
@@ -49,7 +51,7 @@ class Character():
         self.skills = []
 
         self.experience_given = 0 # monsters will overwrite this attribute, it just makes some class stuff easier if its stored in character
-        self.experience = None
+        self.experience = 0
 
         self.health_partial = 0.0
         self.mana_partial = 0.0
@@ -79,8 +81,15 @@ class Character():
             self.mana = self.max_mana
 
     def defend(self):
-        defense = self.armor
+        defense = self.armor + (self.endurance // 3)
         return defense
+
+    def skill_damage_increase(self):
+        return int((self.intelligence * 1.5) // 2)
+
+    def skill_duration_increase(self):
+        return (self.intelligence // 4)
+
 
     def grab(self, key, item_ID, generated_maps, loop):
         item = item_ID.get_subject(key)
@@ -131,15 +140,36 @@ class Character():
         self.intelligence += 1
         self.dexterity += 1
         self.strength += 1
+        self.max_health += (5 + self.endurance - 1)
         self.health = self.max_health
+        self.max_mana += (5 + self.intelligence - 1)
+        self.mana = self.max_mana
+
+    def get_damage_min(self):
+        return self.get_damage()[0]
+    
+    def get_damage_max(self):
+        return self.get_damage()[1]
+
+    def get_damage(self):
+        if self.main_weapon == None:
+            return self.base_damage + 1, self.base_damage + 20
+        else:
+            return self.base_damage + self.main_weapon.damage_min, self.base_damage + self.main_weapon.damage_max
 
     def melee(self, defender):
         if self.main_weapon == None:
             damage = R.roll_dice(1, 20)[0]
         else:
-            damage = self.main_weapon.attack()
+            if self.main_weapon.on_hit == None:
+                damage = self.main_weapon.attack()
+            else:
+                damage, effect = self.main_weapon.attack()
         defense = defender.character.defend()
-        defender.character.take_damage(self.parent, self.base_damage + self.strength+ damage - defense)
+        defender.character.take_damage(self.parent, self.base_damage + self.strength + damage - defense)
+        if self.main_weapon != None and self.main_weapon.on_hit != None:
+            effect = effect(self.parent) # some effects need an inflictor
+            defender.character.add_status_effect(effect)
         self.energy -= self.attack_cost
         return (self.base_damage + damage +self.strength - defense)
 
@@ -220,7 +250,18 @@ class Character():
     def rest(self):
         self.health = self.max_health
         self.mana = self.max_mana
-        
+    
+    def add_skill(self, new_skill):
+        for skill in self.skills:
+            if skill.name == new_skill.name:
+                return
+        self.skills.append(new_skill)
+
+    def remove_skill(self, skill_name):
+        for skill in self.skills:
+            if skill.name == skill_name:
+                self.skills.remove(skill)
+                break
 
 
 class Player(O.Objects):
@@ -230,12 +271,12 @@ class Player(O.Objects):
         self.character.skills = []
         self.character.skills.extend([
             S.Gun(self), # 1
-            S.BurningAttack(self, cooldown=0, cost=10, damage=20, burn_damage=10, burn_duration=10, range=10), #2
-            S.Petrify(self, cooldown=0, cost=10, duration=3, activation_chance=1, range=10), #3
-            S.ShrugOff(self, cooldown=0, cost=10, activation_chance=1.0, action_cost=1), #4
-            S.Berserk(self, cooldown=0, cost=10, activation_threshold=50, strength_increase=10, action_cost=1), #5
-            S.Terrify(self, cooldown=0, cost=0, duration=5, activation_chance=1, range=15), #6
-            S.Escape(self, cooldown=0, cost=0, self_fear=False, activation_threshold=1.1, action_cost=1) #7
+            # S.BurningAttack(self, cooldown=0, cost=10, damage=20, burn_damage=10, burn_duration=10, range=10), #2
+            # S.Petrify(self, cooldown=0, cost=10, duration=3, activation_chance=1, range=10), #3
+            # S.ShrugOff(self, cooldown=0, cost=10, activation_chance=1.0, action_cost=1), #4
+            # S.Berserk(self, cooldown=0, cost=10, activation_threshold=50, strength_increase=10, action_cost=1), #5
+            # S.Terrify(self, cooldown=0, cost=0, duration=5, activation_chance=1, range=15), #6
+            # S.Escape(self, cooldown=0, cost=0, self_fear=False, activation_threshold=1.1, action_cost=1) #7
         ])
 
         self.level = 1

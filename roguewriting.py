@@ -19,7 +19,7 @@ colors = L.ColorDict()
 #dictionary mapping renderID to the image
 tileDict = M.TileDict(textSize, colors)
 #Responsible for game loops
-loop = L.Loops(width, height, textSize)
+loop = L.Loops(width, height, textSize, tileDict)
 
 display = D.Display(width, height, textSize, textWidth, textHeight)
 
@@ -28,5 +28,5 @@ keyboard = K.Keyboard()
 player_turn = True
 loop.init_game(display)
 while player_turn:
-    loop.change_screen(keyboard, display, colors, tileDict)
+    loop.render_screen(keyboard, display, colors, tileDict)
     player_turn = loop.action_loop(keyboard, display)

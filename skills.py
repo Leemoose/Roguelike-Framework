@@ -36,6 +36,11 @@ class Skill():
             return True
         return False
     
+    def health_cost_requirements(self):
+        if self.ready == 0 and self.parent.character.health > self.cost:
+            return True
+        return False
+    
     def below_threshold(self):
         return self.parent.character.health < self.threshold * self.parent.character.max_health
     
@@ -77,6 +82,20 @@ class Teleport(Skill):
                 self.parent.x = startx
                 self.parent.y = starty
 
+class MagicMissile(Skill):
+    def __init__(self, parent, cooldown, cost, damage, range, action_cost):
+        super().__init__("Magic missile", parent, cooldown, cost, range, action_cost)
+        self.damage = damage
+        self.targetted = True
+
+    def activate(self, defender, generator):
+        self.parent.character.mana -= self.cost
+        defender.character.take_damage(self.parent, self.damage + self.parent.character.skill_damage_increase())
+        return True
+
+    def castable(self, target):
+        return self.basic_requirements() and self.in_range(target)
+
 class BurningAttack(Skill):
     def __init__(self, parent, cooldown, cost, damage, burn_damage, burn_duration, range):
         super().__init__("Burning attack", parent, cooldown, cost, range)
@@ -87,8 +106,9 @@ class BurningAttack(Skill):
 
     def activate(self, defender, generator):
         self.parent.character.mana -= self.cost
-        defender.character.take_damage(self.parent, self.damage)
-        effect = E.Burn(self.burn_duration, self.burn_damage, self.parent)
+        defender.character.take_damage(self.parent, self.damage + self.parent.character.skill_damage_increase())
+        effect = E.Burn(self.burn_duration + self.parent.character.skill_duration_increase(), 
+                        self.burn_damage + self.parent.character.skill_damage_increase(), self.parent)
         defender.character.add_status_effect(effect)
         return True # return true if successfully cast, burningAttack cannot fail
 
@@ -105,7 +125,11 @@ class Petrify(Skill):
     def activate(self, defender, generator):
         self.parent.character.mana -= self.cost
         if random.random() < self.activation_chance:
-            effect = E.Petrify(self.duration)
+            if self.duration != -100:
+                duration = self.duration + self.parent.character.skill_duration_increase()
+            else:
+                duration = -100
+            effect = E.Petrify(duration)
             defender.character.add_status_effect(effect)
             return True
         return False
@@ -134,19 +158,39 @@ class ShrugOff(Skill):
 
 class Berserk(Skill):
     # self-might if below certain health percent
-    def __init__(self, parent, cooldown, cost, activation_threshold, strength_increase, action_cost):
+    def __init__(self, parent, cooldown, cost, duration, activation_threshold, strength_increase, action_cost):
         super().__init__("Berserk", parent, cooldown, cost, -1, action_cost)
         self.threshold = activation_threshold
+        self.duration = duration
         self.strength_increase = strength_increase
     
     def activate(self, defender, generator):
         self.parent.character.mana -= self.cost
-        effect = E.Might(-100, self.strength_increase)
+        if self.duration != -100:
+            duration = self.duration + self.parent.character.skill_duration_increase()
+        else:
+            duration = -100
+        effect = E.Might(duration, self.strength_increase)
         self.parent.character.add_status_effect(effect)
         return True
 
     def castable(self, target):
         return self.basic_requirements and self.below_threshold() and not self.parent.character.has_effect("Might")
+
+class BloodPact(Skill):
+    def __init__(self, parent, cooldown, cost, strength_increase, duration, action_cost):
+        super().__init__("Blood pact", parent, cooldown, cost, -1, action_cost)
+        self.strength_increase = strength_increase
+        self.duration = duration
+
+    def activate(self, defender, generator):
+        self.parent.character.take_damage(self.parent, self.cost)
+        effect = E.Might(self.duration + self.parent.character.skill_duration_increase(), self.strength_increase)
+        self.parent.character.add_status_effect(effect)
+        return True
+
+    def castable(self, target):
+        return self.health_cost_requirements and not self.parent.character.has_effect("Might")
 
 # I only want this for playtesting, it's not a real skill
 class Gun(Skill):
@@ -173,7 +217,11 @@ class Terrify(Skill):
     def activate(self, defender, generator):
         self.parent.character.mana -= self.cost
         if random.random() < self.activation_chance:
-            effect = E.Fear(self.duration, self.parent)
+            if self.duration != -100:
+                duration = self.duration + self.parent.character.skill_duration_increase()
+            else:
+                duration = -100
+            effect = E.Fear(duration, self.parent)
             defender.character.add_status_effect(effect)
             return True
         return False

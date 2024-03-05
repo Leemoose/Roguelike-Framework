@@ -5,6 +5,7 @@ import character as C
 import objects as O
 import targets as T
 import shadowcasting
+from enum import Enum
 import pickle
 
 """
@@ -15,6 +16,21 @@ Classes:
     Memory --> Dictionary of everything important for saving
     Loops --> After input, controls what the game should do
 """
+
+class LoopType(Enum):
+    none = -1
+    action = 0
+    autoexplore = 1
+    inventory = 2
+    equipment = 3
+    main = 4
+    race = 5
+    classes = 6
+    items = 7
+    examine = 8
+    rest = 9
+    paused = 10
+    targeting = 11
 
 class ColorDict():
     """
@@ -87,20 +103,11 @@ class Loops():
     """
     This is the brains of the game and after accepting an input from keyboard, will decide what needs to be done
     """
-    def __init__(self, width, height, textSize):
-        self.action = False
-        self.inventory = False
-        self.race = False
+    def __init__(self, width, height, textSize, tileDict):
         self.update_screen = True
-        self.main = True
-        self.classes = False
-        self.examine = False
-        self.targeting = False
-        self.autoexplore = False
-        self.rest = False
-        self.paused = False
+        self.limit_inventory = None
 
-        self.inventory_buttons = None
+        self.currentLoop = LoopType.none
 
         self.width = width
         self.height = height
@@ -117,6 +124,35 @@ class Loops():
         self.messages = []
         self.targets = T.Target()
         self.target_to_display = None
+        self.tileDict = tileDict
+
+        #Start the game by going to the main screen
+        self.change_loop(LoopType.main)
+
+    #Sets the internal loop type, and does the initialization that it needs.
+    #Mostly here to cache UI pieces, which shouldn't be remade every frame.
+    def change_loop(self, newLoop):
+        self.currentLoop = newLoop
+        self.update_screen = True
+        
+        if newLoop == LoopType.action:
+            pass
+        elif newLoop == LoopType.autoexplore:
+            pass
+        elif newLoop == LoopType.inventory:
+            self.display.create_inventory(self.player, self.limit_inventory)
+        elif newLoop == LoopType.equipment:
+            self.display.create_equipment(self.player, self.tileDict)
+        elif newLoop == LoopType.main:
+            pass
+        elif newLoop == LoopType.race:
+            pass
+        elif newLoop == LoopType.classes:
+            pass
+        elif newLoop == LoopType.items:
+            pass
+        elif newLoop == LoopType.examine:
+            pass
 
     def action_loop(self, keyboard, display):
         """
@@ -126,17 +162,16 @@ class Loops():
         """
 
         action = None
-        if self.autoexplore == True:
+        if self.currentLoop == LoopType.autoexplore:
             all_seen, _ = self.generator.all_seen()
             if all_seen:
-                self.autoexplore = False
-                self.action = True
+                self.change_loop(LoopType.action)
                 self.add_message("You have explored the entire floor")
             else:
                 self.player.autoexplore(self)
                 self.monster_loop(0)
         
-        if self.rest == True:
+        if self.currentLoop == LoopType.rest:
             monster_present = False
             for monster_key in self.monster_dict.subjects:
                 if self.monster_dict.get_subject(monster_key).brain.is_awake:
@@ -163,45 +198,48 @@ class Loops():
                         key = keyboard.key_string(event.key, False)
                 except:
                     break
-                if self.action == True:
+                if self.currentLoop == LoopType.action:
                     keyboard.key_action(self.player, self.generator.tile_map, self.monster_dict, self.monster_map, self.item_dict,self, key, self.generator, display, self.memory)
-                elif self.inventory == True:
+                elif self.currentLoop == LoopType.inventory:
                     keyboard.key_inventory(self, self.player, self.item_dict,key)
-                elif self.main == True:
+                elif self.currentLoop == LoopType.equipment:
+                    keyboard.key_equipment(self, self.player, self.item_dict, key)
+                elif self.currentLoop == LoopType.main:
                     if keyboard.key_main_screen(key, self) == False:
                         return False
-                elif self.race == True:
+                elif self.currentLoop == LoopType.race:
                     keyboard.key_race_screen(key, self)
-                elif self.classes == True:
+                elif self.currentLoop == LoopType.classes:
                     keyboard.key_class_screen(key, self)
-                elif self.items == True:
+                elif self.currentLoop == LoopType.items:
                     keyboard.key_item_screen(key, self, self.item_dict, self.player, self.item_for_item_screen, self.generator.item_map)
-                elif self.examine == True or self.targeting:
+                elif self.currentLoop == LoopType.examine or self.currentLoop == LoopType.targeting:
                     keyboard.key_targeting_screen(key, self)
-                elif self.autoexplore == True:
+                elif self.currentLoop == LoopType.autoexplore:
                     keyboard.key_autoexplore(key, self)
-                elif self.paused == True:
+                elif self.currentLoop == LoopType.paused:
                     if (keyboard.key_paused(key, self, display) == False):
                         return False
 
                 self.update_screen = True
 
             elif event.type == pygame_gui.UI_BUTTON_PRESSED:
-                return keyboard.key_main_screen(event.ui_element.action, self)
+                if (self.currentLoop == LoopType.main):
+                    return keyboard.key_main_screen(event.ui_element.action, self)
+                elif (self.currentLoop == LoopType.inventory):
+                    key = event.ui_element.action
+                    keyboard.key_inventory(self, self.player, self.item_dict, key)
+                elif (self.currentLoop == LoopType.equipment):
+                    key = event.ui_element.action
+                    keyboard.key_equipment(self, self.player, self.item_dict, key)
 
             elif event.type == pygame.MOUSEBUTTONUP:
                 x,y = pygame.mouse.get_pos()
-                if self.inventory == True:
-                    for button in self.inventory_buttons.buttons:
-                        if self.inventory_buttons.buttons[button].clicked(x, y):
-                            key = self.inventory_buttons.buttons[button].action
-                            keyboard.key_race_screen(key, self)
-                            break
                 self.update_screen = True
 
             display.uiManager.process_events(event)
 
-        if self.action == True and self.player.character.energy < 0:
+        if self.currentLoop == LoopType.action and self.player.character.energy < 0:
             self.generator.flood_map.update_flood_map(self.player)
             self.monster_loop(-self.player.character.energy)
             self.player.character.energy = 0
@@ -250,22 +288,24 @@ class Loops():
                 while monster.character.energy > 0:
                     monster.brain.rank_actions(monster, self.monster_map, self.generator.tile_map, self.generator.flood_map, self.player, self.generator, self.item_dict, self)
 
-    def change_screen(self, keyboard, display, colors, tileDict):
-        if self.action == True or self.autoexplore == True:
+    def render_screen(self, keyboard, display, colors, tileDict):
+        if self.currentLoop == LoopType.action or self.currentLoop == LoopType.autoexplore:
             self.clean_up()
             shadowcasting.compute_fov(self.player.get_location(), self.generator.tile_map.track_map)
             display.update_display(colors, self.generator.tile_map, tileDict, self.monster_dict, self.item_dict, self.monster_map, self.player, self.messages, self.target_to_display)
-        elif self.inventory == True:
-            self.inventory_buttons = display.update_inventory(self.player)
-        elif self.main == True:
+        elif self.currentLoop == LoopType.inventory:
+            display.update_inventory(self.player, self.limit_inventory)
+        elif self.currentLoop == LoopType.equipment:
+            self.equipment_buttons = display.update_equipment(self.player, tileDict)
+        elif self.currentLoop == LoopType.main:
             display.update_main()
-        elif self.race == True:
+        elif self.currentLoop == LoopType.race:
             display.update_race()
-        elif self.classes == True:
+        elif self.currentLoop == LoopType.classes:
             display.update_class()
-        elif self.items == True:
+        elif self.currentLoop == LoopType.items:
             display.update_item(self.item_for_item_screen, tileDict)
-        elif self.examine == True or self.targeting == True:
+        elif self.currentLoop == LoopType.examine or self.currentLoop == LoopType.targeting:
             display.update_display(colors, self.generator.tile_map, tileDict, self.monster_dict, self.item_dict,
                                    self.monster_map, self.player, self.messages, self.target_to_display)
             display.update_examine(self.targets.target_list, tileDict, self.messages)
@@ -373,13 +413,8 @@ class Loops():
         self.display.create_game_ui(self.player)
 
     def load_game(self):
-        self.action = True
-        self.inventory = False
-        self.race = False
+        self.change_loop(LoopType.action)
         self.update_screen = False
-        self.main = False
-        self.classes = False
-        self.targeting = False
 
 #        self.items = False
 #        self.item_for_item_screen = None
@@ -394,11 +429,9 @@ class Loops():
         self.player.character.energy = 0
 
     def clear_data(self):
-        self.action = False
+        self.change_loop(LoopType.main)
         self.update_screen = True
-        self.main = True
 
-        self.items = False
         self.item_for_item_screen = None
         self.floor_level = 0
         self.memory = Memory()

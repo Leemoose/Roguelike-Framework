@@ -60,9 +60,12 @@ class Display:
         self.uiManager = pygame_gui.UIManager((width, height), "theme.json")
         self.windows = []
         self.clock = pygame.time.Clock()
-        self.buttons = []
+        self.buttons = Buttons()
+        self.colorDict = None
 
     def update_display(self, colorDict, floormap, tileDict, monsterID, item_ID, monster_map, player, messages, target_to_display):
+        if self.colorDict == None:
+            self.colorDict = colorDict
         self.uiManager.clear_and_reset()
         self.win.fill(colorDict.getColor("black"))
         r_x = self.textWidth // 2
@@ -155,6 +158,8 @@ class Display:
         # find monster at target
         if not monster_map.get_passable(x,y):
             monster = monster_dict.get_subject(monster_map.locate(x,y))
+            if monster == None:
+                return
 
             # draw monster
             to_draw = monster.render_tag
@@ -176,7 +181,8 @@ class Display:
             self.win.blit(text, (self.screen_width // 10, self.screen_height // 10 + 80))
 
             # description
-            text = font.render(monster.description(), True, (255, 255, 255))
+            description = monster.description
+            text = font.render(description, True, (255, 255, 255))
             self.win.blit(text, (self.screen_width // 10, self.screen_height // 10 + 95))
             nothing_at_target = False
         else:
@@ -229,9 +235,10 @@ class Display:
                 text = font.render("You are here", True, (255, 255, 255))
                 self.win.blit(text, (self.screen_width // 10, self.screen_height // 10 + 65))
         return nothing_at_target
-            
 
-    def update_inventory(self, player):
+    def create_inventory(self, player, equipment_type=None):   
+        self.uiManager.clear_and_reset()
+        self.win.fill(self.colorDict.getColor("black"))
         inventory_screen_width = self.screen_width // 2
         inventory_screen_height = self.screen_height
         inventory_offset_from_left = self.screen_width // 4
@@ -258,8 +265,9 @@ class Display:
                                     manager=self.uiManager,
                                     object_id='#title_label')
 
-        buttons = Buttons()
         for i, item in enumerate(player.character.inventory):
+            if equipment_type != None and item.equipment_type != equipment_type:
+                continue
             if item.stackable:
                 item_name = item.name + " (x" + str(item.stacks) + ")"
             else:
@@ -270,10 +278,236 @@ class Display:
                 text= chr(ord("a") + i) + ". " + item_name,
                 manager=self.uiManager)
             button.action = chr(ord("a") + i)
-            buttons.add(button, chr(ord("a") + i))
+            self.buttons.add(button, chr(ord("a") + i))
 
         self.uiManager.draw_ui(self.win)
-        return buttons
+        return self.buttons     
+
+    def update_inventory(self, player, equipment_type=None):
+        self.win.fill(self.colorDict.getColor("black"))
+        self.uiManager.draw_ui(self.win)
+    
+    def draw_on_button(self, button, img, letter="", button_size=None):
+        button.drawable_shape.states['normal'].surface.blit(img, (0, 0))
+        if button_size:
+            font_size = 20
+            font = pygame.font.Font('freesansbold.ttf', 20)
+            text = font.render(letter, True, (255, 255, 255))
+            button.drawable_shape.states['normal'].surface.blit(text, (button_size[0] // 15, button_size[1] // 5 * 4))
+        button.drawable_shape.active_state.has_fresh_surface = True
+        # button.drawable_shape.redraw_all_states()
+
+    def create_equipment(self, player, tileMap):
+        self.uiManager.clear_and_reset()
+        self.win.fill(self.colorDict.getColor("black"))
+
+        equipment_screen_width = self.screen_width // 3 * 2
+        equipment_screen_height = self.screen_height
+        equipment_offset_from_left = self.screen_width // 3
+        equipment_offset_from_top = 0
+
+        equipment_message_width = self.screen_width // 2
+        equipment_message_height = self.screen_height // 10
+        equipment_message_offset_from_left = self.screen_width // 4
+        equipment_message_offset_from_top = self.screen_height // 30
+
+        # 8 buttons, for helmet, armor, gloves, boots, ring 1, ring 2, weapon, shield
+        # equipment is across three columns
+        medium_button_width = self.screen_width // 8
+        medium_button_height = self.screen_height // 5
+        first_col_offset_from_left = self.screen_width // 4
+        outer_cols_offset_from_top = self.screen_height // 5 * 2
+        middle_col_offset_from_top = self.screen_height // 5
+        small_button_width = self.screen_width // 16 - self.screen_width // 120
+        small_button_height = self.screen_height // 8
+        margin_between_buttons_height = self.screen_height // 30
+        small_margin_between_buttons_width = self.screen_width // 60
+        margin_between_buttons_width = self.screen_width // 30
+
+        self.uiManager.clear_and_reset()
+        pygame.draw.rect(self.win, (0,0,0), pygame.Rect(equipment_offset_from_left, equipment_offset_from_top, equipment_screen_width, equipment_screen_height))
+
+
+        pygame_gui.elements.UILabel(relative_rect=pygame.Rect((equipment_message_offset_from_left, equipment_message_offset_from_top),
+                                                              (equipment_message_width, equipment_message_height)),
+                                    text="Equipment",
+                                    manager=self.uiManager,
+                                    object_id='#title_label')
+
+        # equipment_slots = ["shield", "ring", "ring", "helmet", "armor", "boots", "weapon", "gloves"]:
+        if player.character.main_shield == None:
+            pre_text = "equip "
+            img = pygame.transform.scale(tileMap.tiles[806], (medium_button_width, medium_button_height))
+        else:
+            pre_text = "change "
+            img = pygame.transform.scale(tileMap.tiles[player.character.main_shield.render_tag], (medium_button_width, medium_button_height))
+        button = pygame_gui.elements.UIButton(
+                        relative_rect=pygame.Rect((first_col_offset_from_left, 
+                                                   outer_cols_offset_from_top),
+                                                  (medium_button_width, medium_button_height)),
+                        text = pre_text + "shield",
+                        manager=self.uiManager,
+                        object_id='#equipment_button')
+        self.draw_on_button(button, img, "q", (medium_button_width, medium_button_height))
+        button.action = 'q'
+
+        if len(player.character.main_rings) == 0:
+            pre_text = "equip "
+            img = pygame.transform.scale(tileMap.tiles[807], (small_button_width, small_button_height))
+        else:
+            pre_text = "change "
+            img = pygame.transform.scale(tileMap.tiles[player.character.main_rings[0].render_tag], (small_button_width, small_button_height))
+        button = pygame_gui.elements.UIButton(
+                    relative_rect=pygame.Rect((first_col_offset_from_left, 
+                                               outer_cols_offset_from_top + (medium_button_height + margin_between_buttons_height)),
+                                               (small_button_width, small_button_height)),
+                    text = "ring 1",
+                    manager=self.uiManager,
+                    object_id='#equipment_button')
+        self.draw_on_button(button, img, "a", (small_button_width, small_button_height))
+        button.action = 'a'
+        
+        if len(player.character.main_rings) != 2:
+            pre_text = "equip "
+            img = pygame.transform.scale(tileMap.tiles[807], (small_button_width, small_button_height))
+        else:
+            pre_text = "change "
+            img = pygame.transform.scale(tileMap.tiles[player.character.main_rings[1].render_tag], (small_button_width, small_button_height))
+        button = pygame_gui.elements.UIButton(
+                    relative_rect=pygame.Rect((first_col_offset_from_left + small_button_width + small_margin_between_buttons_width, 
+                                               outer_cols_offset_from_top + (medium_button_height + margin_between_buttons_height)),
+                                              (small_button_width, small_button_height)),
+                    text = "ring 2",
+                    manager=self.uiManager,
+                    object_id='#equipment_button')
+        self.draw_on_button(button, img, "z", (small_button_width, small_button_height))
+        button.action = 'z'
+        
+        if player.character.helmet == None:
+            pre_text = "equip "
+            img = pygame.transform.scale(tileMap.tiles[804], (medium_button_width, medium_button_height))
+        else:
+            pre_text = "change "
+            img = pygame.transform.scale(tileMap.tiles[player.character.helmet.render_tag], (medium_button_width, medium_button_height))
+        button = pygame_gui.elements.UIButton(
+                    relative_rect=pygame.Rect((first_col_offset_from_left + medium_button_width + margin_between_buttons_width, 
+                                               middle_col_offset_from_top),
+                                               (medium_button_width, medium_button_height)),
+                    text = pre_text + "helmet",
+                    manager=self.uiManager,
+                    object_id='#equipment_button')
+        self.draw_on_button(button, img, "w", (medium_button_width, medium_button_height))
+        button.action = 'w'
+        
+        
+        if player.character.main_armor == None:
+            pre_text = "equip "
+            img = pygame.transform.scale(tileMap.tiles[801], (medium_button_width, medium_button_height))
+        else:
+            pre_text = "change "
+            img = pygame.transform.scale(tileMap.tiles[player.character.main_armor.render_tag], (medium_button_width, medium_button_height))
+        button = pygame_gui.elements.UIButton(
+                    relative_rect=pygame.Rect((first_col_offset_from_left + medium_button_width + margin_between_buttons_width, 
+                                               middle_col_offset_from_top + (medium_button_height + margin_between_buttons_height)),
+                                               (medium_button_width, medium_button_height)),
+                    text = pre_text + "armor",
+                    manager=self.uiManager,
+                    object_id='#equipment_button')
+        
+        self.draw_on_button(button, img, "s", (medium_button_width, medium_button_height))
+        button.action = 's'
+    
+        if player.character.boots == None:
+            pre_text = "equip "
+            img = pygame.transform.scale(tileMap.tiles[802], (medium_button_width, medium_button_height))
+        else:
+            pre_text = "change "
+            img = pygame.transform.scale(tileMap.tiles[player.character.boots.render_tag], (medium_button_width, medium_button_height))
+        
+        button = pygame_gui.elements.UIButton(
+                    relative_rect=pygame.Rect((first_col_offset_from_left + medium_button_width + margin_between_buttons_width, 
+                                               middle_col_offset_from_top + 2 * (medium_button_height + margin_between_buttons_height)),
+                                               (medium_button_width, medium_button_height)),
+                    text = pre_text + "boots",
+                    manager=self.uiManager,
+                    object_id='#equipment_button')
+
+        self.draw_on_button(button, img, "x", (medium_button_width, medium_button_height))
+        button.action = 'x'
+        
+        if player.character.main_weapon == None:
+            pre_text = "equip "
+            img = pygame.transform.scale(tileMap.tiles[805], (medium_button_width, medium_button_height))
+        else:
+            pre_text = "change "
+            img = pygame.transform.scale(tileMap.tiles[player.character.main_weapon.render_tag], (medium_button_width, medium_button_height))
+        
+        button = pygame_gui.elements.UIButton(
+                    relative_rect=pygame.Rect((first_col_offset_from_left + 2 * (medium_button_width + margin_between_buttons_width), 
+                                               outer_cols_offset_from_top),
+                                               (medium_button_width, medium_button_height)),
+                    text = pre_text + "weapon",
+                    manager=self.uiManager,
+                    object_id='#equipment_button')
+        
+        self.draw_on_button(button, img, "d", (medium_button_width, medium_button_height))
+        button.action = 'd'
+
+        if player.character.gloves == None:
+            pre_text = "equip "
+            img = pygame.transform.scale(tileMap.tiles[803], (medium_button_width, medium_button_height))
+        else:
+            pre_text = "change "
+            img = pygame.transform.scale(tileMap.tiles[player.character.gloves.render_tag], (medium_button_width, medium_button_height))
+        
+        button = pygame_gui.elements.UIButton(
+                    relative_rect=pygame.Rect((first_col_offset_from_left + 2 * (medium_button_width + margin_between_buttons_width), 
+                                               outer_cols_offset_from_top + (medium_button_height + margin_between_buttons_height)),
+                                               (medium_button_width, medium_button_height)),
+                    text = pre_text + "gloves",
+                    manager=self.uiManager,
+                    object_id='#equipment_button')
+        
+        self.draw_on_button(button, img, "c", (medium_button_width, medium_button_height))
+        button.action = 'c'
+
+        self.draw_character_stats(player, 
+                                  margin_from_left = first_col_offset_from_left + 3 * (medium_button_width + margin_between_buttons_width),
+                                  margin_from_top = middle_col_offset_from_top,
+                                  width = medium_button_width * 2,
+                                  height = medium_button_height * 3 + margin_between_buttons_height * 2)       
+        self.uiManager.draw_ui(self.win)
+
+    def update_equipment(self, player, tileMap):       
+        self.win.fill(self.colorDict.getColor("black"))
+        self.uiManager.draw_ui(self.win)
+
+
+    def draw_character_stats(self, player, margin_from_left, margin_from_top, width, height):
+        text_box = pygame_gui.elements.UITextBox(
+            relative_rect=pygame.Rect((margin_from_left, margin_from_top), (width, height)),
+            html_text = "Player<br><br>"
+                        "Stats<br>"
+                        "Strength: " + str(player.character.strength) + "<br>"
+                        "Dexterity: " + str(player.character.dexterity) + "<br>"
+                        "Endurance: " + str(player.character.endurance) + "<br>"
+                        "Intelligence: " + str(player.character.intelligence) + "<br>"
+                        "<br>"
+                        "Health: " + str(player.character.health) + " / " + str(player.character.max_health) + "<br>"
+                        "Mana: " + str(player.character.mana) + " / " + str(player.character.max_mana) + "<br>"
+                        "<br>"
+                        "Damage: " + str(player.character.get_damage_min()) + " - " + str(player.character.get_damage_max()) + " (+" + str(player.character.strength) + ") <br>"
+                        "Defense: " + str(player.character.armor) + " (+" + str(player.character.endurance // 3) + ") <br>"
+                        "Movement Delay: " + str(player.character.move_cost) + "<br>"
+                        "Skill Damage Bonus: " + str(player.character.skill_damage_increase()) + "<br>"
+                        "Effect Duration Bonus: " + str(player.character.skill_duration_increase()) + "<br>"
+                        "<br>Known Skills:<br>"
+                        + "<br>".join([str(i + 1) + ". " + skill.name for i, skill in enumerate(player.character.skills)])
+                        ,
+            manager=self.uiManager
+        )
+
+
 
     def update_main(self):
     #Main Screen

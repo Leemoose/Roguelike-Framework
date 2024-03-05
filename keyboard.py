@@ -1,4 +1,5 @@
 import pygame
+from loops import LoopType
 
 class Keyboard():
     """
@@ -18,6 +19,7 @@ class Keyboard():
         keys_to_string[pygame.K_g] = "g"
         keys_to_string[pygame.K_h] = "h"
         keys_to_string[pygame.K_i] = "i"
+        keys_to_string[pygame.K_e] = "e"
 
         keys_to_string[pygame.K_w] = "w"
         keys_to_string[pygame.K_s] = "s"
@@ -83,9 +85,12 @@ class Keyboard():
                     player.character.grab(item_key, item_ID, generated_maps, loop)
                     break
         elif key == "i":
-            loop.action = False
-            loop.inventory = True
-            loop.update_screen = True
+            loop.change_loop(LoopType.inventory)
+        elif key == "e":
+            loop.change_loop(LoopType.equipment)
+        elif key == "q":
+            loop.limit_inventory = "Potiorb"
+            loop.change_loop(LoopType.inventory)
         elif key == "p":
             loop.display.set_visual_debug_mode(True)
         elif key == ">":
@@ -96,27 +101,22 @@ class Keyboard():
             player.character.wait()
             loop.add_message("The player waits.")
         elif key == 'x':
-            loop.action = False
-            loop.examine = True
-            loop.update_screen = True
+            loop.change_loop(LoopType.examine)
             loop.targets.start_target(loop.player.get_location())
             loop.add_target(loop.player.get_location())
         elif key == "o":
-            loop.autoexplore = True
-            loop.action = False
+            loop.change_loop(LoopType.autoexplore)
         elif key == "s":
             memory.save_objects()
         elif key == "t":
             player.skills.teleport(loop.generator)
             loop.update_screen = True
         elif key == "esc":
-            loop.paused = True
-            loop.action = False
+            loop.change_loop(LoopType.paused)
             print("Paused")
             display.open_pause_screen()
         elif key == "z":
-            loop.rest = True
-            loop.action = False
+            loop.change_loop(LoopType.rest)
         elif key.isdigit():
             # cast a skill
             skill_num = int(key) - 1
@@ -127,10 +127,7 @@ class Keyboard():
                     else:
                         loop.add_message("You can't cast " + player.character.skills[skill_num].name + " right now.")
                 else:
-                    loop.action = False
-                    loop.targeting = True
-                    loop.update_screen = True
-                    loop.examine = False
+                    loop.change_loop(LoopType.targeting)
                     closest_dist = 100000
                     closest_monster = player
                     for monster_key in monsterID.subjects:
@@ -147,15 +144,45 @@ class Keyboard():
 
     def key_inventory(self, loop, player, item_dict, key):
             if key == "esc":
-                loop.inventory = False
-                loop.action = True
-                loop.update_screen = True
+                if loop.limit_inventory == None:
+                    loop.change_loop(LoopType.action)
+                else:
+                    loop.change_loop(LoopType.equipment)
+                loop.limit_inventory = None
 
             for i in range(len(player.character.inventory)):
                 if chr(ord("a")+i) == key:
-                    loop.inventory = False
-                    loop.items = True
                     loop.item_for_item_screen = player.character.inventory[i]
+                    loop.change_loop(LoopType.items)
+
+    def key_equipment(self, loop, player, item_dict, key):
+        if key == "esc":
+            loop.limit_inventory = None
+            loop.change_loop(LoopType.action)
+        elif key == "q":
+            loop.limit_inventory = "Shield"
+            loop.change_loop(LoopType.inventory)
+        elif key == "a":
+            loop.limit_inventory = "Ring"
+            loop.change_loop(LoopType.inventory)
+        elif key == "z":
+            loop.limit_inventory = "Ring"
+            loop.change_loop(LoopType.inventory)
+        elif key == "w":
+            loop.limit_inventory = "Helmet"
+            loop.change_loop(LoopType.inventory)
+        elif key == "s":
+            loop.limit_inventory = "Armor"
+            loop.change_loop(LoopType.inventory)
+        elif key == "x":
+            loop.limit_inventory = "Boots"
+            loop.change_loop(LoopType.inventory)
+        elif key == "d":
+            loop.limit_inventory = "Weapon"
+            loop.change_loop(LoopType.inventory)
+        elif key == "c":
+            loop.limit_inventory = "Gloves"
+            loop.change_loop(LoopType.inventory)
 
     def key_main_screen(self, key, loop):
         if key == "esc":
@@ -164,58 +191,44 @@ class Keyboard():
             loop.memory.load_objects()
             loop.load_game()
         else:
-            loop.main = False
-            loop.action = True
-            loop.update_screen = True
+            loop.change_loop(LoopType.action)
             loop.init_new_game()
             loop.down_floor()
         return True
     
     def key_race_screen(self, key, loop):
         if key == "esc":
-            loop.race = False
-            loop.main = True
-            loop.update_screen = True
+            loop.change_loop(LoopType.main)
         else:
-            loop.race = False
-            loop.classes = True
-            loop.update_screen = True
+            loop.change_loop(LoopType.classes)
 
     def key_class_screen(self, key, loop):
         if key == "esc":
-            loop.classes = False
-            loop.race = True
-            loop.update_screen = True        
+            loop.change_loop(LoopType.race)   
         else:
-            loop.classes = False
-            loop.action = True
-            loop.update_screen = True
+            loop.change_loop(LoopType.action)
             loop.down_floor()
 
     def key_item_screen(self, key, loop, item_dict, player, item, item_map):
             if key == "esc":
-                loop.items = False
-                loop.inventory = True
-                loop.update_screen = True
+                if loop.limit_inventory == None:
+                    loop.change_loop(LoopType.inventory)
+                else:
+                    loop.change_loop(LoopType.equipment)
             elif key == "d":
                 player.character.drop(item, item_dict, item_map)
-                loop.items = False
-                loop.inventory = True
-                loop.update_screen = True
+                loop.change_loop(LoopType.inventory)
             elif key == "e":
                 player.character.equip(item)
             elif key == "u":
                 player.character.unequip(item)
             elif key == 'q':
                 if player.character.quaff(item, item_dict, item_map):
-                    loop.update_screen = True
-                    loop.inventory = True
-                    loop.items = False
+                    loop.change_loop(LoopType.inventory)
 
     def key_paused(self, key, loop, display):
         if key == "esc":
-            loop.paused = False
-            loop.action = True
+            loop.change_loop(LoopType.action)
             display.close_pause_screen()
         elif key == "q":
             return False
@@ -252,23 +265,18 @@ class Keyboard():
         elif key == "esc":
             targets.void_skill()
             loop.void_target()
-            loop.targeting = False
-            loop.action = True
-            loop.update_screen = True
+            loop.change_loop(LoopType.action)
         elif key == "return":
-            if loop.examine:
+            if loop.currentLoop == LoopType.examine:
                 targets.explain_target(loop)
             else:
                 targets.cast_on_target(loop)
-                loop.targeting = False
-                loop.action = True
-                loop.update_screen = True
+                loop.change_loop(LoopType.action)
                 loop.void_target()
 
     def key_autoexplore(self, key, loop):
         if key == "o":
             loop.player.autoexplore(loop)
         else:
-            loop.action = True
-            loop.autoexplore = False
+            loop.change_loop(LoopType.action)
 
