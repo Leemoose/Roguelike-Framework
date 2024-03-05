@@ -487,8 +487,9 @@ class Display:
                         "Movement Delay: " + str(player.character.move_cost) + "<br>"
                         "Skill Damage Bonus: " + str(player.character.skill_damage_increase()) + "<br>"
                         "Effect Duration Bonus: " + str(player.character.skill_duration_increase()) + "<br>"
+                        "<br>Known Skills:<br>"
+                        + "<br>".join([str(i + 1) + ". " + skill.name for i, skill in enumerate(player.character.skills)])
                         ,
-
             manager=self.uiManager
         )
 

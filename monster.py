@@ -313,7 +313,7 @@ class Orc(Monster):
         self.brain = Monster_AI(self)
         self.character.skills = []
         # below 25% health, gains 25 strength
-        self.character.skills.append(S.Berserk(self, cooldown=0, cost=0, activation_threshold=0.25, strength_increase=25, action_cost=1))
+        self.character.skills.append(S.Berserk(self, cooldown=0, cost=0, duration=-100, activation_threshold=0.25, strength_increase=25, action_cost=1))
         self.character.experience_given = 10
         self.description = "A strong humanoid with an axe and anger issues."
     
