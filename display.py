@@ -60,7 +60,7 @@ class Display:
         self.uiManager = pygame_gui.UIManager((width, height), "theme.json")
         self.windows = []
         self.clock = pygame.time.Clock()
-        self.buttons = []
+        self.buttons = Buttons()
         self.colorDict = None
 
     def update_display(self, colorDict, floormap, tileDict, monsterID, item_ID, monster_map, player, messages, target_to_display):
@@ -235,9 +235,8 @@ class Display:
                 text = font.render("You are here", True, (255, 255, 255))
                 self.win.blit(text, (self.screen_width // 10, self.screen_height // 10 + 65))
         return nothing_at_target
-            
 
-    def update_inventory(self, player, equipment_type=None):
+    def create_inventory(self, player, equipment_type=None):   
         self.uiManager.clear_and_reset()
         self.win.fill(self.colorDict.getColor("black"))
         inventory_screen_width = self.screen_width // 2
@@ -266,7 +265,6 @@ class Display:
                                     manager=self.uiManager,
                                     object_id='#title_label')
 
-        buttons = Buttons()
         for i, item in enumerate(player.character.inventory):
             if equipment_type != None and item.equipment_type != equipment_type:
                 continue
@@ -280,8 +278,12 @@ class Display:
                 text= chr(ord("a") + i) + ". " + item_name,
                 manager=self.uiManager)
             button.action = chr(ord("a") + i)
-            buttons.add(button, chr(ord("a") + i))
+            self.buttons.add(button, chr(ord("a") + i))
 
+        self.uiManager.draw_ui(self.win)
+        return self.buttons     
+
+    def update_inventory(self, player, equipment_type=None):
         self.uiManager.draw_ui(self.win)
         return self.buttons
     
