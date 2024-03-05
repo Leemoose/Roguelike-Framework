@@ -80,6 +80,7 @@ class Shield(Equipment):
 class Ring(Equipment):
     def __init__(self, render_tag):
         super().__init__(-1,-1, 0, render_tag, "Ring")
+        self.description = "The most circulr thing you own"
 
     def equip(self, entity):
         if len(entity.main_rings) >= 2 :

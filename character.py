@@ -212,6 +212,7 @@ class Player(O.Objects):
         self.character = Character(self, mana=50)
         self.character.skills = []
         self.character.skills.extend([
+            S.Gun(self),
             S.BurningAttack(self, cooldown=0, cost=10, damage=20, burn_damage=10, burn_duration=10, range=10),
             S.Petrify(self, cooldown=0, cost=10, duration=3, activation_chance=1, range=10),
             S.ShrugOff(self, cooldown=0, cost=10, activation_chance=1.0, action_cost=1),

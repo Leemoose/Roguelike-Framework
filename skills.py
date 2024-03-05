@@ -146,3 +146,18 @@ class Berserk(Skill):
 
     def castable(self, target):
         return self.basic_requirements and self.below_threshold() and not self.parent.character.has_effect("Might")
+
+# I only want this for playtesting, it's not a real skill
+class Gun(Skill):
+    def __init__(self, parent):
+        super().__init__("Gun", parent, 0, 0, 10000)
+        self.damage = 10000
+        self.targetted = True
+
+    def activate(self, defender, generator):
+        self.parent.character.mana -= self.cost
+        defender.character.take_damage(self.parent, self.damage)
+        return True
+
+    def castable(self, target):
+        return self.basic_requirements() and self.in_range(target)
