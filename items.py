@@ -1,6 +1,7 @@
 import dice as R
 import objects as O
 import effect as E
+import skills as S
 
 """
 All detailed items are initialized here.
@@ -11,6 +12,8 @@ class Equipment(O.Item):
         self.equipable = True
         self.description = "Its a " + name + "."
         self.stackable = False
+
+        self.attached_skill = None
 
     def activate(self, entity):
         pass
@@ -24,14 +27,19 @@ class Weapon(Equipment):
         self.damage_min = 0
         self.damage_max = 0
         self.equipment_type = "Weapon"
+        self.on_hit = None
 
     def equip(self, entity):
         if entity.main_weapon != None:
             entity.unequip(entity.main_weapon)
+        if self.attached_skill != None:
+            entity.add_skill(self.attached_skill(entity.parent))
         entity.main_weapon = self
 
     def unequip(self, entity):
         entity.main_weapon = None
+        if self.attached_skill != None:
+            entity.remove_skill(self.attached_skill(entity.parent).name)
 
     def attack(self):
         damage = R.roll_dice(self.damage_min, self.damage_max)[0]
@@ -45,10 +53,6 @@ class Ax(Weapon):
         self.description = "An ax with a round edge (could be rounder)"
         self.damage_min = 20
         self.damage_max = 40
-
-    def attack(self):
-        damage = R.roll_dice(20, 40)[0]
-        return damage
 
 class Hammer(Weapon):
     def __init__(self, render_tag):
@@ -67,6 +71,32 @@ class Dagger(Weapon):
         self.description = "I swear that tip is getting rounder... Larry!"
         self.damage_min = 3
         self.damage_max = 20
+
+class MagicWand(Weapon):
+    def __init__(self, render_tag):
+        super().__init__(-1, -1, 0, render_tag, "Magic Wand")
+        self.melee = True
+        self.name = "Magic Wand"
+        self.description = "A wand that you can use to cast magic missile. You can also use it in melee but why would you?"
+        self.damage_min = 1
+        self.damage_max = 5
+        self.attached_skill = (lambda owner : S.MagicMissile(owner, cooldown=3, cost=5, damage=25, range=6, action_cost=100))
+
+class FlamingSword(Weapon):
+    def __init__(self, render_tag):
+        super().__init__(-1, -1, 0, render_tag, "Flaming Sword")
+        self.melee = True
+        self.name = "Flaming Sword"
+        self.description = "A sword that is on fire. You can channel its fire to cast a Burning Attack at a distant foe. "
+        self.damage_min = 15
+        self.damage_max = 20
+
+        self.on_hit = (lambda inflictor : E.Burn(5, 3, inflictor))
+
+        self.attached_skill = (lambda owner : S.BurningAttack(owner, cooldown=5, cost=10, damage=10, burn_damage=5, burn_duration=10, range=5))
+    
+    def attack(self):
+        return (super().attack(), self.on_hit)
 
 class Armor(Equipment):
     def __init__(self, x,y, id_tag, render_tag, name):
@@ -106,7 +136,7 @@ class Ring(Equipment):
         super().__init__(-1,-1, 0, render_tag, "Ring")
         self.equipment_type = "Ring"
         self.name = "Ring"
-        self.description = "The most circulr thing you own"
+        self.description = "The most circular thing you own, it makes you feel spry on your feet"
 
     def equip(self, entity):
         if len(entity.main_rings) >= 2 :
@@ -117,6 +147,29 @@ class Ring(Equipment):
     def unequip(self, entity):
         entity.main_rings.pop(0)
         entity.move_cost += 20
+
+class BloodRing(Equipment):
+    def __init__(self, render_tag):
+        super().__init__(-1,-1, 0, render_tag, "Blood Ring")
+        self.equipment_type = "Ring"
+        self.name = "Blood Ring"
+        self.description = "Pricking your finger on the spikes of this ring makes you feel alive."
+        
+        # skill doesn't have an owner until equipped to an entity, so need a lambda expression here
+        self.attached_skill = (lambda owner : S.BloodPact(owner, cooldown=10, cost=10, strength_increase=10, duration=4, action_cost=100))
+        
+
+    def equip(self, entity):
+        if len(entity.main_rings) >= 2 :
+            entity.unequip(entity.main_rings[0])
+        entity.add_skill(self.attached_skill(entity.parent))
+        entity.main_rings.append(self)
+
+    def unequip(self, entity):
+        entity.main_rings.pop(0)
+        # if other ring is a blood ring don't remove skill
+        if entity.main_rings[0].name != "Blood Ring":
+            entity.remove_skill(self.attached_skill(entity.parent).name)
 
 class Chestarmor(Armor):
     def __init__(self, render_tag):
@@ -154,6 +207,28 @@ class Boots(Armor):
         entity.boots = None
         self.deactivate(entity)
 
+class BootsOfEscape(Armor):
+    def __init__(self, render_tag):
+        super().__init__(-1,-1, 0, render_tag, "Boots of Escape")
+        self.equipment_type = "Boots"
+        self.name = "Boots of Escape"
+        self.armor = 0
+        self.description = "Boots that let you cast the skill flee"
+        self.skill_attached = (lambda owner : S.Escape(owner, cooldown=10, cost=25, self_fear=False, activation_threshold=1.1, action_cost=1))
+        
+
+    def equip(self, entity):
+        if entity.boots != None:
+            entity.unequip(entity.boots)
+        entity.boots = self
+        entity.add_skill(self.skill_attached(entity.parent))
+        self.activate(entity)
+
+    def unequip(self, entity):
+        entity.boots = None
+        entity.remove_skill(self.skill_attached(entity.parent).name)
+        self.deactivate(entity)
+
 class Gloves(Armor):
     def __init__(self, render_tag):
         super().__init__(-1,-1, 0, render_tag, "Gloves")
@@ -188,6 +263,27 @@ class Helmet(Armor):
 
     def unequip(self, entity):
         entity.helmet = None
+        self.deactivate(entity)
+
+class VikingHelmet(Armor):
+    def __init__(self, render_tag):
+        super().__init__(-1,-1, 0, render_tag, "Viking Helmet")
+        self.equipment_type = "Helmet"
+        self.name = "Viking Helmet"
+        self.armor = 0
+        self.description = "A helmet that lets you go berserk below a quarter health"
+        self.attached_skill = (lambda owner : S.Berserk(owner, cooldown=0, cost=10, duration=10, activation_threshold=0.25, strength_increase=10, action_cost=1))
+
+    def equip(self, entity):
+        if entity.helmet != None:
+            entity.unequip(entity.helmet)
+        entity.helmet = self
+        entity.add_skill(self.attached_skill(entity.parent))
+        self.activate(entity)
+
+    def unequip(self, entity):
+        entity.helmet = None
+        entity.remove_skill(self.attached_skill(entity.parent).name)
         self.deactivate(entity)
 
 class Potion(O.Item):
