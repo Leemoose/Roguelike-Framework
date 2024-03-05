@@ -197,7 +197,6 @@ class Loops():
                             key = self.inventory_buttons.buttons[button].action
                             keyboard.key_race_screen(key, self)
                             break
-
                 self.update_screen = True
 
             display.uiManager.process_events(event)

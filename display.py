@@ -63,6 +63,7 @@ class Display:
         self.buttons = []
 
     def update_display(self, colorDict, floormap, tileDict, monsterID, item_ID, monster_map, player, messages, target_to_display):
+        self.uiManager.clear_and_reset()
         self.win.fill(colorDict.getColor("black"))
         r_x = self.textWidth // 2
         r_y = self.textHeight // 2
