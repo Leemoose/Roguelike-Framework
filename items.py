@@ -145,7 +145,7 @@ class Helmet(Equipment):
     def equip(self, entity):
         if entity.helmet != None:
             entity.unequip(entity.helmet)
-        entity.armor = self
+        entity.helmet = self
 
     def unequip(self, entity):
         entity.helmet = None
