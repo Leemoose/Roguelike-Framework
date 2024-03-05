@@ -30,9 +30,14 @@ class Character():
         self.attack_cost = 100
 
         self.alive = True
+
         self.inventory = []
         self.main_weapon = None
         self.main_shield = None
+        self.armor = None
+        self.boots = None
+        self.gloves = None
+        self.helmet = None
         self.main_rings = []
 
         self.base_damage = 0

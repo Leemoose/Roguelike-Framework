@@ -92,6 +92,54 @@ class Ring(Equipment):
         entity.main_rings.pop(0)
         entity.move_cost += 20
 
+class Armor(Equipment):
+    def __init__(self, render_tag):
+        super().__init__(-1,-1, 0, render_tag, "Armor")
+
+    def equip(self, entity):
+        if entity.armor != None:
+            entity.unequip(entity.armor)
+        entity.armor = self
+
+    def unequip(self, entity):
+        entity.armor = None
+
+class Boots(Equipment):
+    def __init__(self, render_tag):
+        super().__init__(-1,-1, 0, render_tag, "Boots")
+
+    def equip(self, entity):
+        if entity.boots != None:
+            entity.unequip(entity.boots)
+        entity.boots = self
+
+    def unequip(self, entity):
+        entity.boots = None
+
+class Gloves(Equipment):
+    def __init__(self, render_tag):
+        super().__init__(-1,-1, 0, render_tag, "Gloves")
+
+    def equip(self, entity):
+        if entity.gloves != None:
+            entity.unequip(entity.gloves)
+        entity.gloves = self
+
+    def unequip(self, entity):
+        entity.gloves = None
+
+class Helmet(Equipment):
+    def __init__(self, render_tag):
+        super().__init__(-1,-1, 0, render_tag, "Hemlet")
+
+    def equip(self, entity):
+        if entity.helmet != None:
+            entity.unequip(entity.helmet)
+        entity.armor = self
+
+    def unequip(self, entity):
+        entity.helmet = None
+
 
 class HealthPotion(O.Item):
     def __init__(self, render_tag):
