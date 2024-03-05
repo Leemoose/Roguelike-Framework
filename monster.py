@@ -241,6 +241,8 @@ class Monster(O.Objects):
         self.brain = Monster_AI(self)
         self.skills = []
 
+        self.description = f"This is a {self.name}. It wants to eat you."
+
     def move(self, move_x, move_y, floormap, monster, monster_map, player):
         # print(self.character.movable)
         # print(move_x)
@@ -258,9 +260,6 @@ class Monster(O.Objects):
             monster.x += move_x
             monster_map.track_map[monster.x][monster.y] = monster.id_tag
     
-    def description(self):
-        # default description for a monster is just its name
-        return f"This is a {self.name}. It wants to eat you."
 
     def __str__(self):
         return self.name
@@ -271,9 +270,8 @@ class Kobold(Monster):
         self.skills = []
         self.character.skills.append(S.BurningAttack(self, cooldown=10, cost=0, damage=10, burn_damage=5, burn_duration=5, range=1.5))
         self.character.experience_given = 10
-    
-    def description(self):
-        return "A small, scaly creature with a penchant for setting things on fire. Including you."
+
+        self.description = "A small, scaly creature with a penchant for setting things on fire. Including you."
 
 class Gargoyle(Monster):
     def __init__(self, x, y, render_tag=108, name="Gargoyle"):
@@ -285,8 +283,7 @@ class Gargoyle(Monster):
         self.character.skills.append(S.Petrify(self, cooldown=10, cost=0, duration=2, activation_chance=0.2, range=3))
         self.character.experience_given = 10
 
-    def description(self):
-        return "A stone creature that can petrify you with its gaze."
+        self.description = "A stone creature that can petrify you with its gaze."
 
 class Raptor(Monster):
     def __init__(self, x, y, render_tag=109, name="Velociraptor"):
@@ -297,9 +294,7 @@ class Raptor(Monster):
         self.character.dexterity += 5
         self.brain = Monster_AI(self)
         self.character.experience_given = 10
-
-    def description(self):
-        return "A very fast and very angry dinosaur."
+        self.description = "A very fast and very angry dinosaur."
 
 class Minotaur(Monster):
     def __init__(self, x, y, render_tag=110, name="Minotaur"):
@@ -309,9 +304,7 @@ class Minotaur(Monster):
         self.character.skills = []
         self.character.skills.append(S.ShrugOff(self, cooldown=3, cost=0, activation_chance=0.75, action_cost=1))
         self.character.experience_given = 10
-
-    def description(self):
-        return "A large, angry bull that can shrug off your status effects"
+        self.description = "A large, angry bull that can shrug off your status effects"
 
 class Orc(Monster):
     def __init__(self, x, y, render_tag=101, name="Orc"):
@@ -322,9 +315,7 @@ class Orc(Monster):
         # below 25% health, gains 25 strength
         self.character.skills.append(S.Berserk(self, cooldown=0, cost=0, activation_threshold=0.25, strength_increase=25, action_cost=1))
         self.character.experience_given = 10
-
-    def description(self):
-        return "A strong humanoid with an axe and anger issues."
+        self.description = "A strong humanoid with an axe and anger issues."
     
 class Goblin(Monster):
     def __init__(self, x, y, render_tag=106, name="Goblin"):
@@ -334,6 +325,5 @@ class Goblin(Monster):
         self.character.skills = []
         self.character.skills.append(S.Escape(self, cooldown=100, cost=0, self_fear=True, activation_threshold=0.4, action_cost=1))
         self.character.experience_given = 10
-
-    def description(self):
-        return "A cowardly creature that will flee when things get tough."
+        self.description = "A cowardly creature that will flee when things get tough."
+        

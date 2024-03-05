@@ -75,6 +75,8 @@ class Armor(Equipment):
         self.armor = 0
 
     def activate(self, entity):
+        if entity.armor :
+            entity.armor = 0
         entity.armor += self.armor
 
     def deactivate(self, entity):
@@ -124,9 +126,10 @@ class Chestarmor(Armor):
         self.armor = 5
 
     def equip(self, entity):
-        if entity.armor != None:
+        if entity.main_armor != None:
             entity.unequip(entity.armor)
-        entity.armor = self
+        entity.main_armor = self
+        entity.armor = self.armor
         self.activate(entity)
 
     def unequip(self, entity):

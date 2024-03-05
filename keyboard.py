@@ -155,6 +155,7 @@ class Keyboard():
                 loop.inventory = False
                 loop.action = True
                 loop.update_screen = True
+                loop.limit_inventory = None
 
             for i in range(len(player.character.inventory)):
                 if chr(ord("a")+i) == key:
@@ -163,10 +164,51 @@ class Keyboard():
                     loop.item_for_item_screen = player.character.inventory[i]
 
     def key_equipment(self, loop, player, item_dict, key):
-            if key == "esc":
-                loop.equipment = False
-                loop.action = True
-                loop.update_screen = True
+        if key == "esc":
+            loop.equipment = False
+            loop.action = True
+            loop.update_screen = True
+            loop.limit_inventory = None
+        elif key == "q":
+            loop.equipment = False
+            loop.inventory = True
+            loop.update_screen = True
+            loop.limit_inventory = "Shield"
+        elif key == "a":
+            loop.equipment = False
+            loop.inventory = True
+            loop.update_screen = True
+            loop.limit_inventory = "Ring"
+        elif key == "z":
+            loop.equipment = False
+            loop.inventory = True
+            loop.update_screen = True
+            loop.limit_inventory = "Ring"
+        elif key == "w":
+            loop.equipment = False
+            loop.inventory = True
+            loop.update_screen = True
+            loop.limit_inventory = "Helmet"
+        elif key == "s":
+            loop.equipment = False
+            loop.inventory = True
+            loop.update_screen = True
+            loop.limit_inventory = "Armor"
+        elif key == "x":
+            loop.equipment = False
+            loop.inventory = True
+            loop.update_screen = True
+            loop.limit_inventory = "Boots"
+        elif key == "d":
+            loop.equipment = False
+            loop.inventory = True
+            loop.update_screen = True
+            loop.limit_inventory = "Weapon"
+        elif key == "c":
+            loop.equipment = False
+            loop.inventory = True
+            loop.update_screen = True
+            loop.limit_inventory = "Gloves"
 
     def key_main_screen(self, key, loop):
         if key == "esc":

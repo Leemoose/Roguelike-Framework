@@ -102,6 +102,7 @@ class Loops():
         self.paused = False
 
         self.inventory_buttons = None
+        self.limit_inventory = None
 
         self.width = width
         self.height = height
@@ -259,7 +260,7 @@ class Loops():
             shadowcasting.compute_fov(self.player.get_location(), self.generator.tile_map.track_map)
             display.update_display(colors, self.generator.tile_map, tileDict, self.monster_dict, self.item_dict, self.monster_map, self.player, self.messages, self.target_to_display)
         elif self.inventory == True:
-            self.inventory_buttons = display.update_inventory(self.player)
+            self.inventory_buttons = display.update_inventory(self.player, self.limit_inventory)
         elif self.equipment == True:
             self.equipment_buttons = display.update_equipment(self.player, tileDict)
         elif self.main == True:
