@@ -391,6 +391,7 @@ class Loops():
         self.item_dict = self.generator.item_dict
         self.monster_dict = self.generator.monster_dict
         self.player = self.memory.player
+        self.player.character.energy = 0
 
     def clear_data(self):
         self.action = False

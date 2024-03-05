@@ -119,18 +119,18 @@ class Ring(Equipment):
 class Chestarmor(Armor):
     def __init__(self, render_tag):
         super().__init__(-1,-1, 0, render_tag, "Armor")
-        self.equipment_type = "Armor"
+        self.equipment_type = "Chestarmor"
         self.name = "Armor"
         self.armor = 5
 
     def equip(self, entity):
-        if entity.armor != None:
-            entity.unequip(entity.armor)
-        entity.armor = self
+        if entity.chestarmor != None:
+            entity.unequip(entity.chestarmor)
+        entity.chestarmor = self
         self.activate(entity)
 
     def unequip(self, entity):
-        entity.armor = None
+        entity.chestarmor = None
         self.deactivate(entity)
 
 class Boots(Armor):
