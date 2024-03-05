@@ -142,10 +142,14 @@ class Ring(Equipment):
         if len(entity.main_rings) >= 2 :
             entity.unequip(entity.main_rings[0])
         entity.main_rings.append(self)
-        entity.move_cost -= 20
 
     def unequip(self, entity):
         entity.main_rings.pop(0)
+
+    def activate(self, entity):
+        entity.move_cost -= 20
+
+    def deactivate(self, entity):
         entity.move_cost += 20
 
 class BloodRing(Equipment):
@@ -174,7 +178,7 @@ class BloodRing(Equipment):
 class Chestarmor(Armor):
     def __init__(self, render_tag):
         super().__init__(-1,-1, 0, render_tag, "Armor")
-        self.equipment_type = "Armor"
+        self.equipment_type = "Chestarmor"
         self.name = "Armor"
         self.armor = 5
 
@@ -182,11 +186,10 @@ class Chestarmor(Armor):
         if entity.main_armor != None:
             entity.unequip(entity.main_armor)
         entity.main_armor = self
-        entity.armor = self.armor
         self.activate(entity)
 
     def unequip(self, entity):
-        entity.armor = None
+        entity.chestarmor = None
         self.deactivate(entity)
 
 class Boots(Armor):
