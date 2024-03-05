@@ -12,6 +12,12 @@ class Equipment(O.Item):
         self.description = "Its a " + name + "."
         self.stackable = False
 
+    def activate(self, entity):
+        pass
+
+    def deactivate(self, entity):
+        pass
+
 class Weapon(Equipment):
     def __init__(self, x, y, id_tag, render_tag, name):
         super().__init__(x,y, id_tag, render_tag, name)
@@ -62,29 +68,42 @@ class Dagger(Weapon):
         self.damage_min = 3
         self.damage_max = 20
 
-class Shield(Equipment):
+class Armor(Equipment):
+    def __init__(self, x,y, id_tag, render_tag, name):
+        super().__init__(-1, -1, 0, render_tag, "Armor")
+        self.name = "Armor"
+        self.armor = 0
+
+    def activate(self, entity):
+        entity.armor += self.armor
+
+    def deactivate(self, entity):
+        entity.armor -= self.armor
+
+class Shield(Armor):
     def __init__(self, render_tag):
         super().__init__(-1, -1, 0, render_tag, "Shield")
         self.equipment_type = "Shield"
+        self.name = "Shield"
         self.shield = True
-        self.defense = 5
+        self.armor = 5
         self.description = "A shield that you can use to block things."
-
-    def defend(self):
-        return self.defense
 
     def equip(self, entity):
         if entity.main_shield != None:
             entity.unequip(entity.main_shield)
         entity.main_shield = self
+        self.activate(entity)
 
     def unequip(self, entity):
         entity.main_shield = None
+        self.deactivate(entity)
 
 class Ring(Equipment):
     def __init__(self, render_tag):
         super().__init__(-1,-1, 0, render_tag, "Ring")
         self.equipment_type = "Ring"
+        self.name = "Ring"
         self.description = "The most circulr thing you own"
 
     def equip(self, entity):
@@ -97,58 +116,76 @@ class Ring(Equipment):
         entity.main_rings.pop(0)
         entity.move_cost += 20
 
-class Armor(Equipment):
+class Chestarmor(Armor):
     def __init__(self, render_tag):
         super().__init__(-1,-1, 0, render_tag, "Armor")
         self.equipment_type = "Armor"
+        self.name = "Armor"
+        self.armor = 5
 
     def equip(self, entity):
         if entity.armor != None:
             entity.unequip(entity.armor)
         entity.armor = self
+        self.activate(entity)
 
     def unequip(self, entity):
         entity.armor = None
+        self.deactivate(entity)
 
-class Boots(Equipment):
+class Boots(Armor):
     def __init__(self, render_tag):
         super().__init__(-1,-1, 0, render_tag, "Boots")
         self.equipment_type = "Boots"
+        self.name = "Boots"
+        self.armor = 1
+
 
     def equip(self, entity):
         if entity.boots != None:
             entity.unequip(entity.boots)
         entity.boots = self
+        self.activate(entity)
 
     def unequip(self, entity):
         entity.boots = None
+        self.deactivate(entity)
 
-class Gloves(Equipment):
+class Gloves(Armor):
     def __init__(self, render_tag):
         super().__init__(-1,-1, 0, render_tag, "Gloves")
         self.equipment_type = "Gloves"
         self.description = "Gloves to keep your hands toasty warm."
+        self.name = "Gloves"
+        self.armor = 1
 
     def equip(self, entity):
         if entity.gloves != None:
             entity.unequip(entity.gloves)
         entity.gloves = self
+        self.activate(entity)
 
     def unequip(self, entity):
         entity.gloves = None
+        self.deactivate(entity)
 
-class Helmet(Equipment):
+class Helmet(Armor):
     def __init__(self, render_tag):
         super().__init__(-1,-1, 0, render_tag, "Helmet")
         self.equipment_type = "Helmet"
+        self.name = "Helmet"
+        self.armor = 1
+
 
     def equip(self, entity):
         if entity.helmet != None:
             entity.unequip(entity.helmet)
         entity.helmet = self
+        self.activate(entity)
 
     def unequip(self, entity):
         entity.helmet = None
+        self.deactivate(entity)
 
 class Potion(O.Item):
     def __init__(self, render_tag, name):

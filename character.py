@@ -41,6 +41,7 @@ class Character():
         self.main_rings = []
 
         self.base_damage = 0
+        self.armor = 0
 
         self.parent = parent
         self.status_effects = []
@@ -78,7 +79,7 @@ class Character():
             self.mana = self.max_mana
 
     def defend(self):
-        defense = self.endurance
+        defense = self.armor
         return defense
 
     def grab(self, key, item_ID, generated_maps, loop):

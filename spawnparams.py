@@ -26,7 +26,7 @@ ItemSpawns = []                                                         # minFlo
 ItemSpawns.append(ItemSpawnParams( I.Ax(300),                 1,               5,          0,              3))
 ItemSpawns.append(ItemSpawnParams( I.Hammer(301),             1,               5,          0,              3))
 ItemSpawns.append(ItemSpawnParams( I.Shield(311),             1,               5,          1,              3))
-ItemSpawns.append(ItemSpawnParams( I.Armor(600),              1,               5,          1,              3))
+ItemSpawns.append(ItemSpawnParams( I.Chestarmor(600),              1,               5,          1,              3))
 ItemSpawns.append(ItemSpawnParams( I.Boots(700),              1,               5,          0,              3))
 ItemSpawns.append(ItemSpawnParams( I.Helmet(770),              1,               5,          1,              3))
 ItemSpawns.append(ItemSpawnParams( I.Gloves(750),              1,               5,          1,              3))
