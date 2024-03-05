@@ -67,11 +67,16 @@ class TileDict():
         file = 'assets/P.png'
         player_image = image.load(file)
         tiles = {}
-        tiles[1] = image.load("assets/basic_wall.png")
+        tiles[1] = pygame.transform.scale(image.load("assets/wall_full.png"), (32,32))
         #Negative numbers are shaded versions
-        tiles[-1] = image.load("assets/basic_wall.png")
-        tiles[2] = image.load("assets/basic_floor.png")
-        tiles[-2] = image.load("assets/basic_floor_shaded.png")
+        tiles[-1] = pygame.transform.scale(image.load("assets/wall_full_shaded.png"), (32,32))
+        tiles[2] = pygame.transform.scale(image.load("assets/floor.png"), (32,32))
+        tiles[-2] = pygame.transform.scale(image.load("assets/floor_shaded.png"), (32,32))
+        tiles[3] = pygame.transform.scale(image.load("assets/floor_dirty.png"), (32,32))
+        tiles[-3] = pygame.transform.scale(image.load("assets/floor_dirty_shaded.png"), (32,32))
+        tiles[4] = pygame.transform.scale(image.load("assets/floor_dirty1.png"), (32,32))
+        tiles[-4] = pygame.transform.scale(image.load("assets/floor_dirty1_shaded.png"), (32,32))
+
         tiles[90] = image.load("assets/stairs_up.png")
         tiles[-90] = image.load("assets/stairs_up.png")
         tiles[91] = image.load("assets/stairs_down.png")
@@ -460,7 +465,13 @@ class TileMap(TrackingMap):
             temp = []
             for y in range(self.height):
                 if self.track_map_render[x][y] == 1:
-                    temp.append(O.Tile(x, y, 2, True))
+                    if (random.randint(0,10)==0):
+                        if (random.randint(0,1)==0):
+                            temp.append(O.Tile(x, y, 3, True))
+                        else:
+                            temp.append(O.Tile(x, y, 4, True))
+                    else:
+                        temp.append(O.Tile(x, y, 2, True))
                 else:
                     temp.append(O.Tile(x, y, 1, False))
             self.track_map.append(temp)

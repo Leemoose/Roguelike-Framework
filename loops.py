@@ -103,10 +103,8 @@ class Loops():
     """
     This is the brains of the game and after accepting an input from keyboard, will decide what needs to be done
     """
-    def __init__(self, width, height, textSize):
+    def __init__(self, width, height, textSize, tileDict):
         self.update_screen = True
-
-        self.inventory_buttons = None
         self.limit_inventory = None
 
         self.currentLoop = LoopType.none
@@ -126,6 +124,7 @@ class Loops():
         self.messages = []
         self.targets = T.Target()
         self.target_to_display = None
+        self.tileDict = tileDict
 
         #Start the game by going to the main screen
         self.change_loop(LoopType.main)
@@ -141,9 +140,9 @@ class Loops():
         elif newLoop == LoopType.autoexplore:
             pass
         elif newLoop == LoopType.inventory:
-            pass
+            self.display.create_inventory(self.player, self.limit_inventory)
         elif newLoop == LoopType.equipment:
-            pass
+            self.display.create_equipment(self.player, self.tileDict)
         elif newLoop == LoopType.main:
             pass
         elif newLoop == LoopType.race:
@@ -225,16 +224,17 @@ class Loops():
                 self.update_screen = True
 
             elif event.type == pygame_gui.UI_BUTTON_PRESSED:
-                return keyboard.key_main_screen(event.ui_element.action, self)
+                if (self.currentLoop == LoopType.main):
+                    return keyboard.key_main_screen(event.ui_element.action, self)
+                elif (self.currentLoop == LoopType.inventory):
+                    key = event.ui_element.action
+                    keyboard.key_inventory(self, self.player, self.item_dict, key)
+                elif (self.currentLoop == LoopType.equipment):
+                    key = event.ui_element.action
+                    keyboard.key_equipment(self, self.player, self.item_dict, key)
 
             elif event.type == pygame.MOUSEBUTTONUP:
                 x,y = pygame.mouse.get_pos()
-                if self.currentLoop == LoopType.inventory:
-                    for button in self.inventory_buttons.buttons:
-                        if self.inventory_buttons.buttons[button].is_selected:
-                            key = self.inventory_buttons.buttons[button].action
-                            keyboard.key_race_screen(key, self)
-                            break
                 self.update_screen = True
 
             display.uiManager.process_events(event)
@@ -294,7 +294,7 @@ class Loops():
             shadowcasting.compute_fov(self.player.get_location(), self.generator.tile_map.track_map)
             display.update_display(colors, self.generator.tile_map, tileDict, self.monster_dict, self.item_dict, self.monster_map, self.player, self.messages, self.target_to_display)
         elif self.currentLoop == LoopType.inventory:
-            self.inventory_buttons = display.update_inventory(self.player, self.limit_inventory)
+            display.update_inventory(self.player, self.limit_inventory)
         elif self.currentLoop == LoopType.equipment:
             self.equipment_buttons = display.update_equipment(self.player, tileDict)
         elif self.currentLoop == LoopType.main:

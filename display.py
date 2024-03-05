@@ -60,7 +60,7 @@ class Display:
         self.uiManager = pygame_gui.UIManager((width, height), "theme.json")
         self.windows = []
         self.clock = pygame.time.Clock()
-        self.buttons = []
+        self.buttons = Buttons()
         self.colorDict = None
 
     def update_display(self, colorDict, floormap, tileDict, monsterID, item_ID, monster_map, player, messages, target_to_display):
@@ -235,9 +235,8 @@ class Display:
                 text = font.render("You are here", True, (255, 255, 255))
                 self.win.blit(text, (self.screen_width // 10, self.screen_height // 10 + 65))
         return nothing_at_target
-            
 
-    def update_inventory(self, player, equipment_type=None):
+    def create_inventory(self, player, equipment_type=None):   
         self.uiManager.clear_and_reset()
         self.win.fill(self.colorDict.getColor("black"))
         inventory_screen_width = self.screen_width // 2
@@ -266,7 +265,6 @@ class Display:
                                     manager=self.uiManager,
                                     object_id='#title_label')
 
-        buttons = Buttons()
         for i, item in enumerate(player.character.inventory):
             if equipment_type != None and item.equipment_type != equipment_type:
                 continue
@@ -280,10 +278,14 @@ class Display:
                 text= chr(ord("a") + i) + ". " + item_name,
                 manager=self.uiManager)
             button.action = chr(ord("a") + i)
-            buttons.add(button, chr(ord("a") + i))
+            self.buttons.add(button, chr(ord("a") + i))
 
         self.uiManager.draw_ui(self.win)
-        return self.buttons
+        return self.buttons     
+
+    def update_inventory(self, player, equipment_type=None):
+        self.win.fill(self.colorDict.getColor("black"))
+        self.uiManager.draw_ui(self.win)
     
     def draw_on_button(self, button, img, letter="", button_size=None):
         button.drawable_shape.states['normal'].surface.blit(img, (0, 0))
@@ -295,7 +297,7 @@ class Display:
         button.drawable_shape.active_state.has_fresh_surface = True
         # button.drawable_shape.redraw_all_states()
 
-    def update_equipment(self, player, tileMap):
+    def create_equipment(self, player, tileMap):
         self.uiManager.clear_and_reset()
         self.win.fill(self.colorDict.getColor("black"))
 
@@ -347,6 +349,7 @@ class Display:
                         manager=self.uiManager,
                         object_id='#equipment_button')
         self.draw_on_button(button, img, "q", (medium_button_width, medium_button_height))
+        button.action = 'q'
 
         if len(player.character.main_rings) == 0:
             pre_text = "equip "
@@ -362,6 +365,7 @@ class Display:
                     manager=self.uiManager,
                     object_id='#equipment_button')
         self.draw_on_button(button, img, "a", (small_button_width, small_button_height))
+        button.action = 'a'
         
         if len(player.character.main_rings) != 2:
             pre_text = "equip "
@@ -377,6 +381,7 @@ class Display:
                     manager=self.uiManager,
                     object_id='#equipment_button')
         self.draw_on_button(button, img, "z", (small_button_width, small_button_height))
+        button.action = 'z'
         
         if player.character.helmet == None:
             pre_text = "equip "
@@ -392,6 +397,7 @@ class Display:
                     manager=self.uiManager,
                     object_id='#equipment_button')
         self.draw_on_button(button, img, "w", (medium_button_width, medium_button_height))
+        button.action = 'w'
         
         
         if player.character.main_armor == None:
@@ -409,6 +415,7 @@ class Display:
                     object_id='#equipment_button')
         
         self.draw_on_button(button, img, "s", (medium_button_width, medium_button_height))
+        button.action = 's'
     
         if player.character.boots == None:
             pre_text = "equip "
@@ -426,6 +433,7 @@ class Display:
                     object_id='#equipment_button')
 
         self.draw_on_button(button, img, "x", (medium_button_width, medium_button_height))
+        button.action = 'x'
         
         if player.character.main_weapon == None:
             pre_text = "equip "
@@ -443,6 +451,7 @@ class Display:
                     object_id='#equipment_button')
         
         self.draw_on_button(button, img, "d", (medium_button_width, medium_button_height))
+        button.action = 'd'
 
         if player.character.gloves == None:
             pre_text = "equip "
@@ -460,12 +469,17 @@ class Display:
                     object_id='#equipment_button')
         
         self.draw_on_button(button, img, "c", (medium_button_width, medium_button_height))
+        button.action = 'c'
 
         self.draw_character_stats(player, 
                                   margin_from_left = first_col_offset_from_left + 3 * (medium_button_width + margin_between_buttons_width),
                                   margin_from_top = middle_col_offset_from_top,
                                   width = medium_button_width * 2,
                                   height = medium_button_height * 3 + margin_between_buttons_height * 2)       
+        self.uiManager.draw_ui(self.win)
+
+    def update_equipment(self, player, tileMap):       
+        self.win.fill(self.colorDict.getColor("black"))
         self.uiManager.draw_ui(self.win)
 
 
