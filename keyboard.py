@@ -88,10 +88,10 @@ class Keyboard():
             loop.change_loop(LoopType.inventory)
         elif key == "e":
             loop.change_loop(LoopType.equipment)
-		elif key == "q":
-			loop.limit_inventory = "Potiorb"
-			loop.change_loop(LoopType.inventory)
-   	     elif key == "p":
+        elif key == "q":
+            loop.limit_inventory = "Potiorb"
+            loop.change_loop(LoopType.inventory)
+        elif key == "p":
             loop.display.set_visual_debug_mode(True)
         elif key == ">":
             loop.down_floor()
