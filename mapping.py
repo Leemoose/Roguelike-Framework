@@ -147,6 +147,14 @@ class DungeonGenerator():
             maxtunnels -= 1
 """
 
+    def all_seen(self):
+        for x in range(self.width):
+            for y in range(self.height):
+                if self.tile_map.track_map[x][y].passable:
+                    if not (self.tile_map.track_map[x][y].seen):
+                        return False, (x, y)
+        return True, (-1, -1)
+
     def in_map(self, x, y):
        return x> 0 and x < self.width and y >0 and y < self.height
 

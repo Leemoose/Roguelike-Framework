@@ -125,8 +125,14 @@ class Loops():
 
         action = None
         if self.autoexplore == True:
-            self.player.autoexplore(self)
-            self.monster_loop(0)
+            all_seen, _ = self.generator.all_seen()
+            if all_seen:
+                self.autoexplore = False
+                self.action = True
+                self.add_message("You have explored the entire floor")
+            else:
+                self.player.autoexplore(self)
+                self.monster_loop(0)
         
         if self.rest == True:
             monster_present = False

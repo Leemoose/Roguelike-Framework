@@ -46,6 +46,9 @@ class Target:
         item_dict = loop.generator.item_dict
         item_map = loop.generator.item_map
         tile_map = loop.generator.tile_map.track_map
+        if not tile_map[x][y].visible:
+            loop.add_message("You can't see that location")
+            return
         loop.add_message("That is a " + tile_map[x][y].name + " my friend")
         if not monster_map.get_passable(x,y):
             monster = monster_dict.get_subject(monster_map.locate(x,y))
