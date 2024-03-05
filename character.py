@@ -139,8 +139,10 @@ class Character():
         self.intelligence += 1
         self.dexterity += 1
         self.strength += 1
-        self.max_health += self.endurance - 1
+        self.max_health += (5 + self.endurance - 1)
         self.health = self.max_health
+        self.max_mana += (5 + self.intelligence - 1)
+        self.mana = self.max_mana
 
     def get_damage_min(self):
         return self.get_damage()[0]

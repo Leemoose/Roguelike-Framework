@@ -91,6 +91,11 @@ class Keyboard():
             loop.action = False
             loop.equipment = True
             loop.update_screen = True
+        elif key == "q":
+            loop.action = False
+            loop.inventory = True
+            loop.update_screen = True
+            loop.limit_inventory = "Potiorb"
         elif key == "p":
             loop.display.set_visual_debug_mode(True)
         elif key == ">":
@@ -165,6 +170,9 @@ class Keyboard():
 
             for i in range(len(player.character.inventory)):
                 if chr(ord("a")+i) == key:
+                    if loop.limit_inventory:
+                        if player.character.inventory[i].equipment_type != loop.limit_inventory:
+                            continue
                     loop.inventory = False
                     loop.items = True
                     loop.item_for_item_screen = player.character.inventory[i]
