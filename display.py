@@ -278,7 +278,7 @@ class Display:
             buttons.add(button, chr(ord("a") + i))
 
         self.uiManager.draw_ui(self.win)
-        return buttons
+        return self.buttons
     
     def draw_on_button(self, button, img, letter="", button_size=None):
         button.drawable_shape.states['normal'].surface.blit(img, (0, 0))

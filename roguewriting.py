@@ -28,5 +28,5 @@ keyboard = K.Keyboard()
 player_turn = True
 loop.init_game(display)
 while player_turn:
-    loop.change_screen(keyboard, display, colors, tileDict)
+    loop.render_screen(keyboard, display, colors, tileDict)
     player_turn = loop.action_loop(keyboard, display)
