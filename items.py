@@ -9,12 +9,15 @@ class Equipment(O.Item):
     def __init__(self, x, y, id_tag, render_tag, name):
         super().__init__(x,y, id_tag, render_tag, name)
         self.equipable = True
+        self.description = "Its a " + name + "."
+        self.stackable = False
 
 class Weapon(Equipment):
     def __init__(self, x, y, id_tag, render_tag, name):
         super().__init__(x,y, id_tag, render_tag, name)
         self.damage_min = 0
         self.damage_max = 0
+        self.equipment_type = "Weapon"
 
     def equip(self, entity):
         if entity.main_weapon != None:
@@ -62,6 +65,7 @@ class Dagger(Weapon):
 class Shield(Equipment):
     def __init__(self, render_tag):
         super().__init__(-1, -1, 0, render_tag, "Shield")
+        self.equipment_type = "Shield"
         self.shield = True
         self.defense = 5
         self.description = "A shield that you can use to block things."
@@ -80,6 +84,7 @@ class Shield(Equipment):
 class Ring(Equipment):
     def __init__(self, render_tag):
         super().__init__(-1,-1, 0, render_tag, "Ring")
+        self.equipment_type = "Ring"
         self.description = "The most circulr thing you own"
 
     def equip(self, entity):
@@ -95,6 +100,7 @@ class Ring(Equipment):
 class Armor(Equipment):
     def __init__(self, render_tag):
         super().__init__(-1,-1, 0, render_tag, "Armor")
+        self.equipment_type = "Armor"
 
     def equip(self, entity):
         if entity.armor != None:
@@ -107,6 +113,7 @@ class Armor(Equipment):
 class Boots(Equipment):
     def __init__(self, render_tag):
         super().__init__(-1,-1, 0, render_tag, "Boots")
+        self.equipment_type = "Boots"
 
     def equip(self, entity):
         if entity.boots != None:
@@ -119,6 +126,8 @@ class Boots(Equipment):
 class Gloves(Equipment):
     def __init__(self, render_tag):
         super().__init__(-1,-1, 0, render_tag, "Gloves")
+        self.equipment_type = "Gloves"
+        self.description = "Gloves to keep your hands toasty warm."
 
     def equip(self, entity):
         if entity.gloves != None:
@@ -130,7 +139,8 @@ class Gloves(Equipment):
 
 class Helmet(Equipment):
     def __init__(self, render_tag):
-        super().__init__(-1,-1, 0, render_tag, "Hemlet")
+        super().__init__(-1,-1, 0, render_tag, "Helmet")
+        self.equipment_type = "Helmet"
 
     def equip(self, entity):
         if entity.helmet != None:
@@ -140,59 +150,67 @@ class Helmet(Equipment):
     def unequip(self, entity):
         entity.helmet = None
 
-
-class HealthPotion(O.Item):
-    def __init__(self, render_tag):
-        super().__init__(-1, -1, 0, render_tag, "Health Potiorb")
+class Potion(O.Item):
+    def __init__(self, render_tag, name):
+        super().__init__(-1, -1, 0, render_tag, name)
+        self.equipment_type = "Potiorb"
         self.consumeable = True
+        self.stackable = True
+        self.stacks = 1
+        self.description = "A potiorb that does something."
+
+    def activate_once(self, entity):
+        pass
+
+    def activate(self, entity):
+        self.activate_once(entity)
+        self.stacks -= 1
+        if self.stacks == 0:
+            self.destroy = True
+
+        
+
+class HealthPotion(Potion):
+    def __init__(self, render_tag):
+        super().__init__(render_tag, "Health Potiorb")
         self.description = "A potiorb that heals you."
 
-    def activate(self, entity):
+    def activate_once(self, entity):
         entity.gain_health(20)
-        self.destroy = True
 
-class MightPotion(O.Item):
+class MightPotion(Potion):
     def __init__(self, render_tag):
-        super().__init__(-1, -1, 0, render_tag, "Might Potiorb")
-        self.consumeable = True
+        super().__init__(render_tag, "Might Potiorb")
         self.description = "A potiorb that makes you stronger for a few turns."
 
-    def activate(self, entity):
+    def activate_once(self, entity):
         effect = E.Might(5, 5)
         entity.add_status_effect(effect)
-        self.destroy = True
 
-
-class DexterityPotion(O.Item):
+class DexterityPotion(Potion):
     def __init__(self, render_tag):
-        super().__init__(-1, 1, 0, render_tag, "Dexterity Potiorb")
-        self.consumeable = True
+        super().__init__(render_tag, "Dexterity Potiorb")
         self.description = "A potiorb that makes you more dexterous for a few turns."
 
-    def activate(self, entity):
+    def activate_once(self, entity):
         effect = E.Haste(5, 5)
         entity.add_status_effect(effect)
-        self.destroy = True
 
-class CurePotion(O.Item):
+class CurePotion(Potion):
     def __init__(self, render_tag):
-        super().__init__(-1, -1, 0, render_tag, "Cure Potiorb")
-        self.consumeable = True
+        super().__init__(render_tag, "Cure Potiorb")
         self.description = "A potiorb that cures you of all status effects."
 
-    def activate(self, entity):
+    def activate_once(self, entity):
         for effect in entity.status_effects:
             effect.remove(entity)
         entity.status_effects = []
-        self.destroy = True
 
-class ManaPotion(O.Item):
+class ManaPotion(Potion):
     def __init__(self, render_tag):
-        super().__init__(-1, -1, 0, render_tag, "Mana Potiorb")
-        self.consumeable = True
+        super().__init__(render_tag, "Mana Potiorb")
         self.description = "A potiorb that restores your mana."
 
-    def activate(self, entity):
+    def activate_once(self, entity):
         entity.gain_mana(20)
-        self.destroy = True
 

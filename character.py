@@ -83,7 +83,15 @@ class Character():
 
     def grab(self, key, item_ID, generated_maps, loop):
         item = item_ID.get_subject(key)
-        self.inventory.append(item)
+        if item.stackable:
+            if not item.name in [x.name for x in self.inventory]:
+                self.inventory.append(item)
+            else:
+                for i in range(len(self.inventory)):
+                    if self.inventory[i].name == item.name:
+                        self.inventory[i].stacks += 1
+        else:
+            self.inventory.append(item)
         item_ID.remove_subject(key)
         itemx, itemy = item.get_location()
         generated_maps.item_map.clear_location(itemx, itemy)
@@ -144,8 +152,9 @@ class Character():
     def quaff(self, potion, item_dict, item_map):
         if potion.consumeable:
             potion.activate(self)
-            self.drop(potion, item_dict, item_map)
-            potion.destroy = True
+            if potion.stacks == 0:
+                self.drop(potion, item_dict, item_map)
+                potion.destroy = True
             self.energy -= self.quaff_cost
             return True
     

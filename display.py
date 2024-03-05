@@ -260,10 +260,14 @@ class Display:
 
         buttons = Buttons()
         for i, item in enumerate(player.character.inventory):
+            if item.stackable:
+                item_name = item.name + " (x" + str(item.stacks) + ")"
+            else:
+                item_name = item.name
             button = pygame_gui.elements.UIButton(
                 relative_rect=pygame.Rect((inventory_button_offset_from_left, inventory_button_offset_from_top + inventory_button_offset_from_each_other * i + inventory_button_height * i),
                                                               (inventory_button_width, inventory_button_height)),
-                text= chr(ord("a") + i) + ". " + item.name,
+                text= chr(ord("a") + i) + ". " + item_name,
                 manager=self.uiManager)
             button.action = chr(ord("a") + i)
             buttons.add(button, chr(ord("a") + i))
