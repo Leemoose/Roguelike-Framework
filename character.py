@@ -34,8 +34,9 @@ class Character():
         self.inventory = []
         self.main_weapon = None
         self.main_shield = None
+
+        self.chestarmor = None
         self.main_armor = None
-        self.armor = None
         self.boots = None
         self.gloves = None
         self.helmet = None
