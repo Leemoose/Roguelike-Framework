@@ -557,45 +557,96 @@ class Display:
             manager=self.uiManager
         )
 
-
-
     def update_main(self):
     #Main Screen
         self.win.fill((0,0,0))
         self.uiManager.draw_ui(self.win)
 
-    def update_race(self):
-    #Race Screen
-        race_background = pygame.image.load("assets/race_screen.png")
-        race_background = pygame.transform.scale(race_background, (self.screen_width, self.screen_height))
-        self.win.blit(race_background, (0,0))
-
-    def update_class(self):
-    #Class Screen
-        class_background = pygame.image.load("assets/class_screen.png")
-        class_background = pygame.transform.scale(class_background, (self.screen_width, self.screen_height))
-        self.win.blit(class_background, (0,0))
-
     def update_item(self, item, tileDict):
-        font2 = pygame.font.SysFont('didot.ttc', 32)
-        item_background = pygame.transform.scale(pygame.image.load("assets/item_background.png"),
-                                     (self.screen_width * 2 // 3, self.screen_height * 4 // 5))
-        self.win.blit(item_background, (self.screen_width // 6, self.screen_height // 10))
-        item_tile = tileDict.tile_string(item.render_tag)
-        self.win.blit(item_tile, (self.screen_width * 17 // 100 , self.screen_height * 11 // 100))
-        text = font2.render(item.name, True, (255, 255, 255))
-        self.win.blit(text, ((self.screen_width * 22 // 100 , self.screen_height * 12 // 100)))
+        self.uiManager.clear_and_reset()
+        self.win.fill(self.colorDict.getColor("black"))
+        item_screen_width = self.screen_width // 2
+        item_screen_height = self.screen_height // 2
+        item_offset_from_left = self.screen_width // 4
+        item_offset_from_top = self.screen_height // 4
 
-        message = ""
-        if item.equipped:
-            message = "u: Unequip"
-        elif item.equipable:
-            message = "e: Equip"
-        elif item.consumeable:
-            message = "q: Quaff"
+        item_message_width = self.screen_width // 2
+        item_message_height = self.screen_height // 10
+        item_message_offset_from_left = self.screen_width // 4
+        item_message_offset_from_top = self.screen_height // 4
 
-        text = font2.render(message, True, (255, 255, 255))
-        self.win.blit(text, ((self.screen_width * 22 // 100, self.screen_height * 15 // 100)))
+        item_image_width = self.screen_width // 20
+        item_image_height = self.screen_width // 20
+        item_image_offset_from_left = self.screen_width // 4 + self.screen_width // 50
+        item_image_offset_from_top = self.screen_height // 4 + self.screen_width // 50
+
+        item_button_width = self.screen_width // 10
+        item_button_height = self.screen_height // 30
+        item_button_offset_from_left = item_offset_from_left+ self.screen_width // 20
+        item_button_offset_from_top = item_screen_height + item_offset_from_top - item_button_height - self.screen_height // 50
+        item_button_offset_from_each_other = self.screen_width // 20
+
+        item_text_offset_from_left = item_offset_from_left
+        item_text_offset_from_top = item_image_offset_from_top + item_message_width
+        item_text_width = item_screen_width // 9
+        item_text_height = item_screen_height // 2
+
+        buttons = Buttons()
+        buttons_drawn = 0
+
+        item_image = pygame.transform.scale(tileDict.tiles[item.render_tag],
+                                     (item_image_width, item_image_height))
+
+        self.uiManager.clear_and_reset()
+        pygame.draw.rect(self.win, (112,128,144), pygame.Rect(item_offset_from_left, item_offset_from_top, item_screen_width, item_screen_height))
+
+        self.win.blit(item_image, (item_image_offset_from_left, item_image_offset_from_top))
+        pygame_gui.elements.UILabel(
+            relative_rect=pygame.Rect((item_message_offset_from_left, item_message_offset_from_top),
+                                      (item_message_width, item_message_height)),
+            text=item.name,
+            manager=self.uiManager,
+            object_id='#title_label')
+
+
+        button = pygame_gui.elements.UIButton(
+            relative_rect=pygame.Rect((item_button_offset_from_left, item_button_offset_from_top),
+                                      (item_button_width, item_button_height)),
+            text='Equip',
+            manager=self.uiManager)
+        button.action = "e"
+        buttons.add(button, "Equip")
+        buttons_drawn += 1
+
+        button = pygame_gui.elements.UIButton(
+            relative_rect=pygame.Rect((item_button_offset_from_left + (item_button_width + item_button_offset_from_each_other) * buttons_drawn, item_button_offset_from_top),
+                                      (item_button_width, item_button_height)),
+            text='Drop',
+            manager=self.uiManager)
+        button.action = "d"
+        buttons.add(button, "Drop")
+        buttons_drawn += 1
+
+        button = pygame_gui.elements.UIButton(
+            relative_rect=pygame.Rect((item_button_offset_from_left + (item_button_width + item_button_offset_from_each_other) * buttons_drawn, item_button_offset_from_top),
+                                      (item_button_width, item_button_height)),
+            text='Destroy',
+            manager=self.uiManager)
+        button.action = "b"
+        buttons.add(button, "Destroy")
+        buttons_drawn += 1
+
+        text_box = pygame_gui.elements.UITextBox(
+            relative_rect=pygame.Rect((item_text_offset_from_left, item_text_offset_from_top), (item_text_width, item_text_height)),
+            html_text = "Player<br><br>"
+                        "Stats<br>"
+                        "<br>Known Skills:<br>"
+                        ,
+            manager=self.uiManager
+        )
+
+        self.uiManager.draw_ui(self.win)
+        return self.buttons
 
     def update_examine(self, target, tileDict, messages):
         x, y = target
@@ -654,40 +705,3 @@ def create_main_screen(scr, width, height):
                                 object_id='#title_label')
     
     return buttons
-
-
-"""
-def create_race_screen(scr):
-    background = pygame.image.load("assets/class_background.png")
-    background = pygame.transform.scale(background, (scr.screen_width, scr.screen_height))
-    scr.win.blit(background, (0,0))
-    buttons = Buttons()
-    button = Button(scr.screen_width, scr.screen_height, "assets/button.png", 15/100, 11/100, "1", scr.screen_width / 2, scr.screen_height * 80/100)
-    buttons.add(button, "Human")
-    scr.win.blit(button.img, (button.get_position()))
-
-    font = pygame.font.Font('freesansbold.ttf', 32)
-    text = font.render('Human', True, (255, 255, 255))
-    text_width, text_height = font.size("Human")
-    scr.win.blit(text, (scr.screen_width / 2 - text_width / 2, scr.screen_height * 85/100 + button.height / 2 - text_height / 2))
-
-    #pygame.image.save(scr.win, "assets/race_screen.png")
-    return buttons
-
-def create_class_screen(scr):
-    background = pygame.image.load("assets/class_background.png")
-    background = pygame.transform.scale(background, (scr.screen_width, scr.screen_height))
-    scr.win.blit(background, (0,0))
-    buttons = Buttons()
-    button = Button(scr.screen_width, scr.screen_height, "assets/button.png", 15/100, 11/100, "1", scr.screen_width // 2, scr.screen_height * 80/100)
-    buttons.add(button, "Warrior")
-    scr.win.blit(button.img, (button.get_position()))
-
-    font = pygame.font.Font('freesansbold.ttf', 32)
-    text = font.render('Warrior', True, (255, 255, 255))
-    text_width, text_height = font.size("Warrior")
-    scr.win.blit(text, (scr.screen_width / 2 - text_width / 2, scr.screen_height * 85/100 + button.height / 2 - text_height / 2))
-
-    # pygame.image.save(scr.win, "assets/class_screen.png")
-    return buttons
-"""
