@@ -271,12 +271,51 @@ class Keyboard():
             loop.void_target()
             loop.change_loop(LoopType.action)
         elif key == "return":
-            if loop.currentLoop == LoopType.examine:
-                targets.explain_target(loop)
-            else:
-                targets.cast_on_target(loop)
-                loop.change_loop(LoopType.action)
-                loop.void_target()
+            targets.cast_on_target(loop)
+            loop.change_loop(LoopType.action)
+            loop.void_target()
+
+    def key_examine_screen(self, key, loop):
+        loop.update_screen = True
+        targets = loop.targets
+        if key == "up":
+            targets.adjust(0, -1)
+            loop.add_target(targets.target_list)
+        elif key == "left":
+            targets.adjust(-1, 0)
+            loop.add_target(targets.target_list)
+        elif key == "down":
+            targets.adjust(0, 1)
+            loop.add_target(targets.target_list)
+        elif key == "right":
+            targets.adjust(1, 0)
+            loop.add_target(targets.target_list)
+        elif key == "y":
+            targets.adjust(-1, -1)
+            loop.add_target(targets.target_list)
+        elif key == "u":
+            targets.adjust(1, -1)
+            loop.add_target(targets.target_list)
+        elif key == "b":
+            targets.adjust(-1, 1)
+            loop.add_target(targets.target_list)
+        elif key == "n":
+            targets.adjust(1, 1)
+            loop.add_target(targets.target_list)
+        elif key == "esc":
+            targets.void_skill()
+            loop.void_target()
+            loop.change_loop(LoopType.action)
+        elif key == "return":
+            targets.explain_target(loop)
+            x, y = targets.target_list
+            if loop.generator.item_map.track_map[x][y] != -1:
+                loop.item_for_item_screen = loop.generator.item_dict.get_subject(loop.generator.item_map.track_map[x][y])
+                loop.change_loop(LoopType.specific_examine)
+
+    def key_specific_examine(self, key, loop, display):
+        if key == "esc":
+            loop.change_loop(LoopType.examine)
 
     def key_autoexplore(self, key, loop):
         if key == "o":

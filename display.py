@@ -563,7 +563,7 @@ class Display:
         self.win.fill((0,0,0))
         self.uiManager.draw_ui(self.win)
 
-    def update_item(self, item, tileDict):
+    def update_item(self, item, tileDict, item_screen = True):
         self.uiManager.clear_and_reset()
         self.win.fill(self.colorDict.getColor("black"))
         item_screen_width = self.screen_width // 2
@@ -609,44 +609,45 @@ class Display:
             manager=self.uiManager,
             object_id='#title_label')
 
-        pretext = ""
-        action = ""
-        if item.equipable:
-            if item.equipped:
-                pretext = "Unequip"
-                action = "u"
-            else:
-                pretext = "Equip"
-                action = "e"
-        elif item.consumeable:
-            pretext = "Quaff"
-            action = "q"
-        button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect((item_button_offset_from_left, item_button_offset_from_top),
-                                      (item_button_width, item_button_height)),
-            text=pretext,
-            manager=self.uiManager)
-        button.action = action
-        buttons.add(button, pretext)
-        buttons_drawn += 1
+        if item_screen:
+            pretext = ""
+            action = ""
+            if item.equipable:
+                if item.equipped:
+                    pretext = "Unequip"
+                    action = "u"
+                else:
+                    pretext = "Equip"
+                    action = "e"
+            elif item.consumeable:
+                pretext = "Quaff"
+                action = "q"
+            button = pygame_gui.elements.UIButton(
+                relative_rect=pygame.Rect((item_button_offset_from_left, item_button_offset_from_top),
+                                          (item_button_width, item_button_height)),
+                text=pretext,
+                manager=self.uiManager)
+            button.action = action
+            buttons.add(button, pretext)
+            buttons_drawn += 1
 
-        button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect((item_button_offset_from_left + (item_button_width + item_button_offset_from_each_other) * buttons_drawn, item_button_offset_from_top),
-                                      (item_button_width, item_button_height)),
-            text='Drop',
-            manager=self.uiManager)
-        button.action = "d"
-        buttons.add(button, "Drop")
-        buttons_drawn += 1
+            button = pygame_gui.elements.UIButton(
+                relative_rect=pygame.Rect((item_button_offset_from_left + (item_button_width + item_button_offset_from_each_other) * buttons_drawn, item_button_offset_from_top),
+                                          (item_button_width, item_button_height)),
+                text='Drop',
+                manager=self.uiManager)
+            button.action = "d"
+            buttons.add(button, "Drop")
+            buttons_drawn += 1
 
-        button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect((item_button_offset_from_left + (item_button_width + item_button_offset_from_each_other) * buttons_drawn, item_button_offset_from_top),
-                                      (item_button_width, item_button_height)),
-            text='Destroy',
-            manager=self.uiManager)
-        button.action = "b"
-        buttons.add(button, "Destroy")
-        buttons_drawn += 1
+            button = pygame_gui.elements.UIButton(
+                relative_rect=pygame.Rect((item_button_offset_from_left + (item_button_width + item_button_offset_from_each_other) * buttons_drawn, item_button_offset_from_top),
+                                          (item_button_width, item_button_height)),
+                text='Destroy',
+                manager=self.uiManager)
+            button.action = "b"
+            buttons.add(button, "Destroy")
+            buttons_drawn += 1
 
         item_text = ""
         item_text += item.description  + "<br>"
