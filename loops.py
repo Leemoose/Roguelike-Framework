@@ -32,6 +32,7 @@ class LoopType(Enum):
     paused = 10
     targeting = 11
     specific_examine = 12
+    enchant = 13
 
 class ColorDict():
     """
@@ -141,7 +142,9 @@ class Loops():
             pass
         elif newLoop == LoopType.autoexplore:
             pass
-        elif newLoop == LoopType.inventory:
+        elif newLoop == LoopType.inventory or newLoop == LoopType.enchant:
+            if newLoop == LoopType.enchant:
+                print("Trying to display inventory")
             self.display.create_inventory(self.player, self.limit_inventory)
         elif newLoop == LoopType.equipment:
             self.display.create_equipment(self.player, self.tileDict)
@@ -208,6 +211,9 @@ class Loops():
                     keyboard.key_action(self.player, self.generator.tile_map, self.monster_dict, self.monster_map, self.item_dict,self, key, self.generator, display, self.memory)
                 elif self.currentLoop == LoopType.inventory:
                     keyboard.key_inventory(self, self.player, self.item_dict,key)
+                elif self.currentLoop == LoopType.enchant:
+                    print("Reaches enchant keyboard")
+                    keyboard.key_enchant(self, self.player, self.item_dict, key)
                 elif self.currentLoop == LoopType.equipment:
                     keyboard.key_equipment(self, self.player, self.item_dict, key)
                 elif self.currentLoop == LoopType.main:
@@ -310,7 +316,7 @@ class Loops():
             self.clean_up()
             shadowcasting.compute_fov(self.player.get_location(), self.generator.tile_map.track_map)
             display.update_display(colors, self.generator.tile_map, tileDict, self.monster_dict, self.item_dict, self.monster_map, self.player, self.messages, self.target_to_display)
-        elif self.currentLoop == LoopType.inventory:
+        elif self.currentLoop == LoopType.inventory or self.currentLoop == LoopType.enchant:
             display.update_inventory(self.player, self.limit_inventory)
         elif self.currentLoop == LoopType.equipment:
             display.update_equipment(self.player, tileDict)

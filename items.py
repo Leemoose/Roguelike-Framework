@@ -2,6 +2,7 @@ import dice as R
 import objects as O
 import effect as E
 import skills as S
+import loops as L
 
 """
 All detailed items are initialized here.
@@ -13,12 +14,17 @@ class Equipment(O.Item):
         self.description = "Its a " + name + "."
         self.stackable = False
         self.attached_skill = None
+        self.level = 1
+        self.can_be_levelled = True
 
     def activate(self, entity):
         pass
 
     def deactivate(self, entity):
         pass
+
+    def enchant(self):
+        self.level += 1
 
     def get_attached_skill_name(self):
         if self.attached_skill != None:
@@ -52,30 +58,49 @@ class Weapon(Equipment):
 
 class Ax(Weapon):
     def __init__(self, render_tag):
-        super().__init__(-1, -1, 0, render_tag, "Ax")
+        super().__init__(-1, -1, 0, render_tag, "Axe")
         self.melee = True
-        self.name = "Ax"
-        self.description = "An ax with a round edge (could be rounder)"
+        self.name = "Axe"
+        self.description = "An axe with a round edge (could be rounder). A solid weapon for a solid warrior."
         self.damage_min = 20
         self.damage_max = 40
+    
+    def level_up(self):
+        print("level up axe")
+        self.level += 1
+        self.damage_min += 10
+        self.damage_max += 10
 
 class Hammer(Weapon):
     def __init__(self, render_tag):
         super().__init__(-1, -1, 0, render_tag, "Hammer")
         self.melee = True
         self.name = "Hammer"
-        self.description = "A hammer that you wish was more spherical."
+        self.description = "A hammer that you wish was more spherical. High damage potential but hard to get a solid hit in."
         self.damage_min = 5
         self.damage_max = 60
+
+    def level_up(self):
+        self.level += 1
+        self.damage_min += 5
+        self.damage_max += 15
 
 class Dagger(Weapon):
     def __init__(self, render_tag):
         super().__init__(-1, -1, 0, render_tag, "Dagger")
         self.melee = True
         self.name = "Dagger"
-        self.description = "I swear that tip is getting rounder... Larry!"
+        self.description = "I swear that tip is getting rounder... Larry!. Enchanting it might make it more pointy and precise."
         self.damage_min = 3
         self.damage_max = 20
+
+    def level_up(self):
+        self.level += 1
+        self.damage_min += 10
+        self.damage_max += 5
+        if self.damage_min > self.damage_max:
+            self.damage_min = self.damage_max
+
 
 class MagicWand(Weapon):
     def __init__(self, render_tag):
@@ -85,8 +110,23 @@ class MagicWand(Weapon):
         self.description = "A wand that you can use to cast magic missile. You can also use it in melee but why would you?"
         self.damage_min = 1
         self.damage_max = 5
-        self.attached_skill = (lambda owner : S.MagicMissile(owner, cooldown=3, cost=5, damage=25, range=6, action_cost=100))
-
+        self.magic_missile_damage = 25
+        self.magic_missile_range = 6
+        self.magic_missile_cost = 10
+        self.magic_missile_cooldown = 3
+        self.attached_skill = (lambda owner : S.MagicMissile(owner, self.magic_missile_cooldown, self.magic_missile_cost, self.magic_missile_damage, self.magic_missile_range, action_cost=100))
+    
+    def level_up(self):
+        self.level += 1
+        # level up improves magic missile
+        self.magic_missile_damage += 5
+        self.magic_missile_range += 1
+        self.magic_missile_cooldown -= 1
+        if self.magic_missile_cooldown < 0:
+            self.magic_missile_cooldown = 0
+        self.attached_skill = (lambda owner : S.MagicMissile(owner, self.magic_missile_cooldown, self.magic_missile_cost, self.magic_missile_damage, self.magic_missile_range, action_cost=100))
+        
+        
 class FlamingSword(Weapon):
     def __init__(self, render_tag):
         super().__init__(-1, -1, 0, render_tag, "Flaming Sword")
@@ -96,13 +136,35 @@ class FlamingSword(Weapon):
         self.damage_min = 15
         self.damage_max = 20
 
-        self.on_hit = (lambda inflictor : E.Burn(5, 3, inflictor))
-        self.on_hit_description = "Burns the target for 5 damage over 3 turns."
+        self.on_hit_burn = 5
+        self.on_hit_burn_duration = 3
+        self.on_hit = (lambda inflictor : E.Burn(self.on_hit_burn, self.on_hit_burn_duration, inflictor))
+        self.on_hit_description = f"Burns the target for {self.on_hit_burn} damage over {self.on_hit_burn_duration} turns."
 
-        self.attached_skill = (lambda owner : S.BurningAttack(owner, cooldown=5, cost=10, damage=10, burn_damage=5, burn_duration=10, range=5))
+        self.skill_cooldown = 5
+        self.skill_cost = 10
+        self.skill_damage = 10
+        self.skill_burn_damage = 5
+        self.skill_burn_duration = 10
+        self.skill_range = 5
+
+        self.attached_skill = (lambda owner : S.BurningAttack(owner, self.skill_cooldown, self.skill_cost, self.skill_damage, self.skill_burn_damage, self.skill_burn_duration, self.skill_range))
     
     def attack(self):
         return (super().attack(), self.on_hit)
+    
+    def level_up(self):
+        self.level += 1
+        self.damage_min += 5
+        self.damage_max += 5
+        self.on_hit_burn += 5
+        self.skill_damage += 5
+        self.skill_burn_damage += 5
+        self.skill_cooldown -= 1
+        if self.skill_cooldown < 2:
+            self.skill_cooldown = 2
+        self.attached_skill = (lambda owner : S.BurningAttack(owner, self.skill_cooldown, self.skill_cost, self.skill_damage, self.skill_burn_damage, self.skill_burn_duration, self.skill_range))
+
 
 class Armor(Equipment):
     def __init__(self, x,y, id_tag, render_tag, name):
@@ -124,7 +186,7 @@ class Shield(Armor):
         self.equipment_type = "Shield"
         self.name = "Shield"
         self.shield = True
-        self.armor = 5
+        self.armor = 3
         self.description = "A shield that you can use to block things."
 
     def equip(self, entity):
@@ -137,12 +199,17 @@ class Shield(Armor):
         entity.main_shield = None
         self.deactivate(entity)
 
+    def level_up(self):
+        self.level += 1
+        self.armor += 3
+
 class Ring(Equipment):
     def __init__(self, render_tag, name):
         super().__init__(-1,-1, 0, render_tag, name)
         self.equipment_type = "Ring"
         self.name = name
         self.description = "A ring that does something."
+        self.can_be_levelled = False
 
     def equip(self, entity):
         if len(entity.main_rings) >= 2 :
@@ -164,6 +231,8 @@ class RingOfSwiftness(Ring):
 
     def deactivate(self, entity):
         entity.move_cost += 20
+
+        
 
 class BloodRing(Ring):
     def __init__(self, render_tag):
@@ -232,10 +301,10 @@ class BoneRing(Ring):
 
 class Chestarmor(Armor):
     def __init__(self, render_tag):
-        super().__init__(-1,-1, 0, render_tag, "Armor")
-        self.equipment_type = "Chestarmor"
-        self.name = "Armor"
-        self.armor = 5
+        super().__init__(-1,-1, 0, render_tag, "Chest Plate")
+        self.equipment_type = "Body Armor"
+        self.name = "Chest Plate"
+        self.armor = 8
 
     def equip(self, entity):
         if entity.main_armor != None:
@@ -246,6 +315,10 @@ class Chestarmor(Armor):
     def unequip(self, entity):
         entity.chestarmor = None
         self.deactivate(entity)
+
+    def level_up(self):
+        self.level += 1
+        self.armor += 5
 
 class Boots(Armor):
     def __init__(self, render_tag):
@@ -265,6 +338,10 @@ class Boots(Armor):
         entity.boots = None
         self.deactivate(entity)
 
+    def level_up(self):
+        self.level += 1
+        self.armor += 1
+
 class BootsOfEscape(Armor):
     def __init__(self, render_tag):
         super().__init__(-1,-1, 0, render_tag, "Boots of Escape")
@@ -272,7 +349,10 @@ class BootsOfEscape(Armor):
         self.name = "Boots of Escape"
         self.armor = 0
         self.description = "Boots that let you cast the skill flee"
-        self.attached_skill = (lambda owner : S.Escape(owner, cooldown=10, cost=25, self_fear=False, activation_threshold=1.1, action_cost=1))
+
+        self.skill_cooldown = 10
+        self.skill_cost = 25
+        self.attached_skill = (lambda owner : S.Escape(owner, self.skill_cooldown, self.skill_cost, self_fear=False, activation_threshold=1.1, action_cost=1))
         
 
     def equip(self, entity):
@@ -286,6 +366,17 @@ class BootsOfEscape(Armor):
         entity.boots = None
         entity.remove_skill(self.attached_skill(entity.parent).name)
         self.deactivate(entity)
+
+    def level_up(self):
+        self.level += 1
+        self.skill_cooldown -= 1
+        if self.skill_cooldown < 5:
+            self.skill_cooldown = 5
+        self.skill_cost -= 2
+        if self.skill_cost < 10:
+            self.skill_cost = 10
+        self.attached_skill = (lambda owner : S.Escape(owner, self.skill_cooldown, self.skill_cost, self_fear=False, activation_threshold=1.1, action_cost=1))
+
 
 class Gloves(Armor):
     def __init__(self, render_tag):
@@ -305,6 +396,10 @@ class Gloves(Armor):
         entity.gloves = None
         self.deactivate(entity)
 
+    def level_up(self):
+        self.level += 1
+        self.armor += 1
+
 class Helmet(Armor):
     def __init__(self, render_tag):
         super().__init__(-1,-1, 0, render_tag, "Helmet")
@@ -323,6 +418,11 @@ class Helmet(Armor):
         entity.helmet = None
         self.deactivate(entity)
 
+    def level_up(self):
+        self.level += 1
+        self.armor += 1
+
+
 class VikingHelmet(Armor):
     def __init__(self, render_tag):
         super().__init__(-1,-1, 0, render_tag, "Viking Helmet")
@@ -330,7 +430,15 @@ class VikingHelmet(Armor):
         self.name = "Viking Helmet"
         self.armor = 0
         self.description = "A helmet that lets you go berserk below a quarter health"
-        self.attached_skill = (lambda owner : S.Berserk(owner, cooldown=0, cost=10, duration=10, activation_threshold=0.25, strength_increase=10, action_cost=1))
+        self.level = 3
+        
+        self.skill_cooldown = 0
+        self.skill_cost = 10
+        self.skill_duration = 10
+        self.skill_threshold = 0.25
+        self.strength_increase = 10
+
+        self.attached_skill = (lambda owner : S.Berserk(owner, self.skill_cooldown, self.skill_cost, self.skill_duration, self.skill_threshold, self.strength_increase, action_cost=1))
 
     def equip(self, entity):
         if entity.helmet != None:
@@ -344,6 +452,14 @@ class VikingHelmet(Armor):
         entity.remove_skill(self.attached_skill(entity.parent).name)
         self.deactivate(entity)
 
+    def level_up(self):
+        self.level += 1
+        self.strength_increase += 2
+        self.skill_threshold += 0.1
+        if self.skill_threshold > 0.5:
+            self.skill_threshold = 0.5
+        self.attached_skill = (lambda owner : S.Berserk(owner, self.skill_cooldown, self.skill_cost, self.skill_duration, self.skill_threshold, self.strength_increase, action_cost=1))
+
 class Potion(O.Item):
     def __init__(self, render_tag, name):
         super().__init__(-1, -1, 0, render_tag, name)
@@ -351,6 +467,8 @@ class Potion(O.Item):
         self.consumeable = True
         self.stackable = True
         self.stacks = 1
+        self.can_be_levelled = False
+        self.attached_skill = None
         self.description = "A potiorb that does something."
 
     def activate_once(self, entity):
@@ -362,6 +480,29 @@ class Potion(O.Item):
         if self.stacks == 0:
             self.destroy = True
 
+class Scroll(O.Item):
+    def __init__(self, render_tag, name):
+        super().__init__(-1, -1, 0, render_tag, name)
+        self.equipment_type = "Scrorb"
+        self.consumeable = True
+        self.stackable = True
+        self.can_be_levelled = False
+        self.stacks = 1
+        self.attached_skill = None
+        self.description = "A scrorb that does something."
+
+    def activate_once(self, entity, loop):
+        pass
+
+    def activate(self, entity, loop):
+        self.activate_once(entity, loop)
+        entity.ready_scroll = self
+
+    def consume_scroll(self, entity):
+        self.stacks -= 1
+        if self.stacks == 0:
+            self.destroy = True
+            entity.inventory.remove(self)
         
 
 class HealthPotion(Potion):
@@ -408,3 +549,11 @@ class ManaPotion(Potion):
     def activate_once(self, entity):
         entity.gain_mana(20)
 
+class EnchantScrorb(Scroll):
+    def __init__(self, render_tag):
+        super().__init__(render_tag, "Enchant Scrorb")
+        self.description = "A scrorb that enchants an item."
+
+    def activate_once(self, entity, loop):
+        loop.limit_inventory = "Enchantable"
+        loop.change_loop(L.LoopType.enchant)

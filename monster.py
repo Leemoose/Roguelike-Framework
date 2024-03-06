@@ -100,8 +100,8 @@ class Monster_AI():
         if len(monster.character.inventory) != 0:
             stuff = monster.character.inventory
             for i, item in enumerate(stuff):
-                if item.consumeable:
-                    return 25
+                if item.consumeable and item.equipment_type == "Potiorb": # monsters can't read so no scrolls
+                    return -1
         return -1
 
     def rank_move(self, loop):
@@ -164,7 +164,7 @@ class Monster_AI():
         if len(monster.character.inventory) != 0:
             stuff = monster.character.inventory
             for i, item in enumerate(stuff):
-                if item.consumeable:
+                if item.consumeable and item.equipment_type == "Potiorb": # monster's can't read so no scrolls
                     item.activate(monster.character)
 
     def do_move(self, loop):

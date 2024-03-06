@@ -265,14 +265,25 @@ class Display:
                                     text="Inventory",
                                     manager=self.uiManager,
                                     object_id='#title_label')
+        
+        if equipment_type == "Enchantable":
+            enchantable = player.character.get_enchantable()
+            print(enchantable)
 
         for i, item in enumerate(player.character.inventory):
-            if equipment_type != None and item.equipment_type != equipment_type:
+            if equipment_type == "Enchantable" and item not in enchantable:
                 continue
+            elif equipment_type != None and equipment_type != "Enchantable" and item.equipment_type != equipment_type:
+                continue
+            # print(item)
             if item.stackable:
                 item_name = item.name + " (x" + str(item.stacks) + ")"
             else:
                 item_name = item.name
+            if item.can_be_levelled:
+                item_level = item.level
+                if item_level > 1:
+                    item_name = item_name + " (+" + str(item_level - 1) + ")"
             button = pygame_gui.elements.UIButton(
                 relative_rect=pygame.Rect((inventory_button_offset_from_left, inventory_button_offset_from_top + inventory_button_offset_from_each_other * i + inventory_button_height * i),
                                                               (inventory_button_width, inventory_button_height)),
@@ -285,6 +296,7 @@ class Display:
         return self.buttons     
 
     def update_inventory(self, player, equipment_type=None):
+
         self.win.fill(self.colorDict.getColor("black"))
         self.uiManager.draw_ui(self.win)
     
@@ -623,9 +635,12 @@ class Display:
                 else:
                     pretext = "Equip"
                     action = "e"
-            elif item.consumeable:
+            elif item.consumeable and item.equipment_type == "Potiorb":
                 pretext = "Quaff"
                 action = "q"
+            elif item.consumeable and item.equipment_type == "Scrorb":
+                pretext = "Read"
+                action = "r"
             button = pygame_gui.elements.UIButton(
                 relative_rect=pygame.Rect((item_button_offset_from_left, item_button_offset_from_top),
                                           (item_button_width, item_button_height)),

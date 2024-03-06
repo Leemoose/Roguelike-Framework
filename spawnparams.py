@@ -45,7 +45,7 @@ ItemSpawns.append(ItemSpawnParams( I.ManaPotion(402),         1,               1
 ItemSpawns.append(ItemSpawnParams( I.CurePotion(403),         1,               10,          0,              3))
 ItemSpawns.append(ItemSpawnParams( I.MightPotion(404),        1,               10,          0,              2))
 ItemSpawns.append(ItemSpawnParams( I.DexterityPotion(405),    1,               10,          0,              2))
-
+ItemSpawns.append(ItemSpawnParams( I.EnchantScrorb(450),     1,               10,          5,              5))
 
 class MonsterSpawnParams:
     def __init__(self, monster, minFloor, maxFloor, minNumber, maxNumber, levelVariance = 0):
