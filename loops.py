@@ -299,10 +299,10 @@ class Loops():
             self.equipment_buttons = display.update_equipment(self.player, tileDict)
         elif self.currentLoop == LoopType.main:
             display.update_main()
-        elif self.currentLoop == LoopType.race:
-            display.update_race()
-        elif self.currentLoop == LoopType.classes:
-            display.update_class()
+    #    elif self.currentLoop == LoopType.race: #Not currently
+     #       display.update_race()
+      #  elif self.currentLoop == LoopType.classes: #Not currently
+       #     display.update_class()
         elif self.currentLoop == LoopType.items:
             display.update_item(self.item_for_item_screen, tileDict)
         elif self.currentLoop == LoopType.examine or self.currentLoop == LoopType.targeting:
