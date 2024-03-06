@@ -301,4 +301,6 @@ class Escape(Skill):
         return self.basic_requirements() and self.below_threshold()
     
     def description(self):
+        if self.activation_threshold > 1:
+            return self.name + "(" + str(self.cost) + " cost, " + str(self.cooldown) + " turn cooldown"
         return self.name + "(" + str(self.cost) + " cost, " + str(self.cooldown) + " turn cooldown" + ", castable below " + str(self.threshold * 100) + "% health)"
