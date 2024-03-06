@@ -97,7 +97,7 @@ class Keyboard():
             loop.limit_inventory = "Potiorb"
             loop.change_loop(LoopType.inventory)
         elif key == "p":
-            loop.display.set_visual_debug_mode(True)
+            loop.display.uiManager.set_visual_debug_mode(True)
         elif key == ">":
             loop.down_floor()
         elif key == "<":
