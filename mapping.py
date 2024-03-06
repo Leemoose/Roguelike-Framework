@@ -75,10 +75,13 @@ class TileDict():
         tiles[4] = pygame.transform.scale(image.load("assets/floor_dirty1.png"), (32,32))
         tiles[-4] = pygame.transform.scale(image.load("assets/floor_dirty1_shaded.png"), (32,32))
 
+        # basic assets
         tiles[90] = image.load("assets/stairs_up.png")
         tiles[-90] = image.load("assets/stairs_up.png")
         tiles[91] = image.load("assets/stairs_down.png")
         tiles[-91] = image.load("assets/stairs_down.png")
+
+        # monster assets
         tiles[101] = image.load("assets/orc.png")
         tiles[102] = image.load("assets/slime.png")
         tiles[103] = image.load('assets/floatingtentacles.png')
@@ -90,35 +93,47 @@ class TileDict():
         tiles[109] = pygame.transform.scale(image.load('assets/raptor.png'),(32,24))
         tiles[110] = pygame.transform.scale(image.load('assets/minotaur.png'), (32, 32))
 
+        # player assets
         tiles[200] = image.load("assets/Player.png")
         tiles[201] = image.load("assets/player_boots.png")
         tiles[202] = image.load("assets/player_gloves.png")
         tiles[203] = image.load("assets/player_helmet.png")
         tiles[204] = image.load("assets/player_armor.png")
 
+        # weapon assets
         tiles[300] = image.load("assets/basic_ax.png")
         tiles[301] = image.load("assets/hammer.png")
         tiles[311] = image.load("assets/shield.png")
         tiles[321] = image.load("assets/dagger.png")
         tiles[331] = image.load("assets/burning_sword.png")
         tiles[332] = image.load("assets/magic_wand.png")
+
+        # potion assets
         tiles[401] = image.load("assets/health_orb_bigger.png")
         tiles[402] = image.load("assets/mana_orb_bigger.png")
         tiles[403] = image.load("assets/curing_orb_bigger.png")
         tiles[404] = image.load("assets/might_orb_bigger.png")
         tiles[405] = image.load("assets/haste_orb_bigger.png")
+
+        # scroll assets
         tiles[450] = image.load("assets/scrorb.png")
+
+        # ring assets
         tiles[500] = image.load("assets/green_ring_gold.png")
         tiles[501] = image.load("assets/blood_ring.png")
         tiles[502] = image.load("assets/blue_ring.png")
         tiles[503] = image.load("assets/red_ring.png")
         tiles[504] = image.load("assets/bone_ring.png")
+
+        # armor assets
         tiles[600] = image.load("assets/armor.png")
         tiles[700] = image.load("assets/boots.png")
         tiles[701] = image.load("assets/boots_of_escape.png")
         tiles[750] = image.load("assets/gloves.png")
         tiles[770] = image.load("assets/helmet.png")
         tiles[771] = image.load("assets/viking_helmet.png")
+
+        # empty equipment assets
         tiles[801] = image.load("assets/empty_armor.png")
         tiles[802] = image.load("assets/empty_boots.png")
         tiles[803] = image.load("assets/empty_gloves.png")
@@ -126,7 +141,30 @@ class TileDict():
         tiles[805] = image.load("assets/empty_weapon.png")
         tiles[806] = image.load("assets/empty_shield.png")
         tiles[807] = image.load("assets/empty_ring.png")
+
+        # skill assets
         tiles[901] = image.load("assets/target.png")
+        tiles[902] = image.load("assets/placeholder_skill_icon.png")
+        tiles[-902] = image.load("assets/placeholder_skill_icon.png")
+        tiles[903] = image.load("assets/gun_skill_icon.png")
+        tiles[-903] = image.load("assets/gun_skill_icon.png")
+        tiles[904] = image.load("assets/BurningAttack_skill_icon.png")
+        tiles[-904] = image.load("assets/BurningAttack_skill_icon_dark.png")
+        tiles[905] = image.load("assets/MagicMissile_skill_icon.png")
+        tiles[-905] = image.load("assets/MagicMissile_skill_icon_dark.png")
+        tiles[906] = image.load("assets/Petrify_skill_icon.png")
+        tiles[-906] = image.load("assets/Petrify_skill_icon_dark.png")
+        tiles[907] = image.load("assets/ShrugOff_skill_icon.png")
+        tiles[-907] = image.load("assets/ShrugOff_skill_icon_dark.png")
+        tiles[908] = image.load("assets/Berserk_skill_icon.png")
+        tiles[-908] = image.load("assets/Berserk_skill_icon_dark.png")
+        tiles[909] = image.load("assets/BloodPact_skill_icon.png")
+        tiles[-909] = image.load("assets/BloodPact_skill_icon_dark.png")
+        tiles[910] = image.load("assets/Terrify_skill_icon.png")
+        tiles[-910] = image.load("assets/Terrify_skill_icon_dark.png")
+        tiles[911] = image.load("assets/Escape_skill_icon.png")
+        tiles[-911] = image.load("assets/Escape_skill_icon_dark.png")
+
         self.tiles = tiles
 
     def tile_string(self, key):

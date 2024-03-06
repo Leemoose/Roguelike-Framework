@@ -136,6 +136,8 @@ class Display:
             clear_target = self.draw_examine_window(target_to_display, tileDict, floormap, monster_map, monsterID, item_ID, player)
             if clear_target:
                 target_to_display = None
+
+        self.create_skill_bar(player, tileDict=tileDict, monsterID=monsterID, tile_map=floormap)
         self.uiManager.draw_ui(self.win)
 
     def write_messages(self, messages):
@@ -244,6 +246,47 @@ class Display:
                 text = font.render("You are here", True, (255, 255, 255))
                 self.win.blit(text, (self.screen_width // 10, self.screen_height // 10 + 65))
         return nothing_at_target
+    
+    def create_skill_bar(self, player, tileDict, monsterID, tile_map):
+        skill_bar_height = self.screen_height // 12
+        skill_bar_offset_from_left = self.screen_width // 5 * 2
+        skill_bar_offset_from_top = self.screen_height // 8 * 7
+        skill_button_width = self.screen_width // 24
+        skill_button_height = self.screen_height // 12
+        skill_button_offset_from_left = self.screen_width // 5 * 2
+        skill_button_offset_from_top = self.screen_height // 8 * 7
+        skill_button_offset_from_each_other = self.screen_width // 100
+
+        self.uiManager.clear_and_reset()
+
+        num_skill = len(player.character.skills)
+        skill_bar_width = skill_button_width * num_skill + skill_button_offset_from_each_other * (num_skill - 1)
+        if num_skill == 0:
+            return
+
+        pygame.draw.rect(self.win, (0,0,0), pygame.Rect(skill_bar_offset_from_left, skill_bar_offset_from_top, skill_bar_width, skill_bar_height))
+
+        for i, skill in enumerate(player.character.skills):
+            closest_monster = player.character.get_closest_monster(player, monsterID, tile_map)
+            if closest_monster == player and skill.range != -1:
+                castable = False # no monster to caste ranged skill on
+            else:
+                castable = skill.castable(closest_monster)
+            if castable:
+                img = pygame.transform.scale(tileDict.tiles[skill.render_tag], (skill_button_width, skill_button_height))
+            else:
+                img = pygame.transform.scale(tileDict.tiles[-skill.render_tag], (skill_button_width, skill_button_height))
+            button = pygame_gui.elements.UIButton(
+                relative_rect=pygame.Rect((skill_button_offset_from_left + skill_button_offset_from_each_other * i + skill_button_width * i, skill_button_offset_from_top),
+                                                              (skill_button_width, skill_button_height)),
+                text = "",
+                manager=self.uiManager,
+                object_id='#skill_button')
+            button.action = chr(ord("1") + i)
+            self.draw_on_button(button, img, chr(ord("1") + i), (skill_button_width, skill_button_height), shrink=True, offset_factor=10, text_offset=(12, (0.6)))
+            self.buttons.add(button, chr(ord("1") + i))
+
+        return self.buttons
 
     def create_inventory(self, player, equipment_type=None):   
         self.uiManager.clear_and_reset()
@@ -306,17 +349,17 @@ class Display:
         self.win.fill(self.colorDict.getColor("black"))
         self.uiManager.draw_ui(self.win)
     
-    def draw_on_button(self, button, img, letter="", button_size=None):
+    def draw_on_button(self, button, img, letter="", button_size=None, shrink=False, offset_factor = 10, text_offset = (15, 0.8)):
         offset = (0, 0)
-        if letter == "d": # shrink weapon image a bit
+        if shrink:# shrink weapon image a bit
             img = pygame.transform.scale(img, (button_size[0] // 5 * 4, button_size[1] // 5 * 4))
-            offset = (button_size[0] // 10, button_size[1] // 10)
+            offset = (button_size[0] // offset_factor, button_size[1] // offset_factor)
         button.drawable_shape.states['normal'].surface.blit(img, offset)
         if button_size:
             font_size = 20
-            font = pygame.font.Font('freesansbold.ttf', 20)
+            font = pygame.font.Font('freesansbold.ttf', font_size)
             text = font.render(letter, True, (255, 255, 255))
-            button.drawable_shape.states['normal'].surface.blit(text, (button_size[0] // 15, button_size[1] // 5 * 4))
+            button.drawable_shape.states['normal'].surface.blit(text, (button_size[0] // text_offset[0], button_size[1] * text_offset[1]))
         button.drawable_shape.active_state.has_fresh_surface = True
         # button.drawable_shape.redraw_all_states()
 
@@ -473,7 +516,7 @@ class Display:
                     manager=self.uiManager,
                     object_id='#equipment_button')
         
-        self.draw_on_button(button, img, "d", (medium_button_width, medium_button_height))
+        self.draw_on_button(button, img, "d", (medium_button_width, medium_button_height), shrink=True)
         button.action = 'd'
 
         if player.character.gloves == None:

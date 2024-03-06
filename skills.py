@@ -13,6 +13,7 @@ class Skill():
         self.targetted = False
         self.action_cost = action_cost
         self.threshold = 0.0
+        self.render_tag = 902 # placeholder icon, skill assets are fixed so not given in user input
 
     def activate(self, target, generator):
         self.parent.character.mana -= self.cost
@@ -90,6 +91,7 @@ class MagicMissile(Skill):
         super().__init__("Magic missile", parent, cooldown, cost, range, action_cost)
         self.damage = damage
         self.targetted = True
+        self.render_tag = 905
 
     def activate(self, defender, generator):
         self.parent.character.mana -= self.cost
@@ -109,6 +111,7 @@ class BurningAttack(Skill):
         self.burn_damage = burn_damage
         self.targetted = True
         self.burn_duration = burn_duration
+        self.render_tag = 904
 
     def activate(self, defender, generator):
         self.parent.character.mana -= self.cost
@@ -132,6 +135,7 @@ class Petrify(Skill):
         self.duration = duration
         self.targetted = True
         self.activation_chance = activation_chance
+        self.render_tag = 906
 
     def activate(self, defender, generator):
         self.parent.character.mana -= self.cost
@@ -157,6 +161,7 @@ class ShrugOff(Skill):
     def __init__(self, parent, cooldown, cost, activation_chance, action_cost):
         super().__init__("Shrug off", parent, cooldown, cost, -1, action_cost)
         self.activation_chance = activation_chance
+        self.render_tag = 907
 
     def activate(self, defender, generator):
         self.parent.character.mana -= self.cost
@@ -183,6 +188,7 @@ class Berserk(Skill):
         self.threshold = activation_threshold
         self.duration = duration
         self.strength_increase = strength_increase
+        self.render_tag = 908
     
     def activate(self, defender, generator):
         self.parent.character.mana -= self.cost
@@ -207,6 +213,7 @@ class BloodPact(Skill):
         super().__init__("Blood pact", parent, cooldown, cost, -1, action_cost)
         self.strength_increase = strength_increase
         self.duration = duration
+        self.render_tag = 909
 
     def activate(self, defender, generator):
         self.parent.character.take_damage(self.parent, self.cost)
@@ -228,6 +235,7 @@ class Gun(Skill):
         super().__init__("Gun", parent, 0, 0, 10000)
         self.damage = 10000
         self.targetted = True
+        self.render_tag = 903
 
     def activate(self, defender, generator):
         self.parent.character.mana -= self.cost
@@ -246,6 +254,7 @@ class Terrify(Skill):
         self.duration = duration
         self.activation_chance = activation_chance
         self.targetted = True
+        self.render_tag = 910
 
     def activate(self, defender, generator):
         self.parent.character.mana -= self.cost
@@ -272,7 +281,7 @@ class Escape(Skill):
         super().__init__("Escape", parent, cooldown, cost, -1, action_cost)
         self.threshold = activation_threshold
         self.self_fear = self_fear
-
+        self.render_tag = 911
 
     def activate(self, target, generator):
         exit = generator.nearest_exit(self.parent)
@@ -301,6 +310,6 @@ class Escape(Skill):
         return self.basic_requirements() and self.below_threshold()
     
     def description(self):
-        if self.activation_threshold > 1:
+        if self.threshold > 1:
             return self.name + "(" + str(self.cost) + " cost, " + str(self.cooldown) + " turn cooldown"
         return self.name + "(" + str(self.cost) + " cost, " + str(self.cooldown) + " turn cooldown" + ", castable below " + str(self.threshold * 100) + "% health)"

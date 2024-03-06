@@ -131,16 +131,7 @@ class Keyboard():
                         loop.add_message("You can't cast " + player.character.skills[skill_num].name + " right now.")
                 else:
                     loop.change_loop(LoopType.targeting)
-                    closest_dist = 100000
-                    closest_monster = player
-                    for monster_key in monsterID.subjects:
-                        monster = monsterID.subjects[monster_key]
-                        dist = player.get_distance(monster.x, monster.y)
-                        
-                        if dist < closest_dist and loop.generator.tile_map.track_map[monster.x][monster.y].visible:
-                            closest_dist = dist
-                            closest_monster = monster
-                    # change closest_monster to targetted monster, maybe start at closest monster and let targetting begin
+                    closest_monster = player.character.get_closest_monster(player, monsterID, loop.generator.tile_map)
                     loop.targets.start_target(closest_monster.get_location())
                     loop.add_target(closest_monster.get_location())
                     loop.targets.store_skill(skill_num, player.character.skills[skill_num], player.character)

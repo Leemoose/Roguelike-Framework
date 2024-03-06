@@ -44,7 +44,9 @@ class Character():
         self.boots = None
         self.gloves = None
         self.helmet = None
-        self.main_rings = []
+        self.ring_1 = None
+        self.ring_2 = None
+        self.force_ring_2 = False # by default we dequip first ring but we can force second with this
 
         self.base_damage = 0
         self.armor = 0
@@ -288,6 +290,17 @@ class Character():
                     enchantable.append(item)
         return enchantable
 
+    def get_closest_monster(self, player, monsterID, tile_map):
+        closest_dist = 100000
+        closest_monster = player
+        for monster_key in monsterID.subjects:
+            monster = monsterID.subjects[monster_key]
+            dist = player.get_distance(monster.x, monster.y)
+                        
+            if dist < closest_dist and tile_map.track_map[monster.x][monster.y].visible:
+                closest_dist = dist
+                closest_monster = monster
+        return closest_monster
 
 
 class Player(O.Objects):

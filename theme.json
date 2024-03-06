@@ -72,6 +72,21 @@
         }
     },
 
+    "#skill_button":
+    {
+        "colours":
+        {
+            "normal_bg":"#45494e",
+            "normal_text":"#c5cbd8",
+            "normal_border": "#DDDDDD"
+        },
+
+        "misc":
+        {
+            "tool_tip_delay": "1000"
+        }
+    },
+
     "#equipment_button":
     {
         "colours":
