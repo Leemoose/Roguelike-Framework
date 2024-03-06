@@ -107,6 +107,7 @@ class TileDict():
         tiles[403] = image.load("assets/curing_orb_bigger.png")
         tiles[404] = image.load("assets/might_orb_bigger.png")
         tiles[405] = image.load("assets/haste_orb_bigger.png")
+        tiles[450] = image.load("assets/scrorb.png")
         tiles[500] = image.load("assets/green_ring_gold.png")
         tiles[501] = image.load("assets/blood_ring.png")
         tiles[502] = image.load("assets/blue_ring.png")

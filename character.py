@@ -4,6 +4,7 @@ import objects as O
 import effect as E
 import pathfinding
 import skills as S
+import items as I
 
 class Character():
     def __init__(self, parent, endurance = 0, intelligence = 0, dexterity = 0, strength = 0, health = 100, mana = 0, health_regen=0.1, mana_regen=0.1):
@@ -27,6 +28,7 @@ class Character():
         self.move_cost = 100
         self.equip_cost = 20
         self.quaff_cost = 10
+        self.read_cost = 100
         self.attack_cost = 100
 
         self.alive = True
@@ -34,6 +36,8 @@ class Character():
         self.inventory = []
         self.main_weapon = None
         self.main_shield = None
+
+        self.ready_scroll = None # index of actively used scroll
 
         self.chestarmor = None
         self.main_armor = None
@@ -181,12 +185,21 @@ class Character():
             return False
 
     def quaff(self, potion, item_dict, item_map):
-        if potion.consumeable:
+        if potion.consumeable and potion.equipment_type == "Potiorb":
             potion.activate(self)
             if potion.stacks == 0:
                 self.drop(potion, item_dict, item_map)
                 potion.destroy = True
             self.energy -= self.quaff_cost
+            return True
+    
+    def read(self, scroll, loop, item_dict, item_map):
+        if scroll.consumeable and scroll.equipment_type == "Scrorb":
+            scroll.activate(self, loop)
+            if scroll.stacks == 0:
+                self.drop(scroll, item_dict, item_map)
+                scroll.destroy = True
+            self.energy -= self.read_cost
             return True
     
     def tick_all_status_effects(self):
@@ -250,6 +263,10 @@ class Character():
     def rest(self):
         self.health = self.max_health
         self.mana = self.max_mana
+        while self.health < self.max_health or self.mana < self.max_mana:
+            self.tick_regen()
+            self.tick_all_status_effects()
+            self.tick_cooldowns()
     
     def add_skill(self, new_skill):
         for skill in self.skills:
@@ -262,6 +279,15 @@ class Character():
             if skill.name == skill_name:
                 self.skills.remove(skill)
                 break
+    
+    def get_enchantable(self):
+        enchantable = []
+        for item in self.inventory:
+            if item.can_be_levelled:
+                if item.level < 6: # items can be levelled upto +5
+                    enchantable.append(item)
+        return enchantable
+
 
 
 class Player(O.Objects):

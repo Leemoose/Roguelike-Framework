@@ -32,6 +32,7 @@ class LoopType(Enum):
     paused = 10
     targeting = 11
     specific_examine = 12
+    enchant = 13
 
 class ColorDict():
     """
@@ -141,7 +142,7 @@ class Loops():
             pass
         elif newLoop == LoopType.autoexplore:
             pass
-        elif newLoop == LoopType.inventory:
+        elif newLoop == LoopType.inventory or newLoop == LoopType.enchant:
             self.display.create_inventory(self.player, self.limit_inventory)
         elif newLoop == LoopType.equipment:
             self.display.create_equipment(self.player, self.tileDict)
@@ -180,17 +181,17 @@ class Loops():
         if self.currentLoop == LoopType.rest:
             monster_present = False
             for monster_key in self.monster_dict.subjects:
-                if self.monster_dict.get_subject(monster_key).brain.is_awake:
+                monster_loc = self.monster_dict.get_subject(monster_key).get_location()
+                if self.generator.tile_map.track_map[monster_loc[0]][monster_loc[1]].visible:
                     self.add_message("You can't rest while enemies are near")
-                    self.rest = False
-                    self.action = True
+                    self.change_loop(LoopType.action)
                     monster_present = True
             if not monster_present:
                 self.player.character.rest()
-                self.rest = False
-                self.action = True
+                self.change_loop(LoopType.action)
                 self.add_message("You rest for a while")
                 self.monster_loop(0)
+
             
 
         for event in pygame.event.get():
@@ -208,6 +209,8 @@ class Loops():
                     keyboard.key_action(self.player, self.generator.tile_map, self.monster_dict, self.monster_map, self.item_dict,self, key, self.generator, display, self.memory)
                 elif self.currentLoop == LoopType.inventory:
                     keyboard.key_inventory(self, self.player, self.item_dict,key)
+                elif self.currentLoop == LoopType.enchant:
+                    keyboard.key_enchant(self, self.player, self.item_dict, key)
                 elif self.currentLoop == LoopType.equipment:
                     keyboard.key_equipment(self, self.player, self.item_dict, key)
                 elif self.currentLoop == LoopType.main:
@@ -310,7 +313,7 @@ class Loops():
             self.clean_up()
             shadowcasting.compute_fov(self.player.get_location(), self.generator.tile_map.track_map)
             display.update_display(colors, self.generator.tile_map, tileDict, self.monster_dict, self.item_dict, self.monster_map, self.player, self.messages, self.target_to_display)
-        elif self.currentLoop == LoopType.inventory:
+        elif self.currentLoop == LoopType.inventory or self.currentLoop == LoopType.enchant:
             display.update_inventory(self.player, self.limit_inventory)
         elif self.currentLoop == LoopType.equipment:
             display.update_equipment(self.player, tileDict)

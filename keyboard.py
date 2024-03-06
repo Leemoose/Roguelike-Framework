@@ -159,6 +159,22 @@ class Keyboard():
                         loop.item_for_item_screen = player.character.inventory[i]
                         loop.change_loop(LoopType.items)
 
+    def key_enchant(self, loop, player, item_dict, key):
+        if key == "esc":
+            loop.change_loop(LoopType.action)
+            loop.limit_inventory = None
+            player.character.ready_scroll = None
+
+        for i in range(len(player.character.inventory)):
+            if chr(ord("a")+i) == key:
+                item = player.character.inventory[i]
+                player.character.ready_scroll.consume_scroll(player.character)
+                item.level_up()
+
+                loop.change_loop(LoopType.action)
+                loop.limit_inventory = None
+                loop.update_screen = True
+
     def key_equipment(self, loop, player, item_dict, key):
         if key == "esc":
             loop.limit_inventory = None
@@ -171,12 +187,13 @@ class Keyboard():
             loop.change_loop(LoopType.inventory)
         elif key == "z":
             loop.limit_inventory = "Ring"
+            player.character.force_ring_2 = True # equip to second slot
             loop.change_loop(LoopType.inventory)
         elif key == "w":
             loop.limit_inventory = "Helmet"
             loop.change_loop(LoopType.inventory)
         elif key == "s":
-            loop.limit_inventory = "Armor"
+            loop.limit_inventory = "Body Armor"
             loop.change_loop(LoopType.inventory)
         elif key == "x":
             loop.limit_inventory = "Boots"
@@ -214,22 +231,27 @@ class Keyboard():
             loop.down_floor()
 
     def key_item_screen(self, key, loop, item_dict, player, item, item_map):
-            if key == "esc":
-                if loop.limit_inventory == None:
-                    loop.change_loop(LoopType.inventory)
-                else:
-                    loop.change_loop(LoopType.equipment)
-            elif key == "d":
-                player.character.drop(item, item_dict, item_map)
+        if key == "esc":
+            if loop.limit_inventory == None:
                 loop.change_loop(LoopType.inventory)
-            elif key == "e":
-                player.character.equip(item)
-            elif key == "u":
-                player.character.unequip(item)
-            elif key == 'q':
-                if player.character.quaff(item, item_dict, item_map):
+            else:
+                if item.equipped:
+                    loop.change_loop(LoopType.equipment)
+                else:
                     loop.change_loop(LoopType.inventory)
-
+        elif key == "d":
+            player.character.drop(item, item_dict, item_map)
+            loop.change_loop(LoopType.inventory)
+        elif key == "e":
+            player.character.equip(item)
+        elif key == "u":
+            player.character.unequip(item)
+        elif key == 'q':
+            if player.character.quaff(item, item_dict, item_map):
+                loop.change_loop(LoopType.inventory)
+        elif key == "r":
+            player.character.read(item, loop, item_dict, item_map)
+            
     def key_paused(self, key, loop, display):
         if key == "esc":
             loop.change_loop(LoopType.action)
