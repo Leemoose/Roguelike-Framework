@@ -31,6 +31,7 @@ class LoopType(Enum):
     rest = 9
     paused = 10
     targeting = 11
+    specific_examine = 12
 
 class ColorDict():
     """
@@ -125,6 +126,7 @@ class Loops():
         self.targets = T.Target()
         self.target_to_display = None
         self.tileDict = tileDict
+        self.item_for_item_screen = None
 
         #Start the game by going to the main screen
         self.change_loop(LoopType.main)
@@ -155,6 +157,8 @@ class Loops():
             pass
         elif newLoop == LoopType.paused:
             self.display.create_pause_screen()
+        elif newLoop == LoopType.specific_examine:
+            pass
 
     def action_loop(self, keyboard, display):
         """
@@ -215,13 +219,17 @@ class Loops():
                     keyboard.key_class_screen(key, self)
                 elif self.currentLoop == LoopType.items:
                     keyboard.key_item_screen(key, self, self.item_dict, self.player, self.item_for_item_screen, self.generator.item_map)
-                elif self.currentLoop == LoopType.examine or self.currentLoop == LoopType.targeting:
+                elif self.currentLoop == LoopType.examine:
+                    keyboard.key_examine_screen(key, self)
+                elif self.currentLoop == LoopType.targeting:
                     keyboard.key_targeting_screen(key, self)
                 elif self.currentLoop == LoopType.autoexplore:
                     keyboard.key_autoexplore(key, self)
                 elif self.currentLoop == LoopType.paused:
                     if (keyboard.key_paused(key, self, display) == False):
                         return False
+                elif self.currentLoop == LoopType.specific_examine:
+                    keyboard.key_specific_examine(key, self, display)
 
                 self.update_screen = True
 
@@ -316,6 +324,8 @@ class Loops():
             display.update_examine(self.targets.target_list, tileDict, self.messages)
         elif self.currentLoop == LoopType.paused:
             display.update_pause_screen()
+        elif self.currentLoop == LoopType.specific_examine:
+            display.update_item(self.item_for_item_screen, tileDict, item_screen=False)
         pygame.display.update()
         self.update_screen = False
 
