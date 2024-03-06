@@ -181,17 +181,17 @@ class Loops():
         if self.currentLoop == LoopType.rest:
             monster_present = False
             for monster_key in self.monster_dict.subjects:
-                if self.monster_dict.get_subject(monster_key).brain.is_awake:
+                monster_loc = self.monster_dict.get_subject(monster_key).get_location()
+                if self.generator.tile_map.track_map[monster_loc[0]][monster_loc[1]].visible:
                     self.add_message("You can't rest while enemies are near")
-                    self.rest = False
-                    self.action = True
+                    self.change_loop(LoopType.action)
                     monster_present = True
             if not monster_present:
                 self.player.character.rest()
-                self.rest = False
-                self.action = True
+                self.change_loop(LoopType.action)
                 self.add_message("You rest for a while")
                 self.monster_loop(0)
+
             
 
         for event in pygame.event.get():

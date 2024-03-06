@@ -263,6 +263,10 @@ class Character():
     def rest(self):
         self.health = self.max_health
         self.mana = self.max_mana
+        while self.health < self.max_health or self.mana < self.max_mana:
+            self.tick_regen()
+            self.tick_all_status_effects()
+            self.tick_cooldowns()
     
     def add_skill(self, new_skill):
         for skill in self.skills:
