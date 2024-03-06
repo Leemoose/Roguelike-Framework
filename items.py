@@ -12,7 +12,6 @@ class Equipment(O.Item):
         self.equipable = True
         self.description = "Its a " + name + "."
         self.stackable = False
-
         self.attached_skill = None
 
     def activate(self, entity):

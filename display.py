@@ -1,5 +1,6 @@
 import pygame
 import pygame_gui
+import items as I
 import ui
 
 class Buttons:
@@ -561,24 +562,10 @@ class Display:
             manager=self.uiManager
         )
 
-
-
     def update_main(self):
     #Main Screen
         self.win.fill((0,0,0))
         self.uiManager.draw_ui(self.win)
-
-    def update_race(self):
-    #Race Screen
-        race_background = pygame.image.load("assets/race_screen.png")
-        race_background = pygame.transform.scale(race_background, (self.screen_width, self.screen_height))
-        self.win.blit(race_background, (0,0))
-
-    def update_class(self):
-    #Class Screen
-        class_background = pygame.image.load("assets/class_screen.png")
-        class_background = pygame.transform.scale(class_background, (self.screen_width, self.screen_height))
-        self.win.blit(class_background, (0,0))
 
     def update_item(self, item, tileDict):
         self.uiManager.clear_and_reset()
@@ -604,9 +591,9 @@ class Display:
         item_button_offset_from_top = item_screen_height + item_offset_from_top - item_button_height - self.screen_height // 50
         item_button_offset_from_each_other = self.screen_width // 20
 
-        item_text_offset_from_left = item_offset_from_left
+        item_text_offset_from_left = item_offset_from_left + item_screen_width // 20
         item_text_offset_from_top = item_image_offset_from_top + item_message_height
-        item_text_width = item_screen_width // 9
+        item_text_width = item_screen_width * 9 // 10
         item_text_height = item_screen_height // 2
 
         buttons = Buttons()
@@ -626,14 +613,25 @@ class Display:
             manager=self.uiManager,
             object_id='#title_label')
 
-
+        pretext = ""
+        action = ""
+        if item.equipable:
+            if item.equipped:
+                pretext = "Unequip"
+                action = "u"
+            else:
+                pretext = "Equip"
+                action = "e"
+        elif item.consumeable:
+            pretext = "Quaff"
+            action = "q"
         button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect((item_button_offset_from_left, item_button_offset_from_top),
                                       (item_button_width, item_button_height)),
-            text='Equip',
+            text=pretext,
             manager=self.uiManager)
-        button.action = "e"
-        buttons.add(button, "Equip")
+        button.action = action
+        buttons.add(button, pretext)
         buttons_drawn += 1
 
         button = pygame_gui.elements.UIButton(
@@ -654,13 +652,19 @@ class Display:
         buttons.add(button, "Destroy")
         buttons_drawn += 1
 
-        self.uiManager.draw_ui(self.win)
+        item_text = ""
+        item_text += item.description  + "<br>"
+        if item.equipped:
+            item_text += "Currently equipped<br>"
+        item_text += "Equipment type: " + item.equipment_type + "<br>"
+        if isinstance(item, I.Armor):
+            item_text += "Armor: " + str(item.armor) + "<br>"
+        if isinstance(item, I.Weapon):
+            item_text += "Damage: " + str(item.damage_min) + " - " + str(item.damage_max) + "<br>"
+      #  item_text += item.attached_skill.name + "<br>"
         text_box = pygame_gui.elements.UITextBox(
             relative_rect=pygame.Rect((item_text_offset_from_left, item_text_offset_from_top), (item_text_width, item_text_height)),
-            html_text = "Player<br><br>"
-                        "Stats<br>"
-                        "<br>Known Skills:<br>"
-                        ,
+            html_text = item_text,
             manager=self.uiManager
         )
 
@@ -724,40 +728,3 @@ def create_main_screen(scr, width, height):
                                 object_id='#title_label')
     
     return buttons
-
-
-"""
-def create_race_screen(scr):
-    background = pygame.image.load("assets/class_background.png")
-    background = pygame.transform.scale(background, (scr.screen_width, scr.screen_height))
-    scr.win.blit(background, (0,0))
-    buttons = Buttons()
-    button = Button(scr.screen_width, scr.screen_height, "assets/button.png", 15/100, 11/100, "1", scr.screen_width / 2, scr.screen_height * 80/100)
-    buttons.add(button, "Human")
-    scr.win.blit(button.img, (button.get_position()))
-
-    font = pygame.font.Font('freesansbold.ttf', 32)
-    text = font.render('Human', True, (255, 255, 255))
-    text_width, text_height = font.size("Human")
-    scr.win.blit(text, (scr.screen_width / 2 - text_width / 2, scr.screen_height * 85/100 + button.height / 2 - text_height / 2))
-
-    #pygame.image.save(scr.win, "assets/race_screen.png")
-    return buttons
-
-def create_class_screen(scr):
-    background = pygame.image.load("assets/class_background.png")
-    background = pygame.transform.scale(background, (scr.screen_width, scr.screen_height))
-    scr.win.blit(background, (0,0))
-    buttons = Buttons()
-    button = Button(scr.screen_width, scr.screen_height, "assets/button.png", 15/100, 11/100, "1", scr.screen_width // 2, scr.screen_height * 80/100)
-    buttons.add(button, "Warrior")
-    scr.win.blit(button.img, (button.get_position()))
-
-    font = pygame.font.Font('freesansbold.ttf', 32)
-    text = font.render('Warrior', True, (255, 255, 255))
-    text_width, text_height = font.size("Warrior")
-    scr.win.blit(text, (scr.screen_width / 2 - text_width / 2, scr.screen_height * 85/100 + button.height / 2 - text_height / 2))
-
-    # pygame.image.save(scr.win, "assets/class_screen.png")
-    return buttons
-"""

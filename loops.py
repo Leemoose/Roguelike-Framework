@@ -234,6 +234,9 @@ class Loops():
                 elif (self.currentLoop == LoopType.equipment):
                     key = event.ui_element.action
                     keyboard.key_equipment(self, self.player, self.item_dict, key)
+                elif (self.currentLoop == LoopType.items):
+                    key = event.ui_element.action
+                    keyboard.key_item_screen(self, self.player, self.item_dict, key)
                 elif (self.currentLoop == LoopType.paused):
                     key = event.ui_element.action
                     if (keyboard.key_paused(key, self, display) == False):
@@ -302,13 +305,9 @@ class Loops():
         elif self.currentLoop == LoopType.inventory:
             display.update_inventory(self.player, self.limit_inventory)
         elif self.currentLoop == LoopType.equipment:
-            self.equipment_buttons = display.update_equipment(self.player, tileDict)
+            display.update_equipment(self.player, tileDict)
         elif self.currentLoop == LoopType.main:
             display.update_main()
-        elif self.currentLoop == LoopType.race:
-            display.update_race()
-        elif self.currentLoop == LoopType.classes:
-            display.update_class()
         elif self.currentLoop == LoopType.items:
             display.update_item(self.item_for_item_screen, tileDict)
         elif self.currentLoop == LoopType.examine or self.currentLoop == LoopType.targeting:
