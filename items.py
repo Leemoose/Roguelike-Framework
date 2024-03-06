@@ -132,19 +132,26 @@ class Shield(Armor):
         self.deactivate(entity)
 
 class Ring(Equipment):
-    def __init__(self, render_tag):
-        super().__init__(-1,-1, 0, render_tag, "Ring")
+    def __init__(self, render_tag, name):
+        super().__init__(-1,-1, 0, render_tag, name)
         self.equipment_type = "Ring"
-        self.name = "Ring"
-        self.description = "The most circular thing you own, it makes you feel spry on your feet"
+        self.name = name
+        self.description = "A ring that does something."
 
     def equip(self, entity):
         if len(entity.main_rings) >= 2 :
             entity.unequip(entity.main_rings[0])
         entity.main_rings.append(self)
+        self.activate(entity)
 
     def unequip(self, entity):
         entity.main_rings.pop(0)
+        self.deactivate(entity)
+
+class RingOfSwiftness(Ring):
+    def __init__(self, render_tag):
+        super().__init__(render_tag, "Ring of Swiftness")
+        self.description = "The most circular thing you own, it makes you feel spry on your feet"
 
     def activate(self, entity):
         entity.move_cost -= 20
@@ -152,17 +159,14 @@ class Ring(Equipment):
     def deactivate(self, entity):
         entity.move_cost += 20
 
-class BloodRing(Equipment):
+class BloodRing(Ring):
     def __init__(self, render_tag):
-        super().__init__(-1,-1, 0, render_tag, "Blood Ring")
-        self.equipment_type = "Ring"
-        self.name = "Blood Ring"
+        super().__init__(render_tag, "Blood Ring")
         self.description = "Pricking your finger on the spikes of this ring makes you feel alive."
         
         # skill doesn't have an owner until equipped to an entity, so need a lambda expression here
         self.attached_skill = (lambda owner : S.BloodPact(owner, cooldown=10, cost=10, strength_increase=10, duration=4, action_cost=100))
         
-
     def equip(self, entity):
         if len(entity.main_rings) >= 2 :
             entity.unequip(entity.main_rings[0])
@@ -174,6 +178,51 @@ class BloodRing(Equipment):
         # if other ring is a blood ring don't remove skill
         if entity.main_rings[0].name != "Blood Ring":
             entity.remove_skill(self.attached_skill(entity.parent).name)
+
+class RingOfMight(Ring):
+    def __init__(self, render_tag):
+        super().__init__(render_tag, "Ring of Might")
+        self.equipment_type = "Ring"
+        self.name = "Ring of Might"
+        self.description = "A ring that makes you feel stronger."
+
+    def activate(self, entity):
+        entity.strength += 10
+
+    def deactivate(self, entity):
+        entity.strength -= 10
+
+class RingOfMana(Ring):
+    def __init__(self, render_tag):
+        super().__init__(render_tag, "Ring of Mana")
+        self.description = "A ring that every spellcaster is given on their 10th birthday"
+
+    def activate(self, entity):
+        entity.mana += 30
+        entity.mana_regen += 5
+        entity.intelligence += 5
+
+    def deactivate(self, entity):
+        entity.mana -= 30
+        entity.mana_regen -= 5
+        entity.intelligence -= 5
+
+class BoneRing(Ring):
+    def __init__(self, render_tag):
+        super().__init__(render_tag, "Bone Ring")
+        self.description = "An eerie ring that makes you much stronger and faster while wearing it but rapidly drains your health and mana"
+
+    def activate(self, entity):
+        entity.strength += 10
+        entity.dexterity += 10
+        entity.mana_regen -= 10
+        entity.health_regen -= 10
+        
+    def deactivate(self, entity):
+        entity.strength -= 10
+        entity.dexterity -= 10
+        entity.mana_regen += 10
+        entity.health_regen += 10
 
 class Chestarmor(Armor):
     def __init__(self, render_tag):

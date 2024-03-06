@@ -240,12 +240,12 @@ class Character():
     def tick_regen(self):
         self.health_partial += self.health_regen
         self.mana_partial += self.mana_regen
-        if self.health_partial >= 1:
-            self.gain_health(1)
-            self.health_partial -= 1
-        if self.mana_partial >= 1:
-            self.gain_mana(1)
-            self.mana_partial -= 1
+        if abs(self.health_partial) >= 1:
+            self.gain_health(self.health_partial // 1)
+            self.health_partial = self.health_partial % 1
+        if abs(self.mana_partial) >= 1:
+            self.gain_mana(self.mana_partial // 1)
+            self.mana_partial = self.mana_partial % 1
     
     def rest(self):
         self.health = self.max_health
