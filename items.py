@@ -20,6 +20,12 @@ class Equipment(O.Item):
     def deactivate(self, entity):
         pass
 
+    def get_attached_skill_name(self):
+        if self.attached_skill != None:
+            return self.attached_skill(None).name # temporarily attach skill to nothing to get name
+        else:
+            return None
+
 class Weapon(Equipment):
     def __init__(self, x, y, id_tag, render_tag, name):
         super().__init__(x,y, id_tag, render_tag, name)
@@ -91,6 +97,7 @@ class FlamingSword(Weapon):
         self.damage_max = 20
 
         self.on_hit = (lambda inflictor : E.Burn(5, 3, inflictor))
+        self.on_hit_description = "Burns the target for 5 damage over 3 turns."
 
         self.attached_skill = (lambda owner : S.BurningAttack(owner, cooldown=5, cost=10, damage=10, burn_damage=5, burn_duration=10, range=5))
     
@@ -265,19 +272,19 @@ class BootsOfEscape(Armor):
         self.name = "Boots of Escape"
         self.armor = 0
         self.description = "Boots that let you cast the skill flee"
-        self.skill_attached = (lambda owner : S.Escape(owner, cooldown=10, cost=25, self_fear=False, activation_threshold=1.1, action_cost=1))
+        self.attached_skill = (lambda owner : S.Escape(owner, cooldown=10, cost=25, self_fear=False, activation_threshold=1.1, action_cost=1))
         
 
     def equip(self, entity):
         if entity.boots != None:
             entity.unequip(entity.boots)
         entity.boots = self
-        entity.add_skill(self.skill_attached(entity.parent))
+        entity.add_skill(self.attached_skill(entity.parent))
         self.activate(entity)
 
     def unequip(self, entity):
         entity.boots = None
-        entity.remove_skill(self.skill_attached(entity.parent).name)
+        entity.remove_skill(self.attached_skill(entity.parent).name)
         self.deactivate(entity)
 
 class Gloves(Armor):

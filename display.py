@@ -661,6 +661,10 @@ class Display:
             item_text += "Armor: " + str(item.armor) + "<br>"
         if isinstance(item, I.Weapon):
             item_text += "Damage: " + str(item.damage_min) + " - " + str(item.damage_max) + "<br>"
+            if item.on_hit:
+                item_text += "On hit: " + item.on_hit_description + "<br>"
+        if item.attached_skill != None:
+            item_text += "Grants skill: " + item.get_attached_skill_name() + "<br>"
       #  item_text += item.attached_skill.name + "<br>"
         text_box = pygame_gui.elements.UITextBox(
             relative_rect=pygame.Rect((item_text_offset_from_left, item_text_offset_from_top), (item_text_width, item_text_height)),
