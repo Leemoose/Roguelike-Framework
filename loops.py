@@ -143,8 +143,6 @@ class Loops():
         elif newLoop == LoopType.autoexplore:
             pass
         elif newLoop == LoopType.inventory or newLoop == LoopType.enchant:
-            if newLoop == LoopType.enchant:
-                print("Trying to display inventory")
             self.display.create_inventory(self.player, self.limit_inventory)
         elif newLoop == LoopType.equipment:
             self.display.create_equipment(self.player, self.tileDict)
@@ -212,7 +210,6 @@ class Loops():
                 elif self.currentLoop == LoopType.inventory:
                     keyboard.key_inventory(self, self.player, self.item_dict,key)
                 elif self.currentLoop == LoopType.enchant:
-                    print("Reaches enchant keyboard")
                     keyboard.key_enchant(self, self.player, self.item_dict, key)
                 elif self.currentLoop == LoopType.equipment:
                     keyboard.key_equipment(self, self.player, self.item_dict, key)

@@ -26,9 +26,9 @@ class Equipment(O.Item):
     def enchant(self):
         self.level += 1
 
-    def get_attached_skill_name(self):
+    def get_attached_skill_description(self):
         if self.attached_skill != None:
-            return self.attached_skill(None).name # temporarily attach skill to nothing to get name
+            return self.attached_skill(None).description() # temporarily attach skill to nothing to get name
         else:
             return None
 
@@ -66,8 +66,11 @@ class Ax(Weapon):
         self.damage_max = 40
     
     def level_up(self):
-        print("level up axe")
         self.level += 1
+        if self.level == 2:
+            self.description += " It's been enchanted to be more effective."
+        if self.level == 6:
+            self.description = "An axe with the roundest edge ever seen. It's been enchanted as much as possible."
         self.damage_min += 10
         self.damage_max += 10
 
@@ -82,6 +85,10 @@ class Hammer(Weapon):
 
     def level_up(self):
         self.level += 1
+        if self.level == 2:
+            self.description += " It's been enchanted to hit harder"
+        if self.level == 6:
+            self.description = "A hammer with incredible damage potential. Still not the easiest to get a clean hit in. It's been enchanted as much as possible."
         self.damage_min += 5
         self.damage_max += 15
 
@@ -96,6 +103,10 @@ class Dagger(Weapon):
 
     def level_up(self):
         self.level += 1
+        if self.level == 2:
+            self.description += " It's been enchanted to be more precise."
+        if self.level == 6:
+            self.description = "A dagger that always strikes accurately, never dealing less than full damage. It's been enchanted as much as possible."
         self.damage_min += 10
         self.damage_max += 5
         if self.damage_min > self.damage_max:
@@ -118,6 +129,11 @@ class MagicWand(Weapon):
     
     def level_up(self):
         self.level += 1
+        if self.level == 2:
+            self.description += " It's been enchanted cast a stronger magic missile"
+        if self.level == 6:
+            self.description = "A wand that you can use to cast an immensely powerful magic missile. It's been enchanted as much as possible."
+
         # level up improves magic missile
         self.magic_missile_damage += 5
         self.magic_missile_range += 1
@@ -155,6 +171,10 @@ class FlamingSword(Weapon):
     
     def level_up(self):
         self.level += 1
+        if self.level == 2:
+            self.description += " It's been enchanted to hit harder and burn stronger."
+        if self.level == 6:
+            self.description = "A sword that burns intensely. It's burning strike has reached its maximum potency. It's been enchanted as much as possible."
         self.damage_min += 5
         self.damage_max += 5
         self.on_hit_burn += 5
@@ -202,6 +222,10 @@ class Shield(Armor):
     def level_up(self):
         self.level += 1
         self.armor += 3
+        if self.level == 2:
+            self.description += " It's been enchanted to be more protective."
+        if self.level == 6:
+            self.description = "A shield that you can use to block nearly anything. It's been enchanted as much as possible."
 
 class Ring(Equipment):
     def __init__(self, render_tag, name):
@@ -304,6 +328,7 @@ class Chestarmor(Armor):
         super().__init__(-1,-1, 0, render_tag, "Chest Plate")
         self.equipment_type = "Body Armor"
         self.name = "Chest Plate"
+        self.description = "A reliable piece of armor that covers your chest."
         self.armor = 8
 
     def equip(self, entity):
@@ -318,6 +343,10 @@ class Chestarmor(Armor):
 
     def level_up(self):
         self.level += 1
+        if self.level == 2:
+            self.description += " It's been enchanted to be more protective."
+        if self.level == 6:
+            self.description = "A chest plate that absorbs most hits for you. It's been enchanted as much as possible."
         self.armor += 5
 
 class Boots(Armor):
@@ -326,6 +355,7 @@ class Boots(Armor):
         self.equipment_type = "Boots"
         self.name = "Boots"
         self.armor = 1
+        self.description = "Boots that are incredibly comfortable but only offer a little protection"
 
 
     def equip(self, entity):
@@ -341,6 +371,10 @@ class Boots(Armor):
     def level_up(self):
         self.level += 1
         self.armor += 1
+        if self.level == 2:
+            self.description += " It's been enchanted to be more protective."
+        if self.level == 6:
+            self.description = "Boots that are somehow incredibly comfy and tough at the same time. It's been enchanted as much as possible."
 
 class BootsOfEscape(Armor):
     def __init__(self, render_tag):
@@ -369,6 +403,10 @@ class BootsOfEscape(Armor):
 
     def level_up(self):
         self.level += 1
+        if self.level == 2:
+            self.description += " It's been enchanted to let you flee on a shorter cooldown."
+        if self.level == 6:
+            self.description = "Boots that let you flee at the drop of a hat. It's been enchanted as much as possible."
         self.skill_cooldown -= 1
         if self.skill_cooldown < 5:
             self.skill_cooldown = 5
@@ -399,6 +437,10 @@ class Gloves(Armor):
     def level_up(self):
         self.level += 1
         self.armor += 1
+        if self.level == 2:
+            self.description += " It's been enchanted to be more protective."
+        if self.level == 6:
+            self.description = "Gloves that are incredibly warm and tough at the same time. It's been enchanted as much as possible."
 
 class Helmet(Armor):
     def __init__(self, render_tag):
@@ -406,6 +448,7 @@ class Helmet(Armor):
         self.equipment_type = "Helmet"
         self.name = "Helmet"
         self.armor = 1
+        self.description = "A helmet that protects your head. You like how round it is."
 
 
     def equip(self, entity):
@@ -421,6 +464,10 @@ class Helmet(Armor):
     def level_up(self):
         self.level += 1
         self.armor += 1
+        if self.level == 2:
+            self.description += " It's been enchanted to be more protective."
+        if self.level == 6:
+            self.description = "A round helmet that protects your head from nearly anything. It's been enchanted as much as possible."
 
 
 class VikingHelmet(Armor):
@@ -429,8 +476,7 @@ class VikingHelmet(Armor):
         self.equipment_type = "Helmet"
         self.name = "Viking Helmet"
         self.armor = 0
-        self.description = "A helmet that lets you go berserk below a quarter health"
-        self.level = 3
+        self.description = "A helmet that lets you go berserk below a quarter health."
         
         self.skill_cooldown = 0
         self.skill_cost = 10
@@ -454,6 +500,10 @@ class VikingHelmet(Armor):
 
     def level_up(self):
         self.level += 1
+        if self.description == 2:
+            self.description += " It's been enchanted to raise the damage you need to take before going berserk"
+        if self.level == 6:
+            self.description = "A helmet that lets you go berserk below half health. It's been enchanted as much as possible"
         self.strength_increase += 2
         self.skill_threshold += 0.1
         if self.skill_threshold > 0.5:

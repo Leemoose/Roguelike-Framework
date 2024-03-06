@@ -246,10 +246,8 @@ class Keyboard():
             if player.character.quaff(item, item_dict, item_map):
                 loop.change_loop(LoopType.inventory)
         elif key == "r":
-            print("trying to read")
-            if player.character.read(item, loop, item_dict, item_map):
-                pass # reading automatically changes loop
-
+            player.character.read(item, loop, item_dict, item_map)
+            
     def key_paused(self, key, loop, display):
         if key == "esc":
             loop.change_loop(LoopType.action)

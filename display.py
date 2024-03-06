@@ -276,14 +276,12 @@ class Display:
         
         if equipment_type == "Enchantable":
             enchantable = player.character.get_enchantable()
-            print(enchantable)
 
         for i, item in enumerate(player.character.inventory):
             if equipment_type == "Enchantable" and item not in enchantable:
                 continue
             elif equipment_type != None and equipment_type != "Enchantable" and item.equipment_type != equipment_type:
                 continue
-            # print(item)
             if item.stackable:
                 item_name = item.name + " (x" + str(item.stacks) + ")"
             else:
@@ -613,8 +611,8 @@ class Display:
 
         item_text_offset_from_left = item_offset_from_left + item_screen_width // 20
         item_text_offset_from_top = item_image_offset_from_top + item_message_height
-        item_text_width = item_screen_width * 9 // 10
-        item_text_height = item_screen_height // 2
+        item_text_width = item_screen_width * 11 // 12
+        item_text_height = item_screen_height * 3 // 5
 
         buttons = Buttons()
         buttons_drawn = 0
@@ -626,13 +624,27 @@ class Display:
         pygame.draw.rect(self.win, (112,128,144), pygame.Rect(item_offset_from_left, item_offset_from_top, item_screen_width, item_screen_height))
 
         self.win.blit(item_image, (item_image_offset_from_left, item_image_offset_from_top))
+
+        item_name = item.name
+
         pygame_gui.elements.UILabel(
             relative_rect=pygame.Rect((item_message_offset_from_left, item_message_offset_from_top),
                                       (item_message_width, item_message_height)),
-            text=item.name,
+            text=item_name,
             manager=self.uiManager,
             object_id='#title_label')
 
+        if item.can_be_levelled:
+            item_level = item.level
+            if item_level > 1:
+                addition = " (+" + str(item_level - 1) + ")"
+                # 
+                pygame_gui.elements.UILabel(
+                relative_rect=pygame.Rect((item_message_offset_from_left + item_message_width * 4// 5, item_message_offset_from_top),
+                                        (item_message_width // 4, item_message_height)),
+                text=addition,
+                manager=self.uiManager,
+                object_id='#title_addition')
         if item_screen:
             pretext = ""
             action = ""
@@ -677,7 +689,7 @@ class Display:
             buttons_drawn += 1
 
         item_text = ""
-        item_text += item.description  + "<br>"
+        item_text += item.description  + "<br><br>"
         if item.equipped:
             item_text += "Currently equipped<br>"
         item_text += "Equipment type: " + item.equipment_type + "<br>"
@@ -688,7 +700,7 @@ class Display:
             if item.on_hit:
                 item_text += "On hit: " + item.on_hit_description + "<br>"
         if item.attached_skill != None:
-            item_text += "Grants skill: " + item.get_attached_skill_name() + "<br>"
+            item_text += "Grants skill: " + item.get_attached_skill_description() + "<br>"
       #  item_text += item.attached_skill.name + "<br>"
         text_box = pygame_gui.elements.UITextBox(
             relative_rect=pygame.Rect((item_text_offset_from_left, item_text_offset_from_top), (item_text_width, item_text_height)),

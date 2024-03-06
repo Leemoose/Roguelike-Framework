@@ -36,6 +36,14 @@
         }
     },
 
+    "#title_addition":
+    {
+        "font":
+        {
+            "size": "30"
+        }
+    },
+
     "button":
     {
         "colours":

@@ -50,8 +50,11 @@ class Skill():
         if distance < self.range:
             return True
 
-    def __str__(self) -> str:
+    def __str__(self):
         return self.name
+    
+    def description(self):
+        return self.name + "(" + str(self.cost) + " cost, " + str(self.cooldown) + " turn cooldown"
 
 class Teleport(Skill):
     def __init__(self, parent, cooldown, cost):
@@ -95,6 +98,9 @@ class MagicMissile(Skill):
 
     def castable(self, target):
         return self.basic_requirements() and self.in_range(target)
+    
+    def description(self):
+        return self.name + "(" + str(self.cost) + " cost, " + str(self.cooldown) + " turn cooldown" + ", " + str(self.damage) + " damage at range " + str(self.range) + ")"
 
 class BurningAttack(Skill):
     def __init__(self, parent, cooldown, cost, damage, burn_damage, burn_duration, range):
@@ -114,6 +120,11 @@ class BurningAttack(Skill):
 
     def castable(self, target):
         return self.basic_requirements() and self.in_range(target)
+    
+    def description(self):
+        if self.burn_duration == -100:
+            return self.name + "(" + str(self.cost) + " cost, " + str(self.cooldown) + " turn cooldown" + ", " + str(self.damage) + " damage at range " + str(self.range) + ", " + str(self.burn_damage) + " burn damage permanently)"
+        return self.name + "(" + str(self.cost) + " cost, " + str(self.cooldown) + " turn cooldown" + ", " + str(self.damage) + " damage at range " + str(self.range) + ", " + str(self.burn_damage) + " burn damage for " + str(self.burn_duration) + " turns)"
     
 class Petrify(Skill):
     def __init__(self, parent, cooldown, cost, duration, activation_chance, range):
@@ -137,6 +148,11 @@ class Petrify(Skill):
     def castable(self, target):
         return self.basic_requirements() and self.in_range(target) and not target.character.has_effect("Petrify")
     
+    def description(self):
+        if self.duration == -100:
+            return self.name + "(" + str(self.cost) + " cost, " + str(self.cooldown) + " turn cooldown" + ", " + self.activation_chance + "% chance to petrify at range " + str(self.range) + ")"
+        return self.name + "(" + str(self.cost) + " cost, " + str(self.cooldown) + " turn cooldown" + ", " + self.activation_chance + "% chance to petrify at range " + str(self.range) + "for " + str(self.duration) + " turns)"
+    
 class ShrugOff(Skill):
     def __init__(self, parent, cooldown, cost, activation_chance, action_cost):
         super().__init__("Shrug off", parent, cooldown, cost, -1, action_cost)
@@ -155,6 +171,10 @@ class ShrugOff(Skill):
 
     def castable(self, target):
         return self.basic_requirements() and self.parent.character.has_negative_effects()
+    
+    def description(self):
+        
+        return self.name + "(" + str(self.cost) + " cost, " + str(self.cooldown) + " turn cooldown" + ", " + str(self.activation_chance * 100) + "% chance to remove a negative effect)"
 
 class Berserk(Skill):
     # self-might if below certain health percent
@@ -176,6 +196,11 @@ class Berserk(Skill):
 
     def castable(self, target):
         return self.basic_requirements and self.below_threshold() and not self.parent.character.has_effect("Might")
+    
+    def description(self):
+        if self.duration == -100:
+            return self.name + "(" + str(self.cost) + " health cost, " + str(self.cooldown) + " turn cooldown" + ", +" + str(self.strength_increase) + " strength if below " + str(self.threshold * 100) + "% health)"
+        return self.name + "(" + str(self.cost) + " cost, " + str(self.cooldown) + " turn cooldown" + ", +" + str(self.strength_increase) + " strength for " + str(self.duration) + " turns if below " + str(self.threshold * 100) + "% health)"
 
 class BloodPact(Skill):
     def __init__(self, parent, cooldown, cost, strength_increase, duration, action_cost):
@@ -191,6 +216,11 @@ class BloodPact(Skill):
 
     def castable(self, target):
         return self.health_cost_requirements and not self.parent.character.has_effect("Might")
+    
+    def description(self):
+        if self.duration == -100:
+            return self.name + "(" + str(self.cost) + " health cost, " + str(self.cooldown) + " turn cooldown" + ", +" + str(self.strength_increase) + " strength)"
+        return self.name + "(" + str(self.cost) + " health cost, " + str(self.cooldown) + " turn cooldown" + ", +" + str(self.strength_increase) + " strength for " + str(self.duration) + " turns)"
 
 # I only want this for playtesting, it's not a real skill
 class Gun(Skill):
@@ -206,6 +236,9 @@ class Gun(Skill):
 
     def castable(self, target):
         return self.basic_requirements() and self.in_range(target)
+    
+    def description(self):
+        return "Gun (Pew Pew)"
     
 class Terrify(Skill):
     def __init__(self, parent, cooldown, cost, duration, activation_chance, range):
@@ -228,6 +261,11 @@ class Terrify(Skill):
 
     def castable(self, target):
         return self.basic_requirements() and self.in_range(target) and not target.character.has_effect("Fear")
+    
+    def description(self):
+        if self.duration == -100:
+            return self.name + "(" + str(self.cost) + " cost, " + str(self.cooldown) + " turn cooldown" + ", " + self.activation_chance + "% chance to terrify at range " + str(self.range) + ")"
+        return self.name + "(" + str(self.cost) + " cost, " + str(self.cooldown) + " turn cooldown" + ", " + self.activation_chance + "% chance to terrify at range " + str(self.range) + "for " + str(self.duration) + " turns)"
     
 class Escape(Skill):
     def __init__(self, parent, cooldown, cost, self_fear, activation_threshold, action_cost):
@@ -261,3 +299,6 @@ class Escape(Skill):
 
     def castable(self, target):
         return self.basic_requirements() and self.below_threshold()
+    
+    def description(self):
+        return self.name + "(" + str(self.cost) + " cost, " + str(self.cooldown) + " turn cooldown" + ", castable below " + str(self.threshold * 100) + "% health)"
