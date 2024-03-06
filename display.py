@@ -106,6 +106,14 @@ class Display:
                     self.win.blit(monster_tile, (self.textSize*(monster.x - self.x_start), self.textSize*(monster.y - self.y_start)))
 
         self.win.blit(tileDict.tile_string(200), (r_x * self.textSize, r_y * self.textSize))
+        if player.character.boots != None:
+            self.win.blit(tileDict.tile_string(201), (r_x * self.textSize, r_y * self.textSize))
+        if player.character.gloves != None:
+            self.win.blit(tileDict.tile_string(202), (r_x * self.textSize, r_y * self.textSize))
+        if player.character.helmet != None:
+            self.win.blit(tileDict.tile_string(203), (r_x * self.textSize, r_y * self.textSize))
+        if player.character.main_armor != None:
+            self.win.blit(tileDict.tile_string(204), (r_x * self.textSize, r_y * self.textSize))
 
         black_screen = pygame.transform.scale(pygame.image.load("assets/black_screen.png"), (self.screen_width // 5, self.screen_height // 5))
         self.win.blit(black_screen, (0, self.screen_height // 5 * 4))

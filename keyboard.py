@@ -155,8 +155,9 @@ class Keyboard():
 
             for i in range(len(player.character.inventory)):
                 if chr(ord("a")+i) == key:
-                    loop.item_for_item_screen = player.character.inventory[i]
-                    loop.change_loop(LoopType.items)
+                    if loop.limit_inventory == None or player.character.inventory[i].equipment_type == loop.limit_inventory:
+                        loop.item_for_item_screen = player.character.inventory[i]
+                        loop.change_loop(LoopType.items)
 
     def key_enchant(self, loop, player, item_dict, key):
         if key == "esc":
