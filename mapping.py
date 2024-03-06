@@ -79,7 +79,6 @@ class TileDict():
         tiles[-90] = image.load("assets/stairs_up.png")
         tiles[91] = image.load("assets/stairs_down.png")
         tiles[-91] = image.load("assets/stairs_down.png")
-        tiles[200] = image.load("assets/Player.png")
         tiles[101] = image.load("assets/orc.png")
         tiles[102] = image.load("assets/slime.png")
         tiles[103] = image.load('assets/floatingtentacles.png')
@@ -90,6 +89,13 @@ class TileDict():
         tiles[108] = pygame.transform.scale(image.load('assets/gargoyle.png'),(32,32))
         tiles[109] = pygame.transform.scale(image.load('assets/raptor.png'),(32,24))
         tiles[110] = pygame.transform.scale(image.load('assets/minotaur.png'), (32, 32))
+
+        tiles[200] = image.load("assets/Player.png")
+        tiles[201] = image.load("assets/player_boots.png")
+        tiles[202] = image.load("assets/player_gloves.png")
+        tiles[203] = image.load("assets/player_helmet.png")
+        tiles[204] = image.load("assets/player_armor.png")
+
         tiles[300] = image.load("assets/basic_ax.png")
         tiles[301] = image.load("assets/hammer.png")
         tiles[311] = image.load("assets/shield.png")
