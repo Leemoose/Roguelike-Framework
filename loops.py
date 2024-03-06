@@ -6,7 +6,7 @@ import objects as O
 import targets as T
 import shadowcasting
 from enum import Enum
-import pickle
+import dill
 
 """
 Theme: Loops is the central brain of which part of the program it is choosing.
@@ -85,15 +85,15 @@ class Memory():
     def save_objects(self):
         save = [self.explored_levels, self.floor_level, self.generators, self.player]
         try:
-            with open("data.pickle", "wb") as f:
-                pickle.dump(save, f)
+            with open("data.dill", "wb") as f:
+                dill.dump(save, f)
         except Exception as ex:
             print("Error during pickling object (Possibly unsupported):", ex)
 
     def load_objects(self):
-        with open('data.pickle', 'rb') as f:
+        with open('data.dill', 'rb') as f:
             # Call load method to deserialze
-            save = pickle.load(f)
+            save = dill.load(f)
         self.explored_levels = save [0]
         self.floor_level = save [1]
         self.generators = save[2]
