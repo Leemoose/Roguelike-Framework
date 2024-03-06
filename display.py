@@ -374,12 +374,12 @@ class Display:
         self.draw_on_button(button, img, "q", (medium_button_width, medium_button_height))
         button.action = 'q'
 
-        if len(player.character.main_rings) == 0:
+        if player.character.ring_1 == None:
             pre_text = "equip "
             img = pygame.transform.scale(tileMap.tiles[807], (small_button_width, small_button_height))
         else:
             pre_text = "change "
-            img = pygame.transform.scale(tileMap.tiles[player.character.main_rings[0].render_tag], (small_button_width, small_button_height))
+            img = pygame.transform.scale(tileMap.tiles[player.character.ring_1.render_tag], (small_button_width, small_button_height))
         button = pygame_gui.elements.UIButton(
                     relative_rect=pygame.Rect((first_col_offset_from_left, 
                                                outer_cols_offset_from_top + (medium_button_height + margin_between_buttons_height)),
@@ -390,12 +390,12 @@ class Display:
         self.draw_on_button(button, img, "a", (small_button_width, small_button_height))
         button.action = 'a'
         
-        if len(player.character.main_rings) != 2:
+        if player.character.ring_2 == None:
             pre_text = "equip "
             img = pygame.transform.scale(tileMap.tiles[807], (small_button_width, small_button_height))
         else:
             pre_text = "change "
-            img = pygame.transform.scale(tileMap.tiles[player.character.main_rings[1].render_tag], (small_button_width, small_button_height))
+            img = pygame.transform.scale(tileMap.tiles[player.character.ring_2.render_tag], (small_button_width, small_button_height))
         button = pygame_gui.elements.UIButton(
                     relative_rect=pygame.Rect((first_col_offset_from_left + small_button_width + small_margin_between_buttons_width, 
                                                outer_cols_offset_from_top + (medium_button_height + margin_between_buttons_height)),

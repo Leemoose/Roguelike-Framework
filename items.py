@@ -16,6 +16,7 @@ class Equipment(O.Item):
         self.attached_skill = None
         self.level = 1
         self.can_be_levelled = True
+        self.equipped = False
 
     def activate(self, entity):
         pass
@@ -236,13 +237,27 @@ class Ring(Equipment):
         self.can_be_levelled = False
 
     def equip(self, entity):
-        if len(entity.main_rings) >= 2 :
-            entity.unequip(entity.main_rings[0])
-        entity.main_rings.append(self)
+        if self.equipped:
+            return
+        if entity.force_ring_2:
+            entity.ring_2 = self
+            entity.force_ring_2 = False
+        elif entity.ring_1 == None:
+            entity.ring_1 = self
+        elif entity.ring_2 == None: # and ring_1 is not
+            entity.ring_2 = self
+        else: # both rings are equipped
+            entity.ring_1.deactivate(entity)
+            entity.ring_1 = entity.ring_2
+            entity.ring_2 = self
         self.activate(entity)
 
     def unequip(self, entity):
-        entity.main_rings.pop(0)
+        if entity.ring_1 == self:
+            entity.ring_1 = entity.ring_2
+            entity.ring_2 = None
+        elif entity.ring_2 == self:
+            entity.ring_2 = None
         self.deactivate(entity)
 
 class RingOfSwiftness(Ring):
@@ -266,17 +281,14 @@ class BloodRing(Ring):
         # skill doesn't have an owner until equipped to an entity, so need a lambda expression here
         self.attached_skill = (lambda owner : S.BloodPact(owner, cooldown=10, cost=10, strength_increase=10, duration=4, action_cost=100))
         
-    def equip(self, entity):
-        if len(entity.main_rings) >= 2 :
-            entity.unequip(entity.main_rings[0])
+    def activate(self, entity):
         entity.add_skill(self.attached_skill(entity.parent))
-        entity.main_rings.append(self)
 
-    def unequip(self, entity):
-        entity.main_rings.pop(0)
-        # if other ring is a blood ring don't remove skill
-        if entity.main_rings[0].name != "Blood Ring":
-            entity.remove_skill(self.attached_skill(entity.parent).name)
+    def deactivate(self, entity):
+        if entity.ring_1 != None and entity.ring_1.name == "Blood Ring":
+            return # don't remove skill if other ring was a blood ring
+        entity.remove_skill(self.attached_skill(entity.parent).name)
+        
 
 class RingOfMight(Ring):
     def __init__(self, render_tag):

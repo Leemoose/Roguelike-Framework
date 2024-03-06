@@ -187,12 +187,13 @@ class Keyboard():
             loop.change_loop(LoopType.inventory)
         elif key == "z":
             loop.limit_inventory = "Ring"
+            player.character.force_ring_2 = True # equip to second slot
             loop.change_loop(LoopType.inventory)
         elif key == "w":
             loop.limit_inventory = "Helmet"
             loop.change_loop(LoopType.inventory)
         elif key == "s":
-            loop.limit_inventory = "Armor"
+            loop.limit_inventory = "Body Armor"
             loop.change_loop(LoopType.inventory)
         elif key == "x":
             loop.limit_inventory = "Boots"
@@ -234,7 +235,10 @@ class Keyboard():
             if loop.limit_inventory == None:
                 loop.change_loop(LoopType.inventory)
             else:
-                loop.change_loop(LoopType.equipment)
+                if item.equipped:
+                    loop.change_loop(LoopType.equipment)
+                else:
+                    loop.change_loop(LoopType.inventory)
         elif key == "d":
             player.character.drop(item, item_dict, item_map)
             loop.change_loop(LoopType.inventory)
