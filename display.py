@@ -110,7 +110,7 @@ class Display:
         message_height = self.screen_height - action_screen_height - 10
 
         views_num_buttons = 3
-        views_button_width = action_screen_width - message_offset_from_left
+        views_button_width = self.screen_width - action_screen_width
         views_button_height = (self.screen_height - map_offset_from_top - map_height) // (views_num_buttons + 1)
         views_button_offset_from_left = action_screen_width
         views_button_offset_from_each_other = (self.screen_height - map_offset_from_top - map_height) // (
