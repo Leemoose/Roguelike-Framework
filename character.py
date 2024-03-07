@@ -415,8 +415,7 @@ class Player(O.Objects):
         tile_map = loop.generator.tile_map
         for monster_key in monster_dict.subjects:
             if monster_dict.get_subject(monster_key).brain.is_awake:
-                loop.action = True
-                loop.autoexplore = False
+                loop.change_loop(L.LoopType.action)
                 return
         while len(self.path) <= 1:
             start = (self.x, self.y)
@@ -448,7 +447,6 @@ class Player(O.Objects):
         loop.update_screen = True
 
         self.character.energy = 0
-        loop.monster_loop(0)
 
 
     def check_for_levelup(self):
