@@ -82,16 +82,24 @@ class TileDict():
         tiles[-91] = image.load("assets/stairs_down.png")
 
         # monster assets
-        tiles[101] = image.load("assets/orc.png")
-        tiles[102] = image.load("assets/slime.png")
-        tiles[103] = image.load('assets/floatingtentacles.png')
-        tiles[104] = image.load('assets/gentleman_eyeball.png')
-        tiles[105] = image.load('assets/monsters/golem.png')
-        tiles[106] = pygame.transform.scale(image.load('assets/monsters/goblin.png'),(32,32))
-        tiles[107] = image.load('assets/monsters/kobold.png')
-        tiles[108] = pygame.transform.scale(image.load('assets/monsters/gargoyle.png'),(32,32))
-        tiles[109] = pygame.transform.scale(image.load('assets/raptor.png'),(32,24))
-        tiles[110] = pygame.transform.scale(image.load('assets/monsters/minotaur.png'), (32, 32))
+        tiles[101] = image.load("assets/monsters/orc.png")
+        tiles[151] = image.load("assets/monsters/orc_orb.png")
+        tiles[102] = image.load('assets/monsters/golem.png')
+        tiles[152] = image.load('assets/monsters/golem_orb.png')
+        tiles[103] = image.load('assets/monsters/goblin.png')
+        tiles[153] = image.load('assets/monsters/goblin_orb.png')
+        tiles[104] = image.load('assets/monsters/hobgoblin.png')
+        tiles[154] = image.load('assets/monsters/hobgoblin_orb.png')
+        tiles[105] = image.load('assets/monsters/kobold.png')
+        tiles[155] = image.load('assets/monsters/kobold_orb.png')
+        tiles[106] = image.load('assets/monsters/gargoyle.png')
+        tiles[156] = image.load('assets/monsters/gargoyle_orb.png')
+        tiles[107] = image.load('assets/monsters/velociraptor.png')
+        tiles[157] = image.load('assets/monsters/velociraptor_orb.png')
+        tiles[108] = image.load('assets/monsters/minotaur.png')
+        tiles[158] = image.load('assets/monsters/minotaur_orb.png')
+        tiles[159] = image.load('assets/monsters/tormentorb.png')
+        tiles[160] = image.load('assets/monsters/yendorb.png')
 
         # player assets
         tiles[200] = image.load("assets/Player.png")
@@ -184,6 +192,10 @@ class TileDict():
         tiles[-910] = image.load("assets/Terrify_skill_icon_dark.png")
         tiles[911] = image.load("assets/Escape_skill_icon.png")
         tiles[-911] = image.load("assets/Escape_skill_icon_dark.png")
+        tiles[912] = image.load("assets/Heal_skill_icon.png")
+        tiles[-912] = image.load("assets/Heal_skill_icon_dark.png")
+        tiles[913] = image.load("assets/Torment_skill_icon.png")
+        tiles[-913] = image.load("assets/Torment_skill_icon_dark.png")
 
         self.tiles = tiles
 
@@ -336,11 +348,9 @@ class DungeonGenerator():
                     self.tile_map[startx + x][starty + y] = tile
 
     def place_monsters(self, depth):
-        for monsterSpawn in Spawns.MonsterSpawns:
-            if (monsterSpawn.AllowedAtDepth(depth)):
-                num_to_spawn = monsterSpawn.GetNumberToSpawn()
-                for count in range(num_to_spawn):
-                    self.place_monster(monsterSpawn.GetLeveledCopy(depth))
+        monsterSpawns = Spawns.monster_spawner.spawnMonsters(depth)
+        for monster in monsterSpawns:
+            self.place_monster(monster)
 
 
     def place_monster(self, creature):

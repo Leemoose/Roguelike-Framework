@@ -422,9 +422,10 @@ class Player(O.Objects):
 
 
     def check_for_levelup(self):
-        if self.level != self.max_level and self.experience >= self.experience_to_next_level:
+        while self.level != self.max_level and self.experience >= self.experience_to_next_level:
             self.level += 1
             self.character.level_up()
+            exp_taken = self.experience_to_next_level
             self.experience_to_next_level += 20 + self.experience_to_next_level // 4
-            self.experience = 0
+            self.experience -= exp_taken
 
