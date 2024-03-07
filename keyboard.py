@@ -234,8 +234,8 @@ class Keyboard():
                 else:
                     loop.change_loop(LoopType.inventory)
         elif key == "d":
-            player.character.drop(item, item_dict, item_map)
-            loop.change_loop(LoopType.inventory)
+            if player.character.drop(item, item_dict, item_map):
+                loop.change_loop(LoopType.inventory)
         elif key == "e":
             player.character.equip(item)
         elif key == "u":
