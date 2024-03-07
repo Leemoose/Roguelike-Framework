@@ -260,10 +260,10 @@ class Display:
 
         button_num += 1
 
-        if target_to_display != None:
-            clear_target = self.draw_examine_window(target_to_display, tileDict, floormap, monster_map, monsterID, item_ID, player)
-            if clear_target:
-                target_to_display = None
+        #if target_to_display != None:
+        #    clear_target = self.draw_examine_window(target_to_display, tileDict, floormap, monster_map, monsterID, item_ID, player)
+        #    if clear_target:
+        #        target_to_display = None
 
       #  self.create_skill_bar(player, tileDict=tileDict, monsterID=monsterID, tile_map=floormap)
         self.uiManager.draw_ui(self.win)

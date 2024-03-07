@@ -5,6 +5,7 @@ import effect as E
 import pathfinding
 import skills as S
 import items as I
+import loops as L
 
 class Character():
     def __init__(self, parent, endurance = 0, intelligence = 0, dexterity = 0, strength = 0, health = 100, mana = 0, health_regen=0.1, mana_regen=0.1):
@@ -80,6 +81,7 @@ class Character():
 
     def gain_health(self, heal):
         self.health += heal
+        self.health = int(self.health)
         if self.health > self.max_health:
             self.health = self.max_health
 
@@ -277,14 +279,42 @@ class Character():
             self.gain_mana(self.mana_partial // 1)
             self.mana_partial = self.mana_partial % 1
     
-    def rest(self):
-        self.health = self.max_health
-        self.mana = self.max_mana
-        while self.health < self.max_health or self.mana < self.max_mana:
-            self.tick_regen()
-            self.tick_all_status_effects()
-            self.tick_cooldowns()
-    
+    def rest(self, loop):
+        #print("in_rest")
+        monster_dict = loop.monster_dict
+        tile_map = loop.generator.tile_map
+        no_monster_active = True
+        for monster_key in monster_dict.subjects:
+            if monster_dict.get_subject(monster_key).brain.is_awake:
+                no_monster_active = False
+                break
+        if no_monster_active:
+            # can freely rest to full health
+            self.health = self.max_health
+            self.mana = self.max_mana
+            for skill in self.skills:
+                skill.ready = 0
+            for effect in self.status_effects:
+                if not effect.positive:
+                    self.remove_status_effect(effect.name)
+            loop.add_message("You rest for a while")
+            loop.change_loop(L.LoopType.action)
+            return
+
+        for monster_key in monster_dict.subjects:
+            monster_loc = monster_dict.get_subject(monster_key).get_location()
+            if tile_map.track_map[monster_loc[0]][monster_loc[1]].visible:
+                loop.add_message("You cannot rest while enemies are nearby.")
+                loop.change_loop(L.LoopType.action)
+                return
+        self.wait()
+        #print(self.energy)
+        #print(self.health)
+        #print(self.max_health)
+        if self.health >= self.max_health and self.mana >= self.max_mana:
+            loop.add_message("You rest for a while")
+            loop.change_loop(L.LoopType.action)
+
     def add_skill(self, new_skill):
         for skill in self.skills:
             if skill.name == new_skill.name:
@@ -392,17 +422,14 @@ class Player(O.Objects):
             start = (self.x, self.y)
             all_seen, unseen = loop.generator.all_seen()
             if all_seen:
-                loop.action = True
-                loop.autoexplore = False
-                loop.update_screen = True
+                loop.change_loop(L.LoopType.action)
+                # loop.update_screen = True
                 return
             endx = unseen[0]
             endy = unseen[1]
             while (not tile_map.get_passable(endx, endy)) and not (tile_map.track_map[endx][endy].seen):
                 if self.x == endx and self.y == endy:
-                    loop.action = True
-                    loop.autoexplore = False
-                    loop.update_screen = True
+                    loop.change_loop(L.LoopType.action) 
                     return
                 if endx != tile_map.width - 1:
                     endx += 1
@@ -421,6 +448,7 @@ class Player(O.Objects):
         loop.update_screen = True
 
         self.character.energy = 0
+        loop.monster_loop(0)
 
 
     def check_for_levelup(self):
