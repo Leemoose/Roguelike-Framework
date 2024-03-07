@@ -416,7 +416,7 @@ class Loops():
         """
 
     def add_message(self, message):
-        if len(self.messages) >= 5:
+        if len(self.messages) >= 4:
             self.messages.pop(0)
         self.messages.append(message)
 
