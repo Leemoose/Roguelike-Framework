@@ -139,7 +139,7 @@ class Loops():
         self.update_screen = True
         
         if newLoop == LoopType.action:
-            pass
+            self.display.create_action_display(self)
         elif newLoop == LoopType.autoexplore:
             pass
         elif newLoop == LoopType.inventory or newLoop == LoopType.enchant:
@@ -153,7 +153,7 @@ class Loops():
         elif newLoop == LoopType.classes:
             pass
         elif newLoop == LoopType.items:
-            pass
+            self.display.create_entity()
         elif newLoop == LoopType.examine:
             pass
         elif newLoop == LoopType.paused:
@@ -179,20 +179,19 @@ class Loops():
                 self.monster_loop(0)
         
         if self.currentLoop == LoopType.rest:
-            monster_present = False
-            for monster_key in self.monster_dict.subjects:
-                monster_loc = self.monster_dict.get_subject(monster_key).get_location()
-                if self.generator.tile_map.track_map[monster_loc[0]][monster_loc[1]].visible:
-                    self.add_message("You can't rest while enemies are near")
-                    self.change_loop(LoopType.action)
-                    monster_present = True
-            if not monster_present:
-                self.player.character.rest()
-                self.change_loop(LoopType.action)
-                self.add_message("You rest for a while")
-                self.monster_loop(0)
+            # monster_present = False
+            # for monster_key in self.monster_dict.subjects:
+            #     monster_loc = self.monster_dict.get_subject(monster_key).get_location()
+            #     if self.generator.tile_map.track_map[monster_loc[0]][monster_loc[1]].visible:
+            #         self.add_message("You can't rest while enemies are near")
+            #         self.change_loop(LoopType.action)
+            #         monster_present = True
+            # if not monster_present:
+            # print("resting")
+            self.player.character.rest(self)
 
-            
+                # self.change_loop(LoopType.action)
+                
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -252,6 +251,9 @@ class Loops():
                     key = event.ui_element.action
                     if (keyboard.key_paused(key, self, display) == False):
                         return False
+                elif (self.currentLoop == LoopType.action):
+                    key = event.ui_element.action
+                    keyboard.key_action(self.player, self.tile_map, self.generator.monster_dict, self.monster_map, self.generator.item_dict, self, key, self.generator, display, self.memory)
 
             elif event.type == pygame.MOUSEBUTTONUP:
                 x,y = pygame.mouse.get_pos()
@@ -259,7 +261,8 @@ class Loops():
 
             display.uiManager.process_events(event)
 
-        if self.currentLoop == LoopType.action and self.player.character.energy < 0:
+        if ((self.currentLoop == LoopType.action and self.player.character.energy < 0) or
+            (self.currentLoop == LoopType.rest and self.player.character.energy < 0)):
             self.generator.flood_map.update_flood_map(self.player)
             self.monster_loop(-self.player.character.energy)
             self.player.character.energy = 0
@@ -312,7 +315,7 @@ class Loops():
         if self.currentLoop == LoopType.action or self.currentLoop == LoopType.autoexplore:
             self.clean_up()
             shadowcasting.compute_fov(self.player.get_location(), self.generator.tile_map.track_map)
-            display.update_display(colors, self.generator.tile_map, tileDict, self.monster_dict, self.item_dict, self.monster_map, self.player, self.messages, self.target_to_display)
+            display.update_action_display(self)
         elif self.currentLoop == LoopType.inventory or self.currentLoop == LoopType.enchant:
             display.update_inventory(self.player, self.limit_inventory)
         elif self.currentLoop == LoopType.equipment:
@@ -322,8 +325,9 @@ class Loops():
         elif self.currentLoop == LoopType.items:
             display.update_entity(self.screen_focus, tileDict)
         elif self.currentLoop == LoopType.examine or self.currentLoop == LoopType.targeting:
-            display.update_display(colors, self.generator.tile_map, tileDict, self.monster_dict, self.item_dict,
-                                   self.monster_map, self.player, self.messages, self.target_to_display)
+            # display.update_display(colors, self.generator.tile_map, tileDict, self.monster_dict, self.item_dict,
+            #                       self.monster_map, self.player, self.messages, self.target_to_display)
+            display.update_display(self)
             display.update_examine(self.targets.target_list, tileDict, self.messages)
         elif self.currentLoop == LoopType.paused:
             display.update_pause_screen()

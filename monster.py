@@ -60,6 +60,7 @@ class Monster_AI():
         # print(max_utility)
         self.parent.character.energy -= 1
 
+        # print(f"{self.parent} is doing {called_function.__name__} with utility {max_utility}")
         called_function(loop)
 
     def rank_flee(self, loop):
@@ -108,6 +109,8 @@ class Monster_AI():
         return 20
     
     def rank_skill(self, loop):
+        if not self.parent.orb: # only orbs can cast skills
+            return -1
         for skill in self.parent.character.skills:
             if skill.castable(loop.player):
                 return 95
@@ -240,6 +243,8 @@ class Monster(O.Objects):
         self.character.experience_given = 10
         self.brain = Monster_AI(self)
         self.skills = []
+        self.orb = False
+        self.rarity = "Common"
 
         self.description = f"This is a {self.name}. It wants to eat you."
 
@@ -265,46 +270,111 @@ class Monster(O.Objects):
         return self.name
 
 class Kobold(Monster):
-    def __init__(self, x, y, render_tag=107, name="Kobold"):
+    def __init__(self, x, y, render_tag=105, name="Kobold"):
         super().__init__(render_tag, x, y, name)
         self.skills = []
         self.character.skills.append(S.BurningAttack(self, cooldown=10, cost=0, damage=10, burn_damage=5, burn_duration=5, range=1.5))
         self.character.experience_given = 10
+        self.endurance = 2
+        self.strength = 2
+        self.dexterity = 1
+        self.intelligence = 1
 
-        self.description = "A small, scaly creature with a penchant for setting things on fire. Including you."
+        self.description = "A small, scaly creature with a mysterious satchel on its back."
 
-class Gargoyle(Monster):
-    def __init__(self, x, y, render_tag=108, name="Gargoyle"):
+class Korbold(Kobold):
+    def __init__(self, x, y, render_tag=155, name="Korbold"):
+        super().__init__(x, y, render_tag, name)
+        self.character.experience_given += 15
+        self.orb = True
+        self.endurance = 2
+        self.strength = 2
+        self.dexterity = 2
+        self.intelligence = 2
+
+        self.description = "A scaly orb with a penchant for setting things on fire. Including you."
+
+class Goblin(Monster):
+    def __init__(self, x, y, render_tag=103, name="Goblin"):
         super().__init__(render_tag, x, y, name)
         self.character = C.Character(self)
         self.brain = Monster_AI(self)
+        self.character.skills = []
+        self.character.skills.append(S.Escape(self, cooldown=100, cost=0, self_fear=True, activation_threshold=0.4, action_cost=1))
+        self.character.experience_given = 10
+        self.description = "A cowardly creature with a tiny dagger"
+
+        self.endurance = 1
+        self.strength = 1
+        self.dexterity = 3
+        self.intelligence = 1
+
+class Gorblin(Goblin):
+    def __init__(self, x, y, render_tag=153, name="Gorblin"):
+        super().__init__(x, y, render_tag, name)
+        self.character.experience_given += 15
+        self.orb = True
+        self.endurance = 1
+        self.strength = 2
+        self.dexterity = 5
+        self.intelligence = 1
+
+        self.description = "A cowardly orb with a tiny dagger. It can blink to escape when it's afraid."
+
+class Gargoyle(Monster):
+    def __init__(self, x, y, render_tag=106, name="Gargoyle"):
+        super().__init__(render_tag, x, y, name)
+        self.character = C.Character(self)
+        self.brain = Monster_AI(self)
+        self.endurance = 5
+        self.strength = 3
+        self.dexterity = 1
+        self.intelligence = 1
         self.skills = []
         # 20% chance to petrify for 2 turns
         self.character.skills.append(S.Petrify(self, cooldown=10, cost=0, duration=2, activation_chance=0.2, range=3))
-        self.character.experience_given = 10
+        self.character.experience_given = 20
 
-        self.description = "A stone creature that can petrify you with its gaze."
+        self.description = "A stone creature that you feel could petrify you if it was rounder."
 
-class Raptor(Monster):
-    def __init__(self, x, y, render_tag=109, name="Velociraptor"):
-        super().__init__(render_tag, x, y, name)
-        self.character = C.Character(self)
-        self.character.move_cost = 100
-        self.character.attack_cost = 100
-        self.character.dexterity += 5
-        self.brain = Monster_AI(self)
-        self.character.experience_given = 10
-        self.description = "A very fast and very angry dinosaur."
+class Gorbgoyle(Gargoyle):
+    def __init__(self, x, y, render_tag=156, name="Gorbgoyle"):
+        super().__init__(x, y, render_tag, name)
+        self.character.experience_given += 25
+        self.orb = True
+        self.endurance = 4
+        self.strength = 4
+        self.dexterity = 4
+        self.intelligence = 4
+
+        self.description = "A stone orb that can petrify you with its gaze."
 
 class Minotaur(Monster):
-    def __init__(self, x, y, render_tag=110, name="Minotaur"):
+    def __init__(self, x, y, render_tag=108, name="Minotaur"):
         super().__init__(render_tag, x, y, name)
         self.character = C.Character(self)
         self.brain = Monster_AI(self)
         self.character.skills = []
         self.character.skills.append(S.ShrugOff(self, cooldown=3, cost=0, activation_chance=0.75, action_cost=1))
-        self.character.experience_given = 10
-        self.description = "A large, angry bull that can shrug off your status effects"
+        self.character.experience_given = 20
+        self.description = "A large, angry bull with mighty horns."
+
+        self.endurance = 4
+        self.strength = 4
+        self.dexterity = 1
+        self.intelligence = 1
+
+class Minotaurb(Minotaur):
+    def __init__(self, x, y, render_tag=158, name="Minotaurb"):
+        super().__init__(x, y, render_tag, name)
+        self.character.experience_given += 25
+        self.orb = True
+        self.endurance = 8
+        self.strength = 8
+        self.dexterity = 3
+        self.intelligence = 1
+
+        self.description = "A large, angry orb wiht horns that can shrug off your status effects."
 
 class Orc(Monster):
     def __init__(self, x, y, render_tag=101, name="Orc"):
@@ -314,16 +384,91 @@ class Orc(Monster):
         self.character.skills = []
         # below 25% health, gains 25 strength
         self.character.skills.append(S.Berserk(self, cooldown=0, cost=0, duration=-100, activation_threshold=0.25, strength_increase=25, action_cost=1))
-        self.character.experience_given = 10
-        self.description = "A strong humanoid with an axe and anger issues."
-    
-class Goblin(Monster):
-    def __init__(self, x, y, render_tag=106, name="Goblin"):
+        self.character.experience_given = 20
+        self.description = "A strong humanoid with anger issues."
+
+        self.endurance = 3
+        self.strength = 7
+        self.dexterity = 3
+        self.intelligence = 1
+
+class Orbc(Orc):
+    def __init__(self, x, y, render_tag=151, name="Orbc"):
+        super().__init__(x, y, render_tag, name)
+        self.character.experience_given += 25
+        self.orb = True
+        self.endurance = 4
+        self.strength = 10
+        self.dexterity = 4
+        self.intelligence = 1
+
+        self.description = "A strong orb that can channel its anger issues to make itself stronger."
+
+class Golem(Monster):
+    def __init__(self, x, y, render_tag=102, name="Golem"):
         super().__init__(render_tag, x, y, name)
         self.character = C.Character(self)
         self.brain = Monster_AI(self)
         self.character.skills = []
-        self.character.skills.append(S.Escape(self, cooldown=100, cost=0, self_fear=True, activation_threshold=0.4, action_cost=1))
-        self.character.experience_given = 10
-        self.description = "A cowardly creature that will flee when things get tough."
+        self.character.experience_given = 30
+        self.description = "A large, slow creature made of stone."
+
+        self.endurance = 10
+        self.strength = 8
+        self.dexterity = -3
+        self.intelligence = 1
+    
+class Gorblem(Golem):
+    def __init__(self, x, y, render_tag=152, name="Gorblem"):
+        super().__init__(x, y, render_tag, name)
+        self.character.experience_given += 35
+        self.orb = True
+        self.endurance = 15
+        self.strength = 15
+        self.dexterity = -5
+        self.intelligence = 1
+
+        self.description = "A large, slow orb made of stone. Don't let it catch up to you but that shouldn't be hard."
+
+class Raptor(Monster):
+    def __init__(self, x, y, render_tag=107, name="Velociraptor"):
+        super().__init__(render_tag, x, y, name)
+        self.character = C.Character(self)
         
+        self.endurance = 1
+        self.strength = 5
+        self.dexterity = 10
+        self.intelligence = 1
+
+        self.brain = Monster_AI(self)
+        self.character.experience_given = 30
+        self.description = "A very fast and very angry dinosaur."
+
+class Raptorb(Raptor):
+    def __init__(self, x, y, render_tag=157, name="Velociraptorb"):
+        super().__init__(x, y, render_tag, name)
+        self.character.experience_given += 35
+        self.orb = True
+        self.endurance = 1
+        self.strength = 9
+        self.dexterity = 20
+        self.intelligence = 1
+
+        self.description = "A ferocious orb that can move and attack with great speed."
+
+class Tormentorb(Monster):
+    def __init__(self, x, y, render_tag=159, name="Tormentorb"):
+        super().__init__(render_tag, x, y, name)
+        self.character = C.Character(self)
+        self.brain = Monster_AI(self)
+        self.character.skills = []
+        self.orb = True
+        # self, parent, cooldown, cost, slow_duration, damage_percent, slow_amount, range, action_cost
+        self.character.skills.append(S.Torment(self, cooldown=10, cost=0, slow_duration=3, damage_percent=0.5, slow_amount=5, range=4, action_cost=100))
+        self.character.experience_given = 65
+        self.description = "A floating orb that can torment and slow you with its gaze."
+
+        self.endurance = 5
+        self.strength = 1
+        self.dexterity = 1
+        self.intelligence = 15

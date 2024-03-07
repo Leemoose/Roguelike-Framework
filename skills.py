@@ -313,3 +313,48 @@ class Escape(Skill):
         if self.threshold > 1:
             return self.name + "(" + str(self.cost) + " cost, " + str(self.cooldown) + " turn cooldown"
         return self.name + "(" + str(self.cost) + " cost, " + str(self.cooldown) + " turn cooldown" + ", castable below " + str(self.threshold * 100) + "% health)"
+    
+class Heal(Skill):
+    def __init__(self, parent, cooldown, cost, heal_amount, action_cost):
+        super().__init__("Heal", parent, cooldown, cost, -1, action_cost)
+        self.heal_amount = heal_amount
+        self.render_tag = 912
+
+    def activate(self, target, generator):
+        self.parent.character.mana -= self.cost
+        target.character.gain_heal(self.heal_amount + self.parent.character.skill_damage_increase())
+        return True
+
+    def castable(self, target):
+        return self.basic_requirements() and (self.parent.character.health < self.parent.character.max_health)
+    
+    def description(self):
+        return self.name + "(" + str(self.cost) + " cost, " + str(self.cooldown) + " turn cooldown" + ", " + str(self.heal_amount) + " health restored)"
+    
+class Torment(Skill):
+    def __init__(self, parent, cooldown, cost, slow_duration, damage_percent, slow_amount, range, action_cost):
+        super().__init__("Torment", parent, cooldown, cost, range, action_cost)
+        self.duration = slow_duration
+        self.slow_amount = slow_amount
+        self.damage_percent = damage_percent
+        self.render_tag = 913
+    
+    def activate(self, target, generator):
+        self.parent.character.mana -= self.cost
+        damage = int(target.character.health * self.damage_percent)
+        target.character.take_damage(self.parent, damage)
+        if self.duration != -100:
+            duration = self.duration + self.parent.character.skill_duration_increase()
+        else:
+            duration = -100
+        effect = E.Slow(duration, self.slow_amount + self.parent.character.skill_damage_increase())
+        target.character.add_status_effect(effect)
+        return True
+    
+    def castable(self, target):
+        return self.basic_requirements() and self.in_range(target)
+    
+    def description(self):
+        if self.duration == -100:
+            return self.name + "(" + str(self.cost) + " cost, " + str(self.cooldown) + " turn cooldown" + ", " + str(int(self.damage_percent * 100)) + "% of target's health as damage, " + str(self.slow_amount) + " strength slow permanently)"
+        return self.name + "(" + str(self.cost) + " cost, " + str(self.cooldown) + " turn cooldown" + ", " + str(int(self.damage_percent * 100)) + "% of target's health as damage, " + str(self.slow_amount) + " strength slow for " + str(self.duration) + " turns)"
