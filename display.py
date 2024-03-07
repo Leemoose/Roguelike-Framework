@@ -53,7 +53,7 @@ class Display:
     """
     def __init__(self, width, height, textSize, textWidth, textHeight):
         pygame.display.set_caption('Tiles')
-        self.win = pygame.display.set_mode((width, height))
+        self.win = pygame.display.set_mode((width, height), pygame.RESIZABLE)
         self.screen_width = width
         self.screen_height = height
         self.textWidth = textWidth
@@ -65,6 +65,8 @@ class Display:
         self.buttons = Buttons()
         self.colorDict = None
 
+    def update_sizes(self):
+        self.screen_width, self.screen_height = self.win.get_size()
     def create_action_display(self, loop):
         self.uiManager.clear_and_reset()
 
