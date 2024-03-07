@@ -24,6 +24,8 @@ class Character():
         self.movable = True
         self.flee = False
 
+        self.inventory_limit = 18
+
         self.energy = 0
         self.move_cost = 100
         self.equip_cost = 20
@@ -101,13 +103,22 @@ class Character():
         item = item_ID.get_subject(key)
         if item.stackable:
             if not item.name in [x.name for x in self.inventory]:
-                self.inventory.append(item)
+                if len(self.inventory) > self.inventory_limit:
+                    loop.add_message("You need to drop something first")
+                    return
+                else:
+                    self.inventory.append(item)
             else:
                 for i in range(len(self.inventory)):
                     if self.inventory[i].name == item.name:
                         self.inventory[i].stacks += 1
         else:
-            self.inventory.append(item)
+            if len(self.inventory) > self.inventory_limit:
+                loop.add_message("You need to drop something first")
+                return
+            else:
+                self.inventory.append(item)
+        
         item_ID.remove_subject(key)
         itemx, itemy = item.get_location()
         generated_maps.item_map.clear_location(itemx, itemy)
@@ -115,6 +126,8 @@ class Character():
 
     def drop(self, item, item_dict,  item_map):
         if len(self.inventory) != 0 and item.dropable:
+            if item.equipable and item.equipped:
+                self.unequip(item)
             i = 0
             while self.inventory[i].id_tag != item.id_tag and i < len(self.inventory):
                 i += 1

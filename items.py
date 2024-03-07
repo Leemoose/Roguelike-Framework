@@ -18,6 +18,7 @@ class Equipment(O.Item):
         self.can_be_levelled = True
         self.equipped = False
         self.wearer = None
+        self.rarity = "Common"
 
     def activate(self, entity):
         self.wearer = entity
@@ -132,6 +133,7 @@ class MagicWand(Weapon):
         self.attached_skill = (lambda owner : S.MagicMissile(owner, self.magic_missile_cooldown, self.magic_missile_cost, self.magic_missile_damage, self.magic_missile_range, action_cost=100))
 
         self.wearer = None # items with stat buffs or skills need to keep track of owner for level ups
+        self.rarity = "Common"
 
     def level_up(self):
         self.level += 1
@@ -176,6 +178,7 @@ class FlamingSword(Weapon):
         self.attached_skill = (lambda owner : S.BurningAttack(owner, self.skill_cooldown, self.skill_cost, self.skill_damage, self.skill_burn_damage, self.skill_burn_duration, self.skill_range))
     
         self.wearer = None # items with stat buffs or skills need to keep track of owner for level ups
+        self.rarity = "Legendary"
 
     def attack(self):
         return (super().attack(), self.on_hit)
@@ -262,6 +265,8 @@ class Aegis(Shield):
 
         self.attached_skill = (lambda owner : S.Petrify(owner, self.skill_cooldown, self.skill_cost, self.skill_duration, self.skill_activation_chance, self.skill_range))
 
+        self.rarity = "Rare"
+
     def activate(self, entity):
         entity.add_skill(self.attached_skill(entity.parent))
         return super().activate(entity)
@@ -299,6 +304,7 @@ class TowerShield(Shield):
         self.description = "A massive shield that can block nearly anything but is unwieldy to use"
         self.dex_debuff = 5
 
+
     def activate(self, entity):
         entity.dexterity -= self.dex_debuff
         return super().activate(entity)
@@ -326,6 +332,8 @@ class MagicFocus(Shield):
         self.armor = 0
         self.description = "An orb that takes your offhand but lets you cast even more powerful spells."
         self.intelligence_buff = 6
+
+        self.rarity = "Rare"
         
     def activate(self, entity):
         entity.intelligence += self.intelligence_buff
@@ -383,6 +391,7 @@ class RingOfSwiftness(Ring):
     def __init__(self, render_tag):
         super().__init__(render_tag, "Ring of Swiftness")
         self.description = "The most circular thing you own, it makes you feel spry on your feet"
+        self.rarity = "Rare"
 
     def activate(self, entity):
         entity.move_cost -= 20
@@ -400,6 +409,8 @@ class BloodRing(Ring):
         # skill doesn't have an owner until equipped to an entity, so need a lambda expression here
         self.attached_skill = (lambda owner : S.BloodPact(owner, cooldown=10, cost=10, strength_increase=10, duration=4, action_cost=100))
         
+        self.rarity = "Rare"
+
     def activate(self, entity):
         entity.add_skill(self.attached_skill(entity.parent))
 
@@ -416,6 +427,8 @@ class RingOfMight(Ring):
         self.name = "Ring of Might"
         self.description = "A ring that makes you feel stronger."
 
+        self.rarity = "Rare"
+
     def activate(self, entity):
         entity.strength += 10
 
@@ -426,6 +439,8 @@ class RingOfMana(Ring):
     def __init__(self, render_tag):
         super().__init__(render_tag, "Ring of Mana")
         self.description = "A ring that every spellcaster is given on their 10th birthday"
+
+        self.rarity = "Rare"
 
     def activate(self, entity):
         entity.mana += 30
@@ -441,6 +456,8 @@ class BoneRing(Ring):
     def __init__(self, render_tag):
         super().__init__(render_tag, "Bone Ring")
         self.description = "An eerie ring that makes you much stronger and faster while wearing it but rapidly drains your health and mana"
+
+        self.rarity = "Legendary"
 
     def activate(self, entity):
         entity.strength += 10
@@ -524,6 +541,8 @@ class GildedArmor(BodyArmor):
         self.activation_chance = 0.5
         self.attached_skill = (lambda owner : S.ShrugOff(owner, self.skill_cooldown, self.skill_cost, self.activation_chance, action_cost=100))
 
+        self.rarity = "Rare"
+
     def activate(self, entity):
         entity.add_skill(self.attached_skill(entity.parent))
         return super().activate(entity)
@@ -572,6 +591,8 @@ class WarlordArmor(BodyArmor):
         self.skill_range = 2
         self.attached_skill = (lambda owner : S.Terrify(owner, self.skill_cooldown, self.skill_cost, self.skill_duration, self.skill_activation_chance, self.skill_range))
 
+        self.rarity = "Legendary"
+
     def activate(self, entity):
         entity.add_skill(self.attached_skill(entity.parent))
         self.wearer = entity
@@ -616,6 +637,8 @@ class WizardRobe(BodyArmor):
         self.intelligence_buff = 5
 
         self.wearer = None # items with stat buffs need to keep track of owner for level ups
+
+        self.rarity = "Rare"
 
     def activate(self, entity):
         entity.mana += self.mana_buff
@@ -684,6 +707,7 @@ class BootsOfEscape(Armor):
         self.skill_cost = 25
         self.attached_skill = (lambda owner : S.Escape(owner, self.skill_cooldown, self.skill_cost, self_fear=False, activation_threshold=1.1, action_cost=1))
         
+        self.rarity = "Rare"
 
     def equip(self, entity):
         if entity.boots != None:
@@ -810,6 +834,8 @@ class VikingHelmet(Armor):
 
         self.attached_skill = (lambda owner : S.Berserk(owner, self.skill_cooldown, self.skill_cost, self.skill_duration, self.skill_threshold, self.strength_increase, action_cost=1))
 
+        self.rarity = "Rare"
+
     def equip(self, entity):
         if entity.helmet != None:
             entity.unequip(entity.helmet)
@@ -848,6 +874,7 @@ class Potion(O.Item):
         self.can_be_levelled = False
         self.attached_skill = None
         self.description = "A potiorb that does something."
+        self.rarity = "Common"
 
     def activate_once(self, entity):
         pass
@@ -870,6 +897,8 @@ class Scroll(O.Item):
         self.attached_skill = None
         self.description = "A scrorb that does something."
 
+        self.rarity = "Common"
+
     def activate_once(self, entity, loop):
         pass
 
@@ -888,6 +917,7 @@ class HealthPotion(Potion):
     def __init__(self, render_tag):
         super().__init__(render_tag, "Health Potiorb")
         self.description = "A potiorb that heals you."
+        self.rarity = "Common"
 
     def activate_once(self, entity):
         entity.gain_health(20)
@@ -896,6 +926,7 @@ class MightPotion(Potion):
     def __init__(self, render_tag):
         super().__init__(render_tag, "Might Potiorb")
         self.description = "A potiorb that makes you stronger for a few turns."
+        self.rarity = "Rare"
 
     def activate_once(self, entity):
         effect = E.Might(5, 5)
@@ -905,6 +936,7 @@ class DexterityPotion(Potion):
     def __init__(self, render_tag):
         super().__init__(render_tag, "Dexterity Potiorb")
         self.description = "A potiorb that makes you more dexterous for a few turns."
+        self.rarity = "Rare"
 
     def activate_once(self, entity):
         effect = E.Haste(5, 5)
@@ -914,6 +946,7 @@ class CurePotion(Potion):
     def __init__(self, render_tag):
         super().__init__(render_tag, "Cure Potiorb")
         self.description = "A potiorb that cures you of all status effects."
+        self.rarity = "Rare"
 
     def activate_once(self, entity):
         for effect in entity.status_effects:
@@ -924,6 +957,7 @@ class ManaPotion(Potion):
     def __init__(self, render_tag):
         super().__init__(render_tag, "Mana Potiorb")
         self.description = "A potiorb that restores your mana."
+        self.rarity = "Common"
 
     def activate_once(self, entity):
         entity.gain_mana(20)
@@ -932,6 +966,7 @@ class EnchantScrorb(Scroll):
     def __init__(self, render_tag):
         super().__init__(render_tag, "Enchant Scrorb")
         self.description = "A scrorb that enchants an item."
+        self.rarity = "Common"
 
     def activate_once(self, entity, loop):
         loop.limit_inventory = "Enchantable"

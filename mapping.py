@@ -360,20 +360,27 @@ class DungeonGenerator():
     
 
     def place_items(self, depth):
-        for itemSpawn in Spawns.ItemSpawns:
-            if (itemSpawn.AllowedAtDepth(depth)):
-                #Want to spawn this!
-                num_to_spawn = itemSpawn.GetNumberToSpawn()
-                for count in range(num_to_spawn):
-                    self.place_item(itemSpawn.GetFreshCopy())
+        itemSpawns = Spawns.item_spawner.spawnItems(depth)
+        for item in itemSpawns:
+            self.place_item(item)
+
+    def on_stairs(self, x, y, stairs):
+        for stair in stairs:
+            if stair.x == x and stair.y == y:
+                return True
 
     def place_item(self, item):
         startx = random.randint(0, self.width-1)
         starty = random.randint(0,self.height-1)
 
-        while (self.tile_map.get_passable(startx, starty)== False):
+        # make sure the item is placed on a passable tile that does not already have an item and is not stairs
+        check_on_stairs = self.on_stairs(startx, starty, self.tile_map.stairs)
+        while ((self.tile_map.get_passable(startx, starty) == False) or 
+               (self.item_map.get_passable(startx, starty) == False) or
+               check_on_stairs):
             startx = random.randint(0, self.width-1)
             starty = random.randint(0,self.height-1)
+            check_on_stairs = self.on_stairs(startx, starty, self.tile_map.stairs)
 
         item.x = startx
         item.y = starty
@@ -395,7 +402,7 @@ class Maps():
         return self.track_map[x][y]
 
     def get_passable(self,x,y):
-        if (x>=0) & (y>=0) & (x < self.width) & (y < self.height):
+        if self.in_map(x,y):
             return (self.track_map[x][y] == -1)
         else:
             return False
