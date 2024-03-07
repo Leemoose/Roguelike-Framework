@@ -96,6 +96,9 @@ class Keyboard():
         elif key == "q":
             loop.limit_inventory = "Potiorb"
             loop.change_loop(LoopType.inventory)
+        elif key == "r":
+            loop.limit_inventory = "Scrorb"
+            loop.change_loop(LoopType.inventory)
         elif key == "p":
             loop.display.uiManager.set_visual_debug_mode(True)
         elif key == ">":
@@ -138,7 +141,7 @@ class Keyboard():
 
     def key_inventory(self, loop, player, item_dict, key):
             if key == "esc":
-                if loop.limit_inventory == None:
+                if loop.limit_inventory == None or loop.limit_inventory == "Potiorb" or loop.limit_inventory == "Scrorb":
                     loop.change_loop(LoopType.action)
                 else:
                     loop.change_loop(LoopType.equipment)
@@ -226,7 +229,7 @@ class Keyboard():
             if loop.limit_inventory == None:
                 loop.change_loop(LoopType.inventory)
             else:
-                if item.equipped:
+                if item.equipable and item.equipped:
                     loop.change_loop(LoopType.equipment)
                 else:
                     loop.change_loop(LoopType.inventory)

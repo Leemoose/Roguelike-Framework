@@ -103,7 +103,6 @@ class TileDict():
         # weapon assets
         tiles[300] = image.load("assets/basic_ax.png")
         tiles[301] = image.load("assets/hammer.png")
-        tiles[311] = image.load("assets/shield.png")
         tiles[321] = image.load("assets/dagger.png")
         tiles[331] = image.load("assets/burning_sword.png")
         tiles[332] = image.load("assets/magic_wand.png")
@@ -126,10 +125,31 @@ class TileDict():
         tiles[504] = image.load("assets/bone_ring.png")
 
         # armor assets
+        # list of armor: basic, leather, golden, warmonger, wizard robe
         tiles[600] = image.load("assets/armor.png")
+        tiles[601] = image.load("assets/leather_armor.png")
+        tiles[602] = image.load("assets/golden_armor.png")
+        tiles[603] = image.load("assets/warmonger_armor.png")
+        tiles[604] = image.load("assets/wizard_robe.png")
+
+        # shield assets
+        # list of shields: basic, aegis, tower, magic focus
+        tiles[311] = image.load("assets/shield.png")
+        tiles[312] = image.load("assets/aegis.png")
+        tiles[313] = image.load("assets/tower_shield.png")
+        tiles[314] = image.load("assets/magic_focus.png")
+
+        # boots assets
+        # list of boots: basic, escape
         tiles[700] = image.load("assets/boots.png")
         tiles[701] = image.load("assets/boots_of_escape.png")
+
+        # gloves assets
+        # list of gloves: basic, gauntlets
         tiles[750] = image.load("assets/gloves.png")
+        tiles[751] = image.load("assets/gauntlets.png")
+
+        # helmet assets
         tiles[770] = image.load("assets/helmet.png")
         tiles[771] = image.load("assets/viking_helmet.png")
 

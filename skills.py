@@ -154,8 +154,8 @@ class Petrify(Skill):
     
     def description(self):
         if self.duration == -100:
-            return self.name + "(" + str(self.cost) + " cost, " + str(self.cooldown) + " turn cooldown" + ", " + self.activation_chance + "% chance to petrify at range " + str(self.range) + ")"
-        return self.name + "(" + str(self.cost) + " cost, " + str(self.cooldown) + " turn cooldown" + ", " + self.activation_chance + "% chance to petrify at range " + str(self.range) + "for " + str(self.duration) + " turns)"
+            return self.name + "(" + str(self.cost) + " cost, " + str(self.cooldown) + " turn cooldown" + ", " + str(int(self.activation_chance * 100)) + "% chance to petrify at range " + str(self.range) + ")"
+        return self.name + "(" + str(self.cost) + " cost, " + str(self.cooldown) + " turn cooldown" + ", " + str(int(100 * self.activation_chance)) + "% chance to petrify at range " + str(self.range) + "for " + str(self.duration) + " turns)"
     
 class ShrugOff(Skill):
     def __init__(self, parent, cooldown, cost, activation_chance, action_cost):
@@ -273,8 +273,8 @@ class Terrify(Skill):
     
     def description(self):
         if self.duration == -100:
-            return self.name + "(" + str(self.cost) + " cost, " + str(self.cooldown) + " turn cooldown" + ", " + self.activation_chance + "% chance to terrify at range " + str(self.range) + ")"
-        return self.name + "(" + str(self.cost) + " cost, " + str(self.cooldown) + " turn cooldown" + ", " + self.activation_chance + "% chance to terrify at range " + str(self.range) + "for " + str(self.duration) + " turns)"
+            return self.name + "(" + str(self.cost) + " cost, " + str(self.cooldown) + " turn cooldown" + ", " + str(int(self.activation_chance * 100)) + "% chance to terrify at range " + str(self.range) + ")"
+        return self.name + "(" + str(self.cost) + " cost, " + str(self.cooldown) + " turn cooldown" + ", " + str(int(self.activation_chance * 100)) + "% chance to terrify at range " + str(self.range) + "for " + str(self.duration) + " turns)"
     
 class Escape(Skill):
     def __init__(self, parent, cooldown, cost, self_fear, activation_threshold, action_cost):
