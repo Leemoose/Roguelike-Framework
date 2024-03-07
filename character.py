@@ -137,6 +137,8 @@ class Character():
                 item.x = self.parent.x
                 item.y = self.parent.y
                 item_map.place_thing(item)
+                return True
+        return False
 
     def equip(self, item):
         if item.equipable:

@@ -139,7 +139,7 @@ class Loops():
         self.update_screen = True
         
         if newLoop == LoopType.action:
-            pass
+            self.display.create_action_display(self)
         elif newLoop == LoopType.autoexplore:
             pass
         elif newLoop == LoopType.inventory or newLoop == LoopType.enchant:
@@ -153,7 +153,7 @@ class Loops():
         elif newLoop == LoopType.classes:
             pass
         elif newLoop == LoopType.items:
-            pass
+            self.display.create_entity()
         elif newLoop == LoopType.examine:
             pass
         elif newLoop == LoopType.paused:
@@ -191,8 +191,6 @@ class Loops():
                 self.change_loop(LoopType.action)
                 self.add_message("You rest for a while")
                 self.monster_loop(0)
-
-            
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -252,6 +250,9 @@ class Loops():
                     key = event.ui_element.action
                     if (keyboard.key_paused(key, self, display) == False):
                         return False
+                elif (self.currentLoop == LoopType.action):
+                    key = event.ui_element.action
+                    keyboard.key_action(self.player, self.tile_map, self.generator.monster_dict, self.monster_map, self.generator.item_dict, self, key, self.generator, display, self.memory)
 
             elif event.type == pygame.MOUSEBUTTONUP:
                 x,y = pygame.mouse.get_pos()
@@ -312,7 +313,7 @@ class Loops():
         if self.currentLoop == LoopType.action or self.currentLoop == LoopType.autoexplore:
             self.clean_up()
             shadowcasting.compute_fov(self.player.get_location(), self.generator.tile_map.track_map)
-            display.update_display(colors, self.generator.tile_map, tileDict, self.monster_dict, self.item_dict, self.monster_map, self.player, self.messages, self.target_to_display)
+            display.update_action_display(self)
         elif self.currentLoop == LoopType.inventory or self.currentLoop == LoopType.enchant:
             display.update_inventory(self.player, self.limit_inventory)
         elif self.currentLoop == LoopType.equipment:

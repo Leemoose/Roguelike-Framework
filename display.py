@@ -65,11 +65,23 @@ class Display:
         self.buttons = Buttons()
         self.colorDict = None
 
-    def update_display(self, colorDict, floormap, tileDict, monsterID, item_ID, monster_map, player, messages, target_to_display):
-        if self.colorDict == None:
-            self.colorDict = colorDict
+    def create_action_display(self, loop):
         self.uiManager.clear_and_reset()
-        self.win.fill(colorDict.getColor("black"))
+
+    def update_action_display(self, loop):
+        self.win.fill((0,0,0))
+        self.update_display(loop)
+        self.uiManager.draw_ui(self.win)
+
+    def update_display(self, loop):
+        floormap = loop.generator.tile_map
+        tileDict = loop.tileDict
+        monsterID = loop.monster_dict
+        item_ID = loop.item_dict
+        monster_map = loop.monster_map
+        player = loop.player
+        messages = loop.messages
+        target_to_display = loop.screen_focus
 
         action_screen_offset_from_left = 0
         action_screen_offset_from_top = 0
@@ -186,6 +198,10 @@ class Display:
                          pygame.Rect(map_offset_from_left + r_map_x * map_tile_size,
                                      map_offset_from_top + r_map_y * map_tile_size,
                                      map_tile_size, map_tile_size))
+        pygame.draw.rect(self.win, (150, 100, 50),
+                         pygame.Rect(map_offset_from_left + (num_map_tiles_wide - num_tiles_wide)* map_tile_size // 2,
+                                     map_offset_from_top + (num_map_tiles_height - num_tiles_height)* map_tile_size //2,
+                                     num_tiles_wide * map_tile_size, num_tiles_height* map_tile_size), 1)
 
         #Writing messages
         text_box = pygame_gui.elements.UITextBox(
@@ -402,7 +418,7 @@ class Display:
 
     def create_inventory(self, player, equipment_type=None):   
         self.uiManager.clear_and_reset()
-        self.win.fill(self.colorDict.getColor("black"))
+        self.win.fill((0,0,0))
         inventory_screen_width = self.screen_width // 2
         inventory_screen_height = self.screen_height
         inventory_offset_from_left = self.screen_width // 4
@@ -457,8 +473,7 @@ class Display:
         return self.buttons     
 
     def update_inventory(self, player, equipment_type=None):
-
-        self.win.fill(self.colorDict.getColor("black"))
+        self.win.fill((0,0,0))
         self.uiManager.draw_ui(self.win)
     
     def draw_on_button(self, button, img, letter="", button_size=None, shrink=False, offset_factor = 10, text_offset = (15, 0.8)):
@@ -477,7 +492,7 @@ class Display:
 
     def create_equipment(self, player, tileMap):
         self.uiManager.clear_and_reset()
-        self.win.fill(self.colorDict.getColor("black"))
+        self.win.fill((0,0,0))
 
         equipment_screen_width = self.screen_width // 3 * 2
         equipment_screen_height = self.screen_height
@@ -657,7 +672,7 @@ class Display:
         self.uiManager.draw_ui(self.win)
 
     def update_equipment(self, player, tileMap):       
-        self.win.fill(self.colorDict.getColor("black"))
+        self.win.fill((0,0,0))
         self.uiManager.draw_ui(self.win)
 
     def create_pause_screen(self):
@@ -740,9 +755,11 @@ class Display:
         self.win.fill((0,0,0))
         self.uiManager.draw_ui(self.win)
 
-    def update_entity(self, entity, tileDict, item_screen = True):
+    def create_entity(self):
         self.uiManager.clear_and_reset()
-        self.win.fill(self.colorDict.getColor("black"))
+
+    def update_entity(self, entity, tileDict, item_screen = True):
+        self.win.fill((0,0,0))
         entity_screen_width = self.screen_width // 2
         entity_screen_height = self.screen_height // 2
         entity_offset_from_left = self.screen_width // 4
