@@ -73,7 +73,7 @@ class Display:
         action_screen_offset_from_left = 0
         action_screen_offset_from_top = 0
         action_screen_width = self.screen_width * 3 // 4
-        action_screen_height = self.screen_height * 6 // 7
+        action_screen_height = self.screen_height * 5 // 6
         num_tiles_wide = action_screen_width // self.textSize
         num_tiles_height = action_screen_height // self.textSize
 
@@ -85,9 +85,14 @@ class Display:
         self.y_start = player.y - r_y
         self.y_end = player.y + r_y
 
+        stats_offset_from_left = action_screen_width
+        stats_offset_from_top = 0
+        stats_width = action_screen_width
+        stats_height = self.screen_height // 3
+
         map_tile_size = 8
         map_offset_from_left = action_screen_width
-        map_offset_from_top = self.screen_height // 3
+        map_offset_from_top = stats_height
         map_width = self.screen_width - action_screen_width
         map_height = self.screen_height // 4
         num_map_tiles_wide = map_width // map_tile_size
@@ -99,10 +104,21 @@ class Display:
         y_map_start = player.y - r_map_y
         y_map_end = player.y + r_map_y
 
-        message_offset_from_left = self.screen_width // 8
+        message_offset_from_left = self.screen_width // 16
         message_offset_from_top = action_screen_height
-        message_width = action_screen_width - message_offset_from_left
-        message_height = self.screen_height - action_screen_height
+        message_width = action_screen_width - 2 * message_offset_from_left
+        message_height = self.screen_height - action_screen_height - 10
+
+        views_num_buttons = 3
+        views_button_width = action_screen_width - message_offset_from_left
+        views_button_height = (self.screen_height - map_offset_from_top - map_height) // (views_num_buttons + 1)
+        views_button_offset_from_left = action_screen_width
+        views_button_offset_from_each_other = (self.screen_height - map_offset_from_top - map_height) // (
+                    views_num_buttons + 1) // (views_num_buttons + 1)
+        views_button_offset_from_top = map_offset_from_top + map_height + views_button_offset_from_each_other
+
+
+
 
        #Making all the tiles
         for x in range(self.x_start, self.x_end):
@@ -176,19 +192,56 @@ class Display:
             html_text = "".join([message + "<br>" for message in (messages)]),
             manager=self.uiManager )
 
-        font = pygame.font.Font('freesansbold.ttf', 12)
-        text = font.render("Health: " + str(player.character.health) + "/" + str(player.character.max_health), True, (255, 255, 255))
-        self.win.blit(text, (0, self.screen_height // 100 * 80))
-        text = font.render("Mana: " + str(player.character.mana) + "/" + str(player.character.max_mana), True, (255, 255, 255))
-        self.win.blit(text, (0, self.screen_height // 100 * 83))
-        status = self.get_status_text(player)
-        text = font.render("Status: " + status, True, (255, 255, 255))
-        self.win.blit(text, (0, self.screen_height // 100 * 86))
-        text = font.render("Experience: " + str(player.experience) + " / " + str(player.experience_to_next_level), True, (255, 255, 255))
-        self.win.blit(text, (0, self.screen_height // 100 * 89))
-        text = font.render("Level: " + str(player.level), True, (255, 255, 255))
-        self.win.blit(text, (0, self.screen_height // 100 * 92))
+        stat_box = pygame_gui.elements.UITextBox(
+            relative_rect=pygame.Rect((stats_offset_from_left, stats_offset_from_top), (stats_width, stats_height)),
+            html_text = "Player:<br>" +
+                        "Strength: " + str(player.character.strength) + "<br>"
+                        "Dexterity: " + str(player.character.dexterity) + "<br>"
+                        "Endurance: " + str(player.character.endurance) + "<br>"
+                        "Intelligence: " + str(player.character.intelligence) + "<br>"
+                        "<br>"
+                        "Health: " + str(player.character.health) + " / " + str(player.character.max_health) + "<br>"
+                        "Mana: " + str(player.character.mana) + " / " + str(player.character.max_mana) + "<br>"
+                        "Status: " + self.get_status_text(player) + "<br>"
+                        "Level: " + str(player.level)
+                        ,
+            manager=self.uiManager
+        )
 
+        button_num = 0
+        button = pygame_gui.elements.UIButton(
+            relative_rect=pygame.Rect((
+                                      views_button_offset_from_left,
+                                      views_button_offset_from_top+ views_button_offset_from_each_other * button_num + views_button_height * button_num),
+                                      (views_button_width, views_button_height)),
+            text="Inventory",
+            manager=self.uiManager)
+        button.action = "i"
+        self.buttons.add(button, "i")
+
+        button_num += 1
+        button = pygame_gui.elements.UIButton(
+            relative_rect=pygame.Rect((
+                views_button_offset_from_left,
+                views_button_offset_from_top + views_button_offset_from_each_other * button_num + views_button_height * button_num),
+                (views_button_width, views_button_height)),
+            text="Equipment",
+            manager=self.uiManager)
+        button.action = "e"
+        self.buttons.add(button, "e")
+
+        button_num += 1
+        button = pygame_gui.elements.UIButton(
+            relative_rect=pygame.Rect((
+                views_button_offset_from_left,
+                views_button_offset_from_top + views_button_offset_from_each_other * button_num + views_button_height * button_num),
+                (views_button_width, views_button_height)),
+            text="Save",
+            manager=self.uiManager)
+        button.action = "s"
+        self.buttons.add(button, "s")
+
+        button_num += 1
 
         if target_to_display != None:
             clear_target = self.draw_examine_window(target_to_display, tileDict, floormap, monster_map, monsterID, item_ID, player)
