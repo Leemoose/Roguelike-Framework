@@ -130,9 +130,6 @@ class Display:
                     views_num_buttons + 1) // (views_num_buttons + 1)
         views_button_offset_from_top = map_offset_from_top + map_height + views_button_offset_from_each_other
 
-
-
-
        #Making all the tiles
         for x in range(self.x_start, self.x_end):
             for y in range(self.y_start, self.y_end):
