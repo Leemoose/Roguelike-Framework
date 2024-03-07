@@ -65,21 +65,21 @@ Classes:
 class TileDict():
     def __init__(self, textSize, colors):
         tiles = {}
-        tiles[1] = pygame.transform.scale(image.load("assets/wall_full.png"), (32,32))
+        tiles[1] = pygame.transform.scale(image.load("assets/tiles/wall_test.png"), (32,32))
         #Negative numbers are shaded versions
-        tiles[-1] = pygame.transform.scale(image.load("assets/wall_full_shaded.png"), (32,32))
-        tiles[2] = pygame.transform.scale(image.load("assets/floor.png"), (32,32))
-        tiles[-2] = pygame.transform.scale(image.load("assets/floor_shaded.png"), (32,32))
+        tiles[-1] = pygame.transform.scale(image.load("assets/tiles/wall_test_shaded.png"), (32,32))
+        tiles[2] = pygame.transform.scale(image.load("assets/tiles/floor_test.png"), (32,32))
+        tiles[-2] = pygame.transform.scale(image.load("assets/tiles/floor_test_shaded.png"), (32,32))
         tiles[3] = pygame.transform.scale(image.load("assets/floor_dirty.png"), (32,32))
         tiles[-3] = pygame.transform.scale(image.load("assets/floor_dirty_shaded.png"), (32,32))
         tiles[4] = pygame.transform.scale(image.load("assets/floor_dirty1.png"), (32,32))
         tiles[-4] = pygame.transform.scale(image.load("assets/floor_dirty1_shaded.png"), (32,32))
 
         # basic assets
-        tiles[90] = image.load("assets/stairs_up.png")
-        tiles[-90] = image.load("assets/stairs_up.png")
-        tiles[91] = image.load("assets/stairs_down.png")
-        tiles[-91] = image.load("assets/stairs_down.png")
+        tiles[90] = image.load("assets/tiles/stairs_up.png")
+        tiles[-90] = image.load("assets/tiles/stairs_up_shaded.png")
+        tiles[91] = image.load("assets/tiles/stairs_down.png")
+        tiles[-91] = image.load("assets/tiles/stairs_down_shaded.png")
 
         # monster assets
         tiles[101] = image.load("assets/orc.png")
@@ -538,7 +538,7 @@ class TileMap(TrackingMap):
             temp = []
             for y in range(self.height):
                 if self.track_map_render[x][y] == 1:
-                    if (random.randint(0,10)==0):
+                    if False:#(random.randint(0,10)==0):
                         if (random.randint(0,1)==0):
                             temp.append(O.Tile(x, y, 3, True))
                         else:
