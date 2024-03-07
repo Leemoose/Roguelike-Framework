@@ -39,6 +39,7 @@ class Target:
         else:
             loop.add_message("Not a valid target there")
 
+
     def explain_target(self, loop):
         x, y = self.target_list
         monster_map = loop.generator.monster_map
@@ -48,7 +49,7 @@ class Target:
         tile_map = loop.generator.tile_map.track_map
         if not tile_map[x][y].visible:
             loop.add_message("You can't see that location")
-            return
+            return False
         loop.add_message("That is a " + tile_map[x][y].name + " my friend")
         if not monster_map.get_passable(x,y):
             monster = monster_dict.get_subject(monster_map.locate(x,y))
@@ -56,4 +57,5 @@ class Target:
         if not item_map.get_passable(x,y):
             item = item_dict.get_subject(item_map.locate(x, y))
             loop.add_message("There is a " + item.name + " there as well")
+        return True
 

@@ -5,7 +5,7 @@ class Objects():
         self.render_tag = render_tag
         self.shaded_render_tag = -render_tag
         self.name = name
-        self.description = None
+        self.description = ""
         self.x = x
         self.y = y
 

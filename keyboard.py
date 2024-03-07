@@ -150,7 +150,7 @@ class Keyboard():
             for i in range(len(player.character.inventory)):
                 if chr(ord("a")+i) == key:
                     if loop.limit_inventory == None or player.character.inventory[i].equipment_type == loop.limit_inventory:
-                        loop.item_for_item_screen = player.character.inventory[i]
+                        loop.screen_focus = player.character.inventory[i]
                         loop.change_loop(LoopType.items)
 
     def key_enchant(self, loop, player, item_dict, key):
@@ -324,11 +324,17 @@ class Keyboard():
             loop.void_target()
             loop.change_loop(LoopType.action)
         elif key == "return":
-            targets.explain_target(loop)
-            x, y = targets.target_list
-            if loop.generator.item_map.track_map[x][y] != -1:
-                loop.item_for_item_screen = loop.generator.item_dict.get_subject(loop.generator.item_map.track_map[x][y])
-                loop.change_loop(LoopType.specific_examine)
+            if targets.explain_target(loop):
+                x, y = targets.target_list
+                if loop.generator.monster_map.track_map[x][y] != -1:
+                    loop.screen_focus = loop.generator.monster_dict.get_subject(loop.generator.monster_map.track_map[x][y])
+                    loop.change_loop(LoopType.specific_examine)
+                elif loop.generator.item_map.track_map[x][y] != -1:
+                    loop.screen_focus = loop.generator.item_dict.get_subject(loop.generator.item_map.track_map[x][y])
+                    loop.change_loop(LoopType.specific_examine)
+                else:
+                    loop.screen_focus = loop.generator.tile_map.track_map[x][y]
+                    loop.change_loop(LoopType.specific_examine)
 
     def key_specific_examine(self, key, loop, display):
         if key == "esc":

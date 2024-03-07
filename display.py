@@ -2,6 +2,7 @@ import pygame
 import pygame_gui
 import items as I
 import ui
+import objects as O
 
 class Buttons:
     def __init__(self):
@@ -259,6 +260,12 @@ class Display:
         for effect in effects:
             status += ", " + effect.description()
         return status
+
+    def write_messages(self, messages):
+        font = pygame.font.Font('freesansbold.ttf', 12)
+        for i, message in enumerate(messages):
+            text = font.render(message, True, (255, 255, 255))
+            self.win.blit(text, (self.screen_width // 100 * 12, self.screen_height // 100 * (85 + i * 3)))
 
     def draw_examine_window(self, target, tileDict, floormap, monster_map, monster_dict, item_dict, player):
         x, y = target
@@ -733,128 +740,131 @@ class Display:
         self.win.fill((0,0,0))
         self.uiManager.draw_ui(self.win)
 
-    def update_item(self, item, tileDict, item_screen = True):
+    def update_entity(self, entity, tileDict, item_screen = True):
         self.uiManager.clear_and_reset()
         self.win.fill(self.colorDict.getColor("black"))
-        item_screen_width = self.screen_width // 2
-        item_screen_height = self.screen_height // 2
-        item_offset_from_left = self.screen_width // 4
-        item_offset_from_top = self.screen_height // 4
+        entity_screen_width = self.screen_width // 2
+        entity_screen_height = self.screen_height // 2
+        entity_offset_from_left = self.screen_width // 4
+        entity_offset_from_top = self.screen_height // 4
 
-        item_message_width = self.screen_width // 2
-        item_message_height = self.screen_height // 10
-        item_message_offset_from_left = self.screen_width // 4
-        item_message_offset_from_top = self.screen_height // 4
+        entity_message_width = self.screen_width // 2
+        entity_message_height = self.screen_height // 10
+        entity_message_offset_from_left = self.screen_width // 4
+        entity_message_offset_from_top = self.screen_height // 4
 
-        item_image_width = self.screen_width // 20
-        item_image_height = self.screen_width // 20
-        item_image_offset_from_left = self.screen_width // 4 + self.screen_width // 50
-        item_image_offset_from_top = self.screen_height // 4 + self.screen_width // 50
+        entity_image_width = self.screen_width // 20
+        entity_image_height = self.screen_width // 20
+        entity_image_offset_from_left = self.screen_width // 4 + self.screen_width // 50
+        entity_image_offset_from_top = self.screen_height // 4 + self.screen_width // 50
 
-        item_button_width = self.screen_width // 10
-        item_button_height = self.screen_height // 30
-        item_button_offset_from_left = item_offset_from_left+ self.screen_width // 20
-        item_button_offset_from_top = item_screen_height + item_offset_from_top - item_button_height - self.screen_height // 50
-        item_button_offset_from_each_other = self.screen_width // 20
+        entity_button_width = self.screen_width // 10
+        entity_button_height = self.screen_height // 30
+        entity_button_offset_from_left = entity_offset_from_left+ self.screen_width // 20
+        entity_button_offset_from_top = entity_screen_height + entity_offset_from_top - entity_button_height - self.screen_height // 50
+        entity_button_offset_from_each_other = self.screen_width // 20
 
-        item_text_offset_from_left = item_offset_from_left + item_screen_width // 20
-        item_text_offset_from_top = item_image_offset_from_top + item_message_height
-        item_text_width = item_screen_width * 11 // 12
-        item_text_height = item_screen_height * 3 // 5
+        entity_text_offset_from_left = entity_offset_from_left + entity_screen_width // 20
+        entity_text_offset_from_top = entity_image_offset_from_top + entity_message_height
+        entity_text_width = entity_screen_width * 11 // 12
+        entity_text_height = entity_screen_height * 3 // 5
 
         buttons = Buttons()
         buttons_drawn = 0
 
-        item_image = pygame.transform.scale(tileDict.tiles[item.render_tag],
-                                     (item_image_width, item_image_height))
+        entity_image = pygame.transform.scale(tileDict.tiles[entity.render_tag],
+                                     (entity_image_width, entity_image_height))
 
         self.uiManager.clear_and_reset()
-        pygame.draw.rect(self.win, (112,128,144), pygame.Rect(item_offset_from_left, item_offset_from_top, item_screen_width, item_screen_height))
+        pygame.draw.rect(self.win, (112,128,144), pygame.Rect(entity_offset_from_left, entity_offset_from_top, entity_screen_width, entity_screen_height))
 
-        self.win.blit(item_image, (item_image_offset_from_left, item_image_offset_from_top))
+        self.win.blit(entity_image, (entity_image_offset_from_left, entity_image_offset_from_top))
 
-        item_name = item.name
+        entity_name = entity.name
 
         pygame_gui.elements.UILabel(
-            relative_rect=pygame.Rect((item_message_offset_from_left, item_message_offset_from_top),
-                                      (item_message_width, item_message_height)),
-            text=item_name,
+            relative_rect=pygame.Rect((entity_message_offset_from_left, entity_message_offset_from_top),
+                                      (entity_message_width, entity_message_height)),
+            text=entity_name,
             manager=self.uiManager,
             object_id='#title_label')
 
-        if item.can_be_levelled:
-            item_level = item.level
-            if item_level > 1:
-                addition = " (+" + str(item_level - 1) + ")"
-                # 
-                pygame_gui.elements.UILabel(
-                relative_rect=pygame.Rect((item_message_offset_from_left + item_message_width * 4// 5, item_message_offset_from_top),
-                                        (item_message_width // 4, item_message_height)),
-                text=addition,
-                manager=self.uiManager,
-                object_id='#title_addition')
         if item_screen:
-            pretext = ""
-            action = ""
-            if item.equipable:
-                if item.equipped:
-                    pretext = "Unequip"
-                    action = "u"
-                else:
-                    pretext = "Equip"
-                    action = "e"
-            elif item.consumeable and item.equipment_type == "Potiorb":
-                pretext = "Quaff"
-                action = "q"
-            elif item.consumeable and item.equipment_type == "Scrorb":
-                pretext = "Read"
-                action = "r"
-            button = pygame_gui.elements.UIButton(
-                relative_rect=pygame.Rect((item_button_offset_from_left, item_button_offset_from_top),
-                                          (item_button_width, item_button_height)),
-                text=pretext,
-                manager=self.uiManager)
-            button.action = action
-            buttons.add(button, pretext)
-            buttons_drawn += 1
+            item = entity
+            if item.can_be_levelled:
+                item_level = item.level
+                if item_level > 1:
+                    addition = " (+" + str(item_level - 1) + ")"
+                    #
+                    pygame_gui.elements.UILabel(
+                    relative_rect=pygame.Rect((entity_message_offset_from_left + entity_message_width * 4// 5, entity_message_offset_from_top),
+                                            (entity_message_width // 4, entity_message_height)),
+                    text=addition,
+                    manager=self.uiManager,
+                    object_id='#title_addition')
+                pretext = ""
+                action = ""
+                if item.equipable:
+                    if item.equipped:
+                        pretext = "Unequip"
+                        action = "u"
+                    else:
+                        pretext = "Equip"
+                        action = "e"
+                elif item.consumeable and item.equipment_type == "Potiorb":
+                    pretext = "Quaff"
+                    action = "q"
+                elif item.consumeable and item.equipment_type == "Scrorb":
+                    pretext = "Read"
+                    action = "r"
+                button = pygame_gui.elements.UIButton(
+                    relative_rect=pygame.Rect((entity_button_offset_from_left, entity_button_offset_from_top),
+                                              (entity_button_width, entity_button_height)),
+                    text=pretext,
+                    manager=self.uiManager)
+                button.action = action
+                buttons.add(button, pretext)
+                buttons_drawn += 1
 
-            button = pygame_gui.elements.UIButton(
-                relative_rect=pygame.Rect((item_button_offset_from_left + (item_button_width + item_button_offset_from_each_other) * buttons_drawn, item_button_offset_from_top),
-                                          (item_button_width, item_button_height)),
-                text='Drop',
-                manager=self.uiManager)
-            button.action = "d"
-            buttons.add(button, "Drop")
-            buttons_drawn += 1
+                button = pygame_gui.elements.UIButton(
+                    relative_rect=pygame.Rect((entity_button_offset_from_left + (entity_button_width + entity_button_offset_from_each_other) * buttons_drawn, entity_button_offset_from_top),
+                                              (entity_button_width, entity_button_height)),
+                    text='Drop',
+                    manager=self.uiManager)
+                button.action = "d"
+                buttons.add(button, "Drop")
+                buttons_drawn += 1
 
-            button = pygame_gui.elements.UIButton(
-                relative_rect=pygame.Rect((item_button_offset_from_left + (item_button_width + item_button_offset_from_each_other) * buttons_drawn, item_button_offset_from_top),
-                                          (item_button_width, item_button_height)),
-                text='Destroy',
-                manager=self.uiManager)
-            button.action = "b"
-            buttons.add(button, "Destroy")
-            buttons_drawn += 1
+                button = pygame_gui.elements.UIButton(
+                    relative_rect=pygame.Rect((entity_button_offset_from_left + (entity_button_width + entity_button_offset_from_each_other) * buttons_drawn, entity_button_offset_from_top),
+                                              (entity_button_width, entity_button_height)),
+                    text='Destroy',
+                    manager=self.uiManager)
+                button.action = "b"
+                buttons.add(button, "Destroy")
+                buttons_drawn += 1
 
-        item_text = ""
-        item_text += item.description  + "<br><br>"
-        if item.equipped:
-            item_text += "Currently equipped<br>"
-        item_text += "Equipment type: " + item.equipment_type + "<br>"
-        if isinstance(item, I.Armor):
-            item_text += "Armor: " + str(item.armor) + "<br>"
-        if isinstance(item, I.Weapon):
-            item_text += "Damage: " + str(item.damage_min) + " - " + str(item.damage_max) + "<br>"
-            if item.on_hit:
-                item_text += "On hit: " + item.on_hit_description + "<br>"
-        if item.attached_skill != None:
-            item_text += "Grants skill: " + item.get_attached_skill_description() + "<br>"
-      #  item_text += item.attached_skill.name + "<br>"
+        entity_text = ""
+        entity_text += entity.description  + "<br><br>"
+
+        if isinstance(entity,O.Item):
+            item = entity
+            if item.equipped:
+                entity_text += "Currently equipped<br>"
+            entity_text += "Equipment type: " + item.equipment_type + "<br>"
+            if isinstance(item, I.Armor):
+                entity_text += "Armor: " + str(item.armor) + "<br>"
+            if isinstance(item, I.Weapon):
+                entity_text += "Damage: " + str(item.damage_min) + " - " + str(item.damage_max) + "<br>"
+                if item.on_hit:
+                    entity_text += "On hit: " + item.on_hit_description + "<br>"
+            if item.attached_skill != None:
+                entity_text += "Grants skill: " + item.get_attached_skill_description() + "<br>"
+          #  entity_text += item.attached_skill.name + "<br>"
         text_box = pygame_gui.elements.UITextBox(
-            relative_rect=pygame.Rect((item_text_offset_from_left, item_text_offset_from_top), (item_text_width, item_text_height)),
-            html_text = item_text,
-            manager=self.uiManager
-        )
+            relative_rect=pygame.Rect((entity_text_offset_from_left, entity_text_offset_from_top), (entity_text_width, entity_text_height)),
+            html_text = entity_text,
+            manager=self.uiManager)
 
         self.uiManager.draw_ui(self.win)
         return self.buttons
@@ -863,7 +873,6 @@ class Display:
         x, y = target
         tag = tileDict.tile_string(901)
         self.win.blit(tag, (self.textSize * (x - self.x_start), self.textSize * (y - self.y_start)))
-        self.write_messages(messages)
 
     def update_ui(self):
         deltaTime = self.clock.tick() / 1000

@@ -115,7 +115,7 @@ class Loops():
         self.height = height
         self.textSize = textSize
         self.items = False
-        self.item_for_item_screen = None
+        self.screen_focus = None
         self.floor_level = 0
         self.memory = Memory()
         self.tile_map = None
@@ -127,7 +127,7 @@ class Loops():
         self.targets = T.Target()
         self.target_to_display = None
         self.tileDict = tileDict
-        self.item_for_item_screen = None
+        self.screen_focus = None
 
         #Start the game by going to the main screen
         self.change_loop(LoopType.main)
@@ -221,7 +221,7 @@ class Loops():
                 elif self.currentLoop == LoopType.classes:
                     keyboard.key_class_screen(key, self)
                 elif self.currentLoop == LoopType.items:
-                    keyboard.key_item_screen(key, self, self.item_dict, self.player, self.item_for_item_screen, self.generator.item_map)
+                    keyboard.key_item_screen(key, self, self.item_dict, self.player, self.screen_focus, self.generator.item_map)
                 elif self.currentLoop == LoopType.examine:
                     keyboard.key_examine_screen(key, self)
                 elif self.currentLoop == LoopType.targeting:
@@ -320,7 +320,7 @@ class Loops():
         elif self.currentLoop == LoopType.main:
             display.update_main()
         elif self.currentLoop == LoopType.items:
-            display.update_item(self.item_for_item_screen, tileDict)
+            display.update_entity(self.screen_focus, tileDict)
         elif self.currentLoop == LoopType.examine or self.currentLoop == LoopType.targeting:
             display.update_display(colors, self.generator.tile_map, tileDict, self.monster_dict, self.item_dict,
                                    self.monster_map, self.player, self.messages, self.target_to_display)
@@ -328,7 +328,7 @@ class Loops():
         elif self.currentLoop == LoopType.paused:
             display.update_pause_screen()
         elif self.currentLoop == LoopType.specific_examine:
-            display.update_item(self.item_for_item_screen, tileDict, item_screen=False)
+            display.update_entity(self.screen_focus, tileDict, item_screen=False)
         pygame.display.update()
         self.update_screen = False
 
@@ -437,7 +437,7 @@ class Loops():
         self.update_screen = False
 
 #        self.items = False
-#        self.item_for_item_screen = None
+#        self.screen_focus = None
         self.floor_level = self.memory.floor_level
 
         self.generator = self.memory.generators[self.floor_level]
@@ -452,7 +452,7 @@ class Loops():
         self.change_loop(LoopType.main)
         self.update_screen = True
 
-        self.item_for_item_screen = None
+        self.screen_focus = None
         self.floor_level = 0
         self.memory = Memory()
         self.tile_map = None
