@@ -802,47 +802,47 @@ class Display:
                     text=addition,
                     manager=self.uiManager,
                     object_id='#title_addition')
-                pretext = ""
-                action = ""
-                if item.equipable:
-                    if item.equipped:
-                        pretext = "Unequip"
-                        action = "u"
-                    else:
-                        pretext = "Equip"
-                        action = "e"
-                elif item.consumeable and item.equipment_type == "Potiorb":
-                    pretext = "Quaff"
-                    action = "q"
-                elif item.consumeable and item.equipment_type == "Scrorb":
-                    pretext = "Read"
-                    action = "r"
-                button = pygame_gui.elements.UIButton(
-                    relative_rect=pygame.Rect((entity_button_offset_from_left, entity_button_offset_from_top),
-                                              (entity_button_width, entity_button_height)),
-                    text=pretext,
-                    manager=self.uiManager)
-                button.action = action
-                buttons.add(button, pretext)
-                buttons_drawn += 1
+            pretext = ""
+            action = ""
+            if item.equipable:
+                if item.equipped:
+                    pretext = "Unequip"
+                    action = "u"
+                else:
+                    pretext = "Equip"
+                    action = "e"
+            elif item.consumeable and item.equipment_type == "Potiorb":
+                pretext = "Quaff"
+                action = "q"
+            elif item.consumeable and item.equipment_type == "Scrorb":
+                pretext = "Read"
+                action = "r"
+            button = pygame_gui.elements.UIButton(
+                relative_rect=pygame.Rect((entity_button_offset_from_left, entity_button_offset_from_top),
+                                          (entity_button_width, entity_button_height)),
+                text=pretext,
+                manager=self.uiManager)
+            button.action = action
+            buttons.add(button, pretext)
+            buttons_drawn += 1
 
-                button = pygame_gui.elements.UIButton(
-                    relative_rect=pygame.Rect((entity_button_offset_from_left + (entity_button_width + entity_button_offset_from_each_other) * buttons_drawn, entity_button_offset_from_top),
-                                              (entity_button_width, entity_button_height)),
-                    text='Drop',
-                    manager=self.uiManager)
-                button.action = "d"
-                buttons.add(button, "Drop")
-                buttons_drawn += 1
+            button = pygame_gui.elements.UIButton(
+                relative_rect=pygame.Rect((entity_button_offset_from_left + (entity_button_width + entity_button_offset_from_each_other) * buttons_drawn, entity_button_offset_from_top),
+                                          (entity_button_width, entity_button_height)),
+                text='Drop',
+                manager=self.uiManager)
+            button.action = "d"
+            buttons.add(button, "Drop")
+            buttons_drawn += 1
 
-                button = pygame_gui.elements.UIButton(
-                    relative_rect=pygame.Rect((entity_button_offset_from_left + (entity_button_width + entity_button_offset_from_each_other) * buttons_drawn, entity_button_offset_from_top),
-                                              (entity_button_width, entity_button_height)),
-                    text='Destroy',
-                    manager=self.uiManager)
-                button.action = "b"
-                buttons.add(button, "Destroy")
-                buttons_drawn += 1
+            button = pygame_gui.elements.UIButton(
+                relative_rect=pygame.Rect((entity_button_offset_from_left + (entity_button_width + entity_button_offset_from_each_other) * buttons_drawn, entity_button_offset_from_top),
+                                          (entity_button_width, entity_button_height)),
+                text='Destroy',
+                manager=self.uiManager)
+            button.action = "b"
+            buttons.add(button, "Destroy")
+            buttons_drawn += 1
 
         entity_text = ""
         entity_text += entity.description  + "<br><br>"
