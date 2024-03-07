@@ -69,14 +69,42 @@ class Display:
             self.colorDict = colorDict
         self.uiManager.clear_and_reset()
         self.win.fill(colorDict.getColor("black"))
-        r_x = self.textWidth // 2
-        r_y = self.textHeight // 2
+
+        action_screen_offset_from_left = 0
+        action_screen_offset_from_top = 0
+        action_screen_width = self.screen_width * 3 // 4
+        action_screen_height = self.screen_height * 6 // 7
+        num_tiles_wide = action_screen_width // self.textSize
+        num_tiles_height = action_screen_height // self.textSize
+
+        r_x = num_tiles_wide // 2
+        r_y = num_tiles_height // 2
 
         self.x_start = player.x - r_x
         self.x_end = player.x + r_x
         self.y_start = player.y - r_y
         self.y_end = player.y + r_y
 
+        map_tile_size = 8
+        map_offset_from_left = action_screen_width
+        map_offset_from_top = self.screen_height // 3
+        map_width = self.screen_width - action_screen_width
+        map_height = self.screen_height // 4
+        num_map_tiles_wide = map_width // map_tile_size
+        num_map_tiles_height = map_height // map_tile_size
+        r_map_x = num_map_tiles_wide // 2
+        r_map_y = num_map_tiles_height // 2
+        x_map_start = player.x - r_map_x
+        x_map_end = player.x + r_map_x
+        y_map_start = player.y - r_map_y
+        y_map_end = player.y + r_map_y
+
+        message_offset_from_left = self.screen_width // 8
+        message_offset_from_top = action_screen_height
+        message_width = action_screen_width - message_offset_from_left
+        message_height = self.screen_height - action_screen_height
+
+       #Making all the tiles
         for x in range(self.x_start, self.x_end):
             for y in range(self.y_start, self.y_end):
                 if (x < 0 or x >= floormap.width or y < 0 or y >= floormap.height):
@@ -115,8 +143,39 @@ class Display:
         if player.character.main_armor != None:
             self.win.blit(tileDict.tile_string(204), (r_x * self.textSize, r_y * self.textSize))
 
-        black_screen = pygame.transform.scale(pygame.image.load("assets/black_screen.png"), (self.screen_width // 5, self.screen_height // 5))
-        self.win.blit(black_screen, (0, self.screen_height // 5 * 4))
+        #Making all map tiles
+        pygame.draw.rect(self.win, (50, 50, 50),
+                             pygame.Rect(map_offset_from_left,
+                                         map_offset_from_top ,
+                                         map_width,map_height))
+        for x in range(x_map_start, x_map_end):
+            for y in range(y_map_start, y_map_end):
+                if (x < 0 or x >= floormap.width or y < 0 or y >= floormap.height):
+                    pass
+                elif floormap.track_map[x][y].seen == False:
+                    pass
+                else:
+                    if floormap.track_map[x][y].passable:
+                        pygame.draw.rect(self.win, (200, 200, 200),
+                                         pygame.Rect(map_offset_from_left + map_tile_size * (x - x_map_start),
+                                                     map_offset_from_top + map_tile_size * (y - y_map_start),
+                                                     map_tile_size, map_tile_size))
+                    else:
+                        pygame.draw.rect(self.win, (100, 100, 100),
+                                         pygame.Rect(map_offset_from_left + map_tile_size * (x - x_map_start),
+                                                     map_offset_from_top + map_tile_size * (y - y_map_start),
+                                                     map_tile_size, map_tile_size))
+        pygame.draw.rect(self.win, (150, 100, 50),
+                         pygame.Rect(map_offset_from_left + r_map_x * map_tile_size,
+                                     map_offset_from_top + r_map_y * map_tile_size,
+                                     map_tile_size, map_tile_size))
+
+        #Writing messages
+        text_box = pygame_gui.elements.UITextBox(
+            relative_rect=pygame.Rect((message_offset_from_left, message_offset_from_top), (message_width, message_height)),
+            html_text = "".join([message + "<br>" for message in (messages)]),
+            manager=self.uiManager )
+
         font = pygame.font.Font('freesansbold.ttf', 12)
         text = font.render("Health: " + str(player.character.health) + "/" + str(player.character.max_health), True, (255, 255, 255))
         self.win.blit(text, (0, self.screen_height // 100 * 80))
@@ -130,21 +189,14 @@ class Display:
         text = font.render("Level: " + str(player.level), True, (255, 255, 255))
         self.win.blit(text, (0, self.screen_height // 100 * 92))
 
-        self.write_messages(messages)
 
         if target_to_display != None:
             clear_target = self.draw_examine_window(target_to_display, tileDict, floormap, monster_map, monsterID, item_ID, player)
             if clear_target:
                 target_to_display = None
 
-        self.create_skill_bar(player, tileDict=tileDict, monsterID=monsterID, tile_map=floormap)
+      #  self.create_skill_bar(player, tileDict=tileDict, monsterID=monsterID, tile_map=floormap)
         self.uiManager.draw_ui(self.win)
-
-    def write_messages(self, messages):
-        font = pygame.font.Font('freesansbold.ttf', 12)
-        for i, message in enumerate(messages):
-            text = font.render(message, True, (255, 255, 255))
-            self.win.blit(text, (self.screen_width // 100 * 12, self.screen_height // 100 * (85 + i * 3)))
 
     def get_status_text(self, entity):
         status = "Healthy"
