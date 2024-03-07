@@ -371,26 +371,44 @@ class DungeonGenerator():
 
     def place_items(self, depth):
         itemSpawns = Spawns.item_spawner.spawnItems(depth)
+        first = True
+        force_near_stairs = False
         for item in itemSpawns:
-            self.place_item(item)
+            if first and depth == 1:
+                # manually force a weapon to spawn near the stairs on the first floor
+                force_near_stairs = True
+                first = False # only do so for first item
+            self.place_item(item, force_near_stairs)
+            force_near_stairs = False
 
     def on_stairs(self, x, y, stairs):
         for stair in stairs:
             if stair.x == x and stair.y == y:
                 return True
+        return False
+            
+    def near_stairs(self, x, y, stairs):
+        if abs(stairs[0].x - x) < 2 and abs(stairs[0].y - y) < 2:
+            return True
+        return False
 
-    def place_item(self, item):
+    def place_item(self, item, force_near_stairs=False):
         startx = random.randint(0, self.width-1)
         starty = random.randint(0,self.height-1)
 
         # make sure the item is placed on a passable tile that does not already have an item and is not stairs
         check_on_stairs = self.on_stairs(startx, starty, self.tile_map.stairs)
+        near_stairs = self.near_stairs(startx, starty, self.tile_map.stairs)
+        
         while ((self.tile_map.get_passable(startx, starty) == False) or 
                (self.item_map.get_passable(startx, starty) == False) or
-               check_on_stairs):
+               check_on_stairs or
+               (force_near_stairs and near_stairs)):
             startx = random.randint(0, self.width-1)
             starty = random.randint(0,self.height-1)
             check_on_stairs = self.on_stairs(startx, starty, self.tile_map.stairs)
+            near_stairs = self.near_stairs(startx, starty, self.tile_map.stairs)
+            
 
         item.x = startx
         item.y = starty

@@ -60,6 +60,7 @@ class Monster_AI():
         # print(max_utility)
         self.parent.character.energy -= 1
 
+        # print(f"{self.parent} is doing {called_function.__name__} with utility {max_utility}")
         called_function(loop)
 
     def rank_flee(self, loop):

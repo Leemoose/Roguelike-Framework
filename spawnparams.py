@@ -89,6 +89,9 @@ class ItemSpawner():
             depth = 10
         items = []
         commonAtDepth = [i for i in self.commonItems if i.AllowedAtDepth(depth)]
+        if depth == 1:
+            commonWeapons = [i for i in commonAtDepth if i.item.equipment_type == "Weapon"]
+            items.append(random.choice(commonWeapons).GetFreshCopy())
         rareAtDepth = [i for i in self.rareItems if i.AllowedAtDepth(depth)]
         if rareAtDepth == []:
             rareAtDepth = commonAtDepth
