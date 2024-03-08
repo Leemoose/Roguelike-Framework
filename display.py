@@ -177,7 +177,8 @@ class Display:
                                         views_offset_from_top + views_button_offset_from_each_other_height+ (views_button_offset_from_each_other_height + views_button_height) * button_num_height),
                                         (views_button_width, views_button_height)),
             text="(I)nventory",
-            manager=self.uiManager)
+            manager=self.uiManager,
+                    starting_height=800)
         button.action = "i"
         self.buttons.add(button, "i")
 
@@ -188,7 +189,8 @@ class Display:
                                         views_offset_from_top + views_button_offset_from_each_other_height+ (views_button_offset_from_each_other_height + views_button_height) * button_num_height),
                                         (views_button_width, views_button_height)),
             text="(E)quip",
-            manager=self.uiManager)
+            manager=self.uiManager,
+                    starting_height=800)
         button.action = "e"
         self.buttons.add(button, "e")
 
@@ -199,7 +201,8 @@ class Display:
                                         views_offset_from_top + views_button_offset_from_each_other_height+ (views_button_offset_from_each_other_height + views_button_height) * button_num_height),
                                         (views_button_width, views_button_height)),
             text="Save",
-            manager=self.uiManager)
+            manager=self.uiManager,
+                    starting_height=800)
         button.action = "s"
         self.buttons.add(button, "s")
 
@@ -211,7 +214,8 @@ class Display:
                                         views_offset_from_top + views_button_offset_from_each_other_height+ (views_button_offset_from_each_other_height + views_button_height) * button_num_height),
                                         (views_button_width, views_button_height)),
             text="(Q)uaff",
-            manager=self.uiManager)
+            manager=self.uiManager,
+                    starting_height=800)
         button.action = "q"
         self.buttons.add(button, "q")
 
@@ -222,7 +226,8 @@ class Display:
                                         views_offset_from_top + views_button_offset_from_each_other_height+ (views_button_offset_from_each_other_height + views_button_height) * button_num_height),
                                         (views_button_width, views_button_height)),
             text="(R)ead",
-            manager=self.uiManager)
+            manager=self.uiManager,
+                    starting_height=800)
         button.action = "r"
         self.buttons.add(button, "r")
 
@@ -233,7 +238,8 @@ class Display:
                                         views_offset_from_top + views_button_offset_from_each_other_height+ (views_button_offset_from_each_other_height + views_button_height) * button_num_height),
                                         (views_button_width, views_button_height)),
             text="Aut(o)explore",
-            manager=self.uiManager)
+            manager=self.uiManager,
+                    starting_height=800)
         button.action = "o"
         self.buttons.add(button, "o")
 
