@@ -57,14 +57,67 @@ class Skill():
     def description(self):
         return self.name + "(" + str(self.cost) + " cost, " + str(self.cooldown) + " turn cooldown"
 
+class MassTorment(Skill):
+    def __init__(self, parent, cooldown, cost):
+        super().__init__("MassTorment", parent, cooldown, cost)
+
+    def activate(self, loop, bypass = False):
+        generator = loop.generator
+        player = loop.player
+        tile_map = generator.tile_map
+        monster_map = generator.monster_map
+        monster_dict = generator.monster_dict
+        for monster_key in monster_dict.subjects:
+            monster = monster_dict.get_subject(monster_key)
+            if tile_map.track_map[monster.x][monster.y].visible:
+                monster.character.health /= 2
+        player.character.health /= 2
+
+class Invinciblity(Skill):
+    def __init__(self, parent, cooldown, cost):
+        super().__init__("Invincibility", parent, cooldown, cost)
+        self.effect = E.Invincible(10)
+
+    def activate(self, loop, bypass = False):
+        loop.player.character.add_status_effect(self.effect)
+        self.effect.apply_effect(loop.player.character)
+
+class Awaken_Monsters(Skill):
+    def __init__(self, parent, cooldown, cost):
+        super().__init__("Awaken Monsters", parent, cooldown, cost)
+
+    def activate(self, loop, bypass = False):
+        monster_dict = loop.generator.monster_dict
+        for monster_key in monster_dict.subjects:
+            monster = monster_dict.get_subject(monster_key)
+            monster.brain.is_awake = True
+
+class Monster_Lullaby(Skill):
+    def __init__(self, parent, cooldown, cost):
+        super().__init__("Monster Lullaby", parent, cooldown, cost)
+        self.effect = E.Asleep(10)
+
+    def activate(self, loop, bypass = False):
+        generator = loop.generator
+        player = loop.player
+        tile_map = generator.tile_map
+        monster_map = generator.monster_map
+        monster_dict = generator.monster_dict
+        for monster_key in monster_dict.subjects:
+            monster = monster_dict.get_subject(monster_key)
+            if tile_map.track_map[monster.x][monster.y].visible:
+                monster.character.add_status_effect(self.effect)
+                self.effect.apply_effect(monster.character)
+
+
 class Teleport(Skill):
     def __init__(self, parent, cooldown, cost):
         super().__init__("Teleport", parent, cooldown, cost)
         self.can_teleport = True
 
-    def activate(self, target, generator):
+    def activate(self, target, generator, bypass = False):
         # teleport is assumed to be self-targetting for now, so target does nothing
-        if self.can_teleport:
+        if self.can_teleport or bypass:
             tile_map = generator.tile_map
             width = generator.width
             height = generator.height
@@ -75,16 +128,17 @@ class Teleport(Skill):
                 startx = random.randint(0, width - 1)
                 starty = random.randint(0, height - 1)
 
-            if isinstance(self.parent, M.Monster):
+            if isinstance(self.parent.parent, M.Monster):
                 monster_map = generator.monster_map
-                x, y = self.parent.x, self.parent.y
+                x, y = self.parent.parent.x, self.parent.parent.y
                 monster_map.clear_location(x, y)
-                self.parent.x = startx
-                self.parent.y = starty
-                monster_map.place_thing(self.parent)
+                self.parent.parent.x = startx
+                self.parent.parent.y = starty
+                monster_map.place_thing(self.parent.parent)
             else:
-                self.parent.x = startx
-                self.parent.y = starty
+                print(self.parent.parent.name)
+                self.parent.parent.x = startx
+                self.parent.parent.y = starty
 
 class MagicMissile(Skill):
     def __init__(self, parent, cooldown, cost, damage, range, action_cost):

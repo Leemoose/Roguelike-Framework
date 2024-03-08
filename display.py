@@ -388,7 +388,13 @@ class Display:
                     monster_tile = tileDict.tile_string(monster.render_tag)
                     self.win.blit(monster_tile, (self.textSize*(monster.x - self.x_start), self.textSize*(monster.y - self.y_start)))
 
-        self.win.blit(tileDict.tile_string(200), (self.r_x * self.textSize, self.r_y * self.textSize))
+        #Draw base character depending on armor state
+        if (player.character.main_armor == None):
+            self.win.blit(tileDict.tile_string(200), (self.r_x * self.textSize, self.r_y * self.textSize)) # DONG MODE ENGAGED
+        else:
+            self.win.blit(tileDict.tile_string(-200), (self.r_x * self.textSize, self.r_y * self.textSize))
+
+        #Draw items on top
         if player.character.boots != None:
             self.win.blit(tileDict.tile_string(201), (self.r_x * self.textSize, self.r_y * self.textSize))
         if player.character.gloves != None:
@@ -807,39 +813,26 @@ class Display:
 
     def create_pause_screen(self):
         self.uiManager.clear_and_reset()
+        pause_screen_width = self.screen_width // 3
+        pause_screen_height = self.screen_height // 2
+        pause_offset_from_left = (self.screen_width - pause_screen_width) // 2
+        pause_offset_from_top = self.screen_height // 4
 
-        pause_screen_width = 700
-        pause_screen_height = 300
-        startX = (self.screen_width - pause_screen_width) / 2
-        startY = (self.screen_height - pause_screen_height) / 2
+        pause_num_buttons_height = 4
+        pause_button_width = pause_screen_width * 9 // 10
+        pause_button_height = (pause_screen_height) // (pause_num_buttons_height + 1)
+        pause_button_offset_from_each_other_height = (pause_screen_height) // (
+                pause_num_buttons_height + 1) // (pause_num_buttons_height + 1)
+        pause_button_offset_from_top = pause_offset_from_top
+        pause_button_offset_from_left = pause_offset_from_left + (pause_screen_width- pause_button_width) //2
 
-        numButtons = 4
-
-        #Offset defines a padding in pixels - buttons remain 'offset' pixels from the edges
-        offset = 10 
-
-        #Button offset is how far apart the buttons are from each other
-        # Bug: this seems to get doubled for some reason?
-        button_offset = 5
-
-
-
-        # Don't change below here! Math should work for arbitrary button numbers and sizes, 
-        # if you set those above.
-        self.draw_empty_box(startX, startY, pause_screen_width, pause_screen_height)
-
-        pause_button_x = startX + offset
-        pause_button_base_y = startY + offset
-        pause_button_width = pause_screen_width - 2 * offset
-        pause_button_height = ((pause_screen_height - 2 * offset)
-                              - (button_offset * (numButtons - 1))) / numButtons
-
-        debug_height = 2 * offset + (numButtons * pause_button_height) + ((numButtons - 1) * button_offset)
+        self.draw_empty_box(pause_offset_from_left, pause_offset_from_top, pause_screen_width,
+                            pause_screen_height)
 
         button_num = 0
         unpause = pygame_gui.elements.UIButton(
-                    relative_rect=pygame.Rect((pause_button_x, pause_button_base_y +
-                                               (pause_button_height + button_offset) * button_num,
+                    relative_rect=pygame.Rect((pause_button_offset_from_left, pause_button_offset_from_top + pause_button_offset_from_each_other_height+
+                                               (pause_button_height + pause_button_offset_from_each_other_height) * button_num,
                                                pause_button_width, pause_button_height)),
                     text = "Unpause",
                     manager=self.uiManager,
@@ -848,8 +841,8 @@ class Display:
 
         button_num += 1
         menu = pygame_gui.elements.UIButton(
-                    relative_rect=pygame.Rect((pause_button_x, pause_button_base_y +
-                                               (pause_button_height + button_offset) * button_num,
+                    relative_rect=pygame.Rect((pause_button_offset_from_left, pause_button_offset_from_top + pause_button_offset_from_each_other_height+
+                                               (pause_button_height + pause_button_offset_from_each_other_height) * button_num,
                                                pause_button_width, pause_button_height)),
                     text = "Return to (m)enu",
                     manager=self.uiManager,
@@ -858,8 +851,8 @@ class Display:
 
         button_num += 1
         save = pygame_gui.elements.UIButton(
-                    relative_rect=pygame.Rect((pause_button_x, pause_button_base_y +
-                                               (pause_button_height + button_offset) * button_num,
+                    relative_rect=pygame.Rect((pause_button_offset_from_left, pause_button_offset_from_top + pause_button_offset_from_each_other_height+
+                                               (pause_button_height + pause_button_offset_from_each_other_height) * button_num,
                                                pause_button_width, pause_button_height)),
                     text = "(S)ave",
                     manager=self.uiManager,
@@ -868,13 +861,14 @@ class Display:
 
         button_num += 1
         quit = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect((pause_button_x, pause_button_base_y +
-                                               (pause_button_height + button_offset) * button_num,
-                                               pause_button_width, pause_button_height)),
+            relative_rect=pygame.Rect((pause_button_offset_from_left, pause_button_offset_from_top + pause_button_offset_from_each_other_height+
+                                       (pause_button_height + pause_button_offset_from_each_other_height) * button_num,
+                                       pause_button_width, pause_button_height)),
             text="(Q)uit",
             manager=self.uiManager,
             starting_height=1000)
         quit.action = 'q'
+
 
     def update_pause_screen(self):
         self.uiManager.draw_ui(self.win)
@@ -909,7 +903,6 @@ class Display:
             relative_rect=pygame.Rect((margin_from_left, margin_from_top), (width, height)),
             manager=self.uiManager
         )
-        box.disable()
 
     def update_main(self):
     #Main Screen
@@ -1027,17 +1020,18 @@ class Display:
 
         if isinstance(entity,O.Item):
             item = entity
-            if item.equipped:
-                entity_text += "Currently equipped<br>"
-            entity_text += "Equipment type: " + item.equipment_type + "<br>"
-            if item.required_strength > 0:
-                entity_text += "Required Strength: " + str(item.required_strength) + "<br>"
-            if isinstance(item, I.Armor):
-                entity_text += "Armor: " + str(item.armor) + "<br>"
-            if isinstance(item, I.Weapon):
-                entity_text += "Damage: " + str(item.damage_min) + " - " + str(item.damage_max) + "<br>"
-                if item.on_hit:
-                    entity_text += "On hit: " + item.on_hit_description + "<br>"
+            if isinstance(entity, I.Equipment):
+                if item.equipped:
+                    entity_text += "Currently equipped<br>"
+                entity_text += "Equipment type: " + item.equipment_type + "<br>"
+                if item.required_strength > 0:
+                    entity_text += "Required Strength: " + str(item.required_strength) + "<br>"
+                if isinstance(item, I.Armor):
+                    entity_text += "Armor: " + str(item.armor) + "<br>"
+                if isinstance(item, I.Weapon):
+                    entity_text += "Damage: " + str(item.damage_min) + " - " + str(item.damage_max) + "<br>"
+                    if item.on_hit:
+                        entity_text += "On hit: " + item.on_hit_description + "<br>"
             if item.attached_skill != None:
                 entity_text += "Grants skill: " + item.get_attached_skill_description() + "<br>"
 

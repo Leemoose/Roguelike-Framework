@@ -158,7 +158,7 @@ class Loops():
         elif newLoop == LoopType.items:
             self.display.update_entity(self.screen_focus, self.tileDict, item_screen = True, create = True)
         elif newLoop == LoopType.examine:
-            self.display.update_display(self, create = True)
+            self.display.create_display(self)
         elif newLoop == LoopType.paused:
             self.display.create_pause_screen()
         elif newLoop == LoopType.specific_examine:
@@ -327,7 +327,7 @@ class Loops():
                 monster.brain.is_awake = True
 
             # do action stuff
-            if monster.brain.is_awake == True:
+            if monster.brain.is_awake == True and not monster.asleep:
                 monster.character.energy += energy
                 while monster.character.energy > 0:
                     monster.brain.rank_actions(monster, self.monster_map, self.generator.tile_map, self.generator.flood_map, self.player, self.generator, self.item_dict, self)

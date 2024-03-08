@@ -276,7 +276,8 @@ class Keyboard():
             if player.character.quaff(item, item_dict, item_map):
                 loop.change_loop(LoopType.inventory)
         elif key == "r":
-            player.character.read(item, loop, item_dict, item_map)
+            if player.character.read(item, loop, item_dict, item_map):
+                loop.change_loop(LoopType.inventory)
             
     def key_paused(self, key, loop, display):
         if key == "esc":
