@@ -41,7 +41,7 @@ class FPSCounter(pygame_gui.elements.UILabel):
         if (len(self.times) > 10):
             self.times.remove(self.times[0])
 
-        self.set_text(str(self.compute_average()))
+        self.set_text("FPS: " + str(self.compute_average()))
 
         return super().update(time_delta)
     
@@ -97,7 +97,7 @@ class StatBox(pygame_gui.elements.UITextBox):
             return "<shadow size=1 offset=0,0 color=#306090><font color=#E0F0FF>Level: " \
                     + str(entity.level) + " (Press L to allocate stat points)</font></shadow>"
         else:
-            to_next_level = str(format(entity.experience * 100 / entity.experience_to_next_level, ".1%"))
+            to_next_level = str(format(entity.experience / entity.experience_to_next_level, ".1%"))
             return "Level: " + str(entity.level) + " (" + to_next_level + " there to next level)"
 
     def update(self, time_delta: float):
@@ -107,8 +107,6 @@ class StatBox(pygame_gui.elements.UITextBox):
                         "Endurance: " + str(self.player.character.endurance) + "<br>"
                         "Intelligence: " + str(self.player.character.intelligence) + "<br>"
                         "<br>"
-                        "Health: " + str(self.player.character.health) + " / " + str(self.player.character.max_health) + "<br>"
-                        "Mana: " + str(self.player.character.mana) + " / " + str(self.player.character.max_mana) + "<br>"
                         "Status: " + self.get_status_text(self.player) + "<br>" + \
                         self.get_level_text(self.player) + "<br>")
 

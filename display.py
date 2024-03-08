@@ -1071,7 +1071,6 @@ class Display:
         self.win.blit(tag, (self.textSize * (x - self.x_start), self.textSize * (y - self.y_start)))
 
     def update_level_up(self, loop):
-        self.win.fill((0,0,0))
         line_to_outline = loop.current_stat
         player = loop.player
         entity_screen_width = self.screen_width // 2
@@ -1086,6 +1085,10 @@ class Display:
 
         border_width = 8
         border_height = 8
+
+        pygame.draw.rect(self.win, (0, 0, 0), pygame.Rect(entity_offset_from_left - border_width // 2, entity_offset_from_top - border_height // 2, entity_screen_width + border_width, entity_screen_height+border_height))
+        pygame.draw.rect(self.win, (112,128,144), pygame.Rect(entity_offset_from_left, entity_offset_from_top, entity_screen_width, entity_screen_height))
+        pygame.draw.rect(self.win, (0, 0, 0), pygame.Rect((0,0),(100,40)))
 
         stat_line_offset_from_left = entity_offset_from_left + entity_screen_width // 6
         stat_line_offset_from_top = entity_offset_from_top + entity_screen_height // 4
