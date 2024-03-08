@@ -58,6 +58,7 @@ class Character():
         self.status_effects = []
 
         self.skills = []
+        self.invincible = False
 
         self.experience_given = 0 # monsters will overwrite this attribute, it just makes some class stuff easier if its stored in character
         self.experience = 0
@@ -66,12 +67,16 @@ class Character():
         self.mana_partial = 0.0
 
     def is_alive(self):
-        if self.health <= 0:
+        if self.health <= 0 and not self.invincible:
             self.alive = False
             return False
         return True
 
     def take_damage(self, dealer, damage):
+        if damage > 0:
+            for effect in self.status_effects:
+                if isinstance(effect, E.Asleep):
+                    effect.duration = 0
         self.health -= damage
         if not self.is_alive():
             if hasattr(dealer, "experience"): # acts as a check for it its a player
@@ -206,7 +211,7 @@ class Character():
     def quaff(self, potion, item_dict, item_map):
         if potion.consumeable and potion.equipment_type == "Potiorb":
             potion.activate(self)
-            if potion.stacks == 0:
+            if potion.stacks == 1:
                 self.drop(potion, item_dict, item_map)
                 potion.destroy = True
             self.energy -= self.quaff_cost
@@ -215,7 +220,7 @@ class Character():
     def read(self, scroll, loop, item_dict, item_map):
         if scroll.consumeable and scroll.equipment_type == "Scrorb":
             scroll.activate(self, loop)
-            if scroll.stacks == 0:
+            if scroll.stacks == 1:
                 self.drop(scroll, item_dict, item_map)
                 scroll.destroy = True
             self.energy -= self.read_cost

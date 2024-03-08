@@ -821,7 +821,6 @@ class Display:
         button_offset = 5
 
 
-
         # Don't change below here! Math should work for arbitrary button numbers and sizes, 
         # if you set those above.
         self.draw_empty_box(startX, startY, pause_screen_width, pause_screen_height)
@@ -907,7 +906,6 @@ class Display:
             relative_rect=pygame.Rect((margin_from_left, margin_from_top), (width, height)),
             manager=self.uiManager
         )
-        box.disable()
 
     def update_main(self):
     #Main Screen
@@ -1025,17 +1023,18 @@ class Display:
 
         if isinstance(entity,O.Item):
             item = entity
-            if item.equipped:
-                entity_text += "Currently equipped<br>"
-            entity_text += "Equipment type: " + item.equipment_type + "<br>"
-            if item.required_strength > 0:
-                entity_text += "Required Strength: " + str(item.required_strength) + "<br>"
-            if isinstance(item, I.Armor):
-                entity_text += "Armor: " + str(item.armor) + "<br>"
-            if isinstance(item, I.Weapon):
-                entity_text += "Damage: " + str(item.damage_min) + " - " + str(item.damage_max) + "<br>"
-                if item.on_hit:
-                    entity_text += "On hit: " + item.on_hit_description + "<br>"
+            if isinstance(entity, I.Equipment):
+                if item.equipped:
+                    entity_text += "Currently equipped<br>"
+                entity_text += "Equipment type: " + item.equipment_type + "<br>"
+                if item.required_strength > 0:
+                    entity_text += "Required Strength: " + str(item.required_strength) + "<br>"
+                if isinstance(item, I.Armor):
+                    entity_text += "Armor: " + str(item.armor) + "<br>"
+                if isinstance(item, I.Weapon):
+                    entity_text += "Damage: " + str(item.damage_min) + " - " + str(item.damage_max) + "<br>"
+                    if item.on_hit:
+                        entity_text += "On hit: " + item.on_hit_description + "<br>"
             if item.attached_skill != None:
                 entity_text += "Grants skill: " + item.get_attached_skill_description() + "<br>"
 

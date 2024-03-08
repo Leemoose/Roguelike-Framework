@@ -404,8 +404,6 @@ class RingOfSwiftness(Ring):
     def deactivate(self, entity):
         entity.move_cost += 20
 
-        
-
 class BloodRing(Ring):
     def __init__(self, render_tag):
         super().__init__(render_tag, "Blood Ring")
@@ -919,7 +917,59 @@ class Scroll(O.Item):
         if self.stacks == 0:
             self.destroy = True
             entity.inventory.remove(self)
-        
+
+class TeleportScroll(Scroll):
+    def __init__(self, render_tag):
+        super().__init__(render_tag, "Teleport Scroll")
+        self.description = "Let's go for a ride."
+        self.rarity = "Common"
+        self.skill = S.Teleport(None, None, None)
+
+    def activate_once(self, entity, loop):
+        self.skill.parent = entity
+        self.skill.activate(entity, loop.generator, bypass = True)
+
+class MassTormentScroll(Scroll):
+    def __init__(self, render_tag):
+        super().__init__(render_tag, "Mass Torment Scroll")
+        self.description = "Must kill everything."
+        self.rarity = "Common"
+        self.skill = S.MassTorment(None, None, None)
+
+    def activate_once(self, entity, loop):
+        self.skill.parent = entity
+        self.skill.activate(loop, bypass = True)
+
+class InvincibilityScroll(Scroll):
+    def __init__(self, render_tag):
+        super().__init__(render_tag, "Invincibility Scroll")
+        self.description = "Death cannot hold me back."
+        self.rarity = "Common"
+        self.skill = S.Invinciblity(None, None, None)
+
+    def activate_once(self, entity, loop):
+        self.skill.parent = entity
+        self.skill.activate(loop, bypass = True)
+
+class CallingScroll(Scroll):
+    def __init__(self, render_tag):
+        super().__init__(render_tag, "The Scroll of Calling")
+        self.description = "Read at your own peril."
+        self.rarity = "Common"
+        self.skill = S.Awaken_Monsters(None, None, None)
+
+    def activate_once(self, entity, loop):
+        self.skill.activate(loop, bypass = True)
+
+class SleepScroll(Scroll):
+    def __init__(self, render_tag):
+        super().__init__(render_tag, "Sleeping Scroll")
+        self.description = "A guide to monster lullabies."
+        self.rarity = "Common"
+        self.skill = S.Monster_Lullaby(None, None, None)
+
+    def activate_once(self, entity, loop):
+        self.skill.activate(loop, bypass = True)
 
 class HealthPotion(Potion):
     def __init__(self, render_tag):

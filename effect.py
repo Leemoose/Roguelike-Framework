@@ -101,3 +101,25 @@ class Fear(StatusEffect):
     
     def remove(self, target):
         target.flee = False
+
+
+class Invincible(StatusEffect):
+    def __init__(self, duration, inflictor = None):
+        super().__init__(806, "Invincible", "I can't be killed", duration)
+    def apply_effect(self, target):
+        target.invincible = True
+
+    def remove(self, target):
+        target.invincible = False
+        target.health = max(1, target.health)
+
+class Asleep(StatusEffect):
+    def __init__(self, duration, inflictor = None):
+        super().__init__(806, "Asleep", "...", duration)
+    def apply_effect(self, target):
+        actual = target.parent
+        actual.asleep = True
+
+    def remove(self, target):
+        actual = target.parent
+        actual.asleep = False
