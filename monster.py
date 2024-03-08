@@ -316,6 +316,7 @@ class Monster(O.Objects):
     def __init__(self, number_tag, x, y, name="Unknown monster"):
         super().__init__(x, y, 0, number_tag, name)
         self.character = C.Character(self)
+        self.asleep = False
         self.character.experience_given = 10
         self.brain = Monster_AI(self)
         self.skills = []
