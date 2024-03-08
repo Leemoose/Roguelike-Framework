@@ -447,7 +447,7 @@ class Player(O.Objects):
                     else:
                         endy += 1
             end = (endx, endy)
-            self.path = pathfinding.astar(tile_map.track_map, start, end)
+            self.path = pathfinding.astar(tile_map.track_map, start, end, loop.generator.monster_map)
             # if all tiles have been seen don't autoexplore
             
         x, y = self.path.pop(0)
@@ -470,7 +470,7 @@ class Player(O.Objects):
         if (start == end):
             loop.change_loop(L.LoopType.action)
             return
-        self.path = pathfinding.astar(tile_map.track_map, start, end)
+        self.path = pathfinding.astar(tile_map.track_map, start, end, loop.generator.monster_map)
         
         x, y = self.path.pop(0)
         x, y = self.path.pop(0)

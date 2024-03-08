@@ -223,6 +223,7 @@ class Loops():
                     keyboard.key_class_screen(key, self)
                 elif self.currentLoop == LoopType.items:
                     keyboard.key_item_screen(key, self, self.item_dict, self.player, self.screen_focus, self.generator.item_map)
+                    self.change_loop(self.currentLoop)
                 elif self.currentLoop == LoopType.examine:
                     keyboard.key_examine_screen(key, self)
                 elif self.currentLoop == LoopType.targeting:
@@ -327,7 +328,7 @@ class Loops():
             display.update_display(self)
             if self.currentLoop == LoopType.action:
                 mos_x, mos_y = pygame.mouse.get_pos()
-                (x,y) = display.screen_to_tile(mos_x,mos_y)
+                (x,y) = display.screen_to_tile(self.player, mos_x,mos_y)
                 if self.generator.tile_map.in_map(x,y):
                     display.draw_examine_window((x,y), self.tileDict, self.generator.tile_map, self.monster_map, self.monster_dict, self.item_dict, self.player)
         elif self.currentLoop == LoopType.inventory or self.currentLoop == LoopType.enchant:
