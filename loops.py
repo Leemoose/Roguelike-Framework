@@ -131,7 +131,6 @@ class Loops():
         self.screen_focus = None
 
         #Start the game by going to the main screen
-        self.change_loop(LoopType.main)
 
     #Sets the internal loop type, and does the initialization that it needs.
     #Mostly here to cache UI pieces, which shouldn't be remade every frame.
@@ -147,7 +146,7 @@ class Loops():
         elif newLoop == LoopType.equipment:
             self.display.create_equipment(self.player, self.tileDict)
         elif newLoop == LoopType.main:
-            pass
+            self.display.create_main_screen()
         elif newLoop == LoopType.race:
             pass
         elif newLoop == LoopType.classes:
@@ -425,7 +424,7 @@ class Loops():
             self.monster_dict = self.generator.monster_dict
 
     def init_game(self, display):
-        self.main_buttons = D.create_main_screen(display, self.width, self.height)
+        self.main_buttons = display.create_main_screen()
         self.player = C.Player(0, 0)
         self.memory.player = self.player
         self.display = display

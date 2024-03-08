@@ -987,44 +987,44 @@ class Display:
         self.uiManager.update(deltaTime)
 
 
-def create_main_screen(scr, width, height):
-    button_width = width // 6
-    button_height = height // 8
-    button_offset_from_bottom = height * 95 // 100 - button_height
-    button_offset_from_each_other = width // 12
-    button_offset_from_left = width * 1/6 #Should be (1 - 3* button_width - 2 * button_offset from each other) / 2
+    def create_main_screen(self):
+        button_width = self.screen_width // 6
+        button_height = self.screen_height // 8
+        button_offset_from_bottom = self.screen_height * 95 // 100 - button_height
+        button_offset_from_each_other = self.screen_width // 12
+        button_offset_from_left = self.screen_width * 1/6 #Should be (1 - 3* button_width - 2 * button_offset from each other) / 2
 
-    message_width = width * 5//6
-    message_height = height * 2//3
-    message_offset_from_left = width // 12
-    message_offset_from_top = height // 12
+        message_width = self.screen_width * 5//6
+        message_height = self.screen_height * 2//3
+        message_offset_from_left = self.screen_width // 12
+        message_offset_from_top = self.screen_height // 12
 
 
-    scr.uiManager.clear_and_reset()
-    buttons = Buttons()
-    button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((button_offset_from_left, button_offset_from_bottom), (button_width, button_height)),
-                                             text='Play',
-                                             manager=scr.uiManager)
-    button.action = "return"
-    buttons.add(button, "play")
-    
+        self.uiManager.clear_and_reset()
+        buttons = Buttons()
+        button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((button_offset_from_left, button_offset_from_bottom), (button_width, button_height)),
+                                                 text='Play',
+                                                 manager=self.uiManager)
+        button.action = "return"
+        buttons.add(button, "play")
 
-    
-    button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((button_offset_from_left + button_width+ button_offset_from_each_other, button_offset_from_bottom), (button_width, button_height)),
-                                             text='Load',
-                                             manager=scr.uiManager)
-    button.action = "l"
-    buttons.add(button, "load")
 
-    button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((button_offset_from_left+ button_width * 2 + button_offset_from_each_other * 2, button_offset_from_bottom), (button_width, button_height)),
-                                             text='Quit',
-                                             manager=scr.uiManager)
-    button.action = "esc"
-    buttons.add(button, "quit")
 
-    pygame_gui.elements.UILabel(relative_rect=pygame.Rect((message_offset_from_left, message_offset_from_top), (message_width, message_height)),
-                                text="Orbworld: The Orb of Destiny",
-                                manager=scr.uiManager,
-                                object_id='#title_label')
-    
-    return buttons
+        button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((button_offset_from_left + button_width+ button_offset_from_each_other, button_offset_from_bottom), (button_width, button_height)),
+                                                 text='Load',
+                                                 manager=self.uiManager)
+        button.action = "l"
+        buttons.add(button, "load")
+
+        button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((button_offset_from_left+ button_width * 2 + button_offset_from_each_other * 2, button_offset_from_bottom), (button_width, button_height)),
+                                                 text='Quit',
+                                                 manager=self.uiManager)
+        button.action = "esc"
+        buttons.add(button, "quit")
+
+        pygame_gui.elements.UILabel(relative_rect=pygame.Rect((message_offset_from_left, message_offset_from_top), (message_width, message_height)),
+                                    text="Orbworld: The Orb of Destiny",
+                                    manager=self.uiManager,
+                                    object_id='#title_label')
+
+        return buttons
