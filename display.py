@@ -1071,6 +1071,7 @@ class Display:
         self.win.blit(tag, (self.textSize * (x - self.x_start), self.textSize * (y - self.y_start)))
 
     def update_level_up(self, loop):
+        self.win.fill((0,0,0))
         line_to_outline = loop.current_stat
         player = loop.player
         entity_screen_width = self.screen_width // 2
@@ -1204,8 +1205,6 @@ class Display:
 
         #stat_line_outline_offset_from_left = stat_change_button_offset_from_left - entity_screen_width // 24
         #stat_line_outline = pygame.Rect((stat_change_button_offset_from_left, stat_line_offset_from_top), (stat_line_width, stat_line_height * 4 + stat_line_offset_from_each_other * 3))
-
-        import pdb; pdb.set_trace()
         ui.LevelUpHeader(
             rect=pygame.Rect((entity_message_offset_from_left, entity_message_offset_from_top), (entity_message_width, entity_message_height)),
             manager=self.uiManager,

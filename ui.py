@@ -62,7 +62,6 @@ class LevelUpHeader(pygame_gui.elements.UILabel):
         self.player = player
 
     def update(self, time_delta: float):
-        import pdb; pdb.set_trace()
         self.set_text("Allocate " + str(self.player.stat_points - sum(self.player.stat_decisions)) + " Stat Points")
         return super().update(time_delta)
     
