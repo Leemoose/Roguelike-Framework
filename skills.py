@@ -205,8 +205,8 @@ class Berserk(Skill):
     
     def description(self):
         if self.duration == -100:
-            return self.name + "(" + str(self.cost) + " health cost, " + str(self.cooldown) + " turn cooldown" + ", +" + str(self.strength_increase) + " strength if below " + str(self.threshold * 100) + "% health)"
-        return self.name + "(" + str(self.cost) + " cost, " + str(self.cooldown) + " turn cooldown" + ", +" + str(self.strength_increase) + " strength for " + str(self.duration) + " turns if below " + str(self.threshold * 100) + "% health)"
+            return self.name + "(" + str(self.cost) + " health cost, " + str(self.cooldown) + " turn cooldown" + ", +" + str(self.strength_increase) + " strength if below " + str(int(self.threshold * 100)) + "% health)"
+        return self.name + "(" + str(self.cost) + " cost, " + str(self.cooldown) + " turn cooldown" + ", +" + str(self.strength_increase) + " strength for " + str(self.duration) + " turns if below " + str(int(self.threshold * 100)) + "% health)"
 
 class BloodPact(Skill):
     def __init__(self, parent, cooldown, cost, strength_increase, duration, action_cost):

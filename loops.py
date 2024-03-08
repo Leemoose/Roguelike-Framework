@@ -327,7 +327,7 @@ class Loops():
             # display.update_display(colors, self.generator.tile_map, tileDict, self.monster_dict, self.item_dict,
             #                       self.monster_map, self.player, self.messages, self.target_to_display)
             display.update_display(self)
-            display.update_examine(self.targets.target_list, tileDict, self.messages)
+            display.update_examine(self.targets.target_current, self)
         elif self.currentLoop == LoopType.paused:
             display.update_pause_screen()
         elif self.currentLoop == LoopType.specific_examine:
@@ -424,6 +424,7 @@ class Loops():
         self.messages.append(message)
 
     def add_target(self, target):
+        self.prev_target = self.target_to_display
         self.target_to_display = target
     
     def void_target(self):
@@ -431,6 +432,7 @@ class Loops():
             return
         if self.monster_map.get_passable(self.target_to_display[0], self.target_to_display[1]): # don't void if its a monster, cuz its a good QOL to keep monster health on screen
             self.target_to_display = None
+
 
     def init_new_game(self):
         self.display.create_game_ui(self.player)

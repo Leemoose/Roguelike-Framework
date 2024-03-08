@@ -74,6 +74,8 @@ class Display:
         self.uiManager.draw_ui(self.win)
 
     def update_display(self, loop):
+        self.uiManager.clear_and_reset()
+        self.win.fill((0,0,0))
         floormap = loop.generator.tile_map
         tileDict = loop.tileDict
         monsterID = loop.monster_dict
@@ -130,23 +132,10 @@ class Display:
                     views_num_buttons + 1) // (views_num_buttons + 1)
         views_button_offset_from_top = map_offset_from_top + map_height + views_button_offset_from_each_other
 
-
-
-
        #Making all the tiles
         for x in range(self.x_start, self.x_end):
             for y in range(self.y_start, self.y_end):
-                if (x < 0 or x >= floormap.width or y < 0 or y >= floormap.height):
-                    pass
-                elif floormap.track_map[x][y].seen == False:
-                    pass
-                elif floormap.track_map[x][y].visible == True:
-                    tag = tileDict.tile_string(floormap.get_tag(x, y))
-                    self.win.blit(tag, (self.textSize * (x - self.x_start), self.textSize * (y - self.y_start)))
-                else:
-                    tag = tileDict.tile_string(floormap.track_map[x][y].shaded_render_tag)
-
-                    self.win.blit(tag, (self.textSize * (x - self.x_start), self.textSize * (y - self.y_start)))
+                self.draw_single_tile(x, y, floormap, tileDict)
 
         for key in item_ID.subjects:
             item = item_ID.get_subject(key)
@@ -885,10 +874,22 @@ class Display:
 
         self.uiManager.draw_ui(self.win)
         return self.buttons
+    
+    def draw_single_tile(self, x, y, floormap, tileDict):
+        if (x < 0 or x >= floormap.width or y < 0 or y >= floormap.height):
+            pass
+        elif floormap.track_map[x][y].seen == False:
+            pass
+        elif floormap.track_map[x][y].visible == True:
+            tag = tileDict.tile_string(floormap.get_tag(x, y))
+            self.win.blit(tag, (self.textSize * (x - self.x_start), self.textSize * (y - self.y_start)))
+        else:
+            tag = tileDict.tile_string(floormap.track_map[x][y].shaded_render_tag)
+            self.win.blit(tag, (self.textSize * (x - self.x_start), self.textSize * (y - self.y_start)))
 
-    def update_examine(self, target, tileDict, messages):
+    def update_examine(self, target, loop):
         x, y = target
-        tag = tileDict.tile_string(901)
+        tag = loop.tileDict.tile_string(901)
         self.win.blit(tag, (self.textSize * (x - self.x_start), self.textSize * (y - self.y_start)))
 
     def update_ui(self):

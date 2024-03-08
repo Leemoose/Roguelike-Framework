@@ -1,17 +1,20 @@
 
 class Target:
     def __init__(self):
-        self.target_list= ()
+        self.target_current = None
+        self.target_previous = None
         self.index_to_cast = None
         self.skill_to_cast = None
         self.caster = None
 
     def start_target(self, starting_target):
-        self.target_list = (starting_target)
+        self.target_current = starting_target
+        self.target_previous = None
 
     def adjust(self, xdelta, ydelta):
-        x, y = self.target_list
-        self.target_list = (x+xdelta, y + ydelta)
+        x, y = self.target_current
+        self.target_current = (x+xdelta, y + ydelta)
+        self.target_previous = (x, y)
 
     def store_skill(self, index_to_cast, skill_to_cast, caster):
         self.index_to_cast = index_to_cast
@@ -24,7 +27,7 @@ class Target:
         self.caster = None
 
     def cast_on_target(self, loop):
-        x, y = self.target_list
+        x, y = self.target_current
         monster_map = loop.generator.monster_map
         monster_dict = loop.generator.monster_dict
         if not monster_map.get_passable(x,y):
@@ -41,7 +44,7 @@ class Target:
 
 
     def explain_target(self, loop):
-        x, y = self.target_list
+        x, y = self.target_current
         monster_map = loop.generator.monster_map
         monster_dict = loop.generator.monster_dict
         item_dict = loop.generator.item_dict

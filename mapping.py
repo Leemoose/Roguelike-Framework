@@ -357,9 +357,14 @@ class DungeonGenerator():
         startx = random.randint(0, self.width-1)
         starty = random.randint(0,self.height-1)
 
-        while (self.tile_map.get_passable(startx, starty)== False):
+        check_on_stairs = self.on_stairs(startx, starty, self.tile_map.stairs)
+        
+        while ((self.tile_map.get_passable(startx, starty) == False) or 
+               (self.monster_map.get_passable(startx, starty) == False) or
+               check_on_stairs):
             startx = random.randint(0, self.width-1)
             starty = random.randint(0,self.height-1)
+            check_on_stairs = self.on_stairs(startx, starty, self.tile_map.stairs)
         
         creature.x = startx
         creature.y = starty

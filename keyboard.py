@@ -1,5 +1,6 @@
 import pygame
 from loops import LoopType
+import skills as S
 
 class Keyboard():
     """
@@ -91,7 +92,7 @@ class Keyboard():
                     break
         elif key == "i":
             loop.change_loop(LoopType.inventory)
-        elif key == "e":
+        elif key == "e" or key == "c":
             loop.change_loop(LoopType.equipment)
         elif key == "q":
             loop.limit_inventory = "Potiorb"
@@ -112,12 +113,16 @@ class Keyboard():
             loop.change_loop(LoopType.examine)
             loop.targets.start_target(loop.player.get_location())
             loop.add_target(loop.player.get_location())
+            loop.update_screen = True
         elif key == "o":
             loop.change_loop(LoopType.autoexplore)
         elif key == "s":
             memory.save_objects()
         elif key == "t":
-            player.skills.teleport(loop.generator)
+            escape_test = S.Escape(player, 0, 0, False, 1.1, 1)
+            player.character.add_skill(escape_test)
+            player.character.cast_skill_by_name("Escape", player, loop)
+            player.character.remove_skill("Escape")
             loop.update_screen = True
         elif key == "esc":
             loop.change_loop(LoopType.paused)
@@ -261,28 +266,28 @@ class Keyboard():
         targets = loop.targets
         if key == "up":
             targets.adjust(0, -1)
-            loop.add_target(targets.target_list)
+            loop.add_target(targets.target_current)
         elif key == "left":
             targets.adjust(-1, 0)
-            loop.add_target(targets.target_list)
+            loop.add_target(targets.target_current)
         elif key == "down":
             targets.adjust(0, 1)
-            loop.add_target(targets.target_list)
+            loop.add_target(targets.target_current)
         elif key == "right":
             targets.adjust(1, 0)
-            loop.add_target(targets.target_list)
+            loop.add_target(targets.target_current)
         elif key == "y":
             targets.adjust(-1, -1)
-            loop.add_target(targets.target_list)
+            loop.add_target(targets.target_current)
         elif key == "u":
             targets.adjust(1, -1)
-            loop.add_target(targets.target_list)
+            loop.add_target(targets.target_current)
         elif key == "b":
             targets.adjust(-1, 1)
-            loop.add_target(targets.target_list)
+            loop.add_target(targets.target_current)
         elif key == "n":
             targets.adjust(1, 1)
-            loop.add_target(targets.target_list)
+            loop.add_target(targets.target_current)
         elif key == "esc":
             targets.void_skill()
             loop.void_target()
@@ -297,35 +302,35 @@ class Keyboard():
         targets = loop.targets
         if key == "up":
             targets.adjust(0, -1)
-            loop.add_target(targets.target_list)
+            loop.add_target(targets.target_current)
         elif key == "left":
             targets.adjust(-1, 0)
-            loop.add_target(targets.target_list)
+            loop.add_target(targets.target_current)
         elif key == "down":
             targets.adjust(0, 1)
-            loop.add_target(targets.target_list)
+            loop.add_target(targets.target_current)
         elif key == "right":
             targets.adjust(1, 0)
-            loop.add_target(targets.target_list)
+            loop.add_target(targets.target_current)
         elif key == "y":
             targets.adjust(-1, -1)
-            loop.add_target(targets.target_list)
+            loop.add_target(targets.target_current)
         elif key == "u":
             targets.adjust(1, -1)
-            loop.add_target(targets.target_list)
+            loop.add_target(targets.target_current)
         elif key == "b":
             targets.adjust(-1, 1)
-            loop.add_target(targets.target_list)
+            loop.add_target(targets.target_current)
         elif key == "n":
             targets.adjust(1, 1)
-            loop.add_target(targets.target_list)
+            loop.add_target(targets.target_current)
         elif key == "esc":
             targets.void_skill()
             loop.void_target()
             loop.change_loop(LoopType.action)
         elif key == "return":
             if targets.explain_target(loop):
-                x, y = targets.target_list
+                x, y = targets.target_current
                 if loop.generator.monster_map.track_map[x][y] != -1:
                     loop.screen_focus = loop.generator.monster_dict.get_subject(loop.generator.monster_map.track_map[x][y])
                     loop.change_loop(LoopType.specific_examine)

@@ -268,6 +268,13 @@ class Character():
         skill = self.skills[skill_num]
         self.energy -= skill.action_cost
         return skill.try_to_activate(target, loop.generator)
+    
+    def cast_skill_by_name(self, skill_name, target, loop):
+        for skill in self.skills:
+            if skill.name == skill_name:
+                self.energy -= skill.action_cost
+                return skill.try_to_activate(target, loop.generator)
+        return False
 
     def tick_regen(self):
         self.health_partial += self.health_regen

@@ -90,10 +90,25 @@ class Monster_AI():
     def rank_equip_item(self, loop): #Needs to be fixed
         monster = self.parent
         if len(monster.character.inventory) != 0:
+            utility = -1
             stuff = monster.character.inventory
             for i, item in enumerate(stuff):
-                if item.equipable and monster.character.main_weapon == None:
-                    return 80
+                if item.equipable:
+                    if item.equipment_type == "Weapon" and monster.character.main_weapon == None:
+                        utility = 80
+                        return utility
+                    elif item.equipment_type == "Shield" and monster.character.main_shield == None:
+                        return -1
+                    elif item.equipment_type == "Body Armor" and monster.character.main_armor == None:
+                        return -1
+                    elif item.equipment_type == "Helmet" and monster.character.helmet == None:
+                        return -1
+                    elif item.equipment_type == "Boots" and monster.character.boots == None:
+                        return -1
+                    elif item.equipment_type == "Gloves" and monster.character.gloves == None:
+                        return -1
+                    elif item.equipment_type == "Ring" and (monster.character.ring_1 == None or monster.character.ring_2 == None):
+                        return -1
         return -1
 
     def rank_use_consumeable(self, loop):
@@ -160,6 +175,7 @@ class Monster_AI():
             for i, item in enumerate(stuff):
                 if monster.character.main_weapon == None and item.equipable:
                     monster.character.equip(item)
+                    return
 
     def do_use_consumeable(self, loop):
         # print("Using consumeable")
