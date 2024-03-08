@@ -191,6 +191,10 @@ class MonsterSpawner():
         self.normalMonsters = [i for i in self.MonsterSpawns if i.monster.orb == False]
         self.orbMonsters = [i for i in self.MonsterSpawns if i.monster.orb == True]
 
+        self.forceSpawn = None
+        # self.forceSpawn = ("Gorblin", 5) # used for testing specific monsters on floor 1, separate from rest of generator
+
+
     def countSpawn(self, depth):
         return random.randint(int(2 + 0.5 * (depth)), int(4 + 1.0 * (depth)))
     
@@ -203,13 +207,19 @@ class MonsterSpawner():
             return random.randint(6, 9)
     
     def spawnMonsters(self, depth):
-        if depth > 10:
-            depth = 10
+        if depth > 9:
+            depth = 9
         monsters = []
         normalAtDepth = [i for i in self.normalMonsters if i.AllowedAtDepth(depth)]
         orbAtDepth = [i for i in self.orbMonsters if i.AllowedAtDepth(depth)]
         if orbAtDepth == []:
             orbAtDepth = normalAtDepth
+
+        if self.forceSpawn:
+            for _ in range(self.forceSpawn[1]):
+                monster_spawn = [i for i in self.MonsterSpawns if i.monster.name == self.forceSpawn[0]][0]
+                monster = monster_spawn.GetLeveledCopy(self.random_level(depth))
+                monsters.append(monster)
         
         for i in range(self.countSpawn(depth)):
             rarity = random.random()

@@ -111,7 +111,9 @@ class Display:
         map_offset_from_left = action_screen_width
         map_offset_from_top = stats_height
         map_width = self.screen_width - action_screen_width
+        map_message_width = map_width // 4
         map_height = self.screen_height // 4
+        map_message_height = map_height // 3
         num_map_tiles_wide = map_width // map_tile_size
         num_map_tiles_height = map_height // map_tile_size
         r_map_x = num_map_tiles_wide // 2
@@ -208,11 +210,17 @@ class Display:
                                      map_offset_from_top + (num_map_tiles_height - num_tiles_height)* map_tile_size //2,
                                      num_tiles_wide * map_tile_size, num_tiles_height* map_tile_size), 1)
 
+        pygame_gui.elements.UILabel(relative_rect=pygame.Rect((map_offset_from_left - map_message_width // 6, map_offset_from_top - map_message_height // 14 * 5),
+                                                              (map_message_width, map_message_height)),
+                                    text="Depth " + str(loop.generator.depth),
+                                    manager=self.uiManager)
+
         #Writing messages
         text_box = pygame_gui.elements.UITextBox(
             relative_rect=pygame.Rect((message_offset_from_left, message_offset_from_top), (message_width, message_height)),
             html_text = "".join([message + "<br>" for message in (messages)]),
             manager=self.uiManager )
+        
 
         stat_box = pygame_gui.elements.UITextBox(
             relative_rect=pygame.Rect((stats_offset_from_left, stats_offset_from_top), (stats_width, stats_height)),
@@ -237,7 +245,7 @@ class Display:
                                       views_button_offset_from_left+ views_button_offset_from_each_other_width * button_num_width + views_button_width * button_num_width,
                                       views_button_offset_from_top+ views_button_offset_from_each_other_height * button_num_height + views_button_height * button_num_height),
                                       (views_button_width, views_button_height)),
-            text="Inventory",
+            text="(I)nventory",
             manager=self.uiManager)
         button.action = "i"
         self.buttons.add(button, "i")
@@ -248,7 +256,7 @@ class Display:
                                       views_button_offset_from_left+ views_button_offset_from_each_other_width * button_num_width + views_button_width * button_num_width,
                                       views_button_offset_from_top+ views_button_offset_from_each_other_height * button_num_height + views_button_height * button_num_height),
                                       (views_button_width, views_button_height)),
-            text="Equip",
+            text="(E)quip",
             manager=self.uiManager)
         button.action = "e"
         self.buttons.add(button, "e")
@@ -271,7 +279,7 @@ class Display:
                                       views_button_offset_from_left+ views_button_offset_from_each_other_width * button_num_width + views_button_width * button_num_width,
                                       views_button_offset_from_top+ views_button_offset_from_each_other_height * button_num_height + views_button_height * button_num_height),
                                       (views_button_width, views_button_height)),
-            text="Quaff",
+            text="(Q)uaff",
             manager=self.uiManager)
         button.action = "q"
         self.buttons.add(button, "q")
@@ -282,7 +290,7 @@ class Display:
                                       views_button_offset_from_left+ views_button_offset_from_each_other_width * button_num_width + views_button_width * button_num_width,
                                       views_button_offset_from_top+ views_button_offset_from_each_other_height * button_num_height + views_button_height * button_num_height),
                                       (views_button_width, views_button_height)),
-            text="Read",
+            text="(R)ead",
             manager=self.uiManager)
         button.action = "r"
         self.buttons.add(button, "r")
@@ -293,10 +301,10 @@ class Display:
                                       views_button_offset_from_left+ views_button_offset_from_each_other_width * button_num_width + views_button_width * button_num_width,
                                       views_button_offset_from_top+ views_button_offset_from_each_other_height * button_num_height + views_button_height * button_num_height),
                                       (views_button_width, views_button_height)),
-            text="Something",
+            text="Aut(o)explore",
             manager=self.uiManager)
-        button.action = "."
-        self.buttons.add(button, ".")
+        button.action = "o"
+        self.buttons.add(button, "o")
 
 
 

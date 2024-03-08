@@ -207,6 +207,7 @@ class DungeonGenerator():
     #tag ranging from 0 to 99
     def __init__(self, depth):
         self.mapData = MapOptions[depth]
+        self.depth = depth
         self.width = self.mapData.width
         self.height = self.mapData.height
         self.monster_map = TrackingMap(self.width, self.height) #Should I include items as well?
@@ -391,11 +392,6 @@ class DungeonGenerator():
             if stair.x == x and stair.y == y:
                 return True
         return False
-            
-    def near_stairs(self, x, y, stairs):
-        if abs(stairs[1].x - x) < 2 and abs(stairs[1].y - y) < 2:
-            return True
-        return False
 
     def place_item(self, item, force_near_stairs=False):
         startx = random.randint(0, self.width-1)
@@ -403,18 +399,21 @@ class DungeonGenerator():
 
         # make sure the item is placed on a passable tile that does not already have an item and is not stairs
         check_on_stairs = self.on_stairs(startx, starty, self.tile_map.stairs)
-        near_stairs = self.near_stairs(startx, starty, self.tile_map.stairs)
-        
-        while ((self.tile_map.get_passable(startx, starty) == False) or 
-               (self.item_map.get_passable(startx, starty) == False) or
-               check_on_stairs or
-               (force_near_stairs and near_stairs)):
-            startx = random.randint(0, self.width-1)
-            starty = random.randint(0,self.height-1)
-            check_on_stairs = self.on_stairs(startx, starty, self.tile_map.stairs)
-            near_stairs = self.near_stairs(startx, starty, self.tile_map.stairs)
+        if force_near_stairs:
+            directions = [(0, 1), (1, 0), (-1, 0), (0, -1), (1, 1), (-1, 1), (1, -1), (-1, -1)]
+            while ((self.tile_map.get_passable(startx, starty) == False) or
+                   (self.item_map.get_passable(startx, starty) == False)):
+                random_direction = random.choice(directions)
+                startx = self.tile_map.stairs[1].x + random_direction[0]
+                starty = self.tile_map.stairs[1].y + random_direction[1]
+        else:
+            while ((self.tile_map.get_passable(startx, starty) == False) or 
+                (self.item_map.get_passable(startx, starty) == False) or
+                check_on_stairs):
+                startx = random.randint(0, self.width-1)
+                starty = random.randint(0,self.height-1)
+                check_on_stairs = self.on_stairs(startx, starty, self.tile_map.stairs)
             
-
         item.x = startx
         item.y = starty
 
