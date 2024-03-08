@@ -138,7 +138,7 @@ class Loops():
         self.currentLoop = newLoop
         self.update_screen = True
         if newLoop == LoopType.action:
-            self.display.update_display(self, create = True)
+            self.display.create_display(self)
         elif newLoop == LoopType.autoexplore:
             pass
         elif newLoop == LoopType.inventory or newLoop == LoopType.enchant:
