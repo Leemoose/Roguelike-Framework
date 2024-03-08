@@ -102,6 +102,12 @@ class Keyboard():
             loop.change_loop(LoopType.inventory)
         elif key == "p":
             loop.display.uiManager.set_visual_debug_mode(True)
+        elif key == "s":
+            # find stairs
+            if loop.generator.tile_map.track_map[loop.generator.tile_map.stairs[0].x][loop.generator.tile_map.stairs[0].y].seen:
+                loop.change_loop(LoopType.search_stairs)
+            else:
+                loop.add_message("You haven't found the way down yet")
         elif key == ">":
             loop.down_floor()
         elif key == "<":
@@ -348,6 +354,12 @@ class Keyboard():
     def key_autoexplore(self, key, loop):
         if key == "o":
             loop.player.autoexplore(loop)
+        else:
+            loop.change_loop(LoopType.action)
+
+    def key_search_stairs(self, key, loop):
+        if key == "s":
+            loop.player.find_stairs(loop)
         else:
             loop.change_loop(LoopType.action)
 

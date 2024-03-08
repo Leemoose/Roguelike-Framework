@@ -33,6 +33,7 @@ class LoopType(Enum):
     targeting = 11
     specific_examine = 12
     enchant = 13
+    search_stairs = 14
 
 class ColorDict():
     """
@@ -178,6 +179,10 @@ class Loops():
                 self.player.autoexplore(self)
                 self.monster_loop(0)
         
+        if self.currentLoop == LoopType.search_stairs:
+            self.player.find_stairs(self)
+            self.monster_loop(0)
+        
         if self.currentLoop == LoopType.rest:
             # monster_present = False
             # for monster_key in self.monster_dict.subjects:
@@ -227,6 +232,8 @@ class Loops():
                     keyboard.key_targeting_screen(key, self)
                 elif self.currentLoop == LoopType.autoexplore:
                     keyboard.key_autoexplore(key, self)
+                elif self.currentLoop == LoopType.search_stairs:
+                    keyboard.key_search_stairs(key, self)
                 elif self.currentLoop == LoopType.paused:
                     if (keyboard.key_paused(key, self, display) == False):
                         return False
@@ -316,7 +323,7 @@ class Loops():
                     monster.brain.rank_actions(monster, self.monster_map, self.generator.tile_map, self.generator.flood_map, self.player, self.generator, self.item_dict, self)
 
     def render_screen(self, keyboard, display, colors, tileDict):
-        if self.currentLoop == LoopType.action or self.currentLoop == LoopType.autoexplore:
+        if self.currentLoop == LoopType.action or self.currentLoop == LoopType.autoexplore or self.currentLoop == LoopType.search_stairs:
             self.clean_up()
             shadowcasting.compute_fov(self.player.get_location(), self.generator.tile_map.track_map)
             display.update_action_display(self)

@@ -456,6 +456,29 @@ class Player(O.Objects):
 
         self.character.energy = 0
 
+    def find_stairs(self, loop):
+        monster_dict = loop.monster_dict
+        tile_map = loop.generator.tile_map
+        for monster_key in monster_dict.subjects:
+            if monster_dict.get_subject(monster_key).brain.is_awake:
+                loop.add_message("You cannot autoexplore while enemies are tracking you.")
+                loop.change_loop(L.LoopType.action)
+                return
+            
+        start = (self.x, self.y)
+        end = loop.generator.tile_map.stairs[0].get_location()
+        if (start == end):
+            loop.change_loop(L.LoopType.action)
+            return
+        self.path = pathfinding.astar(tile_map.track_map, start, end)
+        
+        x, y = self.path.pop(0)
+        x, y = self.path.pop(0)
+        self.move(x-self.x, y-self.y, loop)
+        loop.update_screen = True
+
+        self.character.energy = 0
+
 
     def check_for_levelup(self):
         while self.level != self.max_level and self.experience >= self.experience_to_next_level:

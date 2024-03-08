@@ -393,7 +393,7 @@ class DungeonGenerator():
         return False
             
     def near_stairs(self, x, y, stairs):
-        if abs(stairs[0].x - x) < 2 and abs(stairs[0].y - y) < 2:
+        if abs(stairs[1].x - x) < 2 and abs(stairs[1].y - y) < 2:
             return True
         return False
 
