@@ -218,9 +218,9 @@ class Display:
 
             button_num_height = 0
             button_num_width = 0
-            self.draw_empty_box(views_offset_from_left,
-                                views_offset_from_top,
-                                views_width, views_height)
+         #   self.draw_empty_box(views_offset_from_left,
+         #                       views_offset_from_top,
+          #                      views_width, views_height)
             button = pygame_gui.elements.UIButton(
                 relative_rect=pygame.Rect((
                                           views_offset_from_left + views_button_offset_from_each_other_width+ (views_button_offset_from_each_other_width + views_button_width) * button_num_width,
@@ -816,6 +816,7 @@ class Display:
             relative_rect=pygame.Rect((margin_from_left, margin_from_top), (width, height)),
             manager=self.uiManager
         )
+        box.disable()
 
     def update_main(self):
     #Main Screen
