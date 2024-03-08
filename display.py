@@ -76,6 +76,8 @@ class Display:
         self.uiManager.draw_ui(self.win)
 
     def update_display(self, loop):
+        self.win.fill((0, 0, 0))
+
         floormap = loop.generator.tile_map
         tileDict = loop.tileDict
         monsterID = loop.monster_dict
@@ -357,6 +359,9 @@ class Display:
                 self.draw_on_button(button, img, chr(ord("1") + i), (skill_button_width, skill_button_height), shrink=True,
                                     offset_factor=10, text_offset=(12, (0.6)))
                 self.buttons.add(button, chr(ord("1") + i))
+
+        healthBar = ui.HealthBar(pygame.Rect((self.screen_width - 120, 0), (120, 40)), self.uiManager, player)
+        manaBar = ui.ManaBar(pygame.Rect((self.screen_width - 120, 50), (120, 40)), self.uiManager, player)
         self.uiManager.draw_ui(self.win)
 
     def get_status_text(self, entity):
@@ -945,11 +950,6 @@ class Display:
         deltaTime = self.clock.tick() / 1000
         self.uiManager.update(deltaTime)
 
-    def create_game_ui(self, player):
-        self.uiManager.clear_and_reset()
-
-        healthBar = ui.HealthBar(pygame.Rect((20,400), (120,40)), self.uiManager, player)
-        manaBar = ui.ManaBar(pygame.Rect((20,450), (120,40)), self.uiManager, player)
 
 def create_main_screen(scr, width, height):
     button_width = width // 6

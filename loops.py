@@ -137,7 +137,6 @@ class Loops():
     def change_loop(self, newLoop):
         self.currentLoop = newLoop
         self.update_screen = True
-        
         if newLoop == LoopType.action:
             self.display.create_action_display(self)
         elif newLoop == LoopType.autoexplore:
@@ -160,7 +159,6 @@ class Loops():
             self.display.create_pause_screen()
         elif newLoop == LoopType.specific_examine:
             pass
-
     def action_loop(self, keyboard, display):
         """
         This is responsible for undergoing any inputs when screen is clicked
@@ -437,8 +435,6 @@ class Loops():
         if self.monster_map.get_passable(self.target_to_display[0], self.target_to_display[1]): # don't void if its a monster, cuz its a good QOL to keep monster health on screen
             self.target_to_display = None
 
-    def init_new_game(self):
-        self.display.create_game_ui(self.player)
 
     def load_game(self):
         self.change_loop(LoopType.action)
