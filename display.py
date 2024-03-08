@@ -388,7 +388,13 @@ class Display:
                     monster_tile = tileDict.tile_string(monster.render_tag)
                     self.win.blit(monster_tile, (self.textSize*(monster.x - self.x_start), self.textSize*(monster.y - self.y_start)))
 
-        self.win.blit(tileDict.tile_string(200), (self.r_x * self.textSize, self.r_y * self.textSize))
+        #Draw base character depending on armor state
+        if (player.character.main_armor == None):
+            self.win.blit(tileDict.tile_string(200), (self.r_x * self.textSize, self.r_y * self.textSize)) # DONG MODE ENGAGED
+        else:
+            self.win.blit(tileDict.tile_string(-200), (self.r_x * self.textSize, self.r_y * self.textSize))
+
+        #Draw items on top
         if player.character.boots != None:
             self.win.blit(tileDict.tile_string(201), (self.r_x * self.textSize, self.r_y * self.textSize))
         if player.character.gloves != None:
