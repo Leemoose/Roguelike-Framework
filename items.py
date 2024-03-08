@@ -971,6 +971,17 @@ class SleepScroll(Scroll):
     def activate_once(self, entity, loop):
         self.skill.activate(loop, bypass = True)
 
+class ExperienceScroll(Scroll):
+    def __init__(self, render_tag):
+        super().__init__(render_tag, "Experience Scroll")
+        self.description = "Orb you glad you picked this up."
+        self.rarity = "Common"
+        self.experience = 50
+
+    def activate_once(self, entity, loop):
+        entity.parent.experience += 50
+        entity.parent.check_for_levelup()
+
 class HealthPotion(Potion):
     def __init__(self, render_tag):
         super().__init__(render_tag, "Health Potiorb")

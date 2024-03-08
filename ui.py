@@ -73,15 +73,12 @@ class StatBox(pygame_gui.elements.UITextBox):
 
     def update(self, time_delta: float):
         self.set_text(html_text="Player:<br>" +
-                        "Strength: " + str(self.player.character.strength) + "<br>"
-                        "Dexterity: " + str(self.player.character.dexterity) + "<br>"
-                        "Endurance: " + str(self.player.character.endurance) + "<br>"
-                        "Intelligence: " + str(self.player.character.intelligence) + "<br>"
-                        "<br>"
                         "Health: " + str(self.player.character.health) + " / " + str(self.player.character.max_health) + "<br>"
                         "Mana: " + str(self.player.character.mana) + " / " + str(self.player.character.max_mana) + "<br>"
-                        "Status: " + self.get_status_text(self.player) + "<br>"
-                        "Level: " + str(self.player.level))
+                        "Status: " + self.get_status_text(self.player) + "<br><br>"+
+                        "Level: " + str(self.player.level)+ "<br>"
+                        "Experience: " + str(self.player.experience) + " / " + str(self.player.experience_to_next_level) + "<br>"
+                        "<br>")
 
         return super().update(time_delta)
     
