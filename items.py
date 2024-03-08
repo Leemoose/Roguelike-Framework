@@ -19,6 +19,7 @@ class Equipment(O.Item):
         self.equipped = False
         self.wearer = None
         self.rarity = "Common"
+        self.required_strength = 0
 
     def activate(self, entity):
         self.wearer = entity
@@ -44,12 +45,13 @@ class Weapon(Equipment):
         self.on_hit = None
 
     def equip(self, entity):
-        if entity.main_weapon != None:
-            entity.unequip(entity.main_weapon)
-        if self.attached_skill != None:
-            entity.add_skill(self.attached_skill(entity.parent))
-        entity.main_weapon = self
-        self.activate(entity)
+        if entity.strength >= self.required_strength:
+            if entity.main_weapon != None:
+                entity.unequip(entity.main_weapon)
+            if self.attached_skill != None:
+                entity.add_skill(self.attached_skill(entity.parent))
+            entity.main_weapon = self
+            self.activate(entity)
 
     def unequip(self, entity):
         entity.main_weapon = None
@@ -228,10 +230,11 @@ class Shield(Armor):
         self.description = "A shield that you can use to block things."
 
     def equip(self, entity):
-        if entity.main_shield != None:
-            entity.unequip(entity.main_shield)
-        entity.main_shield = self
-        self.activate(entity)
+        if entity.strength >= self.required_strength:
+            if entity.main_shield != None:
+                entity.unequip(entity.main_shield)
+            entity.main_shield = self
+            self.activate(entity)
 
     def unequip(self, entity):
         entity.main_shield = None
@@ -494,6 +497,7 @@ class Chestarmor(BodyArmor):
         super().__init__(render_tag, "Chest Plate")
         self.description = "A reliable piece of armor that covers your chest."
         self.armor = 8
+        self.required_strength = 3
 
     def level_up(self):
         self.level += 1
@@ -535,6 +539,7 @@ class GildedArmor(BodyArmor):
         super().__init__(render_tag, "Gilded Armor")
         self.description = "A piece of golden armor studded with gems. Just wearing it makes you feel like you can ignore trivial things like status effects."
         self.armor = 3
+        self.required_strength = 1
         
         self.skill_cooldown = 15
         self.skill_cost = 20
@@ -580,6 +585,7 @@ class WarlordArmor(BodyArmor):
         super().__init__(render_tag, "Warlord Armor")
         self.description = "Bloodstained armor that belonged to a famous warrior. Wearing it makes you stronger and your enemies more terrified."
         self.armor = 3
+        self.required_strength = 1
         self.strength_buff = 2
 
         self.wearer = None # items with stat buffs need to keep track of owner for level ups

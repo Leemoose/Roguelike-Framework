@@ -240,7 +240,7 @@ class Loops():
 
                 self.update_screen = True
 
-            elif event.type == pygame_gui.UI_BUTTON_PRESSED:
+            elif event.type == pygame_gui.UI_BUTTON_PRESSED and hasattr(event.ui_element, "action"):
                 if (self.currentLoop == LoopType.main):
                     return keyboard.key_main_screen(event.ui_element.action, self)
                 elif (self.currentLoop == LoopType.inventory):
@@ -430,7 +430,7 @@ class Loops():
         """
 
     def add_message(self, message):
-        if len(self.messages) >= 4:
+        if len(self.messages) >= 5:
             self.messages.pop(0)
         self.messages.append(message)
 
@@ -456,7 +456,6 @@ class Loops():
 
 
     def load_game(self):
-        self.change_loop(LoopType.action)
         self.update_screen = False
 
 #        self.items = False
@@ -470,6 +469,7 @@ class Loops():
         self.monster_dict = self.generator.monster_dict
         self.player = self.memory.player
         self.player.character.energy = 0
+        self.change_loop(LoopType.action)
 
     def clear_data(self):
         self.change_loop(LoopType.main)

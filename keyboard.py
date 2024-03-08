@@ -258,9 +258,12 @@ class Keyboard():
             loop.change_loop(LoopType.action)
         elif key == "m":
             loop.change_loop(LoopType.main)
+            loop.clear_data()
+            loop.init_game(display)
+        elif key == 's':
+            loop.memory.save_objects()
         elif key == "q":
             return False
-
         return True
 
     def key_targeting_screen(self, key, loop):
