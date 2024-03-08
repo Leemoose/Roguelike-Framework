@@ -138,9 +138,8 @@ class Loops():
     def change_loop(self, newLoop):
         self.currentLoop = newLoop
         self.update_screen = True
-        
         if newLoop == LoopType.action:
-            self.display.create_action_display(self)
+            self.display.update_display(self, create = True)
         elif newLoop == LoopType.autoexplore:
             pass
         elif newLoop == LoopType.inventory or newLoop == LoopType.enchant:
@@ -156,12 +155,11 @@ class Loops():
         elif newLoop == LoopType.items:
             self.display.create_entity()
         elif newLoop == LoopType.examine:
-            pass
+            self.display.update_display(self, create = True)
         elif newLoop == LoopType.paused:
             self.display.create_pause_screen()
         elif newLoop == LoopType.specific_examine:
             pass
-
     def action_loop(self, keyboard, display):
         """
         This is responsible for undergoing any inputs when screen is clicked
@@ -326,7 +324,7 @@ class Loops():
         if self.currentLoop == LoopType.action or self.currentLoop == LoopType.autoexplore or self.currentLoop == LoopType.search_stairs:
             self.clean_up()
             shadowcasting.compute_fov(self.player.get_location(), self.generator.tile_map.track_map)
-            display.update_action_display(self)
+            display.update_display(self)
         elif self.currentLoop == LoopType.inventory or self.currentLoop == LoopType.enchant:
             display.update_inventory(self.player, self.limit_inventory)
         elif self.currentLoop == LoopType.equipment:
@@ -445,6 +443,7 @@ class Loops():
         if self.monster_map.get_passable(self.target_to_display[0], self.target_to_display[1]): # don't void if its a monster, cuz its a good QOL to keep monster health on screen
             self.target_to_display = None
 
+
     def start_targetting(self):
         self.change_loop(LoopType.targeting)
         closest_monster = self.player.character.get_closest_monster(self.player, self.generator.monster_dict, self.generator.tile_map)
@@ -453,6 +452,7 @@ class Loops():
 
     def init_new_game(self):
         self.display.create_game_ui(self.player)
+
 
     def load_game(self):
         self.change_loop(LoopType.action)
