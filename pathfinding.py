@@ -18,7 +18,7 @@ class Node():
         return str(self.position)
 
 
-def astar(maze, start, end):
+def astar(maze, start, end, monster_map, monster_blocks = False):
     """Returns a list of tuples as a path from the given start to the given end in the given maze"""
     # reverse is a flag that determines if we're moving towards end or away from it
 
@@ -71,6 +71,8 @@ def astar(maze, start, end):
 
             # Make sure walkable terrain
             if not maze[node_position[0]][node_position[1]].passable:
+                continue
+            if monster_blocks == True and (not monster_map.get_passable(node_position[0],node_position[1])): # and not start == (node_position[0],node_position[1])):
                 continue
 
             # Create new node
