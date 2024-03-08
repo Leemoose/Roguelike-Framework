@@ -143,7 +143,7 @@ class Character():
         return False
 
     def equip(self, item):
-        if item.equipable:
+        if item.equipable and self.strength >= item.required_strength:
             item.equip(self)
             item.equipped = True
             item.dropable = False

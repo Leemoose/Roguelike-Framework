@@ -223,7 +223,6 @@ class Loops():
                     keyboard.key_class_screen(key, self)
                 elif self.currentLoop == LoopType.items:
                     keyboard.key_item_screen(key, self, self.item_dict, self.player, self.screen_focus, self.generator.item_map)
-                    self.change_loop(self.currentLoop)
                 elif self.currentLoop == LoopType.examine:
                     keyboard.key_examine_screen(key, self)
                 elif self.currentLoop == LoopType.targeting:

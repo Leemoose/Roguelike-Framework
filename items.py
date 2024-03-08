@@ -259,6 +259,7 @@ class Aegis(Shield):
         super().__init__(render_tag, "Aegis")
         self.armor = 5
         self.description = "A shield with the face of a horrifying monster on it. It can turn your enemies to stone"
+        self.required_strength = 2
 
         self.skill_cooldown = 10
         self.skill_cost = 20
@@ -306,6 +307,7 @@ class TowerShield(Shield):
         self.armor = 10
         self.description = "A massive shield that can block nearly anything but is unwieldy to use"
         self.dex_debuff = 5
+        self.required_strength = 3
 
 
     def activate(self, entity):
