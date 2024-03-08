@@ -59,7 +59,8 @@ ItemSpawns.append(ItemSpawnParams( I.TeleportScroll(450),      1,               
 ItemSpawns.append(ItemSpawnParams( I.MassTormentScroll(450),      1,               10,          1,              5))
 ItemSpawns.append(ItemSpawnParams( I.InvincibilityScroll(450),      1,               10,          1,              5))
 ItemSpawns.append(ItemSpawnParams( I.CallingScroll(450),      1,               10,          1,              5))
-ItemSpawns.append(ItemSpawnParams( I.SleepScroll(450),      1,               10,          5,              5))
+ItemSpawns.append(ItemSpawnParams( I.SleepScroll(450),      1,               10,          1,              5))
+ItemSpawns.append(ItemSpawnParams( I.ExperienceScroll(450),      1,               10,          5,              5))
 
 
 Floor_Distributions = [(0.9, 0.1, 0.0), # floor 1
@@ -82,7 +83,7 @@ class ItemSpawner():
 
         # useful for debugging specific items, separate from generator
         self.forceSpawn = None
-        self.forceSpawn = ("Sleeping Scroll", 3)
+        self.forceSpawn = ("Experience Scroll", 3)
         # self.forceSpawn = ("Flame Scrorb", 5)
 
     def countSpawn(self, depth):

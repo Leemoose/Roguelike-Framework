@@ -33,6 +33,7 @@ MapOptions[10] = MapData(50, 50, 12, 10, 1.0 )
 
 
 MaxTries = 100
+CirclesBeginOn = 7 #Circular walls on 7 and below
 
 class Room():
     def __init__(self, x : int, y : int, width : int, height: int):
@@ -74,6 +75,11 @@ class TileDict():
         tiles[-3] = pygame.transform.scale(image.load("assets/floor_dirty_shaded.png"), (32,32))
         tiles[4] = pygame.transform.scale(image.load("assets/floor_dirty1.png"), (32,32))
         tiles[-4] = pygame.transform.scale(image.load("assets/floor_dirty1_shaded.png"), (32,32))
+
+        tiles[11] = pygame.transform.scale(image.load("assets/tiles/wall_extra_rounded.png"), (32,32))
+        tiles[-11] = pygame.transform.scale(image.load("assets/tiles/wall_extra_rounded_shaded.png"), (32,32))
+        tiles[12] = pygame.transform.scale(image.load("assets/tiles/floor_rounded.png"), (32,32))
+        tiles[-12] = pygame.transform.scale(image.load("assets/tiles/floor_rounded_shaded.png"), (32,32))
 
         # basic assets
         tiles[90] = image.load("assets/tiles/stairs_up.png")
@@ -219,7 +225,7 @@ class DungeonGenerator():
         self.height = self.mapData.height
         self.monster_map = TrackingMap(self.width, self.height) #Should I include items as well?
         self.flood_map = FloodMap(self.width, self.height)
-        self.tile_map = TileMap(self.mapData)
+        self.tile_map = TileMap(self.mapData, depth)
         self.item_map = TrackingMap(self.width, self.height)
 
         self.monster_dict = L.ID() #Unique to this floor
@@ -504,7 +510,7 @@ class FloodMap(Maps):
 This map is responsible for carving all tiles out.
 """
 class TileMap(TrackingMap):
-    def __init__(self, mapData):
+    def __init__(self, mapData, depth):
         super().__init__(mapData.width, mapData.height)
         self.mapData = mapData
         self.track_map = []
@@ -525,7 +531,7 @@ class TileMap(TrackingMap):
         #Apply smoothing
         
         #self.cellular_caves()
-        self.render_to_map()
+        self.render_to_map(depth)
         self.place_stairs()
 
     def get_tag(self, x, y):
@@ -571,21 +577,22 @@ class TileMap(TrackingMap):
         return count
 
 
-    def render_to_map(self):
+    def render_to_map(self, depth):
         self.track_map = []
         for x in range(self.width):
             temp = []
             for y in range(self.height):
                 if self.track_map_render[x][y] == 1:
-                    if False:#(random.randint(0,10)==0):
-                        if (random.randint(0,1)==0):
-                            temp.append(O.Tile(x, y, 3, True))
-                        else:
-                            temp.append(O.Tile(x, y, 4, True))
+                    if (depth != 4 and depth != 9 and depth >= CirclesBeginOn):
+                        temp.append(O.Tile(x, y, 12, True))
                     else:
                         temp.append(O.Tile(x, y, 2, True))
                 else:
-                    temp.append(O.Tile(x, y, 1, False))
+                    if (depth != 4 and depth != 9 and depth >= CirclesBeginOn):
+                        temp.append(O.Tile(x, y, 11, False))
+                    else:
+                        temp.append(O.Tile(x, y, 1, False))
+                    
             self.track_map.append(temp)
 
 
