@@ -873,17 +873,28 @@ class Display:
     def update_pause_screen(self):
         self.uiManager.draw_ui(self.win)
 
+    def stat_text(self, entity, stat):
+        if entity.character.rounded():
+            return str(stat) + " (+" + str(int(stat * entity.character.round_bonus()) - stat) + ")"
+        else:
+            return str(stat)
+        
+    def round_text(self, entity):
+        if entity.character.rounded():
+            return "You feel the dungeon enhancing your well-rounded stats.<br><br>"
+        else:
+            return "<br>"
 
     def draw_character_stats(self, player, margin_from_left, margin_from_top, width, height):
         text_box = pygame_gui.elements.UITextBox(
             relative_rect=pygame.Rect((margin_from_left, margin_from_top), (width, height)),
             html_text = "Player<br><br>"
                         "Stats<br>"
-                        "Strength: " + str(player.character.strength) + "<br>"
-                        "Dexterity: " + str(player.character.dexterity) + "<br>"
-                        "Endurance: " + str(player.character.endurance) + "<br>"
-                        "Intelligence: " + str(player.character.intelligence) + "<br>"
-                        "<br>"
+                        "Strength: " + self.stat_text(player, player.character.strength) + "<br>"
+                        "Dexterity: " + self.stat_text(player, player.character.dexterity) + "<br>"
+                        "Endurance: " + self.stat_text(player, player.character.endurance) + "<br>"
+                        "Intelligence: " + self.stat_text(player, player.character.intelligence) + "<br>" + \
+                        self.round_text(player) + "<br>"
                         "Health: " + str(player.character.health) + " / " + str(player.character.max_health) + "<br>"
                         "Mana: " + str(player.character.mana) + " / " + str(player.character.max_mana) + "<br>"
                         "<br>"
@@ -1249,11 +1260,17 @@ class Display:
             manager=self.uiManager,
             object_id='#stat_label')
         
+        ui.RoundedText(
+            rect=pygame.Rect((stat_change_button_offset_from_left, stat_line_offset_from_top + 4 * (stat_line_height + stat_line_offset_from_each_other)), 
+                                      (stat_outline_width, stat_line_height)),
+            manager=self.uiManager,
+            player=player)
+        
         # confirmation_button
         confirmation_button_width = entity_message_width // 3
         confirmation_button_height = stat_change_button_height * 2
         confirmation_button_offset_from_left = stat_outline_width + stat_outline_offset_from_left - confirmation_button_width
-        confirmation_button_offset_from_top = stat_line_offset_from_top + 4 * (stat_line_height + stat_line_offset_from_each_other)
+        confirmation_button_offset_from_top = stat_line_offset_from_top + 4 * (stat_line_height + stat_line_offset_from_each_other) + stat_line_height + (stat_line_offset_from_each_other // 4 * 3)
 
         button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect((confirmation_button_offset_from_left, confirmation_button_offset_from_top),
