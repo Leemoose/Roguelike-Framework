@@ -66,6 +66,9 @@ class Display:
         self.buttons = Buttons()
         self.colorDict = None
 
+    def screen_to_tile(self, x, y):
+        print(x // self.textSize, y//self.textSize)
+        return (x // self.textSize, y//self.textSize)
     def update_sizes(self):
         self.screen_width, self.screen_height = self.win.get_size()
 
