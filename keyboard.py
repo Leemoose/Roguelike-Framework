@@ -144,10 +144,7 @@ class Keyboard():
                     else:
                         loop.add_message("You can't cast " + player.character.skills[skill_num].name + " right now.")
                 else:
-                    loop.change_loop(LoopType.targeting)
-                    closest_monster = player.character.get_closest_monster(player, monsterID, loop.generator.tile_map)
-                    loop.targets.start_target(closest_monster.get_location())
-                    loop.add_target(closest_monster.get_location())
+                    loop.start_targetting()
                     loop.targets.store_skill(skill_num, player.character.skills[skill_num], player.character)
 
     def key_inventory(self, loop, player, item_dict, key):
@@ -297,6 +294,7 @@ class Keyboard():
         elif key == "esc":
             targets.void_skill()
             loop.void_target()
+            loop.player.character.ready_scroll = None
             loop.change_loop(LoopType.action)
         elif key == "return":
             targets.cast_on_target(loop)

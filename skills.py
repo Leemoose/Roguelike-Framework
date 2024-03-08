@@ -315,10 +315,11 @@ class Escape(Skill):
         return self.name + "(" + str(self.cost) + " cost, " + str(self.cooldown) + " turn cooldown" + ", castable below " + str(self.threshold * 100) + "% health)"
     
 class Heal(Skill):
-    def __init__(self, parent, cooldown, cost, heal_amount, action_cost):
+    def __init__(self, parent, cooldown, cost, heal_amount, activation_threshold, action_cost):
         super().__init__("Heal", parent, cooldown, cost, -1, action_cost)
         self.heal_amount = heal_amount
         self.render_tag = 912
+        self.threshold = activation_threshold
 
     def activate(self, target, generator):
         self.parent.character.mana -= self.cost
@@ -326,10 +327,10 @@ class Heal(Skill):
         return True
 
     def castable(self, target):
-        return self.basic_requirements() and (self.parent.character.health < self.parent.character.max_health)
+        return self.basic_requirements() and (self.parent.character.health < self.parent.character.max_health * self.threshold)
     
     def description(self):
-        return self.name + "(" + str(self.cost) + " cost, " + str(self.cooldown) + " turn cooldown" + ", " + str(self.heal_amount) + " health restored)"
+        return self.name + "(" + str(self.cost) + " cost, " + str(self.cooldown) + " turn cooldown" + ", " + str(self.heal_amount) + " health restored when below " + str(int(self.threshold * 100)) + "% health"
     
 class Torment(Skill):
     def __init__(self, parent, cooldown, cost, slow_duration, damage_percent, slow_amount, range, action_cost):

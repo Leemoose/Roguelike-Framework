@@ -6,6 +6,7 @@ class Target:
         self.index_to_cast = None
         self.skill_to_cast = None
         self.caster = None
+        self.temp_cast = None
 
     def start_target(self, starting_target):
         self.target_current = starting_target
@@ -16,15 +17,19 @@ class Target:
         self.target_current = (x+xdelta, y + ydelta)
         self.target_previous = (x, y)
 
-    def store_skill(self, index_to_cast, skill_to_cast, caster):
+    def store_skill(self, index_to_cast, skill_to_cast, caster, temp_cast = False):
         self.index_to_cast = index_to_cast
         self.skill_to_cast = skill_to_cast
         self.caster = caster
+        self.temp_cast = temp_cast
 
     def void_skill(self):
+        if self.temp_cast:
+            self.caster.character.ready_scroll = None
         self.index_to_cast = None
         self.skill_to_cast = None
         self.caster = None
+        self.temp_cast = False
 
     def cast_on_target(self, loop):
         x, y = self.target_current
@@ -33,9 +38,15 @@ class Target:
         if not monster_map.get_passable(x,y):
             monster = monster_dict.get_subject(monster_map.locate(x,y))
             if self.skill_to_cast.castable(monster):
-                self.caster.cast_skill(self.index_to_cast, monster, loop)
-                loop.add_message("You cast " + str(self.skill_to_cast.name) + " on " + monster.name)
-                self.void_skill()
+                if self.temp_cast:
+                    self.skill_to_cast.try_to_activate(monster, loop.generator)
+                    self.caster.character.ready_scroll.consume_scroll(self.caster.character)
+                    loop.add_message("You cast " + str(self.skill_to_cast.name) + " on " + monster.name)
+                    self.void_skill()
+                else:
+                    self.caster.cast_skill(self.index_to_cast, monster, loop)
+                    loop.add_message("You cast " + str(self.skill_to_cast.name) + " on " + monster.name)
+                    self.void_skill()
             else:
                 loop.add_message("You can't cast " + self.skill_to_cast.name + " on " + monster.name + " right now")
                 self.void_skill()

@@ -54,6 +54,7 @@ ItemSpawns.append(ItemSpawnParams( I.CurePotion(403),         1,               1
 ItemSpawns.append(ItemSpawnParams( I.MightPotion(404),        1,               10,          0,              0))
 ItemSpawns.append(ItemSpawnParams( I.DexterityPotion(405),    1,               10,          0,              0))
 ItemSpawns.append(ItemSpawnParams( I.EnchantScrorb(450),     1,               10,          5,              5))
+ItemSpawns.append(ItemSpawnParams( I.BurningAttackScrorb(450),      1,               10,          5,              5))
 
 Floor_Distributions = [(0.9, 0.1, 0.0), # floor 1
                        (0.7, 0.3, 0.0), # floor 2
@@ -72,6 +73,10 @@ class ItemSpawner():
         self.commonItems = [i for i in self.ItemSpawns if i.item.rarity == "Common"]
         self.rareItems = [i for i in self.ItemSpawns if i.item.rarity == "Rare"]
         self.legendaryItems = [i for i in self.ItemSpawns if i.item.rarity == "Legendary"]
+
+        # useful for debugging specific items, separate from generator
+        self.forceSpawn = None
+        # self.forceSpawn = ("Flame Scrorb", 5)
 
     def countSpawn(self, depth):
         return random.randint(int(2 + 0.25 * (10 - depth)), int(4 + 0.5 * (10 - depth)))
@@ -92,6 +97,13 @@ class ItemSpawner():
         if depth == 1:
             commonWeapons = [i for i in commonAtDepth if i.item.equipment_type == "Weapon"]
             items.append(random.choice(commonWeapons).GetFreshCopy())
+
+        if self.forceSpawn:
+            for _ in range(self.forceSpawn[1]):
+                item_spawn = [i for i in self.ItemSpawns if i.item.name == self.forceSpawn[0]][0]
+                item = item_spawn.GetFreshCopy()
+                items.append(item)
+        
         rareAtDepth = [i for i in self.rareItems if i.AllowedAtDepth(depth)]
         if rareAtDepth == []:
             rareAtDepth = commonAtDepth
@@ -191,9 +203,9 @@ class MonsterSpawner():
         self.normalMonsters = [i for i in self.MonsterSpawns if i.monster.orb == False]
         self.orbMonsters = [i for i in self.MonsterSpawns if i.monster.orb == True]
 
+        # useful for debugging specific items, separate from generator
         self.forceSpawn = None
-        # self.forceSpawn = ("Gorblin", 5) # used for testing specific monsters on floor 1, separate from rest of generator
-
+        # self.forceSpawn = ("Gorblin", 5) 
 
     def countSpawn(self, depth):
         return random.randint(int(2 + 0.5 * (depth)), int(4 + 1.0 * (depth)))

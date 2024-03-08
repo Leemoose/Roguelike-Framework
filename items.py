@@ -971,3 +971,14 @@ class EnchantScrorb(Scroll):
     def activate_once(self, entity, loop):
         loop.limit_inventory = "Enchantable"
         loop.change_loop(L.LoopType.enchant)
+
+class BurningAttackScrorb(Scroll):
+    def __init__(self, render_tag):
+        super().__init__(render_tag, "Flame Scrorb")
+        self.description = "A scrorb that lets you cast burning attack once."
+        self.rarity = "Common"
+
+    def activate_once(self, entity, loop):
+        entity.ready_skill = S.BurningAttack(entity.parent, 0, 0, 10, 5, 5, 5)
+        loop.start_targetting()
+        loop.targets.store_skill(0, entity.ready_skill, entity.parent, temp_cast=True)

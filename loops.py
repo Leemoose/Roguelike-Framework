@@ -445,6 +445,11 @@ class Loops():
         if self.monster_map.get_passable(self.target_to_display[0], self.target_to_display[1]): # don't void if its a monster, cuz its a good QOL to keep monster health on screen
             self.target_to_display = None
 
+    def start_targetting(self):
+        self.change_loop(LoopType.targeting)
+        closest_monster = self.player.character.get_closest_monster(self.player, self.generator.monster_dict, self.generator.tile_map)
+        self.targets.start_target(closest_monster.get_location())
+        self.add_target(closest_monster.get_location())
 
     def init_new_game(self):
         self.display.create_game_ui(self.player)
