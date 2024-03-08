@@ -132,6 +132,8 @@ class Display:
         views_num_buttons_width = 2
         views_offset_from_left = action_screen_width
         views_offset_from_top = map_offset_from_top + map_height
+        views_width = (self.screen_width - action_screen_width)
+        views_height = (self.screen_height - map_offset_from_top - map_height)
         views_button_width = (self.screen_width - action_screen_width) // (views_num_buttons_width + 1)
         views_button_height = (self.screen_height - map_offset_from_top - map_height) // (views_num_buttons_height + 1)
         views_button_offset_from_each_other_height = (self.screen_height - map_offset_from_top - map_height) // (
@@ -166,16 +168,17 @@ class Display:
 
         button_num_height = 0
         button_num_width = 0
-        #   self.draw_empty_box(views_offset_from_left,
-        #                       views_offset_from_top,
-        #                      views_width, views_height)
+        self.draw_empty_box(views_offset_from_left,
+                               views_offset_from_top,
+                              views_width, views_height)
         button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect((
                                         views_offset_from_left + views_button_offset_from_each_other_width+ (views_button_offset_from_each_other_width + views_button_width) * button_num_width,
                                         views_offset_from_top + views_button_offset_from_each_other_height+ (views_button_offset_from_each_other_height + views_button_height) * button_num_height),
                                         (views_button_width, views_button_height)),
             text="(I)nventory",
-            manager=self.uiManager)
+            manager=self.uiManager,
+                    starting_height=800)
         button.action = "i"
         self.buttons.add(button, "i")
 
@@ -186,7 +189,8 @@ class Display:
                                         views_offset_from_top + views_button_offset_from_each_other_height+ (views_button_offset_from_each_other_height + views_button_height) * button_num_height),
                                         (views_button_width, views_button_height)),
             text="(E)quip",
-            manager=self.uiManager)
+            manager=self.uiManager,
+                    starting_height=800)
         button.action = "e"
         self.buttons.add(button, "e")
 
@@ -197,7 +201,8 @@ class Display:
                                         views_offset_from_top + views_button_offset_from_each_other_height+ (views_button_offset_from_each_other_height + views_button_height) * button_num_height),
                                         (views_button_width, views_button_height)),
             text="Save",
-            manager=self.uiManager)
+            manager=self.uiManager,
+                    starting_height=800)
         button.action = "s"
         self.buttons.add(button, "s")
 
@@ -209,7 +214,8 @@ class Display:
                                         views_offset_from_top + views_button_offset_from_each_other_height+ (views_button_offset_from_each_other_height + views_button_height) * button_num_height),
                                         (views_button_width, views_button_height)),
             text="(Q)uaff",
-            manager=self.uiManager)
+            manager=self.uiManager,
+                    starting_height=800)
         button.action = "q"
         self.buttons.add(button, "q")
 
@@ -220,7 +226,8 @@ class Display:
                                         views_offset_from_top + views_button_offset_from_each_other_height+ (views_button_offset_from_each_other_height + views_button_height) * button_num_height),
                                         (views_button_width, views_button_height)),
             text="(R)ead",
-            manager=self.uiManager)
+            manager=self.uiManager,
+                    starting_height=800)
         button.action = "r"
         self.buttons.add(button, "r")
 
@@ -231,7 +238,8 @@ class Display:
                                         views_offset_from_top + views_button_offset_from_each_other_height+ (views_button_offset_from_each_other_height + views_button_height) * button_num_height),
                                         (views_button_width, views_button_height)),
             text="Aut(o)explore",
-            manager=self.uiManager)
+            manager=self.uiManager,
+                    starting_height=800)
         button.action = "o"
         self.buttons.add(button, "o")
 
@@ -390,7 +398,6 @@ class Display:
         if player.character.main_armor != None:
             self.win.blit(tileDict.tile_string(204), (self.r_x * self.textSize, self.r_y * self.textSize))
 
-        #Draw UI from manager!
         self.uiManager.draw_ui(self.win)
 
         #Making all map tiles

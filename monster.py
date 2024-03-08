@@ -47,6 +47,11 @@ class Monster_AI():
             max_utility = utility
             called_function = self.do_move
 
+        utility = self.rank_ungroup(loop)
+        if utility > max_utility:
+            max_utility = utility
+            called_function = self.do_ungroup
+
         utility = self.rank_skill(loop)
         if utility > max_utility:
             max_utility = utility
@@ -122,6 +127,29 @@ class Monster_AI():
 
     def rank_move(self, loop):
         return 20
+
+    def rank_ungroup(self, loop):
+        player = loop.player
+        x,y = self.parent.x, self.parent.y
+        tile_map = loop.generator.tile_map
+        monster_map = loop.generator.monster_map
+        if player.get_distance(x,y) < 1.5:
+            xplayer, yplayer = player.get_location()
+            xdiff = xplayer - x
+            ydiff = yplayer - y
+            grouped = False
+            if xdiff != 0:
+                print("xdiff")
+                if not tile_map.get_passable(x,y + 1) and not tile_map.get_passable(x,y - 1) and not monster_map.get_passable(x-xdiff,y):
+                    grouped = True
+            elif ydiff != 0:
+                print("ydiff", player.y, y, ydiff)
+                if not tile_map.get_passable(x - 1,y) and not tile_map.get_passable(x + 1,y) and not monster_map.get_passable(x,y-ydiff):
+                    grouped = True
+            if grouped == True and tile_map.get_passable(xplayer + xdiff, yplayer + ydiff): #opposite side of player
+                print(str(tile_map.get_passable(xplayer + xdiff, yplayer + ydiff)))
+                return 90
+        return -1
     
     def rank_skill(self, loop):
         if not self.parent.orb: # only orbs can cast skills
@@ -205,15 +233,44 @@ class Monster_AI():
         start = (monster.x, monster.y)
         end = (player.x, player.y)
         if player.get_distance(monster.x, monster.y) <= 2.5:
-            moves = pathfinding.astar(tile_map.track_map, start, end, monster_map, monster_blocks=True)
+            moves = pathfinding.astar(tile_map.track_map, start, end, monster_map, loop, monster_blocks=True)
         else:
-            moves = pathfinding.astar(tile_map.track_map, start, end, monster_map)
+            moves = pathfinding.astar(tile_map.track_map, start, end, monster_map, loop)
         if len(moves) > 1:
             xmove, ymove = moves.pop(1)
             monster.move(xmove - monster.x, ymove-monster.y, tile_map, monster, monster_map, player)
         if update_target:
             loop.add_target((monster.x, monster.y))
 
+    def do_ungroup(self, loop):
+        tile_map = loop.generator.tile_map
+        monster = self.parent
+        monster_map = loop.generator.monster_map
+        player = loop.player
+        x,y = self.parent.x, self.parent.y
+
+        if not monster.character.movable:
+            monster.character.energy -= (monster.character.move_cost - monster.character.dexterity)
+            loop.add_message(f"{monster} is petrified and cannot move.")
+            return
+
+        update_target = False
+        if loop.target_to_display == (monster.x, monster.y):
+            update_target = True
+
+        xplayer, yplayer = player.get_location()
+        xdiff = xplayer - x
+        ydiff = yplayer - y
+
+        start = (monster.x, monster.y)
+        end = (xplayer + xdiff, yplayer + ydiff)
+        if player.get_distance(monster.x, monster.y) <= 2.5:
+            moves = pathfinding.astar(tile_map.track_map, start, end, monster_map, loop, monster_blocks=True, player_blocks=True)
+        if len(moves) > 1:
+            xmove, ymove = moves.pop(1)
+            monster.move(xmove - monster.x, ymove-monster.y, tile_map, monster, monster_map, player)
+        if update_target:
+            loop.add_target((monster.x, monster.y))
     def do_flee(self, loop):
         # print("Fleeing")
         tile_map = loop.generator.tile_map
@@ -232,7 +289,7 @@ class Monster_AI():
 
         start = (monster.x, monster.y)
         end = (player.x, player.y)
-        moves = pathfinding.astar(tile_map.track_map, start, end, monster_map)
+        moves = pathfinding.astar(tile_map.track_map, start, end, monster_map, loop)
         if len(moves) > 1:
             xmove, ymove = moves.pop(1)
             # if one direciton is blocked, still move in the other
