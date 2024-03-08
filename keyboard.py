@@ -100,6 +100,9 @@ class Keyboard():
         elif key == "r":
             loop.limit_inventory = "Scrorb"
             loop.change_loop(LoopType.inventory)
+        elif key == "l":
+            if loop.player.stat_points > 0:
+                loop.change_loop(LoopType.level_up)
         elif key == "p":
             loop.display.uiManager.set_visual_debug_mode(True)
         elif key == "s":
@@ -176,6 +179,28 @@ class Keyboard():
                 loop.change_loop(LoopType.action)
                 loop.limit_inventory = None
                 loop.update_screen = True
+
+    def key_level_up(self, loop, key):
+        player = loop.player
+        if key == "esc":
+            loop.change_loop(LoopType.action)
+            loop.current_stat = 0
+            player.stat_decisions = [0, 0, 0, 0]
+        elif key == "up":
+            if loop.current_stat > 0:
+                loop.current_stat -= 1
+        elif key == "down":
+            if loop.current_stat < 3:
+                loop.current_stat += 1
+        elif key == "left":
+            player.modify_stat_decisions(loop.current_stat, increase=False)
+        elif key == "right":
+            player.modify_stat_decisions(loop.current_stat, increase=True)
+        elif key == "return":
+            player.apply_level_up()
+            loop.current_stat = 0
+            loop.change_loop(LoopType.action)
+            
 
     def key_equipment(self, loop, player, item_dict, key):
         if key == "esc":

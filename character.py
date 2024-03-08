@@ -158,15 +158,21 @@ class Character():
     def wait(self):
         self.energy -=  self.move_cost
 
-    def level_up(self):
-        self.endurance += 1
-        self.intelligence += 1
-        self.dexterity += 1
-        self.strength += 1
-        self.max_health += (5 + self.endurance - 1)
+    def level_up(self, strength_up=1, dexterity_up=1, endurance_up=1, intelligence_up=1):
+        self.level_up_stats(strength_up, dexterity_up, endurance_up, intelligence_up)
+        self.level_up_max_health_and_mana()
+        
+    def level_up_max_health_and_mana(self):
+        self.max_health += (5 + self.endurance * 2)
         self.health = self.max_health
-        self.max_mana += (5 + self.intelligence - 1)
+        self.max_mana += (5 + self.intelligence)
         self.mana = self.max_mana
+
+    def level_up_stats(self, strength_up=1, dexterity_up=1, endurance_up=1, intelligence_up=1):
+        self.endurance += endurance_up
+        self.intelligence += intelligence_up
+        self.dexterity += dexterity_up
+        self.strength += strength_up
 
     def get_damage_min(self):
         return self.get_damage()[0]
@@ -360,24 +366,29 @@ class Player(O.Objects):
         super().__init__(x, y, 1, 200, "Player")
         self.character = Character(self, mana=50)
         self.character.skills = []
-        self.character.skills.extend([
-            S.Gun(self), # 1
-            # S.BurningAttack(self, cooldown=0, cost=10, damage=20, burn_damage=10, burn_duration=10, range=10), #2
-            # S.Petrify(self, cooldown=0, cost=10, duration=3, activation_chance=1, range=10), #3
-            # S.ShrugOff(self, cooldown=0, cost=10, activation_chance=1.0, action_cost=1), #4
-            # S.Berserk(self, cooldown=0, cost=10, activation_threshold=50, strength_increase=10, action_cost=1), #5
-            # S.Terrify(self, cooldown=0, cost=0, duration=5, activation_chance=1, range=15), #6
-            # S.Escape(self, cooldown=0, cost=0, self_fear=False, activation_threshold=1.1, action_cost=1) #7
-        ])
 
         self.level = 1
         self.max_level = 20
         self.experience = 0
         self.experience_to_next_level = 20
 
+        self.stat_points = 0
+        self.stat_decisions = [0, 0, 0, 0] # used at loop levelling to allocate points
+
         self.path = []
 
         self.invincible = True
+
+        if self.invincible: # only get the gun if you're invincible
+            self.character.skills.extend([
+                S.Gun(self), # 1
+                # S.BurningAttack(self, cooldown=0, cost=10, damage=20, burn_damage=10, burn_duration=10, range=10), #2
+                # S.Petrify(self, cooldown=0, cost=10, duration=3, activation_chance=1, range=10), #3
+                # S.ShrugOff(self, cooldown=0, cost=10, activation_chance=1.0, action_cost=1), #4
+                # S.Berserk(self, cooldown=0, cost=10, activation_threshold=50, strength_increase=10, action_cost=1), #5
+                # S.Terrify(self, cooldown=0, cost=0, duration=5, activation_chance=1, range=15), #6
+                # S.Escape(self, cooldown=0, cost=0, self_fear=False, activation_threshold=1.1, action_cost=1) #7
+            ])
 
     def attack_move(self, move_x, move_y, loop):
         if not self.character.movable:
@@ -483,8 +494,25 @@ class Player(O.Objects):
     def check_for_levelup(self):
         while self.level != self.max_level and self.experience >= self.experience_to_next_level:
             self.level += 1
-            self.character.level_up()
+            # self.character.level_up()
+            # self.awaiting_level_up = True
+            self.character.level_up_max_health_and_mana()
+            self.stat_points += 4
             exp_taken = self.experience_to_next_level
             self.experience_to_next_level += 20 + self.experience_to_next_level // 4
             self.experience -= exp_taken
+
+    def modify_stat_decisions(self, i, increase=True): # 0 = strength, 1 = dexterity, 2 = endurance, 3 = intelligence
+
+        if increase:
+            if self.stat_points > sum(self.stat_decisions):
+                self.stat_decisions[i] += 1
+        else:
+            if self.stat_decisions[i] > 0:
+                self.stat_decisions[i] -= 1
+    
+    def apply_level_up(self):
+        self.character.level_up_stats(self.stat_decisions[0], self.stat_decisions[1], self.stat_decisions[2], self.stat_decisions[3])
+        self.stat_points -= sum(self.stat_decisions)
+        self.stat_decisions = [0, 0, 0, 0]
 

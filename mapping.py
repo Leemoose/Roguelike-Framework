@@ -81,6 +81,12 @@ class TileDict():
         tiles[91] = image.load("assets/tiles/stairs_down.png")
         tiles[-91] = image.load("assets/tiles/stairs_down_shaded.png")
 
+        # ui assets
+        tiles[50] = image.load("assets/stat_up.png")
+        tiles[51] = image.load("assets/stat_down.png")
+        tiles[-50] = image.load("assets/stat_up_dark.png")
+        tiles[-51] = image.load("assets/stat_down_dark.png")
+
         # monster assets
         tiles[101] = image.load("assets/monsters/orc.png")
         tiles[151] = image.load("assets/monsters/orc_orb.png")

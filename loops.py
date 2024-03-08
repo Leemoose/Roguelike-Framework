@@ -34,6 +34,7 @@ class LoopType(Enum):
     specific_examine = 12
     enchant = 13
     search_stairs = 14
+    level_up = 15
 
 class ColorDict():
     """
@@ -129,6 +130,7 @@ class Loops():
         self.target_to_display = None
         self.tileDict = tileDict
         self.screen_focus = None
+        self.current_stat = 0 # index of stat for levelling up
 
         #Start the game by going to the main screen
         self.change_loop(LoopType.main)
@@ -145,6 +147,8 @@ class Loops():
             pass
         elif newLoop == LoopType.inventory or newLoop == LoopType.enchant:
             self.display.create_inventory(self.player, self.limit_inventory)
+        elif newLoop == LoopType.level_up:
+            self.display.create_level_up(self)
         elif newLoop == LoopType.equipment:
             self.display.create_equipment(self.player, self.tileDict)
         elif newLoop == LoopType.main:
@@ -213,6 +217,8 @@ class Loops():
                     keyboard.key_action(self.player, self.generator.tile_map, self.monster_dict, self.monster_map, self.item_dict,self, key, self.generator, display, self.memory)
                 elif self.currentLoop == LoopType.inventory:
                     keyboard.key_inventory(self, self.player, self.item_dict,key)
+                elif self.currentLoop == LoopType.level_up:
+                    keyboard.key_level_up(self, key)
                 elif self.currentLoop == LoopType.enchant:
                     keyboard.key_enchant(self, self.player, self.item_dict, key)
                 elif self.currentLoop == LoopType.equipment:
@@ -248,6 +254,13 @@ class Loops():
                 elif (self.currentLoop == LoopType.inventory):
                     key = event.ui_element.action
                     keyboard.key_inventory(self, self.player, self.item_dict, key)
+                elif (self.currentLoop == LoopType.level_up):
+                    key = event.ui_element.action
+                    row = event.ui_element.row
+                    print(key)
+                    print(row)
+                    self.current_stat = row
+                    keyboard.key_level_up(self, key)
                 elif (self.currentLoop == LoopType.equipment):
                     key = event.ui_element.action
                     keyboard.key_equipment(self, self.player, self.item_dict, key)
@@ -329,6 +342,9 @@ class Loops():
             display.update_action_display(self)
         elif self.currentLoop == LoopType.inventory or self.currentLoop == LoopType.enchant:
             display.update_inventory(self.player, self.limit_inventory)
+        elif self.currentLoop == LoopType.level_up:
+            # display.update_display(self)
+            display.update_level_up(self)
         elif self.currentLoop == LoopType.equipment:
             display.update_equipment(self.player, tileDict)
         elif self.currentLoop == LoopType.main:
