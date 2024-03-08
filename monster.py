@@ -139,15 +139,12 @@ class Monster_AI():
             ydiff = yplayer - y
             grouped = False
             if xdiff != 0:
-                print("xdiff")
                 if not tile_map.get_passable(x,y + 1) and not tile_map.get_passable(x,y - 1) and not monster_map.get_passable(x-xdiff,y):
                     grouped = True
             elif ydiff != 0:
-                print("ydiff", player.y, y, ydiff)
                 if not tile_map.get_passable(x - 1,y) and not tile_map.get_passable(x + 1,y) and not monster_map.get_passable(x,y-ydiff):
                     grouped = True
             if grouped == True and tile_map.get_passable(xplayer + xdiff, yplayer + ydiff): #opposite side of player
-                print(str(tile_map.get_passable(xplayer + xdiff, yplayer + ydiff)))
                 return 90
         return -1
     
