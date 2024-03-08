@@ -793,26 +793,38 @@ class Display:
     def create_pause_screen(self):
         self.uiManager.clear_and_reset()
 
-        pause_screen_width = self.screen_width // 3
-        pause_screen_height = self.screen_height // 2
-        pause_offset_from_left = (self.screen_width - pause_screen_width) // 2
-        pause_offset_from_top = self.screen_height // 4
+        pause_screen_width = 700
+        pause_screen_height = 300
+        startX = (self.screen_width - pause_screen_width) / 2
+        startY = (self.screen_height - pause_screen_height) / 2
 
-        pause_num_buttons_height = 4
-        pause_button_width = pause_screen_width
-        pause_button_height = (pause_screen_height) // (pause_num_buttons_height + 1)
-        pause_button_offset_from_each_other_height = (pause_screen_height) // (
-                    pause_num_buttons_height + 1) // (pause_num_buttons_height + 1)
-        pause_button_offset_from_top = pause_offset_from_top
-        pause_button_offset_from_left = pause_offset_from_left
+        numButtons = 4
+
+        #Offset defines a padding in pixels - buttons remain 'offset' pixels from the edges
+        offset = 10 
+
+        #Button offset is how far apart the buttons are from each other
+        # Bug: this seems to get doubled for some reason?
+        button_offset = 5
 
 
-        self.draw_empty_box(pause_button_offset_from_left, pause_button_offset_from_top, pause_button_width, pause_button_height)
+
+        # Don't change below here! Math should work for arbitrary button numbers and sizes, 
+        # if you set those above.
+        self.draw_empty_box(startX, startY, pause_screen_width, pause_screen_height)
+
+        pause_button_x = startX + offset
+        pause_button_base_y = startY + offset
+        pause_button_width = pause_screen_width - 2 * offset
+        pause_button_height = ((pause_screen_height - 2 * offset)
+                              - (button_offset * (numButtons - 1))) / numButtons
+
+        debug_height = 2 * offset + (numButtons * pause_button_height) + ((numButtons - 1) * button_offset)
 
         button_num = 0
         unpause = pygame_gui.elements.UIButton(
-                    relative_rect=pygame.Rect((pause_button_offset_from_left, pause_button_offset_from_top +
-                                               (pause_button_height + pause_button_offset_from_each_other_height) * button_num,
+                    relative_rect=pygame.Rect((pause_button_x, pause_button_base_y +
+                                               (pause_button_height + button_offset) * button_num,
                                                pause_button_width, pause_button_height)),
                     text = "Unpause",
                     manager=self.uiManager,
@@ -821,8 +833,8 @@ class Display:
 
         button_num += 1
         menu = pygame_gui.elements.UIButton(
-                    relative_rect=pygame.Rect((pause_button_offset_from_left, pause_button_offset_from_top +
-                                               (pause_button_height + pause_button_offset_from_each_other_height) * button_num,
+                    relative_rect=pygame.Rect((pause_button_x, pause_button_base_y +
+                                               (pause_button_height + button_offset) * button_num,
                                                pause_button_width, pause_button_height)),
                     text = "Return to (m)enu",
                     manager=self.uiManager,
@@ -831,8 +843,8 @@ class Display:
 
         button_num += 1
         save = pygame_gui.elements.UIButton(
-                    relative_rect=pygame.Rect((pause_button_offset_from_left, pause_button_offset_from_top +
-                                               (pause_button_height + pause_button_offset_from_each_other_height) * button_num,
+                    relative_rect=pygame.Rect((pause_button_x, pause_button_base_y +
+                                               (pause_button_height + button_offset) * button_num,
                                                pause_button_width, pause_button_height)),
                     text = "(S)ave",
                     manager=self.uiManager,
@@ -841,9 +853,9 @@ class Display:
 
         button_num += 1
         quit = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect((pause_button_offset_from_left, pause_button_offset_from_top +
-                                       (pause_button_height + pause_button_offset_from_each_other_height) * button_num,
-                                       pause_button_width, pause_button_height)),
+            relative_rect=pygame.Rect((pause_button_x, pause_button_base_y +
+                                               (pause_button_height + button_offset) * button_num,
+                                               pause_button_width, pause_button_height)),
             text="(Q)uit",
             manager=self.uiManager,
             starting_height=1000)
