@@ -143,7 +143,7 @@ class Character():
         return False
 
     def equip(self, item):
-        if item.equipable:
+        if item.equipable and self.strength >= item.required_strength:
             item.equip(self)
             item.equipped = True
             item.dropable = False
@@ -458,7 +458,7 @@ class Player(O.Objects):
                     else:
                         endy += 1
             end = (endx, endy)
-            self.path = pathfinding.astar(tile_map.track_map, start, end)
+            self.path = pathfinding.astar(tile_map.track_map, start, end, loop.generator.monster_map, loop)
             # if all tiles have been seen don't autoexplore
             
         x, y = self.path.pop(0)
@@ -481,7 +481,7 @@ class Player(O.Objects):
         if (start == end):
             loop.change_loop(L.LoopType.action)
             return
-        self.path = pathfinding.astar(tile_map.track_map, start, end)
+        self.path = pathfinding.astar(tile_map.track_map, start, end, loop.generator.monster_map, loop)
         
         x, y = self.path.pop(0)
         x, y = self.path.pop(0)

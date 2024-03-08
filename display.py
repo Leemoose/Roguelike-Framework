@@ -3,6 +3,7 @@ import pygame_gui
 import items as I
 import ui
 import objects as O
+import monster as M
 
 class Buttons:
     def __init__(self):
@@ -65,19 +66,234 @@ class Display:
         self.buttons = Buttons()
         self.colorDict = None
 
+    def screen_to_tile(self, player, x, y):
+        xplayerscreen, yplayerscreen = self.r_x * self.textSize + self.textSize // 2, self.r_y * self.textSize + self.textSize // 2
+        xdiff = x - xplayerscreen + 10
+        ydiff = y - yplayerscreen + 10
+        return (player.x + xdiff // self.textSize, player.y + ydiff//self.textSize)
     def update_sizes(self):
         self.screen_width, self.screen_height = self.win.get_size()
-    def create_action_display(self, loop):
+
+    def create_display(self, loop):
         self.uiManager.clear_and_reset()
 
-    def update_action_display(self, loop):
-        self.win.fill((0,0,0))
-        self.update_display(loop)
-        self.uiManager.draw_ui(self.win)
+        tileDict = loop.tileDict
+        monsterID = loop.monster_dict
+        player = loop.player
+        messages = loop.messages
+
+        action_screen_width = self.screen_width * 3 // 4
+        action_screen_height = self.screen_height * 5 // 6
+        num_tiles_wide = action_screen_width // self.textSize
+        num_tiles_height = action_screen_height // self.textSize
+
+        r_x = num_tiles_wide // 2
+        r_y = num_tiles_height // 2
+
+        self.x_start = player.x - r_x
+        self.x_end = player.x + r_x
+        self.y_start = player.y - r_y
+        self.y_end = player.y + r_y
+
+        stats_offset_from_left = action_screen_width
+        stats_offset_from_top = 0
+        stats_width = self.screen_width - stats_offset_from_left
+        stats_height = self.screen_height // 3
+
+        map_tile_size = 8
+        map_offset_from_left = action_screen_width
+        map_offset_from_top = stats_height
+        map_width = self.screen_width - action_screen_width
+        map_message_width = map_width // 4
+        map_height = self.screen_height // 4
+        map_message_height = map_height // 3
+        num_map_tiles_wide = map_width // map_tile_size
+        num_map_tiles_height = map_height // map_tile_size
+        r_map_x = num_map_tiles_wide // 2
+        r_map_y = num_map_tiles_height // 2
+
+        message_offset_from_left = 0
+        message_offset_from_top = action_screen_height
+        message_width = action_screen_width // 2 - 2 * message_offset_from_left
+        message_height = self.screen_height - action_screen_height
+
+        skill_bar_height = self.screen_height - action_screen_height
+        skill_bar_offset_from_left = message_offset_from_left + message_width
+        skill_bar_width = stats_offset_from_left - skill_bar_offset_from_left
+        skill_bar_offset_from_top = action_screen_height
+
+        num_skill_buttons = 6
+        skill_button_width = (action_screen_width - skill_bar_offset_from_left) // (num_skill_buttons + 1)
+        skill_button_height = (self.screen_height - action_screen_height) * 3 // 4
+        skill_button_offset_from_top = (self.screen_height - action_screen_height) // 8 + skill_bar_offset_from_top
+        skill_button_offset_from_each_other_width = (action_screen_width - skill_bar_offset_from_left) // (num_skill_buttons + 1)// (num_skill_buttons + 1)
+
+        views_num_buttons_height = 3
+        views_num_buttons_width = 2
+        views_offset_from_left = action_screen_width
+        views_offset_from_top = map_offset_from_top + map_height
+        views_width = (self.screen_width - action_screen_width)
+        views_height = (self.screen_height - map_offset_from_top - map_height)
+        views_button_width = (self.screen_width - action_screen_width) // (views_num_buttons_width + 1)
+        views_button_height = (self.screen_height - map_offset_from_top - map_height) // (views_num_buttons_height + 1)
+        views_button_offset_from_each_other_height = (self.screen_height - map_offset_from_top - map_height) // (
+                    views_num_buttons_height + 1) // (views_num_buttons_height + 1)
+        views_button_offset_from_each_other_width = (self.screen_width -action_screen_width) // (
+                views_num_buttons_width + 1) // (views_num_buttons_width + 1)
+
+        # Writing messages
+        text_box = ui.MessageBox(
+            pygame.Rect((message_offset_from_left, message_offset_from_top),
+                                      (message_width, message_height)),
+            manager=self.uiManager,
+            loop=loop)
+
+        #Map box
+        self.draw_empty_box(map_offset_from_left,
+                            map_offset_from_top,
+                            map_width, map_height)
+        
+        #Depth
+        depth_label = ui.DepthDisplay(pygame.Rect((map_offset_from_left - map_message_width // 6, map_offset_from_top - map_message_height // 14 * 5),
+                                                                (map_message_width, map_message_height)),
+                                    manager=self.uiManager,
+                                    loop=loop)
+
+
+        stat_box = ui.StatBox(
+            pygame.Rect((stats_offset_from_left, stats_offset_from_top), (stats_width, stats_height)),
+            self.uiManager,
+            player
+        )
+
+        button_num_height = 0
+        button_num_width = 0
+        self.draw_empty_box(views_offset_from_left,
+                               views_offset_from_top,
+                              views_width, views_height)
+        button = pygame_gui.elements.UIButton(
+            relative_rect=pygame.Rect((
+                                        views_offset_from_left + views_button_offset_from_each_other_width+ (views_button_offset_from_each_other_width + views_button_width) * button_num_width,
+                                        views_offset_from_top + views_button_offset_from_each_other_height+ (views_button_offset_from_each_other_height + views_button_height) * button_num_height),
+                                        (views_button_width, views_button_height)),
+            text="(I)nventory",
+            manager=self.uiManager,
+                    starting_height=800)
+        button.action = "i"
+        self.buttons.add(button, "i")
+
+        button_num_height += 1
+        button = pygame_gui.elements.UIButton(
+            relative_rect=pygame.Rect((
+                                        views_offset_from_left + views_button_offset_from_each_other_width+ (views_button_offset_from_each_other_width + views_button_width) * button_num_width,
+                                        views_offset_from_top + views_button_offset_from_each_other_height+ (views_button_offset_from_each_other_height + views_button_height) * button_num_height),
+                                        (views_button_width, views_button_height)),
+            text="(E)quip",
+            manager=self.uiManager,
+                    starting_height=800)
+        button.action = "e"
+        self.buttons.add(button, "e")
+
+        button_num_height += 1
+        button = pygame_gui.elements.UIButton(
+            relative_rect=pygame.Rect((
+                                        views_offset_from_left + views_button_offset_from_each_other_width+ (views_button_offset_from_each_other_width + views_button_width) * button_num_width,
+                                        views_offset_from_top + views_button_offset_from_each_other_height+ (views_button_offset_from_each_other_height + views_button_height) * button_num_height),
+                                        (views_button_width, views_button_height)),
+            text="Save",
+            manager=self.uiManager,
+                    starting_height=800)
+        button.action = "s"
+        self.buttons.add(button, "s")
+
+        button_num_height = 0
+        button_num_width = 1
+        button = pygame_gui.elements.UIButton(
+            relative_rect=pygame.Rect((
+                                        views_offset_from_left + views_button_offset_from_each_other_width+ (views_button_offset_from_each_other_width + views_button_width) * button_num_width,
+                                        views_offset_from_top + views_button_offset_from_each_other_height+ (views_button_offset_from_each_other_height + views_button_height) * button_num_height),
+                                        (views_button_width, views_button_height)),
+            text="(Q)uaff",
+            manager=self.uiManager,
+                    starting_height=800)
+        button.action = "q"
+        self.buttons.add(button, "q")
+
+        button_num_height += 1
+        button = pygame_gui.elements.UIButton(
+            relative_rect=pygame.Rect((
+                                        views_offset_from_left + views_button_offset_from_each_other_width+ (views_button_offset_from_each_other_width + views_button_width) * button_num_width,
+                                        views_offset_from_top + views_button_offset_from_each_other_height+ (views_button_offset_from_each_other_height + views_button_height) * button_num_height),
+                                        (views_button_width, views_button_height)),
+            text="(R)ead",
+            manager=self.uiManager,
+                    starting_height=800)
+        button.action = "r"
+        self.buttons.add(button, "r")
+
+        button_num_height += 1
+        button = pygame_gui.elements.UIButton(
+            relative_rect=pygame.Rect((
+                                        views_offset_from_left + views_button_offset_from_each_other_width+ (views_button_offset_from_each_other_width + views_button_width) * button_num_width,
+                                        views_offset_from_top + views_button_offset_from_each_other_height+ (views_button_offset_from_each_other_height + views_button_height) * button_num_height),
+                                        (views_button_width, views_button_height)),
+            text="Aut(o)explore",
+            manager=self.uiManager,
+                    starting_height=800)
+        button.action = "o"
+        self.buttons.add(button, "o")
+
+        #FPS counter
+        fps_counter = ui.FPSCounter(
+            pygame.Rect((0,0),(100,40)),
+            self.uiManager
+        )
+
+    #if target_to_display != None:
+    #    clear_target = self.draw_examine_window(target_to_display, tileDict, floormap, monster_map, monsterID, item_ID, player)
+    #    if clear_target:
+    #        target_to_display = None
+
+
+        num_skill = len(player.character.skills)
+        if num_skill == 0:
+            pass
+        else:
+            self.draw_empty_box(skill_bar_offset_from_left,
+                                skill_bar_offset_from_top,
+                                skill_bar_width, skill_bar_height)
+
+            for i, skill in enumerate(player.character.skills):
+                closest_monster = player.character.get_closest_monster(player, monsterID, loop.generator.tile_map)
+                if closest_monster == player and skill.range != -1:
+                    castable = False  # no monster to caste ranged skill on
+                else:
+                    castable = skill.castable(closest_monster)
+                if castable:
+                    img = pygame.transform.scale(tileDict.tiles[skill.render_tag],
+                                                    (skill_button_width, skill_button_height))
+                else:
+                    img = pygame.transform.scale(tileDict.tiles[-skill.render_tag],
+                                                    (skill_button_width, skill_button_height))
+                button = pygame_gui.elements.UIButton(
+                    relative_rect=pygame.Rect((
+                                                skill_bar_offset_from_left + skill_button_offset_from_each_other_width +(skill_button_offset_from_each_other_width + skill_button_width) * i,
+                                                skill_button_offset_from_top),
+                                                (skill_button_width, skill_button_height)),
+                    text="",
+                    manager=self.uiManager,
+                    object_id='#skill_button')
+                button.action = chr(ord("1") + i)
+                self.draw_on_button(button, img, chr(ord("1") + i), (skill_button_width, skill_button_height), shrink=True,
+                                    offset_factor=10, text_offset=(12, (0.6)))
+                self.buttons.add(button, chr(ord("1") + i))
+
+        healthBar = ui.HealthBar(pygame.Rect((self.screen_width - 120, 0), (120, 40)), self.uiManager, player)
+        manaBar = ui.ManaBar(pygame.Rect((self.screen_width - 120, 50), (120, 40)), self.uiManager, player)
 
     def update_display(self, loop):
-        self.uiManager.clear_and_reset()
         self.win.fill((0,0,0))
+
         floormap = loop.generator.tile_map
         tileDict = loop.tileDict
         monsterID = loop.monster_dict
@@ -94,17 +310,17 @@ class Display:
         num_tiles_wide = action_screen_width // self.textSize
         num_tiles_height = action_screen_height // self.textSize
 
-        r_x = num_tiles_wide // 2
-        r_y = num_tiles_height // 2
+        self.r_x = num_tiles_wide // 2
+        self.r_y = num_tiles_height // 2
 
-        self.x_start = player.x - r_x
-        self.x_end = player.x + r_x
-        self.y_start = player.y - r_y
-        self.y_end = player.y + r_y
+        self.x_start = player.x - self.r_x
+        self.x_end = player.x + self.r_x
+        self.y_start = player.y - self.r_y
+        self.y_end = player.y + self.r_y
 
         stats_offset_from_left = action_screen_width
         stats_offset_from_top = 0
-        stats_width = action_screen_width
+        stats_width = self.screen_width - stats_offset_from_left
         stats_height = self.screen_height // 3
 
         map_tile_size = 8
@@ -123,32 +339,35 @@ class Display:
         y_map_start = player.y - r_map_y
         y_map_end = player.y + r_map_y
 
-        message_offset_from_left = self.screen_width // 50
+        message_offset_from_left = 0
         message_offset_from_top = action_screen_height
         message_width = action_screen_width // 2 - 2 * message_offset_from_left
-        message_height = self.screen_height - action_screen_height - 10
+        message_height = self.screen_height - action_screen_height
 
         skill_bar_height = self.screen_height - action_screen_height
         skill_bar_offset_from_left = message_offset_from_left + message_width
         skill_bar_width = stats_offset_from_left - skill_bar_offset_from_left
         skill_bar_offset_from_top = action_screen_height
+
         num_skill_buttons = 6
         skill_button_width = (action_screen_width - skill_bar_offset_from_left) // (num_skill_buttons + 1)
         skill_button_height = (self.screen_height - action_screen_height) * 3 // 4
-
-        skill_button_offset_from_top = (self.screen_height - action_screen_height) // 8
+        skill_button_offset_from_top = (self.screen_height - action_screen_height) // 8 + skill_bar_offset_from_top
         skill_button_offset_from_each_other_width = (action_screen_width - skill_bar_offset_from_left) // (num_skill_buttons + 1)// (num_skill_buttons + 1)
 
         views_num_buttons_height = 3
         views_num_buttons_width = 2
+        views_width = (self.screen_width - action_screen_width)
+        views_height = (self.screen_height - map_offset_from_top - map_height)
+        views_offset_from_left = action_screen_width
+        views_offset_from_top = map_offset_from_top + map_height
         views_button_width = (self.screen_width - action_screen_width) // (views_num_buttons_width + 1)
         views_button_height = (self.screen_height - map_offset_from_top - map_height) // (views_num_buttons_height + 1)
         views_button_offset_from_each_other_height = (self.screen_height - map_offset_from_top - map_height) // (
                     views_num_buttons_height + 1) // (views_num_buttons_height + 1)
         views_button_offset_from_each_other_width = (self.screen_width -action_screen_width) // (
                 views_num_buttons_width + 1) // (views_num_buttons_width + 1)
-        views_button_offset_from_top = map_offset_from_top + map_height + views_button_offset_from_each_other_height
-        views_button_offset_from_left = action_screen_width + views_button_offset_from_each_other_width
+
 
        #Making all the tiles
         for x in range(self.x_start, self.x_end):
@@ -169,21 +388,20 @@ class Display:
                     monster_tile = tileDict.tile_string(monster.render_tag)
                     self.win.blit(monster_tile, (self.textSize*(monster.x - self.x_start), self.textSize*(monster.y - self.y_start)))
 
-        self.win.blit(tileDict.tile_string(200), (r_x * self.textSize, r_y * self.textSize))
+        self.win.blit(tileDict.tile_string(200), (self.r_x * self.textSize, self.r_y * self.textSize))
         if player.character.boots != None:
-            self.win.blit(tileDict.tile_string(201), (r_x * self.textSize, r_y * self.textSize))
+            self.win.blit(tileDict.tile_string(201), (self.r_x * self.textSize, self.r_y * self.textSize))
         if player.character.gloves != None:
-            self.win.blit(tileDict.tile_string(202), (r_x * self.textSize, r_y * self.textSize))
+            self.win.blit(tileDict.tile_string(202), (self.r_x * self.textSize, self.r_y * self.textSize))
         if player.character.helmet != None:
-            self.win.blit(tileDict.tile_string(203), (r_x * self.textSize, r_y * self.textSize))
+            self.win.blit(tileDict.tile_string(203), (self.r_x * self.textSize, self.r_y * self.textSize))
         if player.character.main_armor != None:
-            self.win.blit(tileDict.tile_string(204), (r_x * self.textSize, r_y * self.textSize))
+            self.win.blit(tileDict.tile_string(204), (self.r_x * self.textSize, self.r_y * self.textSize))
+
+        self.uiManager.draw_ui(self.win)
 
         #Making all map tiles
-        pygame.draw.rect(self.win, (50, 50, 50),
-                             pygame.Rect(map_offset_from_left,
-                                         map_offset_from_top ,
-                                         map_width,map_height))
+
         for x in range(x_map_start, x_map_end):
             for y in range(y_map_start, y_map_end):
                 if (x < 0 or x >= floormap.width or y < 0 or y >= floormap.height):
@@ -210,157 +428,7 @@ class Display:
                                      map_offset_from_top + (num_map_tiles_height - num_tiles_height)* map_tile_size //2,
                                      num_tiles_wide * map_tile_size, num_tiles_height* map_tile_size), 1)
 
-        pygame_gui.elements.UILabel(relative_rect=pygame.Rect((map_offset_from_left - map_message_width // 6, map_offset_from_top - map_message_height // 14 * 5),
-                                                              (map_message_width, map_message_height)),
-                                    text="Depth " + str(loop.generator.depth),
-                                    manager=self.uiManager)
-
-        #Writing messages
-        text_box = pygame_gui.elements.UITextBox(
-            relative_rect=pygame.Rect((message_offset_from_left, message_offset_from_top), (message_width, message_height)),
-            html_text = "".join([message + "<br>" for message in (messages)]),
-            manager=self.uiManager )
-        
-        Level = "Level: " + str(player.level)
-        if player.stat_points > 0:
-            Level = "<shadow size=3 offset=0,0 color=#306090><font color=#E0F0FF>" + Level + " (Press L to allocate stats points) </font></shadow>"
-        stat_box = pygame_gui.elements.UITextBox(
-            relative_rect=pygame.Rect((stats_offset_from_left, stats_offset_from_top), (stats_width, stats_height)),
-            html_text = "Player:<br>" +
-                        "Strength: " + str(player.character.strength) + "<br>"
-                        "Dexterity: " + str(player.character.dexterity) + "<br>"
-                        "Endurance: " + str(player.character.endurance) + "<br>"
-                        "Intelligence: " + str(player.character.intelligence) + "<br>"
-                        "<br>"
-                        "Health: " + str(player.character.health) + " / " + str(player.character.max_health) + "<br>"
-                        "Mana: " + str(player.character.mana) + " / " + str(player.character.max_mana) + "<br>"
-                        "Status: " + self.get_status_text(player) + "<br>"
-                        + Level
-                        ,
-            manager=self.uiManager
-        )
-
-        button_num_height = 0
-        button_num_width = 0
-        button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect((
-                                      views_button_offset_from_left+ views_button_offset_from_each_other_width * button_num_width + views_button_width * button_num_width,
-                                      views_button_offset_from_top+ views_button_offset_from_each_other_height * button_num_height + views_button_height * button_num_height),
-                                      (views_button_width, views_button_height)),
-            text="(I)nventory",
-            manager=self.uiManager)
-        button.action = "i"
-        self.buttons.add(button, "i")
-
-        button_num_height += 1
-        button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect((
-                                      views_button_offset_from_left+ views_button_offset_from_each_other_width * button_num_width + views_button_width * button_num_width,
-                                      views_button_offset_from_top+ views_button_offset_from_each_other_height * button_num_height + views_button_height * button_num_height),
-                                      (views_button_width, views_button_height)),
-            text="(E)quip",
-            manager=self.uiManager)
-        button.action = "e"
-        self.buttons.add(button, "e")
-
-        button_num_height += 1
-        button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect((
-                                      views_button_offset_from_left+ views_button_offset_from_each_other_width * button_num_width + views_button_width * button_num_width,
-                                      views_button_offset_from_top+ views_button_offset_from_each_other_height * button_num_height + views_button_height * button_num_height),
-                                      (views_button_width, views_button_height)),
-            text="Save",
-            manager=self.uiManager)
-        button.action = "s"
-        self.buttons.add(button, "s")
-
-        button_num_height = 0
-        button_num_width = 1
-        button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect((
-                                      views_button_offset_from_left+ views_button_offset_from_each_other_width * button_num_width + views_button_width * button_num_width,
-                                      views_button_offset_from_top+ views_button_offset_from_each_other_height * button_num_height + views_button_height * button_num_height),
-                                      (views_button_width, views_button_height)),
-            text="(Q)uaff",
-            manager=self.uiManager)
-        button.action = "q"
-        self.buttons.add(button, "q")
-
-        button_num_height += 1
-        button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect((
-                                      views_button_offset_from_left+ views_button_offset_from_each_other_width * button_num_width + views_button_width * button_num_width,
-                                      views_button_offset_from_top+ views_button_offset_from_each_other_height * button_num_height + views_button_height * button_num_height),
-                                      (views_button_width, views_button_height)),
-            text="(R)ead",
-            manager=self.uiManager)
-        button.action = "r"
-        self.buttons.add(button, "r")
-
-        button_num_height += 1
-        button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect((
-                                      views_button_offset_from_left+ views_button_offset_from_each_other_width * button_num_width + views_button_width * button_num_width,
-                                      views_button_offset_from_top+ views_button_offset_from_each_other_height * button_num_height + views_button_height * button_num_height),
-                                      (views_button_width, views_button_height)),
-            text="Aut(o)explore",
-            manager=self.uiManager)
-        button.action = "o"
-        self.buttons.add(button, "o")
-
-
-
-        #if target_to_display != None:
-        #    clear_target = self.draw_examine_window(target_to_display, tileDict, floormap, monster_map, monsterID, item_ID, player)
-        #    if clear_target:
-        #        target_to_display = None
-
-        skill_bar_height = self.screen_height - action_screen_height
-        skill_bar_offset_from_left = message_offset_from_left + message_width
-        skill_bar_width = stats_offset_from_left - skill_bar_offset_from_left
-        skill_bar_offset_from_top = action_screen_height
-        num_skill_buttons = 6
-        skill_button_width = (action_screen_width - skill_bar_offset_from_left) // (num_skill_buttons + 1)
-        skill_button_height = (self.screen_height - action_screen_height) * 3 // 4
-
-        skill_button_offset_from_top = (self.screen_height - action_screen_height) // 8 + skill_bar_offset_from_top
-        skill_button_offset_from_each_other_width = (action_screen_width - skill_bar_offset_from_left) // (num_skill_buttons + 1)// (num_skill_buttons + 1)
-
-
-        num_skill = len(player.character.skills)
-        if num_skill == 0:
-            pass
-        else:
-            pygame.draw.rect(self.win, (0, 0, 0),
-                             pygame.Rect(skill_bar_offset_from_left, skill_bar_offset_from_top, skill_bar_width,
-                                         skill_bar_height))
-
-            for i, skill in enumerate(player.character.skills):
-                closest_monster = player.character.get_closest_monster(player, monsterID, loop.generator.tile_map)
-                if closest_monster == player and skill.range != -1:
-                    castable = False  # no monster to caste ranged skill on
-                else:
-                    castable = skill.castable(closest_monster)
-                if castable:
-                    img = pygame.transform.scale(tileDict.tiles[skill.render_tag],
-                                                 (skill_button_width, skill_button_height))
-                else:
-                    img = pygame.transform.scale(tileDict.tiles[-skill.render_tag],
-                                                 (skill_button_width, skill_button_height))
-                button = pygame_gui.elements.UIButton(
-                    relative_rect=pygame.Rect((
-                                              skill_bar_offset_from_left + skill_button_offset_from_each_other_width +(skill_button_offset_from_each_other_width + skill_button_width) * i,
-                                              skill_button_offset_from_top),
-                                              (skill_button_width, skill_button_height)),
-                    text="",
-                    manager=self.uiManager,
-                    object_id='#skill_button')
-                button.action = chr(ord("1") + i)
-                self.draw_on_button(button, img, chr(ord("1") + i), (skill_button_width, skill_button_height), shrink=True,
-                                    offset_factor=10, text_offset=(12, (0.6)))
-                self.buttons.add(button, chr(ord("1") + i))
-        self.uiManager.draw_ui(self.win)
-
+    #HORRIBLE HACK - THIS IS ALSO DEFINED IN UI.PY - KEEP THEM SYNCED!
     def get_status_text(self, entity):
         status = "Healthy"
         if entity.character.health < entity.character.max_health // 3 * 2:
@@ -377,6 +445,8 @@ class Display:
             self.win.blit(text, (self.screen_width // 100 * 12, self.screen_height // 100 * (85 + i * 3)))
 
     def draw_examine_window(self, target, tileDict, floormap, monster_map, monster_dict, item_dict, player):
+        examine_offset_from_left = self.screen_width // 30
+        examine_offset_from_top = self.screen_height // 20
         x, y = target
         if not floormap.track_map[x][y].visible:
             return
@@ -396,26 +466,26 @@ class Display:
             # draw monster
             to_draw = monster.render_tag
             tag = tileDict.tile_string(to_draw)
-            self.win.blit(tag, (self.screen_width  // 10, self.screen_height // 10))
+            self.win.blit(tag, (examine_offset_from_left, examine_offset_from_top))
             font = pygame.font.Font('freesansbold.ttf', 12)
 
             # name
             text = font.render(monster.name, True, (255, 255, 255))
-            self.win.blit(text, (self.screen_width // 10, self.screen_height // 10 + 50))
+            self.win.blit(text, (examine_offset_from_left, examine_offset_from_top + 50))
             
             # health
             text = font.render("Health: " + str(monster.character.health) + "/" + str(monster.character.max_health), True, (255, 255, 255))
-            self.win.blit(text, (self.screen_width // 10, self.screen_height // 10 + 65))
+            self.win.blit(text, (examine_offset_from_left, examine_offset_from_top + 65))
                 
             # status
             status = self.get_status_text(monster)
             text = font.render("Status: " + status, True, (255, 255, 255))
-            self.win.blit(text, (self.screen_width // 10, self.screen_height // 10 + 80))
+            self.win.blit(text, (examine_offset_from_left, examine_offset_from_top + 80))
 
             # description
             description = monster.description
             text = font.render(description, True, (255, 255, 255))
-            self.win.blit(text, (self.screen_width // 10, self.screen_height // 10 + 95))
+            self.win.blit(text, (examine_offset_from_left, examine_offset_from_top + 95))
             nothing_at_target = False
         else:
             # find item at target
@@ -425,31 +495,31 @@ class Display:
                     # draw item
                     to_draw = item.render_tag
                     tag = tileDict.tile_string(to_draw)
-                    self.win.blit(tag, (self.screen_width // 10, self.screen_height // 10))
+                    self.win.blit(tag, (examine_offset_from_left, examine_offset_from_top))
                     font = pygame.font.Font('freesansbold.ttf', 12)
 
                     # name
                     text = font.render(item.name, True, (255, 255, 255))
-                    self.win.blit(text, (self.screen_width // 10, self.screen_height // 10 + 50))
+                    self.win.blit(text, (examine_offset_from_left, examine_offset_from_top + 50))
 
                     # description 
                     text = font.render(item.description, True, (255, 255, 255))
-                    self.win.blit(text, (self.screen_width // 10, self.screen_height // 10 + 65))
+                    self.win.blit(text, (examine_offset_from_left, examine_offset_from_top + 65))
                     nothing_at_target = False
 
                     # stats (if present)
                     next_text = 80
                     if hasattr(item, "damage_min"):
                         text = font.render("Damage: " + str(item.damage_min) + " - " + str(item.damage_max), True, (255, 255, 255))
-                        self.win.blit(text, (self.screen_width // 10, self.screen_height // 10 + next_text))
+                        self.win.blit(text, (examine_offset_from_left, examine_offset_from_top + next_text))
                         next_text += 15
                     if hasattr(item, "defense"):
                         text = font.render("Defense: " + str(item.defense), True, (255, 255, 255))
-                        self.win.blit(text, (self.screen_width // 10, self.screen_height // 10 + next_text))
+                        self.win.blit(text, (examine_offset_from_left, examine_offset_from_top + next_text))
                         next_text += 15
                     if hasattr(item, "consumable"):
                         text = font.render("Consumable", True, (255, 255, 255))
-                        self.win.blit(text, (self.screen_width // 10, self.screen_height // 10 + next_text))
+                        self.win.blit(text, (examine_offset_from_left, examine_offset_from_top + next_text))
                         next_text += 15
         # find player at target
         if nothing_at_target:
@@ -458,14 +528,14 @@ class Display:
 
                 to_draw = player.render_tag
                 tag = tileDict.tile_string(to_draw)
-                self.win.blit(tag, (self.screen_width  // 10, self.screen_height // 10))
+                self.win.blit(tag, (self.screen_width  // 10, examine_offset_from_top))
                 font = pygame.font.Font('freesansbold.ttf', 12)
 
                 # random flavor text since detailed player info is elsewhere
                 text = font.render("You", True, (255, 255, 255))
-                self.win.blit(text, (self.screen_width // 10, self.screen_height // 10 + 50))
+                self.win.blit(text, (examine_offset_from_left, examine_offset_from_top + 50))
                 text = font.render("You are here", True, (255, 255, 255))
-                self.win.blit(text, (self.screen_width // 10, self.screen_height // 10 + 65))
+                self.win.blit(text, (examine_offset_from_left, examine_offset_from_top + 65))
         return nothing_at_target
 
     def create_inventory(self, player, equipment_type=None):   
@@ -738,42 +808,72 @@ class Display:
     def create_pause_screen(self):
         self.uiManager.clear_and_reset()
 
-        width = 700
-        height = 300
-        startX = (self.screen_width - width) / 2
-        startY = (self.screen_height - height) / 2
+        pause_screen_width = 700
+        pause_screen_height = 300
+        startX = (self.screen_width - pause_screen_width) / 2
+        startY = (self.screen_height - pause_screen_height) / 2
 
-        numButtons = 3
+        numButtons = 4
 
-        offset = 10
-        self.draw_empty_box(startX, startY, width, height)
+        #Offset defines a padding in pixels - buttons remain 'offset' pixels from the edges
+        offset = 10 
 
-        startX += offset
-        startY += offset
-        width -= 2 * offset
-        buttonHeight = ((height - offset) / numButtons) - offset
-        
+        #Button offset is how far apart the buttons are from each other
+        # Bug: this seems to get doubled for some reason?
+        button_offset = 5
+
+
+
+        # Don't change below here! Math should work for arbitrary button numbers and sizes, 
+        # if you set those above.
+        self.draw_empty_box(startX, startY, pause_screen_width, pause_screen_height)
+
+        pause_button_x = startX + offset
+        pause_button_base_y = startY + offset
+        pause_button_width = pause_screen_width - 2 * offset
+        pause_button_height = ((pause_screen_height - 2 * offset)
+                              - (button_offset * (numButtons - 1))) / numButtons
+
+        debug_height = 2 * offset + (numButtons * pause_button_height) + ((numButtons - 1) * button_offset)
+
+        button_num = 0
         unpause = pygame_gui.elements.UIButton(
-                    relative_rect=pygame.Rect((startX, startY, width, buttonHeight)),
+                    relative_rect=pygame.Rect((pause_button_x, pause_button_base_y +
+                                               (pause_button_height + button_offset) * button_num,
+                                               pause_button_width, pause_button_height)),
                     text = "Unpause",
                     manager=self.uiManager,
                     starting_height=1000) #Important! Need this to be high so it's above the panel.
         unpause.action = "esc"
 
-        startY += buttonHeight + offset
+        button_num += 1
         menu = pygame_gui.elements.UIButton(
-                    relative_rect=pygame.Rect((startX, startY, width, buttonHeight)),
+                    relative_rect=pygame.Rect((pause_button_x, pause_button_base_y +
+                                               (pause_button_height + button_offset) * button_num,
+                                               pause_button_width, pause_button_height)),
                     text = "Return to (m)enu",
                     manager=self.uiManager,
                     starting_height=1000) #Important! Need this to be high so it's above the panel.
         menu.action = 'm'
 
-        startY += buttonHeight + offset
-        quit = pygame_gui.elements.UIButton(
-                    relative_rect=pygame.Rect((startX, startY, width, buttonHeight)),
-                    text = "(Q)uit",
+        button_num += 1
+        save = pygame_gui.elements.UIButton(
+                    relative_rect=pygame.Rect((pause_button_x, pause_button_base_y +
+                                               (pause_button_height + button_offset) * button_num,
+                                               pause_button_width, pause_button_height)),
+                    text = "(S)ave",
                     manager=self.uiManager,
                     starting_height=1000)
+        save.action = 's'
+
+        button_num += 1
+        quit = pygame_gui.elements.UIButton(
+            relative_rect=pygame.Rect((pause_button_x, pause_button_base_y +
+                                               (pause_button_height + button_offset) * button_num,
+                                               pause_button_width, pause_button_height)),
+            text="(Q)uit",
+            manager=self.uiManager,
+            starting_height=1000)
         quit.action = 'q'
 
     def update_pause_screen(self):
@@ -809,16 +909,16 @@ class Display:
             relative_rect=pygame.Rect((margin_from_left, margin_from_top), (width, height)),
             manager=self.uiManager
         )
+        box.disable()
 
     def update_main(self):
     #Main Screen
         self.win.fill((0,0,0))
         self.uiManager.draw_ui(self.win)
 
-    def create_entity(self):
-        self.uiManager.clear_and_reset()
-
-    def update_entity(self, entity, tileDict, item_screen = True):
+    def update_entity(self, entity, tileDict, item_screen = True, create = False):
+        if create == True:
+            self.uiManager.clear_and_reset()
         self.win.fill((0,0,0))
         entity_screen_width = self.screen_width // 2
         entity_screen_height = self.screen_height // 2
@@ -852,19 +952,18 @@ class Display:
         entity_image = pygame.transform.scale(tileDict.tiles[entity.render_tag],
                                      (entity_image_width, entity_image_height))
 
-        self.uiManager.clear_and_reset()
         pygame.draw.rect(self.win, (112,128,144), pygame.Rect(entity_offset_from_left, entity_offset_from_top, entity_screen_width, entity_screen_height))
 
         self.win.blit(entity_image, (entity_image_offset_from_left, entity_image_offset_from_top))
 
         entity_name = entity.name
-
-        pygame_gui.elements.UILabel(
-            relative_rect=pygame.Rect((entity_message_offset_from_left, entity_message_offset_from_top),
-                                      (entity_message_width, entity_message_height)),
-            text=entity_name,
-            manager=self.uiManager,
-            object_id='#title_label')
+        if create == True:
+            pygame_gui.elements.UILabel(
+                relative_rect=pygame.Rect((entity_message_offset_from_left, entity_message_offset_from_top),
+                                          (entity_message_width, entity_message_height)),
+                text=entity_name,
+                manager=self.uiManager,
+                object_id='#title_label')
 
         if item_screen:
             item = entity
@@ -873,12 +972,13 @@ class Display:
                 if item_level > 1:
                     addition = " (+" + str(item_level - 1) + ")"
                     #
-                    pygame_gui.elements.UILabel(
-                    relative_rect=pygame.Rect((entity_message_offset_from_left + entity_message_width * 4// 5, entity_message_offset_from_top),
-                                            (entity_message_width // 4, entity_message_height)),
-                    text=addition,
-                    manager=self.uiManager,
-                    object_id='#title_addition')
+                    if create == True:
+                        pygame_gui.elements.UILabel(
+                        relative_rect=pygame.Rect((entity_message_offset_from_left + entity_message_width * 4// 5, entity_message_offset_from_top),
+                                                (entity_message_width // 4, entity_message_height)),
+                        text=addition,
+                        manager=self.uiManager,
+                        object_id='#title_addition')
             pretext = ""
             action = ""
             if item.equipable:
@@ -894,32 +994,33 @@ class Display:
             elif item.consumeable and item.equipment_type == "Scrorb":
                 pretext = "Read"
                 action = "r"
-            button = pygame_gui.elements.UIButton(
-                relative_rect=pygame.Rect((entity_button_offset_from_left, entity_button_offset_from_top),
-                                          (entity_button_width, entity_button_height)),
-                text=pretext,
-                manager=self.uiManager)
-            button.action = action
-            buttons.add(button, pretext)
-            buttons_drawn += 1
+            if create == True:
+                button = pygame_gui.elements.UIButton(
+                    relative_rect=pygame.Rect((entity_button_offset_from_left, entity_button_offset_from_top),
+                                              (entity_button_width, entity_button_height)),
+                    text=pretext,
+                    manager=self.uiManager)
+                button.action = action
+                buttons.add(button, pretext)
+                buttons_drawn += 1
 
-            button = pygame_gui.elements.UIButton(
-                relative_rect=pygame.Rect((entity_button_offset_from_left + (entity_button_width + entity_button_offset_from_each_other) * buttons_drawn, entity_button_offset_from_top),
-                                          (entity_button_width, entity_button_height)),
-                text='Drop',
-                manager=self.uiManager)
-            button.action = "d"
-            buttons.add(button, "Drop")
-            buttons_drawn += 1
+                button = pygame_gui.elements.UIButton(
+                    relative_rect=pygame.Rect((entity_button_offset_from_left + (entity_button_width + entity_button_offset_from_each_other) * buttons_drawn, entity_button_offset_from_top),
+                                              (entity_button_width, entity_button_height)),
+                    text='Drop',
+                    manager=self.uiManager)
+                button.action = "d"
+                buttons.add(button, "Drop")
+                buttons_drawn += 1
 
-            button = pygame_gui.elements.UIButton(
-                relative_rect=pygame.Rect((entity_button_offset_from_left + (entity_button_width + entity_button_offset_from_each_other) * buttons_drawn, entity_button_offset_from_top),
-                                          (entity_button_width, entity_button_height)),
-                text='Destroy',
-                manager=self.uiManager)
-            button.action = "b"
-            buttons.add(button, "Destroy")
-            buttons_drawn += 1
+                button = pygame_gui.elements.UIButton(
+                    relative_rect=pygame.Rect((entity_button_offset_from_left + (entity_button_width + entity_button_offset_from_each_other) * buttons_drawn, entity_button_offset_from_top),
+                                              (entity_button_width, entity_button_height)),
+                    text='Destroy',
+                    manager=self.uiManager)
+                button.action = "b"
+                buttons.add(button, "Destroy")
+                buttons_drawn += 1
 
         entity_text = ""
         entity_text += entity.description  + "<br><br>"
@@ -929,6 +1030,8 @@ class Display:
             if item.equipped:
                 entity_text += "Currently equipped<br>"
             entity_text += "Equipment type: " + item.equipment_type + "<br>"
+            if item.required_strength > 0:
+                entity_text += "Required Strength: " + str(item.required_strength) + "<br>"
             if isinstance(item, I.Armor):
                 entity_text += "Armor: " + str(item.armor) + "<br>"
             if isinstance(item, I.Weapon):
@@ -937,11 +1040,21 @@ class Display:
                     entity_text += "On hit: " + item.on_hit_description + "<br>"
             if item.attached_skill != None:
                 entity_text += "Grants skill: " + item.get_attached_skill_description() + "<br>"
-          #  entity_text += item.attached_skill.name + "<br>"
-        text_box = pygame_gui.elements.UITextBox(
-            relative_rect=pygame.Rect((entity_text_offset_from_left, entity_text_offset_from_top), (entity_text_width, entity_text_height)),
-            html_text = entity_text,
-            manager=self.uiManager)
+
+        if isinstance(entity, M.Monster):
+            entity_text += "Health: " + str(entity.character.health) + " / " + str(entity.character.max_health) + "<br>"
+            entity_text += "Attack: " + str(entity.character.get_damage_min()) + " - " + str(entity.character.get_damage_max()) + "<br>"
+            for i, skill in enumerate(entity.character.skills):
+                if i == 0:
+                    entity_text += "Skills: "
+                entity_text += str(skill)
+                if i < len(entity.character.skills) - 1:
+                    entity_text += ", "
+        if create == True:
+            text_box = pygame_gui.elements.UITextBox(
+                relative_rect=pygame.Rect((entity_text_offset_from_left, entity_text_offset_from_top), (entity_text_width, entity_text_height)),
+                html_text = entity_text,
+                manager=self.uiManager)
 
         self.uiManager.draw_ui(self.win)
         return self.buttons
@@ -1157,50 +1270,45 @@ class Display:
         deltaTime = self.clock.tick() / 1000
         self.uiManager.update(deltaTime)
 
-    def create_game_ui(self, player):
+
+    def create_main_screen(self):
+        button_width = self.screen_width // 6
+        button_height = self.screen_height // 8
+        button_offset_from_bottom = self.screen_height * 95 // 100 - button_height
+        button_offset_from_each_other = self.screen_width // 12
+        button_offset_from_left = self.screen_width * 1/6 #Should be (1 - 3* button_width - 2 * button_offset from each other) / 2
+
+        message_width = self.screen_width * 5//6
+        message_height = self.screen_height * 2//3
+        message_offset_from_left = self.screen_width // 12
+        message_offset_from_top = self.screen_height // 12
+
+
         self.uiManager.clear_and_reset()
-
-        healthBar = ui.HealthBar(pygame.Rect((20,400), (120,40)), self.uiManager, player)
-        manaBar = ui.ManaBar(pygame.Rect((20,450), (120,40)), self.uiManager, player)
-
-def create_main_screen(scr, width, height):
-    button_width = width // 6
-    button_height = height // 8
-    button_offset_from_bottom = height * 95 // 100 - button_height
-    button_offset_from_each_other = width // 12
-    button_offset_from_left = width * 1/6 #Should be (1 - 3* button_width - 2 * button_offset from each other) / 2
-
-    message_width = width * 5//6
-    message_height = height * 2//3
-    message_offset_from_left = width // 12
-    message_offset_from_top = height // 12
+        buttons = Buttons()
+        button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((button_offset_from_left, button_offset_from_bottom), (button_width, button_height)),
+                                                 text='Play',
+                                                 manager=self.uiManager)
+        button.action = "return"
+        buttons.add(button, "play")
 
 
-    scr.uiManager.clear_and_reset()
-    buttons = Buttons()
-    button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((button_offset_from_left, button_offset_from_bottom), (button_width, button_height)),
-                                             text='Play',
-                                             manager=scr.uiManager)
-    button.action = "return"
-    buttons.add(button, "play")
-    
 
-    
-    button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((button_offset_from_left + button_width+ button_offset_from_each_other, button_offset_from_bottom), (button_width, button_height)),
-                                             text='Load',
-                                             manager=scr.uiManager)
-    button.action = "l"
-    buttons.add(button, "load")
+        button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((button_offset_from_left + button_width+ button_offset_from_each_other, button_offset_from_bottom), (button_width, button_height)),
+                                                 text='Load',
+                                                 manager=self.uiManager)
+        button.action = "l"
+        buttons.add(button, "load")
 
-    button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((button_offset_from_left+ button_width * 2 + button_offset_from_each_other * 2, button_offset_from_bottom), (button_width, button_height)),
-                                             text='Quit',
-                                             manager=scr.uiManager)
-    button.action = "esc"
-    buttons.add(button, "quit")
+        button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((button_offset_from_left+ button_width * 2 + button_offset_from_each_other * 2, button_offset_from_bottom), (button_width, button_height)),
+                                                 text='Quit',
+                                                 manager=self.uiManager)
+        button.action = "esc"
+        buttons.add(button, "quit")
 
-    pygame_gui.elements.UILabel(relative_rect=pygame.Rect((message_offset_from_left, message_offset_from_top), (message_width, message_height)),
-                                text="Orbworld: The Orb of Destiny",
-                                manager=scr.uiManager,
-                                object_id='#title_label')
-    
-    return buttons
+        pygame_gui.elements.UILabel(relative_rect=pygame.Rect((message_offset_from_left, message_offset_from_top), (message_width, message_height)),
+                                    text="Orbworld: The Orb of Destiny",
+                                    manager=self.uiManager,
+                                    object_id='#title_label')
+
+        return buttons

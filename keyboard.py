@@ -239,9 +239,8 @@ class Keyboard():
             loop.memory.load_objects()
             loop.load_game()
         else:
-            loop.change_loop(LoopType.action)
-            loop.init_new_game()
             loop.down_floor()
+            loop.change_loop(LoopType.action)
         return True
     
     def key_race_screen(self, key, loop):
@@ -284,9 +283,12 @@ class Keyboard():
             loop.change_loop(LoopType.action)
         elif key == "m":
             loop.change_loop(LoopType.main)
+            loop.clear_data()
+            loop.init_game(display)
+        elif key == 's':
+            loop.memory.save_objects()
         elif key == "q":
             return False
-
         return True
 
     def key_targeting_screen(self, key, loop):
@@ -369,6 +371,7 @@ class Keyboard():
                 else:
                     loop.screen_focus = loop.generator.tile_map.track_map[x][y]
                     loop.change_loop(LoopType.specific_examine)
+
 
     def key_specific_examine(self, key, loop, display):
         if key == "esc":

@@ -133,16 +133,14 @@ class Loops():
         self.current_stat = 0 # index of stat for levelling up
 
         #Start the game by going to the main screen
-        self.change_loop(LoopType.main)
 
     #Sets the internal loop type, and does the initialization that it needs.
     #Mostly here to cache UI pieces, which shouldn't be remade every frame.
     def change_loop(self, newLoop):
         self.currentLoop = newLoop
         self.update_screen = True
-        
         if newLoop == LoopType.action:
-            self.display.create_action_display(self)
+            self.display.create_display(self)
         elif newLoop == LoopType.autoexplore:
             pass
         elif newLoop == LoopType.inventory or newLoop == LoopType.enchant:
@@ -152,20 +150,19 @@ class Loops():
         elif newLoop == LoopType.equipment:
             self.display.create_equipment(self.player, self.tileDict)
         elif newLoop == LoopType.main:
-            pass
+            self.display.create_main_screen()
         elif newLoop == LoopType.race:
             pass
         elif newLoop == LoopType.classes:
             pass
         elif newLoop == LoopType.items:
-            self.display.create_entity()
+            self.display.update_entity(self.screen_focus, self.tileDict, item_screen = True, create = True)
         elif newLoop == LoopType.examine:
-            pass
+            self.display.update_display(self, create = True)
         elif newLoop == LoopType.paused:
             self.display.create_pause_screen()
         elif newLoop == LoopType.specific_examine:
             pass
-
     def action_loop(self, keyboard, display):
         """
         This is responsible for undergoing any inputs when screen is clicked
@@ -232,6 +229,7 @@ class Loops():
                     keyboard.key_class_screen(key, self)
                 elif self.currentLoop == LoopType.items:
                     keyboard.key_item_screen(key, self, self.item_dict, self.player, self.screen_focus, self.generator.item_map)
+                    self.change_loop(self.currentLoop)
                 elif self.currentLoop == LoopType.examine:
                     keyboard.key_examine_screen(key, self)
                 elif self.currentLoop == LoopType.targeting:
@@ -248,7 +246,7 @@ class Loops():
 
                 self.update_screen = True
 
-            elif event.type == pygame_gui.UI_BUTTON_PRESSED:
+            elif event.type == pygame_gui.UI_BUTTON_PRESSED and hasattr(event.ui_element, "action"):
                 if (self.currentLoop == LoopType.main):
                     return keyboard.key_main_screen(event.ui_element.action, self)
                 elif (self.currentLoop == LoopType.inventory):
@@ -266,7 +264,8 @@ class Loops():
                     keyboard.key_equipment(self, self.player, self.item_dict, key)
                 elif (self.currentLoop == LoopType.items):
                     key = event.ui_element.action
-                    keyboard.key_item_screen(self, self.player, self.item_dict, key)
+                    keyboard.key_item_screen(key, self, self.item_dict, self.player, self.screen_focus, self.generator.item_map)
+                    self.change_loop(self.currentLoop)
                 elif (self.currentLoop == LoopType.paused):
                     key = event.ui_element.action
                     if (keyboard.key_paused(key, self, display) == False):
@@ -339,7 +338,12 @@ class Loops():
         if self.currentLoop == LoopType.action or self.currentLoop == LoopType.autoexplore or self.currentLoop == LoopType.search_stairs:
             self.clean_up()
             shadowcasting.compute_fov(self.player.get_location(), self.generator.tile_map.track_map)
-            display.update_action_display(self)
+            display.update_display(self)
+            if self.currentLoop == LoopType.action:
+                mos_x, mos_y = pygame.mouse.get_pos()
+                (x,y) = display.screen_to_tile(self.player, mos_x,mos_y)
+                if self.generator.tile_map.in_map(x,y):
+                    display.draw_examine_window((x,y), self.tileDict, self.generator.tile_map, self.monster_map, self.monster_dict, self.item_dict, self.player)
         elif self.currentLoop == LoopType.inventory or self.currentLoop == LoopType.enchant:
             display.update_inventory(self.player, self.limit_inventory)
         elif self.currentLoop == LoopType.level_up:
@@ -359,7 +363,7 @@ class Loops():
         elif self.currentLoop == LoopType.paused:
             display.update_pause_screen()
         elif self.currentLoop == LoopType.specific_examine:
-            display.update_entity(self.screen_focus, tileDict, item_screen=False)
+            display.update_entity(self.screen_focus, tileDict, item_screen=False, create = True)
         pygame.display.update()
         self.update_screen = False
 
@@ -437,7 +441,7 @@ class Loops():
             self.monster_dict = self.generator.monster_dict
 
     def init_game(self, display):
-        self.main_buttons = D.create_main_screen(display, self.width, self.height)
+        self.main_buttons = display.create_main_screen()
         self.player = C.Player(0, 0)
         self.memory.player = self.player
         self.display = display
@@ -447,7 +451,7 @@ class Loops():
         """
 
     def add_message(self, message):
-        if len(self.messages) >= 4:
+        if len(self.messages) >= 5:
             self.messages.pop(0)
         self.messages.append(message)
 
@@ -461,6 +465,7 @@ class Loops():
         if self.monster_map.get_passable(self.target_to_display[0], self.target_to_display[1]): # don't void if its a monster, cuz its a good QOL to keep monster health on screen
             self.target_to_display = None
 
+
     def start_targetting(self):
         self.change_loop(LoopType.targeting)
         closest_monster = self.player.character.get_closest_monster(self.player, self.generator.monster_dict, self.generator.tile_map)
@@ -470,8 +475,8 @@ class Loops():
     def init_new_game(self):
         self.display.create_game_ui(self.player)
 
+
     def load_game(self):
-        self.change_loop(LoopType.action)
         self.update_screen = False
 
 #        self.items = False
@@ -485,6 +490,7 @@ class Loops():
         self.monster_dict = self.generator.monster_dict
         self.player = self.memory.player
         self.player.character.energy = 0
+        self.change_loop(LoopType.action)
 
     def clear_data(self):
         self.change_loop(LoopType.main)
