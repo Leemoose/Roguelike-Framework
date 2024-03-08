@@ -342,7 +342,7 @@ class Loops():
         elif self.currentLoop == LoopType.paused:
             display.update_pause_screen()
         elif self.currentLoop == LoopType.specific_examine:
-            display.update_entity(self.screen_focus, tileDict, item_screen=False)
+            display.update_entity(self.screen_focus, tileDict, item_screen=False, create = True)
         pygame.display.update()
         self.update_screen = False
 
