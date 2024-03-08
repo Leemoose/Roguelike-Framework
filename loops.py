@@ -259,6 +259,11 @@ class Loops():
                 x,y = pygame.mouse.get_pos()
                 self.update_screen = True
 
+            elif event.type == pygame.VIDEORESIZE:
+                self.display.update_sizes()
+                self.update_screen = True
+                self.change_loop(self.currentLoop)
+
             display.uiManager.process_events(event)
 
         if ((self.currentLoop == LoopType.action and self.player.character.energy < 0) or
