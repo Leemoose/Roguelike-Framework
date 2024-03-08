@@ -56,6 +56,28 @@ class MessageBox(pygame_gui.elements.UITextBox):
 
         return super().update(time_delta)
     
+class LevelUpHeader(pygame_gui.elements.UILabel):
+    def __init__(self, rect, manager, player):
+        super().__init__(relative_rect=rect, manager=manager, text="Allocate " + str(player.stat_points) + " Stat Points")
+        self.player = player
+
+    def update(self, time_delta: float):
+        import pdb; pdb.set_trace()
+        self.set_text("Allocate " + str(self.player.stat_points - sum(self.player.stat_decisions)) + " Stat Points")
+        return super().update(time_delta)
+    
+class StatChangeText(pygame_gui.elements.UILabel):
+    def __init__(self, rect, manager, player, index):
+        super().__init__(relative_rect=rect, manager=manager, text="+" + str(player.stat_decisions[index]))
+        self.player = player
+        self.index = index
+
+    def update(self, time_delta: float):
+        self.set_text("+" + str(self.player.stat_decisions[self.index]))
+
+        return super().update(time_delta)
+    
+    
 class StatBox(pygame_gui.elements.UITextBox):
     def __init__(self, rect, manager, player):
         super().__init__(relative_rect=rect, manager=manager, html_text="Error")
@@ -70,6 +92,14 @@ class StatBox(pygame_gui.elements.UITextBox):
         for effect in effects:
             status += ", " + effect.description()
         return status
+    
+    def get_level_text(self, entity):
+        if entity.stat_points > 0:
+            return "<shadow size=1 offset=0,0 color=#306090><font color=#E0F0FF>Level: " \
+                    + str(entity.level) + " (Press L to allocate stat points)</font></shadow>"
+        else:
+            to_next_level = str(format(entity.experience * 100 / entity.experience_to_next_level, ".1%"))
+            return "Level: " + str(entity.level) + " (" + to_next_level + " there to next level)"
 
     def update(self, time_delta: float):
         self.set_text(html_text="Player:<br>" +
@@ -80,8 +110,8 @@ class StatBox(pygame_gui.elements.UITextBox):
                         "<br>"
                         "Health: " + str(self.player.character.health) + " / " + str(self.player.character.max_health) + "<br>"
                         "Mana: " + str(self.player.character.mana) + " / " + str(self.player.character.max_mana) + "<br>"
-                        "Status: " + self.get_status_text(self.player) + "<br>"
-                        "Level: " + str(self.player.level))
+                        "Status: " + self.get_status_text(self.player) + "<br>" + \
+                        self.get_level_text(self.player) + "<br>")
 
         return super().update(time_delta)
     

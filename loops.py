@@ -254,10 +254,8 @@ class Loops():
                     keyboard.key_inventory(self, self.player, self.item_dict, key)
                 elif (self.currentLoop == LoopType.level_up):
                     key = event.ui_element.action
-                    row = event.ui_element.row
-                    print(key)
-                    print(row)
-                    self.current_stat = row
+                    if event.ui_element.row != None:
+                        self.current_stat = event.ui_element.row
                     keyboard.key_level_up(self, key)
                 elif (self.currentLoop == LoopType.equipment):
                     key = event.ui_element.action

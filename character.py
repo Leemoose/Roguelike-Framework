@@ -308,6 +308,7 @@ class Character():
             for skill in self.skills:
                 skill.ready = 0
             for effect in self.status_effects:
+                print(effect)
                 if not effect.positive:
                     self.remove_status_effect(effect.name)
             loop.add_message("You rest for a while")

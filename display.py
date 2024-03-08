@@ -1078,6 +1078,7 @@ class Display:
 
     def update_level_up(self, loop):
         line_to_outline = loop.current_stat
+        player = loop.player
         entity_screen_width = self.screen_width // 2
         entity_screen_height = self.screen_height // 2
         entity_offset_from_left = self.screen_width // 4
@@ -1119,6 +1120,7 @@ class Display:
                                                           stat_outline_offset_from_top + i * (stat_line_height + stat_line_offset_from_each_other), 
                                                           stat_outline_width, 
                                                           stat_outline_height))
+
         self.uiManager.draw_ui(self.win)
 
     def create_level_up(self, loop):
@@ -1138,12 +1140,6 @@ class Display:
         border_height = 8
         pygame.draw.rect(self.win, (0, 0, 0), pygame.Rect(entity_offset_from_left - border_width // 2, entity_offset_from_top - border_height // 2, entity_screen_width + border_width, entity_screen_height+border_height))
         pygame.draw.rect(self.win, (112,128,144), pygame.Rect(entity_offset_from_left, entity_offset_from_top, entity_screen_width, entity_screen_height))
-        
-        available_stat_points = player.stat_points - sum(player.stat_decisions)
-        pygame_gui.elements.UILabel(
-            relative_rect=pygame.Rect((entity_message_offset_from_left, entity_message_offset_from_top), (entity_message_width, entity_message_height)),
-            text="Allocate " + str(available_stat_points) + " Stat Points",
-            manager=self.uiManager)
         
         stat_line_offset_from_left = entity_offset_from_left + entity_screen_width // 6
         stat_line_offset_from_top = entity_offset_from_top + entity_screen_height // 4
@@ -1189,16 +1185,15 @@ class Display:
             button.row = i
             
             self.draw_on_button(button, stat_change_left, letter = "", button_size=(stat_change_button_width, stat_change_button_height), shrink=False, offset_factor=12, text_offset=(15, 0.8))
-            
-            text_in_between = "+" + str(player.stat_decisions[i])
 
-            pygame_gui.elements.UILabel(
-                relative_rect=pygame.Rect(
+            ui.StatChangeText(
+                rect=pygame.Rect(
                     (stat_change_text_offset_left, 
                     stat_change_button_offset_from_top + i * (stat_line_height + stat_change_button_offset_from_each_other_height)),
                     (stat_change_button_width, stat_change_button_height)),
-                text=text_in_between,
-                manager=self.uiManager)
+                manager=self.uiManager,
+                player=player,
+                index=i)
             
             button_2 = pygame_gui.elements.UIButton(
                 relative_rect=pygame.Rect((stat_change_button_offset_from_left + stat_change_button_width + stat_change_offset_from_each_other_width, 
@@ -1215,6 +1210,12 @@ class Display:
 
         #stat_line_outline_offset_from_left = stat_change_button_offset_from_left - entity_screen_width // 24
         #stat_line_outline = pygame.Rect((stat_change_button_offset_from_left, stat_line_offset_from_top), (stat_line_width, stat_line_height * 4 + stat_line_offset_from_each_other * 3))
+
+        import pdb; pdb.set_trace()
+        ui.LevelUpHeader(
+            rect=pygame.Rect((entity_message_offset_from_left, entity_message_offset_from_top), (entity_message_width, entity_message_height)),
+            manager=self.uiManager,
+            player=player)
 
         # strength
         description = "Str (currently " + str(player.character.strength) + ") - increase your damage and wear heavier armor"
@@ -1264,6 +1265,7 @@ class Display:
             text="Confirm",
             manager=self.uiManager)
         button.action = "return"
+        button.row = None
 
 
     def update_ui(self):
