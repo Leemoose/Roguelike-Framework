@@ -3,6 +3,7 @@ import pygame_gui
 import items as I
 import ui
 import objects as O
+import monster as M
 
 class Buttons:
     def __init__(self):
@@ -791,10 +792,9 @@ class Display:
         self.win.fill((0,0,0))
         self.uiManager.draw_ui(self.win)
 
-    def create_entity(self):
-        self.uiManager.clear_and_reset()
-
-    def update_entity(self, entity, tileDict, item_screen = True):
+    def update_entity(self, entity, tileDict, item_screen = True, create = False):
+        if create == True:
+            self.uiManager.clear_and_reset()
         self.win.fill((0,0,0))
         entity_screen_width = self.screen_width // 2
         entity_screen_height = self.screen_height // 2
@@ -828,19 +828,18 @@ class Display:
         entity_image = pygame.transform.scale(tileDict.tiles[entity.render_tag],
                                      (entity_image_width, entity_image_height))
 
-        self.uiManager.clear_and_reset()
         pygame.draw.rect(self.win, (112,128,144), pygame.Rect(entity_offset_from_left, entity_offset_from_top, entity_screen_width, entity_screen_height))
 
         self.win.blit(entity_image, (entity_image_offset_from_left, entity_image_offset_from_top))
 
         entity_name = entity.name
-
-        pygame_gui.elements.UILabel(
-            relative_rect=pygame.Rect((entity_message_offset_from_left, entity_message_offset_from_top),
-                                      (entity_message_width, entity_message_height)),
-            text=entity_name,
-            manager=self.uiManager,
-            object_id='#title_label')
+        if create == True:
+            pygame_gui.elements.UILabel(
+                relative_rect=pygame.Rect((entity_message_offset_from_left, entity_message_offset_from_top),
+                                          (entity_message_width, entity_message_height)),
+                text=entity_name,
+                manager=self.uiManager,
+                object_id='#title_label')
 
         if item_screen:
             item = entity
@@ -849,12 +848,13 @@ class Display:
                 if item_level > 1:
                     addition = " (+" + str(item_level - 1) + ")"
                     #
-                    pygame_gui.elements.UILabel(
-                    relative_rect=pygame.Rect((entity_message_offset_from_left + entity_message_width * 4// 5, entity_message_offset_from_top),
-                                            (entity_message_width // 4, entity_message_height)),
-                    text=addition,
-                    manager=self.uiManager,
-                    object_id='#title_addition')
+                    if create == True:
+                        pygame_gui.elements.UILabel(
+                        relative_rect=pygame.Rect((entity_message_offset_from_left + entity_message_width * 4// 5, entity_message_offset_from_top),
+                                                (entity_message_width // 4, entity_message_height)),
+                        text=addition,
+                        manager=self.uiManager,
+                        object_id='#title_addition')
             pretext = ""
             action = ""
             if item.equipable:
@@ -870,32 +870,33 @@ class Display:
             elif item.consumeable and item.equipment_type == "Scrorb":
                 pretext = "Read"
                 action = "r"
-            button = pygame_gui.elements.UIButton(
-                relative_rect=pygame.Rect((entity_button_offset_from_left, entity_button_offset_from_top),
-                                          (entity_button_width, entity_button_height)),
-                text=pretext,
-                manager=self.uiManager)
-            button.action = action
-            buttons.add(button, pretext)
-            buttons_drawn += 1
+            if create == True:
+                button = pygame_gui.elements.UIButton(
+                    relative_rect=pygame.Rect((entity_button_offset_from_left, entity_button_offset_from_top),
+                                              (entity_button_width, entity_button_height)),
+                    text=pretext,
+                    manager=self.uiManager)
+                button.action = action
+                buttons.add(button, pretext)
+                buttons_drawn += 1
 
-            button = pygame_gui.elements.UIButton(
-                relative_rect=pygame.Rect((entity_button_offset_from_left + (entity_button_width + entity_button_offset_from_each_other) * buttons_drawn, entity_button_offset_from_top),
-                                          (entity_button_width, entity_button_height)),
-                text='Drop',
-                manager=self.uiManager)
-            button.action = "d"
-            buttons.add(button, "Drop")
-            buttons_drawn += 1
+                button = pygame_gui.elements.UIButton(
+                    relative_rect=pygame.Rect((entity_button_offset_from_left + (entity_button_width + entity_button_offset_from_each_other) * buttons_drawn, entity_button_offset_from_top),
+                                              (entity_button_width, entity_button_height)),
+                    text='Drop',
+                    manager=self.uiManager)
+                button.action = "d"
+                buttons.add(button, "Drop")
+                buttons_drawn += 1
 
-            button = pygame_gui.elements.UIButton(
-                relative_rect=pygame.Rect((entity_button_offset_from_left + (entity_button_width + entity_button_offset_from_each_other) * buttons_drawn, entity_button_offset_from_top),
-                                          (entity_button_width, entity_button_height)),
-                text='Destroy',
-                manager=self.uiManager)
-            button.action = "b"
-            buttons.add(button, "Destroy")
-            buttons_drawn += 1
+                button = pygame_gui.elements.UIButton(
+                    relative_rect=pygame.Rect((entity_button_offset_from_left + (entity_button_width + entity_button_offset_from_each_other) * buttons_drawn, entity_button_offset_from_top),
+                                              (entity_button_width, entity_button_height)),
+                    text='Destroy',
+                    manager=self.uiManager)
+                button.action = "b"
+                buttons.add(button, "Destroy")
+                buttons_drawn += 1
 
         entity_text = ""
         entity_text += entity.description  + "<br><br>"
@@ -913,11 +914,21 @@ class Display:
                     entity_text += "On hit: " + item.on_hit_description + "<br>"
             if item.attached_skill != None:
                 entity_text += "Grants skill: " + item.get_attached_skill_description() + "<br>"
-          #  entity_text += item.attached_skill.name + "<br>"
-        text_box = pygame_gui.elements.UITextBox(
-            relative_rect=pygame.Rect((entity_text_offset_from_left, entity_text_offset_from_top), (entity_text_width, entity_text_height)),
-            html_text = entity_text,
-            manager=self.uiManager)
+
+        if isinstance(entity, M.Monster):
+            entity_text += "Health: " + str(entity.character.health) + " / " + str(entity.character.max_health) + "<br>"
+            entity_text += "Attack: " + str(entity.character.get_damage_min()) + " - " + str(entity.character.get_damage_max()) + "<br>"
+            for i, skill in enumerate(entity.character.skills):
+                if i == 0:
+                    entity_text += "Skills: "
+                entity_text += str(skill)
+                if i < len(entity.character.skills) - 1:
+                    entity_text += ", "
+        if create == True:
+            text_box = pygame_gui.elements.UITextBox(
+                relative_rect=pygame.Rect((entity_text_offset_from_left, entity_text_offset_from_top), (entity_text_width, entity_text_height)),
+                html_text = entity_text,
+                manager=self.uiManager)
 
         self.uiManager.draw_ui(self.win)
         return self.buttons

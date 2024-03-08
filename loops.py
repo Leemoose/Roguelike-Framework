@@ -153,7 +153,7 @@ class Loops():
         elif newLoop == LoopType.classes:
             pass
         elif newLoop == LoopType.items:
-            self.display.create_entity()
+            self.display.update_entity(self.screen_focus, self.tileDict, item_screen = True, create = True)
         elif newLoop == LoopType.examine:
             self.display.update_display(self, create = True)
         elif newLoop == LoopType.paused:
@@ -251,7 +251,8 @@ class Loops():
                     keyboard.key_equipment(self, self.player, self.item_dict, key)
                 elif (self.currentLoop == LoopType.items):
                     key = event.ui_element.action
-                    keyboard.key_item_screen(self, self.player, self.item_dict, key)
+                    keyboard.key_item_screen(key, self, self.item_dict, self.player, self.screen_focus, self.generator.item_map)
+                    self.change_loop(self.currentLoop)
                 elif (self.currentLoop == LoopType.paused):
                     key = event.ui_element.action
                     if (keyboard.key_paused(key, self, display) == False):
