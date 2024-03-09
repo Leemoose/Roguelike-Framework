@@ -149,6 +149,8 @@ class Fear(StatusEffect):
 class Invincible(StatusEffect):
     def __init__(self, duration, inflictor = None):
         super().__init__(806, "Invincible", "can't be killed", duration)
+        self.positive = True
+
     def apply_effect(self, target):
         target.invincible = True
 

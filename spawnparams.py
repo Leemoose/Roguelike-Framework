@@ -113,9 +113,9 @@ class ItemSpawner():
 
         # useful for debugging specific items, separate from generator
         self.forceSpawn = None
-
+        self.forceSpawn = ("Lich Hand", 3)
         # self.forceSpawn = ("Enchant Scrorb", 3)
-        # self.forceSpawn = ("Flaming Sword", 5)
+        self.forceSpawn2 = ("Flaming Sword", 5)
         
     def countSpawn(self, depth):
         return random.randint(int(2 + 0.25 * (10 - depth)), int(4 + 0.5 * (10 - depth)))
@@ -140,6 +140,11 @@ class ItemSpawner():
         if self.forceSpawn:
             for _ in range(self.forceSpawn[1]):
                 item_spawn = [i for i in self.ItemSpawns if i.item.name == self.forceSpawn[0]][0]
+                item = item_spawn.GetFreshCopy()
+                items.append(item)
+        if self.forceSpawn2:
+            for _ in range(self.forceSpawn2[1]):
+                item_spawn = [i for i in self.ItemSpawns if i.item.name == self.forceSpawn2[0]][0]
                 item = item_spawn.GetFreshCopy()
                 items.append(item)
         
@@ -264,8 +269,8 @@ class MonsterSpawner():
             return random.randint(6, 9)
     
     def spawnMonsters(self, depth):
-        if depth > 9:
-            depth = 9
+        if depth > 10:
+            depth = 10
         monsters = []
         normalAtDepth = [i for i in self.normalMonsters if i.AllowedAtDepth(depth)]
         orbAtDepth = [i for i in self.orbMonsters if i.AllowedAtDepth(depth)]
