@@ -199,6 +199,7 @@ class Monster_AI():
         # print("Attacking player")
         player=loop.player
         monster = self.parent
+        monster.character.energy -= monster.character.attack_cost
         if not monster.character.movable:
             monster.character.energy -= (monster.character.move_cost - monster.character.dexterity)
             loop.add_message(f"{monster} is petrified and cannot attack.")

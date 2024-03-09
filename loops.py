@@ -313,6 +313,7 @@ class Loops():
 
             display.uiManager.process_events(event)
 
+        print(self.player.character.energy)
         if ((self.currentLoop == LoopType.action and self.player.character.energy < 0) or
             (self.currentLoop == LoopType.rest and self.player.character.energy < 0)):
             self.monster_loop(-self.player.character.energy)
