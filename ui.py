@@ -19,7 +19,7 @@ class HealthBar(pygame_gui.elements.UIProgressBar):
         if (self.needs_update(self.player.character)):
             self.maximum_progress = max(1.0, self.player.character.max_health)
             self.current_progress = self.player.character.health
-            self.percent_full = 100 * self.current_progress / self.maximum_progress
+            self.percent_full = self.current_progress / self.maximum_progress
 
         return super().update(time_delta)
     
@@ -150,8 +150,7 @@ class StatChangeText(pygame_gui.elements.UILabel):
         self.set_text("+" + str(self.player.stat_decisions[self.index]))
 
         return super().update(time_delta)
-    
-    
+
 class StatBox(pygame_gui.elements.UITextBox):
     def __init__(self, rect, manager, player):
         super().__init__(relative_rect=rect, manager=manager, html_text="Error")
@@ -232,22 +231,156 @@ class StatBox(pygame_gui.elements.UITextBox):
         
     def round_text(self, entity):
         if entity.character.rounded():
-            return "You feel the dungeon enhancing your well-rounded stats.<br><br>"
+            return "Your stats are well rounded.<br><br>"
         else:
-            return "<br>"
+            return "Your stats are not well rounded.<br><br>"
 
     def update(self, time_delta: float):
         if (self.NeedsUpdate(self.player)):
-            self.set_text(html_text="Player:<br>" +
-                            "Strength: " + self.stat_text(self.player, self.player.character.strength) + "<br>"
+            self.set_text(html_text=
+                            "Health: " + "<br>" +
+                            "Mana: " + "<br>" +
+                            "Strength: " + self.stat_text(self.player, self.player.character.strength) + " "
                             "Dexterity: " + self.stat_text(self.player, self.player.character.dexterity) + "<br>"
-                            "Endurance: " + self.stat_text(self.player, self.player.character.endurance) + "<br>"
+                            "Endurance: " + self.stat_text(self.player, self.player.character.endurance) + " "
                             "Intelligence: " + self.stat_text(self.player, self.player.character.intelligence) + "<br>" + \
                             self.round_text(self.player) + \
                             "Status: " + self.get_status_text(self.player) + "<br>" + \
                             self.get_level_text(self.player) + "<br>")
 
         return super().update(time_delta)
+    
+class SkillButton(pygame_gui.elements.UIButton):
+    def __init__(self, rect, manager, player, index, img1, img2, loop, object_id):
+        super().__init__(relative_rect=rect, manager=manager, text="", object_id=object_id,
+                    starting_height=900)
+        self.player = player
+        self.index = index
+        self.img1 = img1
+        self.img2 = img2
+        self.loop = loop
+        self.set_text("")
+        self.draw_on_button(self, self.img2, chr(ord("1") + index), self.relative_rect.size, True)
+
+    def draw_on_button(self, button, img, letter="", button_size=None, shrink=False, offset_factor = 10, text_offset = (15, 0.8)):
+        offset = (0, 0)
+        if shrink:# shrink weapon image a bit
+            img = pygame.transform.scale(img, (button_size[0] // 5 * 4, button_size[1] // 5 * 4))
+            offset = (button_size[0] // offset_factor, button_size[1] // offset_factor)
+        button.drawable_shape.states['normal'].surface.blit(img, offset)
+        button.drawable_shape.states['hovered'].surface.blit(img, offset)
+        button.drawable_shape.states['disabled'].surface.blit(img, offset)
+        button.drawable_shape.states['selected'].surface.blit(img, offset)
+        button.drawable_shape.states['active'].surface.blit(img, offset)
+        if button_size:
+            font_size = 20
+            font = pygame.font.Font('freesansbold.ttf', font_size)
+            text = font.render(letter, True, (255, 255, 255))
+            button.drawable_shape.states['normal'].surface.blit(text, (button_size[0] // text_offset[0], button_size[1] * text_offset[1]))
+            button.drawable_shape.states['hovered'].surface.blit(text, (button_size[0] // text_offset[0], button_size[1] * text_offset[1]))
+            button.drawable_shape.states['disabled'].surface.blit(text, (button_size[0] // text_offset[0], button_size[1] * text_offset[1]))
+            button.drawable_shape.states['selected'].surface.blit(text, (button_size[0] // text_offset[0], button_size[1] * text_offset[1]))
+            button.drawable_shape.states['active'].surface.blit(text, (button_size[0] // text_offset[0], button_size[1] * text_offset[1]))
+        button.drawable_shape.active_state.has_fresh_surface = True
+
+    def draw_text_on_button(self, button, text, button_size):
+        # draw text on middle of button
+        font_size = 20
+        font = pygame.font.Font('freesansbold.ttf', font_size)
+        text = font.render(text, True, (255, 255, 255))
+        button.drawable_shape.states['normal'].surface.blit(text, (button_size[0] // 2 - 10, button_size[1] // 2 - 10))
+        button.drawable_shape.states['hovered'].surface.blit(text, (button_size[0] // 2 - 10, button_size[1] // 2 - 10))
+        button.drawable_shape.states['disabled'].surface.blit(text, (button_size[0] // 2 - 10, button_size[1] // 2 - 10))
+        button.drawable_shape.states['selected'].surface.blit(text, (button_size[0] // 2 - 10, button_size[1] // 2 - 10))
+        button.drawable_shape.states['active'].surface.blit(text, (button_size[0] // 2 - 10, button_size[1] // 2 - 10))
+        button.drawable_shape.active_state.has_fresh_surface = True
+
+    def update(self, time_delta: float):
+        skill = self.player.character.skills[self.index]
+        closest_monster = self.player.character.get_closest_monster(self.player, self.loop.monster_dict, self.loop.generator.tile_map)
+        if closest_monster == self.player and skill.range != -1:
+            castable = False  # no monster to caste ranged skill on
+        else:
+            castable = skill.castable(closest_monster)
+        if (castable):
+            self.draw_on_button(self, self.img1, "", self.relative_rect.size, True)
+            
+        else:
+            ready = skill.ready
+            self.draw_on_button(self, self.img2, "", self.relative_rect.size, True)
+            if ready != 0:
+                self.draw_text_on_button(self, str(ready), self.relative_rect.size)
+
+        return super().update(time_delta)
+    
+class StatDownButton(pygame_gui.elements.UIButton):
+    def __init__(self, rect, manager, player, img1, img2, index):
+        super().__init__(relative_rect=rect, manager=manager, text="")
+        self.player = player
+        self.img1 = img1
+        self.img2 = img2
+        self.index = index
+        self.set_text("")
+        self.draw_on_button(self, self.img2)
+
+    def draw_on_button(self, button, img):
+        offset = (0, 0)
+        button.drawable_shape.states['normal'].surface.blit(img, offset)
+        button.drawable_shape.states['hovered'].surface.blit(img, offset)
+        button.drawable_shape.states['disabled'].surface.blit(img, offset)
+        button.drawable_shape.states['selected'].surface.blit(img, offset)
+        button.drawable_shape.states['active'].surface.blit(img, offset)
+        button.drawable_shape.active_state.has_fresh_surface = True
+
+    def update(self, time_delta: float):
+        if (self.player.stat_decisions[self.index] > 0):
+            self.draw_on_button(self, self.img1)
+        else:
+            self.draw_on_button(self, self.img2)
+
+        return super().update(time_delta)
+    
+class ExamineWindow(pygame_gui.elements.UITextBox):
+    def __init__(self, rect, manager, loop):
+        super().__init__(relative_rect=rect, manager=manager, html_text="Error")
+        self.loop = loop
+        self.last_examine = -1
+
+    def update(self, time_delta: float):
+        if (self.last_examine != self.loop.examine):
+            self.set_text(html_text=self.loop.examine)
+            self.last_examine = self.loop.examine
+
+        return super().update(time_delta)
+    
+class StatUpButton(pygame_gui.elements.UIButton):
+    def __init__(self, rect, manager, player, img1, img2, index):
+        super().__init__(relative_rect=rect, manager=manager, text="")
+        self.player = player
+        self.img1 = img1
+        self.img2 = img2
+        self.index = index
+        self.set_text("")
+        self.draw_on_button(self, self.img2)
+
+    def draw_on_button(self, button, img):
+        offset = (0, 0)
+        button.drawable_shape.states['normal'].surface.blit(img, offset)
+        button.drawable_shape.states['hovered'].surface.blit(img, offset)
+        button.drawable_shape.states['disabled'].surface.blit(img, offset)
+        button.drawable_shape.states['selected'].surface.blit(img, offset)
+        button.drawable_shape.states['active'].surface.blit(img, offset)
+        button.drawable_shape.active_state.has_fresh_surface = True
+
+    def update(self, time_delta: float):
+        if self.player.stat_points > sum(self.player.stat_decisions):
+            self.draw_on_button(self, self.img1)
+        else:
+            self.draw_on_button(self, self.img2)
+
+        return super().update(time_delta)
+    
+
     
 class DepthDisplay(pygame_gui.elements.UILabel):
     def __init__(self, rect, manager, loop):

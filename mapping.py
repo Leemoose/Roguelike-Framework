@@ -100,6 +100,7 @@ class TileDict():
         tiles[152] = image.load('assets/monsters/golem_orb.png')
         tiles[103] = image.load('assets/monsters/goblin.png')
         tiles[153] = image.load('assets/monsters/goblin_orb.png')
+        tiles[162] = image.load('assets/monsters/gorblin_shaman.png')
         tiles[104] = image.load('assets/monsters/hobgoblin.png')
         tiles[154] = image.load('assets/monsters/hobgoblin_orb.png')
         tiles[105] = image.load('assets/monsters/kobold.png')
@@ -125,9 +126,14 @@ class TileDict():
         # weapon assets
         tiles[300] = image.load("assets/basic_ax.png")
         tiles[301] = image.load("assets/hammer.png")
+        tiles[302] = image.load("assets/crushing_hammer.png")
         tiles[321] = image.load("assets/dagger.png")
+        tiles[322] = image.load("assets/screaming_dagger.png")
         tiles[331] = image.load("assets/burning_sword.png")
         tiles[332] = image.load("assets/magic_wand.png")
+        tiles[340] = image.load("assets/sword.png")
+        tiles[341] = image.load("assets/sleeping_sword.png")
+
 
         # potion assets
         tiles[401] = image.load("assets/health_orb_bigger.png")
@@ -137,7 +143,7 @@ class TileDict():
         tiles[405] = image.load("assets/haste_orb_bigger.png")
 
         # scroll assets
-        tiles[450] = image.load("assets/scrorb.png")
+        tiles[450] = image.load("assets/scroll.png")
 
         # ring assets
         tiles[500] = image.load("assets/green_ring_gold.png")
@@ -153,6 +159,8 @@ class TileDict():
         tiles[602] = image.load("assets/golden_armor.png")
         tiles[603] = image.load("assets/warmonger_armor.png")
         tiles[604] = image.load("assets/wizard_robe.png")
+        tiles[605] = image.load("assets/karate_gi.png")
+        tiles[606] = image.load("assets/bloodstained_armor.png")
 
         # shield assets
         # list of shields: basic, aegis, tower, magic focus
@@ -165,15 +173,23 @@ class TileDict():
         # list of boots: basic, escape
         tiles[700] = image.load("assets/boots.png")
         tiles[701] = image.load("assets/boots_of_escape.png")
+        tiles[702] = image.load("assets/blackened_boots.png")
 
         # gloves assets
         # list of gloves: basic, gauntlets
         tiles[750] = image.load("assets/gloves.png")
         tiles[751] = image.load("assets/gauntlets.png")
+        tiles[752] = image.load("assets/boxing_gloves.png")
+        tiles[753] = image.load("assets/healer_gloves.png")
+        tiles[754] = image.load("assets/lich_hand.png")
 
         # helmet assets
         tiles[770] = image.load("assets/helmet.png")
         tiles[771] = image.load("assets/viking_helmet.png")
+        tiles[772] = image.load("assets/spartan_helmet.png")
+        tiles[773] = image.load("assets/great_helm.png")
+        tiles[774] = image.load("assets/thief_hood.png")
+        tiles[775] = image.load("assets/wizard_hat.png")
 
         # empty equipment assets
         tiles[801] = image.load("assets/empty_armor.png")
@@ -210,6 +226,8 @@ class TileDict():
         tiles[-912] = image.load("assets/Heal_skill_icon_dark.png")
         tiles[913] = image.load("assets/Torment_skill_icon.png")
         tiles[-913] = image.load("assets/Torment_skill_icon_dark.png")
+        tiles[914] = image.load("assets/teleport_skill_icon.png")
+        tiles[-914] = image.load("assets/teleport_skill_icon_dark.png")
 
         self.tiles = tiles
 
@@ -230,6 +248,7 @@ class DungeonGenerator():
         self.tile_map = TileMap(self.mapData, depth)
         self.item_map = TrackingMap(self.width, self.height)
         self.player = None
+        self.summoner = []
 
         self.monster_dict = L.ID() #Unique to this floor
         self.item_dict = L.ID() #Unique to this floor

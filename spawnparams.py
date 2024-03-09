@@ -25,34 +25,62 @@ ItemSpawns = []                                                         # minFlo
 
 ItemSpawns.append(ItemSpawnParams( I.Ax(300),                 1,               5,          1,              1))
 ItemSpawns.append(ItemSpawnParams( I.Hammer(301),             1,               5,          0,              0))
+ItemSpawns.append(ItemSpawnParams( I.Dagger(321),             1,               5,          0,              0))
+ItemSpawns.append(ItemSpawnParams( I.MagicWand(332),          2,               8,          1,              1))
+ItemSpawns.append(ItemSpawnParams( I.Sword(340),           1,               10,          1,              5))
+
+ItemSpawns.append(ItemSpawnParams( I.ScreamingDagger(322),           1,               10,          1,              1))
+ItemSpawns.append(ItemSpawnParams( I.SleepingSword(341),           5,               10,          1,              1))
+ItemSpawns.append(ItemSpawnParams( I.FlamingSword(331),       3,               10,          1,              1))
+ItemSpawns.append(ItemSpawnParams( I.CrushingHammer(302),       3,               10,          1,              1))
+
 ItemSpawns.append(ItemSpawnParams( I.BasicShield(311),             1,               5,          0,              0))
 ItemSpawns.append(ItemSpawnParams( I.Aegis(312),              3,               10,          1,              1))
 ItemSpawns.append(ItemSpawnParams( I.TowerShield(313),        2,               5,          1,              1))
 ItemSpawns.append(ItemSpawnParams( I.MagicFocus(314),         3,               10,          1,              1))
+
 ItemSpawns.append(ItemSpawnParams( I.Chestarmor(600),              1,               5,          0,              0))
 ItemSpawns.append(ItemSpawnParams( I.LeatherArmor(601),         1,               5,          1,              1))
 ItemSpawns.append(ItemSpawnParams( I.GildedArmor(602),         3,               10,          1,              1))
 ItemSpawns.append(ItemSpawnParams( I.WarlordArmor(603),        3,               10,          1,              1))
 ItemSpawns.append(ItemSpawnParams( I.WizardRobe(604),          2,               5,          1,              1))
+ItemSpawns.append(ItemSpawnParams( I.KarateGi(605),            2,               8,          1,              1))
+ItemSpawns.append(ItemSpawnParams( I.BloodstainedArmor(606),        3,               10,          1,              1))
+
 ItemSpawns.append(ItemSpawnParams( I.Boots(700),              1,               5,          0,              0))
+ItemSpawns.append(ItemSpawnParams( I.BootsOfEscape(701),      3,               7,          0,              0))
+ItemSpawns.append(ItemSpawnParams( I.BlackenedBoots(702),              5,               10,          1,              1))
+
 ItemSpawns.append(ItemSpawnParams( I.Helmet(770),              1,               5,          0,              0))
+ItemSpawns.append(ItemSpawnParams( I.VikingHelmet(771),       2,               8,          0,              0))
+# spartan helmet, great helm, thief hood, wizard hat
+ItemSpawns.append(ItemSpawnParams( I.SpartanHelmet(772),       3,               10,          1,              1))
+ItemSpawns.append(ItemSpawnParams( I.GreatHelm(773),       3,               10,          1,              1))
+ItemSpawns.append(ItemSpawnParams( I.ThiefHood(774),       3,               10,          1,              1))
+ItemSpawns.append(ItemSpawnParams( I.WizardHat(775),       3,               10,          1,              1))
+
+
 ItemSpawns.append(ItemSpawnParams( I.Gloves(750),              1,               5,          0,              0))
 ItemSpawns.append(ItemSpawnParams( I.Gauntlets(751),           2,               5,          1,              1))
-ItemSpawns.append(ItemSpawnParams( I.HealthPotion(401),       1,               10,          0,              0))
-ItemSpawns.append(ItemSpawnParams( I.Dagger(321),             1,               5,          0,              0))
+ItemSpawns.append(ItemSpawnParams( I.BoxingGloves(752),        1,               8,          1,              1))
+ItemSpawns.append(ItemSpawnParams( I.HealingGloves(753),       3,               10,          1,              1))
+ItemSpawns.append(ItemSpawnParams( I.LichHand(754),            5,               10,          1,              1))
+
 ItemSpawns.append(ItemSpawnParams( I.RingOfSwiftness(500),               1,               10,          0,              0))
-ItemSpawns.append(ItemSpawnParams( I.FlamingSword(331),       3,               10,          0,              0))
-ItemSpawns.append(ItemSpawnParams( I.MagicWand(332),          2,               8,          1,              1))
-ItemSpawns.append(ItemSpawnParams( I.VikingHelmet(771),       2,               8,          0,              0))
-ItemSpawns.append(ItemSpawnParams( I.BootsOfEscape(701),      3,               7,          0,              0))
+ItemSpawns.append(ItemSpawnParams( I.RingOfTeleportation(502),              5,               10,          1,              1))
 ItemSpawns.append(ItemSpawnParams( I.BloodRing(501),          3,               10,          0,              0))
 ItemSpawns.append(ItemSpawnParams( I.RingOfMana(502),          1,               10,          0,              0))
 ItemSpawns.append(ItemSpawnParams( I.RingOfMight(503),          1,               10,          0,              0))
 ItemSpawns.append(ItemSpawnParams( I.BoneRing(504),          3,               10,          0,              0))
+
+ItemSpawns.append(ItemSpawnParams( I.HealthPotion(401),       1,               10,          0,              0))
 ItemSpawns.append(ItemSpawnParams( I.ManaPotion(402),         1,               10,          0,              0))
 ItemSpawns.append(ItemSpawnParams( I.CurePotion(403),         1,               10,          0,              0))
 ItemSpawns.append(ItemSpawnParams( I.MightPotion(404),        1,               10,          0,              0))
 ItemSpawns.append(ItemSpawnParams( I.DexterityPotion(405),    1,               10,          0,              0))
+ItemSpawns.append(ItemSpawnParams( I.PermanentStrengthPotion(404),      1,               10,          0,              1))
+ItemSpawns.append(ItemSpawnParams( I.PermanentDexterityPotion(405),      1,               10,          0,              1))
+
 ItemSpawns.append(ItemSpawnParams( I.EnchantScrorb(450),     1,               10,          1,              5))
 ItemSpawns.append(ItemSpawnParams( I.BurningAttackScrorb(450),      1,               10,          1,              5))
 ItemSpawns.append(ItemSpawnParams( I.TeleportScroll(450),      1,               10,          1,              5))
@@ -62,11 +90,7 @@ ItemSpawns.append(ItemSpawnParams( I.CallingScroll(450),      1,               1
 ItemSpawns.append(ItemSpawnParams( I.SleepScroll(450),      1,               10,          1,              5))
 ItemSpawns.append(ItemSpawnParams( I.ExperienceScroll(450),      1,               10,          5,              5))
 ItemSpawns.append(ItemSpawnParams( I.BlinkScrorb(450),      1,               10,          1,              5))
-ItemSpawns.append(ItemSpawnParams( I.PermanentStrengthPotion(404),      1,               10,          0,              1))
-ItemSpawns.append(ItemSpawnParams( I.PermanentDexterityPotion(405),      1,               10,          0,              1))
 ItemSpawns.append(ItemSpawnParams( I.MassHealScrorb(450),      1,               10,          1,              5))
-ItemSpawns.append(ItemSpawnParams( I.BloodstainedArmor(603),        3,               10,          1,              1))
-ItemSpawns.append(ItemSpawnParams( I.BlackenedBoots(700),              5,               10,          1,              1))
 
 
 Floor_Distributions = [(0.9, 0.1, 0.0), # floor 1
@@ -191,6 +215,7 @@ MonsterSpawns.append(MonsterSpawnParams(M.Hobgoblin(-1, -1), 1, 3, 0, 0))
 MonsterSpawns.append(MonsterSpawnParams(M.Hobgorblin(-1, -1), 2, 5, 0, 0))
 MonsterSpawns.append(MonsterSpawnParams(M.Kobold(-1, -1), 1, 3, 0, 0))
 MonsterSpawns.append(MonsterSpawnParams(M.Korbold(-1, -1), 2, 5, 0, 0))
+MonsterSpawns.append(MonsterSpawnParams(M.GorblinShaman(-1, -1), 3, 5, 0, 0))
 
 MonsterSpawns.append(MonsterSpawnParams(M.Gargoyle(-1, -1), 4, 6, 0, 0))
 MonsterSpawns.append(MonsterSpawnParams(M.Gorbgoyle(-1, -1), 6, 8, 0, 0))
@@ -225,8 +250,8 @@ class MonsterSpawner():
         self.orbMonsters = [i for i in self.MonsterSpawns if i.monster.orb == True]
 
         # useful for debugging specific items, separate from generator
-        self.forceSpawn = None 
-        # self.forceSpawn = ("ORB OF YENDORB", 1)
+        self.forceSpawn = None
+        #self.forceSpawn = ("Gorblin Shaman", 1)
         # self.forceSpawn = ("Hobgorblin", 5) 
 
     def countSpawn(self, depth):

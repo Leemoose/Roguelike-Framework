@@ -4,7 +4,7 @@ import display as D
 import keyboard as K
 import loops as L
 
-#random.seed(420)
+#random.seed(420)1
 pygame.init()
 pygame.font.init()
 

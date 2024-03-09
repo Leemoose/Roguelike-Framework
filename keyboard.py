@@ -122,10 +122,11 @@ class Keyboard():
             loop.change_loop(LoopType.examine)
             loop.targets.start_target(loop.player.get_location())
             loop.add_target(loop.player.get_location())
+            self.screen_focus = loop.targets.target_current
             loop.update_screen = True
         elif key == "o":
             loop.change_loop(LoopType.autoexplore)
-        elif key == "s":
+        elif key == "/":
             memory.save_objects()
         # elif key == "t":
         #     escape_test = S.Escape(player, 0, 0, False, 1.1, 1)
@@ -142,6 +143,7 @@ class Keyboard():
             skill_num = int(key) - 1
             if skill_num < len(player.character.skills):
                 if not player.character.skills[skill_num].targetted:
+                    print(player.character.skills[skill_num].castable(player))
                     if player.character.skills[skill_num].castable(player):
                         player.character.cast_skill(skill_num, loop.player, loop)
                     else:
@@ -235,8 +237,13 @@ class Keyboard():
         if key == "esc":
             return False
         elif key == "l":
-            loop.memory.load_objects()
-            loop.load_game()
+            try:
+                loop.memory.load_objects()
+                loop.load_game()
+            except:
+                pass
+        elif key == "h":
+            loop.change_loop(LoopType.help)
         else:
             loop.down_floor()
             loop.change_loop(LoopType.action)
@@ -299,28 +306,28 @@ class Keyboard():
         loop.update_screen = True
         targets = loop.targets
         if key == "up":
-            targets.adjust(0, -1, loop.generator.tile_map)
+            targets.adjust(0, -1, loop.generator.tile_map, loop)
             loop.add_target(targets.target_current)
         elif key == "left":
-            targets.adjust(-1, 0, loop.generator.tile_map)
+            targets.adjust(-1, 0, loop.generator.tile_map, loop)
             loop.add_target(targets.target_current)
         elif key == "down":
-            targets.adjust(0, 1, loop.generator.tile_map)
+            targets.adjust(0, 1, loop.generator.tile_map, loop)
             loop.add_target(targets.target_current)
         elif key == "right":
-            targets.adjust(1, 0, loop.generator.tile_map)
+            targets.adjust(1, 0, loop.generator.tile_map, loop)
             loop.add_target(targets.target_current)
         elif key == "y":
-            targets.adjust(-1, -1, loop.generator.tile_map)
+            targets.adjust(-1, -1, loop.generator.tile_map, loop)
             loop.add_target(targets.target_current)
         elif key == "u":
-            targets.adjust(1, -1, loop.generator.tile_map)
+            targets.adjust(1, -1, loop.generator.tile_map, loop)
             loop.add_target(targets.target_current)
         elif key == "b":
-            targets.adjust(-1, 1, loop.generator.tile_map)
+            targets.adjust(-1, 1, loop.generator.tile_map, loop)
             loop.add_target(targets.target_current)
         elif key == "n":
-            targets.adjust(1, 1, loop.generator.tile_map)
+            targets.adjust(1, 1, loop.generator.tile_map, loop)
             loop.add_target(targets.target_current)
         elif key == "esc":
             targets.void_skill()
@@ -336,28 +343,28 @@ class Keyboard():
         loop.update_screen = True
         targets = loop.targets
         if key == "up":
-            targets.adjust(0, -1, loop.generator.tile_map)
+            targets.adjust(0, -1, loop.generator.tile_map, loop)
             loop.add_target(targets.target_current)
         elif key == "left":
-            targets.adjust(-1, 0, loop.generator.tile_map)
+            targets.adjust(-1, 0, loop.generator.tile_map, loop)
             loop.add_target(targets.target_current)
         elif key == "down":
-            targets.adjust(0, 1, loop.generator.tile_map)
+            targets.adjust(0, 1, loop.generator.tile_map, loop)
             loop.add_target(targets.target_current)
         elif key == "right":
-            targets.adjust(1, 0, loop.generator.tile_map)
+            targets.adjust(1, 0, loop.generator.tile_map, loop)
             loop.add_target(targets.target_current)
         elif key == "y":
-            targets.adjust(-1, -1, loop.generator.tile_map)
+            targets.adjust(-1, -1, loop.generator.tile_map, loop)
             loop.add_target(targets.target_current)
         elif key == "u":
-            targets.adjust(1, -1, loop.generator.tile_map)
+            targets.adjust(1, -1, loop.generator.tile_map, loop)
             loop.add_target(targets.target_current)
         elif key == "b":
-            targets.adjust(-1, 1, loop.generator.tile_map)
+            targets.adjust(-1, 1, loop.generator.tile_map, loop)
             loop.add_target(targets.target_current)
         elif key == "n":
-            targets.adjust(1, 1, loop.generator.tile_map)
+            targets.adjust(1, 1, loop.generator.tile_map, loop)
             loop.add_target(targets.target_current)
         elif key == "esc":
             targets.void_skill()
@@ -392,4 +399,8 @@ class Keyboard():
             loop.player.find_stairs(loop)
         else:
             loop.change_loop(LoopType.action)
+
+    def key_help(self, key, loop):
+        if key == "esc":
+            loop.change_loop(LoopType.main)
 

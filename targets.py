@@ -12,12 +12,12 @@ class Target:
         self.target_current = starting_target
         self.target_previous = None
 
-    def adjust(self, xdelta, ydelta, tile_map):
+    def adjust(self, xdelta, ydelta, tile_map, loop):
         if (tile_map.track_map[self.target_current[0] + xdelta][self.target_current[1] + ydelta].passable and
             tile_map.track_map[self.target_current[0] + xdelta][self.target_current[1] + ydelta].seen):
             x, y = self.target_current
             self.target_current = (x+xdelta, y + ydelta)
-            self.target_previous = (x, y)
+            loop.screen_focus = self.target_current
 
     def store_skill(self, index_to_cast, skill_to_cast, caster, temp_cast = False):
         self.index_to_cast = index_to_cast

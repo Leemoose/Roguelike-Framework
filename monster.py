@@ -1,3 +1,4 @@
+import monster as M
 import objects as O
 import character as C
 import dice as R
@@ -66,7 +67,6 @@ class Monster_AI():
 
         # print(max_utility)
         self.parent.character.energy -= 1
-
         # print(f"{self.parent} is doing {called_function.__name__} with utility {max_utility}")
         called_function(loop)
 
@@ -95,6 +95,7 @@ class Monster_AI():
             return -1
 
     def rank_equip_item(self, loop): #Needs to be fixed
+        return -1
         monster = self.parent
         if len(monster.character.inventory) != 0:
             utility = -1
@@ -173,7 +174,7 @@ class Monster_AI():
                 self.move_path = (pathfinding.astar_multi_goal(tile_map.track_map, (x, y), goals,
                                              monster_map, player, True, True))
                 if len(self.move_path) > 0:
-                    return 90
+                    return random.randint(60-100)
         return -1
     
     def rank_skill(self, loop):
@@ -197,6 +198,7 @@ class Monster_AI():
         # print("Attacking player")
         player=loop.player
         monster = self.parent
+        monster.character.energy -= monster.character.attack_cost
         if not monster.character.movable:
             monster.character.energy -= (monster.character.move_cost - monster.character.dexterity)
             loop.add_message(f"{monster} is petrified and cannot attack.")
@@ -212,7 +214,6 @@ class Monster_AI():
     def do_skill(self, loop):
         monster = self.parent
         for i in range(len(monster.character.skills)):
-            print(monster.character.skills[i].name)
             # use first castable skill
             if monster.character.skills[i].castable(loop.player):
                 skill = monster.character.skills[i]
@@ -254,7 +255,7 @@ class Monster_AI():
             return
 
         update_target = False
-        if loop.target_to_display == (monster.x, monster.y):
+        if loop.screen_focus == (monster.x, monster.y):
             update_target = True
 
         start = (monster.x, monster.y)
@@ -268,6 +269,7 @@ class Monster_AI():
             monster.move(xmove - monster.x, ymove-monster.y, tile_map, monster, monster_map, player)
         if update_target:
             loop.add_target((monster.x, monster.y))
+            loop.screen_focus = (monster.x, monster.y)
 
     def do_ungroup(self, loop):
         tile_map = loop.generator.tile_map
@@ -300,13 +302,14 @@ class Monster_AI():
         monster_map = loop.generator.monster_map
         player = loop.player
 
+
         if not monster.character.movable:
             monster.character.energy -= (monster.character.move_cost - monster.character.dexterity)
             loop.add_message(f"{monster} is petrified and cannot move.")
             return
 
         update_target = False
-        if loop.target_to_display == (monster.x, monster.y):
+        if loop.screen_focus == (monster.x, monster.y):
             update_target = True
 
         start = (monster.x, monster.y)
@@ -327,6 +330,8 @@ class Monster_AI():
                 loop.add_message(f"{monster} cowers in a corner since it can't run further.")
         if update_target:
             loop.add_target((monster.x, monster.y))
+            loop.screen_focus = (monster.x, monster.y)
+        
 
     def do_nothing(self,loop):
         # print("doing nothing")
@@ -413,6 +418,27 @@ class Goblin(Monster):
         self.dexterity = 3
         self.intelligence = 1
 
+class GorblinShaman(Monster):
+    def __init__(self, x, y, render_tag=162, name="Gorblin Shaman", activation_threshold=0.4):
+        super().__init__(render_tag, x, y, name)
+        self.character = C.Character(self)
+        self.brain = Monster_AI(self)
+        self.orb = True
+        self.character.skills = []
+        self.character.skills.append(S.SummonGorblin(self, cooldown=15, cost=0, range=4,action_cost=20))
+        self.character.skills.append(S.Escape(self, cooldown=100,
+                                              cost=0, self_fear=True,
+                                              dex_buff=20, str_debuff=20, int_debuff=20, haste_duration=-100,
+                                              activation_threshold=activation_threshold,
+                                              action_cost=1))
+        self.character.experience_given = 25
+        self.description = "What's more cowardly than summoning your pals?"
+
+        self.endurance = 1
+        self.strength = 1
+        self.dexterity = 3
+        self.intelligence = 5
+
 class Gorblin(Goblin):
     def __init__(self, x, y, render_tag=153, name="Gorblin", activation_threshold=0.4):
         super().__init__(x, y, render_tag, name, activation_threshold)
@@ -423,7 +449,7 @@ class Gorblin(Goblin):
         self.dexterity = 5
         self.intelligence = 1
 
-        self.description = "A cowardly orb with a tiny dagger. It can blink to escape when it's afraid."
+        self.description = "A cowardly orb with a tiny dagger. It will run away when low on health"
 
 class Hobgoblin(Monster):
     def __init__(self, x, y, render_tag=104, name="Hobgoblin"):
@@ -510,7 +536,7 @@ class Minotaurb(Minotaur):
         self.dexterity = 3
         self.intelligence = 1
 
-        self.description = "A large, angry orb wiht horns that can shrug off your status effects."
+        self.description = "A large, angry orb with horns that can shrug off your status effects."
 
 class Orc(Monster):
     def __init__(self, x, y, render_tag=101, name="Orc"):
@@ -619,9 +645,9 @@ class BossOrb(Monster):
         self.orb = True
         # self, parent, cooldown, cost, slow_duration, damage_percent, slow_amount, range, action_cost
         self.character.skills.append(S.Torment(self, cooldown=10, cost=0, slow_duration=3, damage_percent=0.5, slow_amount=5, range=4, action_cost=100))
-  #      self.character.skills.append(S.SummonGorblin(self, cooldown=10, cost=0, range=4,action_cost=20))
-        self.character.skills.append(S.Heal(self, cooldown = 20, cost = 10, heal_amount = 30, activation_threshold = .25, action_cost = 100))
-        self.character.skills.append(S.Invinciblity(self, cooldown=1000, cost=0))
+        self.character.skills.append(S.SummonGorblin(self, cooldown=20, cost=0, range=4,action_cost=20))
+        self.character.skills.append(S.Heal(self, cooldown = 20, cost = 10, heal_amount = 40, activation_threshold = .25, action_cost = 100))
+        self.character.skills.append(S.Invinciblity(self, cooldown=1000, cost=0, duration=5, activation_threshold=0.25, by_scroll=True))
 
         self.character.experience_given = 1000
         self.description = "The orb of all orbs, the orbiest of orbs, the archetype of orbs... you get the idea."

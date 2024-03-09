@@ -36,6 +36,7 @@ class LoopType(Enum):
     search_stairs = 14
     level_up = 15
     victory = 16
+    help = 17
 
 class ColorDict():
     """
@@ -167,6 +168,8 @@ class Loops():
             self.display.create_pause_screen()
         elif newLoop == LoopType.specific_examine:
             pass
+        elif newLoop == LoopType.help:
+            self.display.create_help_screen()
     def action_loop(self, keyboard, display):
         """
         This is responsible for undergoing any inputs when screen is clicked
@@ -249,6 +252,8 @@ class Loops():
                         return False
                 elif self.currentLoop == LoopType.specific_examine:
                     keyboard.key_specific_examine(key, self, display)
+                elif self.currentLoop == LoopType.help:
+                    keyboard.key_help(key, self)
 
                 self.update_screen = True
 
@@ -280,15 +285,16 @@ class Loops():
                 elif (self.currentLoop == LoopType.action):
                     key = event.ui_element.action
                     keyboard.key_action(self.player, self.tile_map, self.generator.monster_dict, self.monster_map, self.generator.item_dict, self, key, self.generator, display, self.memory)
+                elif (self.currentLoop == LoopType.help):
+                    key = event.ui_element.action
+                    keyboard.key_help(key, self)
 
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if (self.currentLoop == LoopType.action):
                     x, y = pygame.mouse.get_pos()
                     player = self.player
                     x_tile, y_tile = display.screen_to_tile(player, x, y)
-                    print(x_tile, y_tile, player.x, player.y)
                     if self.player.get_distance(x_tile,y_tile) == 0:
-                        print("hi")
                         if not self.generator.item_map.get_passable(player.x,player.y):
                             key = self.generator.item_map.track_map[player.x][player.y]
                             item = self.generator.item_dict.subjects[key]
@@ -342,30 +348,35 @@ class Loops():
     def monster_loop(self, energy):
         for monster_key in self.monster_dict.subjects:
             monster = self.monster_dict.subjects[monster_key]
-            
-            # do status effect stuff
-            monster.character.tick_all_status_effects()
-            status_messages = [monster.name + " " + mes for mes in monster.character.status_messages()]
-            for message in status_messages:
-                self.add_message(message)
-            
-            # tick skill cooldowns
-            monster.character.tick_cooldowns()
+            if monster.character.alive:
+                # do status effect stuff
+                monster.character.tick_all_status_effects()
+                status_messages = [monster.name + " " + mes for mes in monster.character.status_messages()]
+                for message in status_messages:
+                    self.add_message(message)
 
-            # tick regen
-            monster.character.tick_regen()
+                # tick skill cooldowns
+                monster.character.tick_cooldowns()
 
-            if self.generator.tile_map.track_map[monster.x][monster.y].seen:
-                monster.brain.is_awake = True
+                # tick regen
+                monster.character.tick_regen()
 
-            # do action stuff
-            if monster.brain.is_awake == True and not monster.asleep:
-                monster.character.energy += energy
-                while monster.character.energy > 0:
-                    monster.brain.rank_actions(monster, self.monster_map, self.generator.tile_map, self.generator.flood_map, self.player, self.generator, self.item_dict, self)
+                if self.generator.tile_map.track_map[monster.x][monster.y].seen:
+                    monster.brain.is_awake = True
+
+                # do action stuff
+                if monster.brain.is_awake == True and not monster.asleep:
+                    monster.character.energy += energy
+                    while monster.character.energy > 0:
+                        monster.brain.rank_actions(monster, self.monster_map, self.generator.tile_map, self.generator.flood_map, self.player, self.generator, self.item_dict, self)
         if len(self.generator.summoner) > 0:
             for generation in self.generator.summoner:
-                self.generator.place_monster_at_location(generation[0], generation[1], generation[2])
+                placement = self.generator.nearest_empty_tile((generation[1], generation[2]))
+                if placement != None:
+                    self.generator.place_monster_at_location(generation[0], placement[0], placement[1])
+                else:
+                    self.add_message("The summoning fizzled.")
+            self.generator.summoner = []
 
     def render_screen(self, keyboard, display, colors, tileDict):
         if self.currentLoop == LoopType.action or self.currentLoop == LoopType.autoexplore or self.currentLoop == LoopType.search_stairs:
@@ -377,6 +388,11 @@ class Loops():
                 (x,y) = display.screen_to_tile(self.player, mos_x,mos_y)
                 if self.generator.tile_map.in_map(x,y):
                     display.draw_examine_window((x,y), self.tileDict, self.generator.tile_map, self.monster_map, self.monster_dict, self.item_dict, self.player)
+                else:
+                    if self.screen_focus != None:
+                        clear_target = display.draw_examine_window(self.screen_focus, self.tileDict, self.generator.tile_map, self.monster_map, self.monster_dict, self.item_dict, self.player)
+                        if clear_target:
+                            self.screen_focus = None
         elif self.currentLoop == LoopType.inventory or self.currentLoop == LoopType.enchant:
             display.update_inventory(self.player, self.limit_inventory)
         elif self.currentLoop == LoopType.level_up:
@@ -395,11 +411,17 @@ class Loops():
             #                       self.monster_map, self.player, self.messages, self.target_to_display)
             # display.refresh_screen()
             display.update_display(self)
+            if self.screen_focus != None:
+                clear_target = display.draw_examine_window(self.screen_focus, self.tileDict, self.generator.tile_map, self.monster_map, self.monster_dict, self.item_dict, self.player)
+                if clear_target:
+                    self.screen_focus = None
             display.update_examine(self.targets.target_current, self)
         elif self.currentLoop == LoopType.paused:
             display.update_pause_screen()
         elif self.currentLoop == LoopType.specific_examine:
             display.update_entity(self.screen_focus, tileDict, self.player, item_screen=False, create = True)
+        elif self.currentLoop == LoopType.help:
+            display.update_help()
         pygame.display.update()
         self.update_screen = False
 
@@ -512,10 +534,12 @@ class Loops():
         if start_on_player:
             self.targets.start_target(self.player.get_location())
             self.add_target(self.player.get_location())
+            self.screen_focus = self.player.get_location()
         else:
             closest_monster = self.player.character.get_closest_monster(self.player, self.generator.monster_dict, self.generator.tile_map)
             self.targets.start_target(closest_monster.get_location())
             self.add_target(closest_monster.get_location())
+            self.screen_focus = closest_monster.get_location()
 
     def init_new_game(self):
         self.display.create_game_ui(self.player)

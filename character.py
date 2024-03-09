@@ -24,6 +24,7 @@ class Character():
         # flags altered by status conditions
         self.movable = True
         self.flee = False
+        self.can_teleport = True
 
         self.round_bonus_factor = 1.5 # stat bonus for being rounded
 
@@ -67,6 +68,9 @@ class Character():
 
         self.health_partial = 0.0
         self.mana_partial = 0.0
+
+        self.unarmed_damage_min = 1
+        self.unarmed_damage_max = 20
 
     def rounded(self):
         # check all stats are equal
@@ -171,7 +175,6 @@ class Character():
 
     def unequip(self, item):
         if item.can_be_unequipped(self):
-            print("hi")
             item.unequip(self)
             item.dropable = True
             item.equipped = False
@@ -203,13 +206,14 @@ class Character():
 
     def get_damage(self):
         if self.main_weapon == None:
-            return self.base_damage + 1, self.base_damage + 20
+            return self.base_damage + self.unarmed_damage_min, self.base_damage + self.unarmed_damage_max
         else:
             return self.base_damage + self.main_weapon.damage_min, self.base_damage + self.main_weapon.damage_max
 
     def melee(self, defender):
+        effect = None
         if self.main_weapon == None:
-            damage = R.roll_dice(1, 20)[0]
+            damage = R.roll_dice(self.unarmed_damage_min, self.unarmed_damage_max)[0]
         else:
             if self.main_weapon.on_hit == None:
                 damage = self.main_weapon.attack()
@@ -217,7 +221,7 @@ class Character():
                 damage, effect = self.main_weapon.attack()
         defense = defender.character.defend()
         defender.character.take_damage(self.parent, self.base_damage + int(self.strength * self.round_bonus()) + damage - defense)
-        if self.main_weapon != None and self.main_weapon.on_hit != None:
+        if effect != None:
             effect = effect(self.parent) # some effects need an inflictor
             defender.character.add_status_effect(effect)
         self.energy -= self.attack_cost
@@ -327,7 +331,6 @@ class Character():
             for skill in self.skills:
                 skill.ready = 0
             for effect in self.status_effects:
-                print(effect)
                 if not effect.positive:
                     self.remove_status_effect(effect.name)
             loop.add_message("You rest for a while")
@@ -444,6 +447,7 @@ class Player(O.Objects):
 
     def attack(self, defender, loop):
         self.character.energy -= (self.character.attack_cost - int(self.character.dexterity * self.character.round_bonus()))
+        loop.screen_focus = (defender.x, defender.y)
         if not self.character.dodge():
             damage = self.character.melee(defender)
             if damage < 0:

@@ -1,6 +1,7 @@
 import random
 import monster as M
 import effect as E
+import character as C
 import pathfinding
 
 class Skill():
@@ -92,13 +93,27 @@ class MassHeal(Skill):
         player.character.health = player.character.max_health
 
 class Invinciblity(Skill):
-    def __init__(self, parent, cooldown, cost):
+    def __init__(self, parent, cost, cooldown, duration, activation_threshold=1.1, by_scroll=True):
         super().__init__("Invincibility", parent, cooldown, cost)
-        self.effect = E.Invincible(10)
+        self.effect = E.Invincible(duration)
+        self.dur = duration
+        self.by_scroll = by_scroll
+        self.threshold = activation_threshold
 
     def activate(self, loop, bypass = False):
-        loop.player.character.add_status_effect(self.effect)
-        self.effect.apply_effect(loop.player.character)
+        if self.by_scroll:
+            loop.player.character.add_status_effect(self.effect)
+            self.effect.apply_effect(loop.player.character)
+        else:
+            self.parent.character.mana -= self.cost
+            self.parent.character.add_status_effect(self.effect)
+        
+
+    def castable(self, target):
+        return self.basic_requirements() and self.below_threshold()
+    
+    def description(self):
+        return self.name + "(" + str(self.cost) + " cost, " + str(self.cooldown) + " turn cooldown" + ", invincible for " + str(self.dur) + ", castable below " + str(int(self.threshold * 100)) + "% health)"
 
 class Awaken_Monsters(Skill):
     def __init__(self, parent, cooldown, cost):
@@ -132,6 +147,7 @@ class Teleport(Skill):
     def __init__(self, parent, cooldown, cost):
         super().__init__("Teleport", parent, cooldown, cost)
         self.can_teleport = True
+        self.render_tag = 914
 
     def activate(self, target, generator, bypass = False):
         # teleport is assumed to be self-targetting for now, so target does nothing
@@ -145,18 +161,18 @@ class Teleport(Skill):
             while (tile_map.get_passable(startx, starty) == False):
                 startx = random.randint(0, width - 1)
                 starty = random.randint(0, height - 1)
-
-            if isinstance(self.parent.parent, M.Monster):
+            if isinstance(self.parent, C.Player):
+                self.parent.x = startx
+                self.parent.y = starty
+                return
+            elif isinstance(self.parent, M.Monster):
                 monster_map = generator.monster_map
-                x, y = self.parent.parent.x, self.parent.parent.y
+                x, y = self.parent.x, self.parent.y
                 monster_map.clear_location(x, y)
-                self.parent.parent.x = startx
-                self.parent.parent.y = starty
-                monster_map.place_thing(self.parent.parent)
-            else:
-                print(self.parent.parent.name)
-                self.parent.parent.x = startx
-                self.parent.parent.y = starty
+                self.parent.x = startx
+                self.parent.y = starty
+                monster_map.place_thing(self.parent)
+
 
 # !!! keep monster exclusive for now, pathing breaks if a player tries to use it !!!
 class BlinkStrike(Skill):
@@ -417,12 +433,14 @@ class Escape(Skill):
             duration = self.duration + self.parent.character.skill_duration_increase()
         else:
             duration = -100
-        haste = E.Haste(duration, self.dex_buff)
-        weak = E.Weak(duration, self.str_debuff)
-        dumb = E.Dumb(duration, self.int_debuff)
-        self.parent.character.add_status_effect(haste)
-        self.parent.character.add_status_effect(weak)
-        self.parent.character.add_status_effect(dumb)
+        # haste = E.Haste(duration, self.dex_buff)
+        # weak = E.Weak(duration, self.str_debuff)
+        # dumb = E.Dumb(duration, self.int_debuff)
+        # self.parent.character.add_status_effect(haste)
+        # self.parent.character.add_status_effect(weak)
+        # self.parent.character.add_status_effect(dumb)
+        effect = E.Escaping(duration, self.dex_buff, self.str_debuff, self.int_debuff)
+        self.parent.character.add_status_effect(effect)
         if self.self_fear:
             effect = E.Fear(-100, self.parent)
             self.parent.character.add_status_effect(effect)
@@ -496,10 +514,12 @@ class SummonGorblin(Skill):
         x, y = target.get_location()
         location = generator.nearest_empty_tile((x,y))
         if location != None:
-            gorblin = M.Gorblin(-1, -1, activation_threshold=1.1)
+            gorblin = M.Gorblin(-1, -1)
             generator.summoner.append((gorblin, location[0], location[1]))
             return True
         return False
 
     def castable(self, target):
         return self.basic_requirements()
+
+

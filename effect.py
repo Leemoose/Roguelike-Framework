@@ -115,6 +115,23 @@ class Slow(StatusEffect):
     def remove(self, target):
         target.dexterity += self.dexterity
 
+class Escaping(StatusEffect):
+    def __init__(self, duration, dex_buff, str_debuff, int_debuff):
+        super().__init__(806, "Escaping", "is trying to escape", duration)
+        self.dex_buff = dex_buff
+        self.str_debuff = str_debuff
+        self.int_debuff = int_debuff
+    
+    def apply_effect(self, target):
+        target.dexterity += self.dex_buff
+        target.strength -= self.str_debuff
+        target.intelligence -= self.int_debuff
+    
+    def remove(self, target):
+        target.dexterity -= self.dex_buff
+        target.strength += self.str_debuff
+        target.intelligence += self.int_debuff
+
 class Fear(StatusEffect):
     def __init__(self, duration, inflictor):
         super().__init__(806, "Fear", "is scared", duration)
@@ -127,9 +144,11 @@ class Fear(StatusEffect):
         target.flee = False
 
 
+
+
 class Invincible(StatusEffect):
     def __init__(self, duration, inflictor = None):
-        super().__init__(806, "Invincible", "I can't be killed", duration)
+        super().__init__(806, "Invincible", "can't be killed", duration)
     def apply_effect(self, target):
         target.invincible = True
 
@@ -147,3 +166,23 @@ class Asleep(StatusEffect):
     def remove(self, target):
         actual = target.parent
         actual.asleep = False
+class Tormented(StatusEffect):
+    def __init__(self, duration, inflictor = None):
+        super().__init__(806, "Tormented", "is tormented", duration)
+    def apply_effect(self, target):
+        target.health //= 2
+
+    def remove(self, target):
+        pass
+
+class ArmorShredding(StatusEffect):
+    def __init__(self, duration, inflictor = None):
+        super().__init__(806, "Shredded", "armor is shredded", duration)
+        self.armor_shredded = 0
+    def apply_effect(self, target):
+        target.armor -= 5
+        self.armor_shredded += 5
+
+    def remove(self, target):
+        target.armor += self.armor_shredded
+        self.armor_shredded = 0
