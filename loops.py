@@ -466,11 +466,15 @@ class Loops():
             self.target_to_display = None
 
 
-    def start_targetting(self):
+    def start_targetting(self, start_on_player = False):
         self.change_loop(LoopType.targeting)
-        closest_monster = self.player.character.get_closest_monster(self.player, self.generator.monster_dict, self.generator.tile_map)
-        self.targets.start_target(closest_monster.get_location())
-        self.add_target(closest_monster.get_location())
+        if start_on_player:
+            self.targets.start_target(self.player.get_location())
+            self.add_target(self.player.get_location())
+        else:
+            closest_monster = self.player.character.get_closest_monster(self.player, self.generator.monster_dict, self.generator.tile_map)
+            self.targets.start_target(closest_monster.get_location())
+            self.add_target(closest_monster.get_location())
 
     def init_new_game(self):
         self.display.create_game_ui(self.player)

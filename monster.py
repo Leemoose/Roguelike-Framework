@@ -232,9 +232,9 @@ class Monster_AI():
         start = (monster.x, monster.y)
         end = (player.x, player.y)
         if player.get_distance(monster.x, monster.y) <= 2.5:
-            moves = pathfinding.astar(tile_map.track_map, start, end, monster_map, loop, monster_blocks=True)
+            moves = pathfinding.astar(tile_map.track_map, start, end, monster_map, loop.player, monster_blocks=True)
         else:
-            moves = pathfinding.astar(tile_map.track_map, start, end, monster_map, loop)
+            moves = pathfinding.astar(tile_map.track_map, start, end, monster_map, loop.player)
         if len(moves) > 1:
             xmove, ymove = moves.pop(1)
             monster.move(xmove - monster.x, ymove-monster.y, tile_map, monster, monster_map, player)
@@ -264,7 +264,7 @@ class Monster_AI():
         start = (monster.x, monster.y)
         end = (xplayer + xdiff, yplayer + ydiff)
         if player.get_distance(monster.x, monster.y) <= 2.5:
-            moves = pathfinding.astar(tile_map.track_map, start, end, monster_map, loop, monster_blocks=True, player_blocks=True)
+            moves = pathfinding.astar(tile_map.track_map, start, end, monster_map, loop.player, monster_blocks=True, player_blocks=True)
         if len(moves) > 1:
             xmove, ymove = moves.pop(1)
             monster.move(xmove - monster.x, ymove-monster.y, tile_map, monster, monster_map, player)
@@ -288,7 +288,7 @@ class Monster_AI():
 
         start = (monster.x, monster.y)
         end = (player.x, player.y)
-        moves = pathfinding.astar(tile_map.track_map, start, end, monster_map, loop)
+        moves = pathfinding.astar(tile_map.track_map, start, end, monster_map, loop.player)
         if len(moves) > 1:
             xmove, ymove = moves.pop(1)
             # if one direciton is blocked, still move in the other

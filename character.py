@@ -397,6 +397,8 @@ class Player(O.Objects):
         if self.invincible: # only get the gun if you're invincible at the start
             self.character.skills.extend([
                 S.Gun(self), # 1
+                S.BlinkToEmpty(self, cooldown=0, cost=0, range=10, action_cost=1), # 2
+                S.BlinkStrike(self, cooldown=0, cost=10, damage=25, range=10, action_cost=1), # 3
                 # S.SummonGorblin(self, cooldown=0, cost=10, range=10, action_cost=1), # 2
                 # S.BurningAttack(self, cooldown=0, cost=10, damage=20, burn_damage=10, burn_duration=10, range=10), #2
                 # S.Petrify(self, cooldown=0, cost=10, duration=3, activation_chance=1, range=10), #3
@@ -477,7 +479,7 @@ class Player(O.Objects):
                     else:
                         endy += 1
             end = (endx, endy)
-            self.path = pathfinding.astar(tile_map.track_map, start, end, loop.generator.monster_map, loop)
+            self.path = pathfinding.astar(tile_map.track_map, start, end, loop.generator.monster_map, loop.player)
             # if all tiles have been seen don't autoexplore
             
         x, y = self.path.pop(0)
@@ -501,7 +503,7 @@ class Player(O.Objects):
         if (start == end):
             loop.change_loop(L.LoopType.action)
             return
-        self.path = pathfinding.astar(tile_map.track_map, start, end, loop.generator.monster_map, loop)
+        self.path = pathfinding.astar(tile_map.track_map, start, end, loop.generator.monster_map, loop.player)
         
         x, y = self.path.pop(0)
         x, y = self.path.pop(0)

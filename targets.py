@@ -12,10 +12,12 @@ class Target:
         self.target_current = starting_target
         self.target_previous = None
 
-    def adjust(self, xdelta, ydelta):
-        x, y = self.target_current
-        self.target_current = (x+xdelta, y + ydelta)
-        self.target_previous = (x, y)
+    def adjust(self, xdelta, ydelta, tile_map):
+        if (tile_map.track_map[self.target_current[0] + xdelta][self.target_current[1] + ydelta].passable and
+            tile_map.track_map[self.target_current[0] + xdelta][self.target_current[1] + ydelta].seen):
+            x, y = self.target_current
+            self.target_current = (x+xdelta, y + ydelta)
+            self.target_previous = (x, y)
 
     def store_skill(self, index_to_cast, skill_to_cast, caster, temp_cast = False):
         self.index_to_cast = index_to_cast
@@ -35,6 +37,9 @@ class Target:
         x, y = self.target_current
         monster_map = loop.generator.monster_map
         monster_dict = loop.generator.monster_dict
+        if loop.generator.tile_map.track_map[x][y].visible == False:
+            loop.add_message("You can't see that location")
+            return
         if not monster_map.get_passable(x,y):
             if not self.skill_to_cast.targets_monster:
                 loop.add_message("You can't cast " + self.skill_to_cast.name + " on a space with a monster")

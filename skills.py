@@ -142,14 +142,50 @@ class Teleport(Skill):
                 self.parent.parent.x = startx
                 self.parent.parent.y = starty
 
-# def BlinkStrike(Skill):
-#     def __init__(self, parent, cooldown, cost, damage, range, action_cost):
-#         super().__init__("Blink Strike", parent, cooldown, cost, range, action_cost)
-#         self.damage = damage
-#         self.targetted = True
+class BlinkStrike(Skill):
+    def __init__(self, parent, cooldown, cost, damage, range, action_cost):
+        super().__init__("Blink Strike", parent, cooldown, cost, range, action_cost)
+        self.damage = damage
+        self.targetted = True
     
-#     def activate(self, defender, generator):
+    def activate(self, defender, generator):
+        self.parent.character.mana -= self.cost
+        defender.character.take_damage(self.parent, self.damage + self.parent.character.skill_damage_increase())
+        
+        path = pathfinding.astar(generator.tile_map.track_map, self.parent.get_location(), defender.get_location(), generator.monster_map, defender, monster_blocks=True)
+        if len(path) > 1:
+            self.parent.x, self.parent.y = path[-2] # blink to second last part of path
+        return True
 
+    def castable(self, target):
+        return self.basic_requirements() and self.in_range(target)
+    
+    def description(self):
+        return self.name + "(" + str(self.cost) + " cost, " + str(self.cooldown) + " turn cooldown" + ", " + str(self.damage) + " damage and blink at range " + str(self.range) + ")"
+
+
+# player exclusive skill
+class BlinkToEmpty(Skill):
+    def __init__(self, parent, cooldown, cost, range, action_cost):
+        super().__init__("Blink", parent, cooldown, cost, range, action_cost)
+        self.targets_monster = False
+        self.targetted = True
+    
+    def activate(self, target, generator):
+        self.parent.character.mana -= self.cost
+        self.parent.x, self.parent.y = target[0], target[1] # if targets_monster is false, target is a tuple
+        return True
+    
+    def in_range(self, target):
+        return self.parent.get_distance(target[0], target[1]) <= self.range
+
+    def castable(self, target):
+        if type(target) != tuple:
+            return False # if targets_monster is false, target is a tuple, so if we are not targetting a tuple, we can't cast
+        return self.basic_requirements() and self.in_range(target)
+
+    def description(self):
+        return self.name + "(" + str(self.cost) + " cost, " + str(self.cooldown) + " turn cooldown" + ", blink to empty space in range " + str(self.range) + ")"
 
 class MagicMissile(Skill):
     def __init__(self, parent, cooldown, cost, damage, range, action_cost):
