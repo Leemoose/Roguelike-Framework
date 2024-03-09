@@ -17,6 +17,9 @@ class Node():
     
     def __lt__(self, other):
         return self.f < other.f
+    
+    def __gt__(self, other):
+        return self.f > other.f
 
     def __str__(self):
         return str(self.position)
@@ -30,6 +33,8 @@ def astar_multi_goal(maze, start, goals, monster_map, player, monster_blocks = F
     # reverse is a flag that determines if we're moving towards end or away from it
 
     max = 0
+    checked = 0
+    total = 0
     runtime = time.perf_counter()
 
     # Create start and end node
@@ -51,6 +56,7 @@ def astar_multi_goal(maze, start, goals, monster_map, player, monster_blocks = F
         # Get the current node
         current_node = heapq.heappop(open_list)
         current_position = current_node.position
+        total += 1
 
         #By invariants - if we have already checked this, there is a faster way here.
         if (current_position in closed_list):
@@ -68,18 +74,18 @@ def astar_multi_goal(maze, start, goals, monster_map, player, monster_blocks = F
             while current is not None:
                 path.append(current.position)
                 current = current.parent
-            print("Max was " + str(max) + "in " + str(round((time.perf_counter() - runtime)*1000, 2)) + " ms")
+            print("Max: " + str(max) + ", total: " + str(total) + ", checked:" + str(checked) + " in " + str(round((time.perf_counter() - runtime)*1000, 2)) + " ms")
             return path # Return reversed path
         
         
         
         # Make sure walkable terrain
-        if not maze[current_position[0]][current_position[1]].passable:
-            continue
         if monster_blocks == True and (not monster_map.get_passable(current_position[0],current_position[1])): # and not start == (node_position[0],node_position[1])):
             continue
         if player_blocks == True and (player.x == current_position[0] and player.y == current_position[1]):
             continue
+
+        checked += 1
 
         # Generate children
         for new_position in [(0, -1), (0, 1), (-1, 0), (1, 0), (-1, -1), (-1, 1), (1, -1), (1, 1)]: # Adjacent squares
@@ -89,6 +95,10 @@ def astar_multi_goal(maze, start, goals, monster_map, player, monster_blocks = F
 
             # Make sure within range
             if node_position[0] > (len(maze) - 1) or node_position[0] < 0 or node_position[1] > (len(maze[len(maze)-1]) -1) or node_position[1] < 0:
+                continue
+            
+            #No need to insert walls
+            if not maze[node_position[0]][node_position[1]].passable:
                 continue
 
             if (node_position in closed_list):
