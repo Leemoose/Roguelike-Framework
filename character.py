@@ -170,7 +170,7 @@ class Character():
             self.energy -= self.equip_cost
 
     def unequip(self, item):
-        if item.equipped:
+        if item.equipped and not item.cursed:
             item.unequip(self)
             item.dropable = True
             item.equipped = False

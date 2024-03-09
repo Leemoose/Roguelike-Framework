@@ -366,7 +366,6 @@ class Loops():
         if len(self.generator.summoner) > 0:
             for generation in self.generator.summoner:
                 self.generator.place_monster_at_location(generation[0], generation[1], generation[2])
-                self.generator.monster_dict.tag_subject(generation[0])
 
     def render_screen(self, keyboard, display, colors, tileDict):
         if self.currentLoop == LoopType.action or self.currentLoop == LoopType.autoexplore or self.currentLoop == LoopType.search_stairs:
