@@ -13,13 +13,13 @@ class Equipment(O.Item):
         self.equipable = True
         self.description = "Its a " + name + "."
         self.stackable = False
-        self.attached_skill = None
         self.level = 1
         self.can_be_levelled = True
         self.equipped = False
         self.wearer = None
         self.rarity = "Common"
         self.required_strength = 0
+        self.attached_skill_exists = False
 
     def activate(self, entity):
         self.wearer = entity
@@ -31,7 +31,7 @@ class Equipment(O.Item):
         self.level += 1
 
     def get_attached_skill_description(self):
-        if self.attached_skill != None:
+        if self.attached_skill_exists:
             return self.attached_skill(None).description() # temporarily attach skill to nothing to get name
         else:
             return None
@@ -48,14 +48,14 @@ class Weapon(Equipment):
         if entity.strength >= self.required_strength:
             if entity.main_weapon != None:
                 entity.unequip(entity.main_weapon)
-            if self.attached_skill != None:
+            if self.attached_skill_exists:
                 entity.add_skill(self.attached_skill(entity.parent))
             entity.main_weapon = self
             self.activate(entity)
 
     def unequip(self, entity):
         entity.main_weapon = None
-        if self.attached_skill != None:
+        if self.attached_skill_exists:
             entity.remove_skill(self.attached_skill(entity.parent).name)
         self.deactivate(entity)
 
@@ -137,6 +137,7 @@ class MagicWand(Weapon):
         self.rarity = "Common"
 
     def attached_skill(self, owner):
+        self.attached_skill_exists = True
         return S.MagicMissile(owner, self.magic_missile_cooldown, 
                                      self.magic_missile_cost, 
                                      self.magic_missile_damage, 
@@ -187,6 +188,7 @@ class FlamingSword(Weapon):
         self.rarity = "Legendary"
 
     def attached_skill(self, owner):
+        self.attached_skill_exists = True
         return S.BurningAttack(owner, self.skill_cooldown, 
                                 self.skill_cost, 
                                 self.skill_damage, 
@@ -281,6 +283,7 @@ class Aegis(Shield):
         self.rarity = "Rare"
 
     def attached_skill(self, owner):
+        self.attached_skill_exists = True
         return S.Petrify(owner, self.skill_cooldown, 
                                 self.skill_cost, 
                                 self.skill_duration, 
@@ -428,6 +431,7 @@ class BloodRing(Ring):
         self.rarity = "Rare"
 
     def attached_skill(self, owner):
+        self.attached_skill_exists = True
         return S.BloodPact(owner, cooldown=10, cost=10, strength_increase=10, duration=4, action_cost=100)
         
 
@@ -565,6 +569,7 @@ class GildedArmor(BodyArmor):
         self.rarity = "Rare"
 
     def attached_skill(self, owner):
+        self.attached_skill_exists = True
         return S.ShrugOff(owner, self.skill_cooldown, self.skill_cost, self.activation_chance, action_cost=100)
 
     def activate(self, entity):
@@ -617,6 +622,7 @@ class WarlordArmor(BodyArmor):
         self.rarity = "Legendary"
 
     def attached_skill(self, owner):
+        self.attached_skill_exists = True
         return S.Terrify(owner, self.skill_cooldown, 
                                 self.skill_cost, 
                                 self.skill_duration, 
@@ -742,6 +748,7 @@ class BootsOfEscape(Armor):
         self.rarity = "Rare"
     
     def attached_skill(self, owner):
+        self.attached_skill_exists = True
         return S.Escape(owner, self.skill_cooldown, 
                         self.skill_cost, 
                         self_fear=False, 
@@ -887,6 +894,7 @@ class VikingHelmet(Armor):
         self.rarity = "Rare"
 
     def attached_skill(self, owner):
+        self.attached_skill_exists = True
         return S.Berserk(owner, self.skill_cooldown, self.skill_cost, self.skill_duration, self.skill_threshold, self.strength_increase, action_cost=1)
 
     def equip(self, entity):
@@ -924,7 +932,7 @@ class Potion(O.Item):
         self.stacks = 1
         self.equipable = False
         self.can_be_levelled = False
-        self.attached_skill = None
+        self.attached_skill_exists = False
         self.description = "A potiorb that does something."
         self.rarity = "Common"
 
@@ -946,7 +954,7 @@ class Scroll(O.Item):
         self.equipable = False
         self.can_be_levelled = False
         self.stacks = 1
-        self.attached_skill = None
+        self.attached_skill_exists = False
         self.description = "A scrorb that does something."
 
         self.rarity = "Common"
@@ -1108,6 +1116,19 @@ class BurningAttackScrorb(Scroll):
         self.rarity = "Common"
 
     def activate_once(self, entity, loop):
+        print(entity)
         entity.ready_skill = S.BurningAttack(entity.parent, 0, 0, 10, 5, 5, 5)
         loop.start_targetting()
+        loop.targets.store_skill(0, entity.ready_skill, entity.parent, temp_cast=True)
+
+class BlinkScrorb(Scroll):
+    def __init__(self, render_tag):
+        super().__init__(render_tag, "Blink Scrorb")
+        self.description = "A scrorb that lets you cast blink once."
+        self.rarity = "Common"
+
+    def activate_once(self, entity, loop):
+        print(entity)
+        entity.ready_skill = S.BlinkToEmpty(entity.parent, 0, 0, 10, 1)
+        loop.start_targetting(start_on_player=True)
         loop.targets.store_skill(0, entity.ready_skill, entity.parent, temp_cast=True)

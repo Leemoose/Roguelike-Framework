@@ -61,9 +61,15 @@ class Target:
                 self.void_skill()
         else:
             if not self.skill_to_cast.targets_monster:
-                self.caster.cast_skill(self.index_to_cast, (x, y), loop)
-                loop.add_message("You cast " + str(self.skill_to_cast.name))
-                self.void_skill()
+                if self.temp_cast:
+                    self.skill_to_cast.try_to_activate((x, y), loop.generator)
+                    self.caster.character.ready_scroll.consume_scroll(self.caster.character)
+                    loop.add_message("You cast " + str(self.skill_to_cast.name))
+                    self.void_skill()
+                else:
+                    self.caster.cast_skill(self.index_to_cast, (x, y), loop)
+                    loop.add_message("You cast " + str(self.skill_to_cast.name))
+                    self.void_skill()
             else:
                 loop.add_message("Not a valid target there")
             

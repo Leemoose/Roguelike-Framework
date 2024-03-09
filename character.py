@@ -397,8 +397,8 @@ class Player(O.Objects):
         if self.invincible: # only get the gun if you're invincible at the start
             self.character.skills.extend([
                 S.Gun(self), # 1
-                S.BlinkToEmpty(self, cooldown=0, cost=0, range=10, action_cost=1), # 2
-                S.BlinkStrike(self, cooldown=0, cost=10, damage=25, range=10, action_cost=1), # 3
+                # S.BlinkToEmpty(self, cooldown=0, cost=0, range=10, action_cost=1), # 2
+                # S.BlinkStrike(self, cooldown=0, cost=10, damage=25, range=10, action_cost=1), # 3
                 # S.SummonGorblin(self, cooldown=0, cost=10, range=10, action_cost=1), # 2
                 # S.BurningAttack(self, cooldown=0, cost=10, damage=20, burn_damage=10, burn_duration=10, range=10), #2
                 # S.Petrify(self, cooldown=0, cost=10, duration=3, activation_chance=1, range=10), #3

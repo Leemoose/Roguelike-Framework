@@ -960,7 +960,7 @@ class Display:
         self.win.fill((0,0,0))
         self.uiManager.draw_ui(self.win)
 
-    def update_entity(self, entity, tileDict, item_screen = True, create = False):
+    def update_entity(self, entity, tileDict, player, item_screen = True, create = False):
         if create == True:
             self.uiManager.clear_and_reset()
         self.win.fill((0,0,0))
@@ -1076,14 +1076,18 @@ class Display:
                     entity_text += "Currently equipped<br>"
                 entity_text += "Equipment type: " + item.equipment_type + "<br>"
                 if item.required_strength > 0:
-                    entity_text += "Required Strength: " + str(item.required_strength) + "<br>"
+                    if player.character.strength < item.required_strength:
+                        req_str_text = "<shadow size=1 offset=0,0 color=#901010><font color=#E0F0FF>Required Strength: " + str(item.required_strength) + "(Unequippable) </font></shadow><br>"
+                    else:
+                        req_str_text = "Required Strength: " + str(item.required_strength) + "<br>"
+                    entity_text += req_str_text
                 if isinstance(item, I.Armor):
                     entity_text += "Armor: " + str(item.armor) + "<br>"
                 if isinstance(item, I.Weapon):
                     entity_text += "Damage: " + str(item.damage_min) + " - " + str(item.damage_max) + "<br>"
                     if item.on_hit:
                         entity_text += "On hit: " + item.on_hit_description + "<br>"
-            if item.attached_skill != None:
+            if item.attached_skill_exists:
                 entity_text += "Grants skill: " + item.get_attached_skill_description() + "<br>"
 
         if isinstance(entity, M.Monster):

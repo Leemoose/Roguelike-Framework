@@ -142,7 +142,7 @@ class Teleport(Skill):
                 self.parent.parent.x = startx
                 self.parent.parent.y = starty
 
-# keep monster exclusive for now
+# !!! keep monster exclusive for now, pathing breaks if a player tries to use it !!!
 class BlinkStrike(Skill):
     def __init__(self, parent, cooldown, cost, damage, range, action_cost):
         super().__init__("Blink Strike", parent, cooldown, cost, range, action_cost)
@@ -155,7 +155,12 @@ class BlinkStrike(Skill):
         
         path = pathfinding.astar(generator.tile_map.track_map, self.parent.get_location(), defender.get_location(), generator.monster_map, defender, monster_blocks=True)
         if len(path) > 1:
+            monster_map = generator.monster_map
+            x, y = self.parent.x, self.parent.y
+            monster_map.clear_location(x, y)
             self.parent.x, self.parent.y = path[-2] # blink to second last part of path
+            monster_map.place_thing(self.parent)
+            
         return True
 
     def castable(self, target):

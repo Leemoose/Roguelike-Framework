@@ -61,7 +61,7 @@ ItemSpawns.append(ItemSpawnParams( I.InvincibilityScroll(450),      1,          
 ItemSpawns.append(ItemSpawnParams( I.CallingScroll(450),      1,               10,          1,              5))
 ItemSpawns.append(ItemSpawnParams( I.SleepScroll(450),      1,               10,          1,              5))
 ItemSpawns.append(ItemSpawnParams( I.ExperienceScroll(450),      1,               10,          5,              5))
-
+ItemSpawns.append(ItemSpawnParams( I.BlinkScrorb(450),      1,               10,          1,              5))
 
 Floor_Distributions = [(0.9, 0.1, 0.0), # floor 1
                        (0.7, 0.3, 0.0), # floor 2
@@ -84,8 +84,8 @@ class ItemSpawner():
         # useful for debugging specific items, separate from generator
         self.forceSpawn = None
         # self.forceSpawn = ("Enchant Scrorb", 3)
-        self.forceSpawn = ("Flame Scrorb", 5)
-
+        # self.forceSpawn = ("Blink Scrorb", 5)
+        
     def countSpawn(self, depth):
         return random.randint(int(2 + 0.25 * (10 - depth)), int(4 + 0.5 * (10 - depth)))
     
@@ -215,7 +215,7 @@ class MonsterSpawner():
 
         # useful for debugging specific items, separate from generator
         self.forceSpawn = None
-        self.forceSpawn = ("Hobgorblin", 5) 
+        # self.forceSpawn = ("Hobgorblin", 5) 
 
     def countSpawn(self, depth):
         return random.randint(int(2 + 0.5 * (depth)), int(4 + 1.0 * (depth)))

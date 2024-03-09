@@ -156,7 +156,7 @@ class Loops():
         elif newLoop == LoopType.classes:
             pass
         elif newLoop == LoopType.items:
-            self.display.update_entity(self.screen_focus, self.tileDict, item_screen = True, create = True)
+            self.display.update_entity(self.screen_focus, self.tileDict, self.player, item_screen = True, create = True)
         elif newLoop == LoopType.examine:
             self.display.create_display(self)
         elif newLoop == LoopType.paused:
@@ -352,7 +352,7 @@ class Loops():
         elif self.currentLoop == LoopType.main:
             display.update_main()
         elif self.currentLoop == LoopType.items:
-            display.update_entity(self.screen_focus, tileDict)
+            display.update_entity(self.screen_focus, tileDict, self.player)
         elif self.currentLoop == LoopType.examine or self.currentLoop == LoopType.targeting:
             # display.update_display(colors, self.generator.tile_map, tileDict, self.monster_dict, self.item_dict,
             #                       self.monster_map, self.player, self.messages, self.target_to_display)
@@ -362,7 +362,7 @@ class Loops():
         elif self.currentLoop == LoopType.paused:
             display.update_pause_screen()
         elif self.currentLoop == LoopType.specific_examine:
-            display.update_entity(self.screen_focus, tileDict, item_screen=False, create = True)
+            display.update_entity(self.screen_focus, tileDict, self.player, item_screen=False, create = True)
         pygame.display.update()
         self.update_screen = False
 
