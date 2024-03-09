@@ -68,6 +68,9 @@ class Character():
         self.health_partial = 0.0
         self.mana_partial = 0.0
 
+        self.unarmed_damage_min = 1
+        self.unarmed_damage_max = 20
+
     def rounded(self):
         # check all stats are equal
         return self.endurance == self.intelligence == self.dexterity == self.strength
@@ -202,13 +205,13 @@ class Character():
 
     def get_damage(self):
         if self.main_weapon == None:
-            return self.base_damage + 1, self.base_damage + 20
+            return self.base_damage + self.unarmed_damage_min, self.base_damage + self.unarmed_damage_max
         else:
             return self.base_damage + self.main_weapon.damage_min, self.base_damage + self.main_weapon.damage_max
 
     def melee(self, defender):
         if self.main_weapon == None:
-            damage = R.roll_dice(1, 20)[0]
+            damage = R.roll_dice(self.unarmed_damage_min, self.unarmed_damage_max)[0]
         else:
             if self.main_weapon.on_hit == None:
                 damage = self.main_weapon.attack()
