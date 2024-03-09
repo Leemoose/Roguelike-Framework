@@ -427,12 +427,14 @@ class Escape(Skill):
             duration = self.duration + self.parent.character.skill_duration_increase()
         else:
             duration = -100
-        haste = E.Haste(duration, self.dex_buff)
-        weak = E.Weak(duration, self.str_debuff)
-        dumb = E.Dumb(duration, self.int_debuff)
-        self.parent.character.add_status_effect(haste)
-        self.parent.character.add_status_effect(weak)
-        self.parent.character.add_status_effect(dumb)
+        # haste = E.Haste(duration, self.dex_buff)
+        # weak = E.Weak(duration, self.str_debuff)
+        # dumb = E.Dumb(duration, self.int_debuff)
+        # self.parent.character.add_status_effect(haste)
+        # self.parent.character.add_status_effect(weak)
+        # self.parent.character.add_status_effect(dumb)
+        effect = E.Escaping(duration, self.dex_buff, self.str_debuff, self.int_debuff)
+        self.parent.character.add_status_effect(effect)
         if self.self_fear:
             effect = E.Fear(-100, self.parent)
             self.parent.character.add_status_effect(effect)

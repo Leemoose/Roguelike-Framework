@@ -115,6 +115,23 @@ class Slow(StatusEffect):
     def remove(self, target):
         target.dexterity += self.dexterity
 
+class Escaping(StatusEffect):
+    def __init__(self, duration, dex_buff, str_debuff, int_debuff):
+        super().__init__(806, "Escaping", "is trying to escape", duration)
+        self.dex_buff = dex_buff
+        self.str_debuff = str_debuff
+        self.int_debuff = int_debuff
+    
+    def apply_effect(self, target):
+        target.dexterity += self.dex_buff
+        target.strength -= self.str_debuff
+        target.intelligence -= self.int_debuff
+    
+    def remove(self, target):
+        target.dexterity -= self.dex_buff
+        target.strength += self.str_debuff
+        target.intelligence += self.int_debuff
+
 class Fear(StatusEffect):
     def __init__(self, duration, inflictor):
         super().__init__(806, "Fear", "is scared", duration)
@@ -125,6 +142,8 @@ class Fear(StatusEffect):
     
     def remove(self, target):
         target.flee = False
+
+
 
 
 class Invincible(StatusEffect):
