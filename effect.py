@@ -63,10 +63,34 @@ class Might(StatusEffect):
         self.positive = True
 
     def apply_effect(self, target):
-        target.base_damage += self.strength
+        target.strength += self.strength
 
     def remove(self, target):
-        target.base_damage -= self.strength
+        target.strength -= self.strength
+
+class Weak(StatusEffect):
+    def __init__(self, duration, strength):
+        super().__init__(803, "Weak", "feels weak", duration)
+        self.strength = strength
+        self.positive = False
+
+    def apply_effect(self, target):
+        target.strength -= self.strength
+
+    def remove(self, target):
+        target.strength += self.strength
+
+class Dumb(StatusEffect):
+    def __init__(self, duration, intelligence):
+        super().__init__(803, "Dumb", "feels dumb", duration)
+        self.intelligence = intelligence
+        self.positive = False
+
+    def apply_effect(self, target):
+        target.intelligence -= self.intelligence
+
+    def remove(self, target):
+        target.intelligence += self.intelligence
 
 class Haste(StatusEffect):
     def __init__(self, duration, dexterity):

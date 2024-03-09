@@ -310,6 +310,7 @@ class DungeonGenerator():
             return (x != self.player.x or y != self.player.y)
 
     def nearest_empty_tile(self, location):
+        import pdb; pdb.set_trace()
         if location == None:
             return None
         if self.monster_map.get_passable(location[0], location[1]) and self.not_on_player(location[0], location[1]):

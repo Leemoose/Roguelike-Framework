@@ -176,6 +176,8 @@ class Monster_AI():
             return
         if not player.character.dodge():
             damage = monster.character.melee(player)
+            if damage < 0:
+                damage = 0
             loop.add_message(f"{monster} attacked you for {damage} damage")
         else:
             loop.add_message("You dodged the monsters attack")
@@ -299,7 +301,7 @@ class Monster_AI():
                 monster.move(opposite_move[0], 0, tile_map, monster, monster_map, player)
             else:
                 monster.character.energy -= (monster.character.move_cost - monster.character.dexterity)
-                loop.add_message(f"{monster} is backed into a corner and cannot flee.")
+                loop.add_message(f"{monster} cowers in a corner since it can't run further.")
         if update_target:
             loop.add_target((monster.x, monster.y))
 
@@ -374,7 +376,11 @@ class Goblin(Monster):
         self.character = C.Character(self)
         self.brain = Monster_AI(self)
         self.character.skills = []
-        self.character.skills.append(S.Escape(self, cooldown=100, cost=0, self_fear=True, activation_threshold=activation_threshold, action_cost=1))
+        self.character.skills.append(S.Escape(self, cooldown=100, 
+                                              cost=0, self_fear=True, 
+                                              dex_buff=20, str_debuff=20, int_debuff=20, haste_duration=-100,
+                                              activation_threshold=activation_threshold, 
+                                              action_cost=1))
         self.character.experience_given = 10
         self.description = "A cowardly creature with a tiny dagger"
 

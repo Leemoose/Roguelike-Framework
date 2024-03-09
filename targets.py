@@ -36,6 +36,10 @@ class Target:
         monster_map = loop.generator.monster_map
         monster_dict = loop.generator.monster_dict
         if not monster_map.get_passable(x,y):
+            if not self.skill_to_cast.targets_monster:
+                loop.add_message("You can't cast " + self.skill_to_cast.name + " on a space with a monster")
+                self.void_skill()
+                return
             monster = monster_dict.get_subject(monster_map.locate(x,y))
             if self.skill_to_cast.castable(monster):
                 if self.temp_cast:

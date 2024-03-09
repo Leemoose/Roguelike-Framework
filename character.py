@@ -228,7 +228,8 @@ class Character():
     def quaff(self, potion, item_dict, item_map):
         if potion.consumeable and potion.equipment_type == "Potiorb":
             potion.activate(self)
-            if potion.stacks == 1:
+            print(potion.stacks)
+            if potion.stacks < 1:
                 self.drop(potion, item_dict, item_map)
                 potion.destroy = True
             self.energy -= self.quaff_cost
@@ -393,10 +394,10 @@ class Player(O.Objects):
 
         self.invincible = True
 
-        if self.invincible: # only get the gun if you're invincible
+        if self.invincible: # only get the gun if you're invincible at the start
             self.character.skills.extend([
                 S.Gun(self), # 1
-                S.SummonGorblin(self, cooldown=0, cost=10, range=10, action_cost=1), # 2
+                # S.SummonGorblin(self, cooldown=0, cost=10, range=10, action_cost=1), # 2
                 # S.BurningAttack(self, cooldown=0, cost=10, damage=20, burn_damage=10, burn_duration=10, range=10), #2
                 # S.Petrify(self, cooldown=0, cost=10, duration=3, activation_chance=1, range=10), #3
                 # S.ShrugOff(self, cooldown=0, cost=10, activation_chance=1.0, action_cost=1), #4
@@ -436,6 +437,8 @@ class Player(O.Objects):
         self.character.energy -= (self.character.attack_cost - int(self.character.dexterity * self.character.round_bonus()))
         if not self.character.dodge():
             damage = self.character.melee(defender)
+            if damage < 0:
+                damage = 0
             # if not defender.character.is_alive():
             #     self.experience += defender.experience_given
             #     self.check_for_levelup()

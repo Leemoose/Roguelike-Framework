@@ -132,10 +132,16 @@ class MagicWand(Weapon):
         self.magic_missile_range = 6
         self.magic_missile_cost = 10
         self.magic_missile_cooldown = 3
-        self.attached_skill = (lambda owner : S.MagicMissile(owner, self.magic_missile_cooldown, self.magic_missile_cost, self.magic_missile_damage, self.magic_missile_range, action_cost=100))
-
+        
         self.wearer = None # items with stat buffs or skills need to keep track of owner for level ups
         self.rarity = "Common"
+
+    def attached_skill(self, owner):
+        return S.MagicMissile(owner, self.magic_missile_cooldown, 
+                                     self.magic_missile_cost, 
+                                     self.magic_missile_damage, 
+                                     self.magic_missile_range, 
+                                     action_cost=100)
 
     def level_up(self):
         self.level += 1
@@ -150,7 +156,7 @@ class MagicWand(Weapon):
         self.magic_missile_cooldown -= 1
         if self.magic_missile_cooldown < 0:
             self.magic_missile_cooldown = 0
-        self.attached_skill = (lambda owner : S.MagicMissile(owner, self.magic_missile_cooldown, self.magic_missile_cost, self.magic_missile_damage, self.magic_missile_range, action_cost=100))
+        
         if self.wearer != None:
             self.wearer.remove_skill(self.attached_skill(self.wearer.parent).name)
             self.wearer.add_skill(self.attached_skill(self.wearer.parent))
@@ -177,10 +183,16 @@ class FlamingSword(Weapon):
         self.skill_burn_duration = 10
         self.skill_range = 5
 
-        self.attached_skill = (lambda owner : S.BurningAttack(owner, self.skill_cooldown, self.skill_cost, self.skill_damage, self.skill_burn_damage, self.skill_burn_duration, self.skill_range))
-    
         self.wearer = None # items with stat buffs or skills need to keep track of owner for level ups
         self.rarity = "Legendary"
+
+    def attached_skill(self, owner):
+        return S.BurningAttack(owner, self.skill_cooldown, 
+                                self.skill_cost, 
+                                self.skill_damage, 
+                                self.skill_burn_damage, 
+                                self.skill_burn_duration, 
+                                self.skill_range)
 
     def attack(self):
         return (super().attack(), self.on_hit)
@@ -199,8 +211,7 @@ class FlamingSword(Weapon):
         self.skill_cooldown -= 1
         if self.skill_cooldown < 2:
             self.skill_cooldown = 2
-        self.attached_skill = (lambda owner : S.BurningAttack(owner, self.skill_cooldown, self.skill_cost, self.skill_damage, self.skill_burn_damage, self.skill_burn_duration, self.skill_range))
-
+        
         if self.wearer != None:
             self.wearer.remove_skill(self.attached_skill(self.wearer.parent).name)
             self.wearer.add_skill(self.attached_skill(self.wearer.parent))
@@ -267,9 +278,14 @@ class Aegis(Shield):
         self.skill_activation_chance = 0.3
         self.skill_range = 3
 
-        self.attached_skill = (lambda owner : S.Petrify(owner, self.skill_cooldown, self.skill_cost, self.skill_duration, self.skill_activation_chance, self.skill_range))
-
         self.rarity = "Rare"
+
+    def attached_skill(self, owner):
+        return S.Petrify(owner, self.skill_cooldown, 
+                                self.skill_cost, 
+                                self.skill_duration, 
+                                self.skill_activation_chance, 
+                                self.skill_range)
 
     def activate(self, entity):
         entity.add_skill(self.attached_skill(entity.parent))
@@ -291,7 +307,6 @@ class Aegis(Shield):
         if self.skill_range > 6:
             self.skill_range = 6
 
-        self.attached_skill = (lambda owner : S.Petrify(owner, self.skill_cooldown, self.skill_cost, self.skill_duration, self.skill_activation_chance, self.skill_range))
         if self.wearer != None:
             self.wearer.remove_skill(self.attached_skill(self.wearer.parent).name)
             self.wearer.add_skill(self.attached_skill(self.wearer.parent))
@@ -410,9 +425,11 @@ class BloodRing(Ring):
         self.description = "Pricking your finger on the spikes of this ring makes you feel alive."
         
         # skill doesn't have an owner until equipped to an entity, so need a lambda expression here
-        self.attached_skill = (lambda owner : S.BloodPact(owner, cooldown=10, cost=10, strength_increase=10, duration=4, action_cost=100))
-        
         self.rarity = "Rare"
+
+    def attached_skill(self, owner):
+        return S.BloodPact(owner, cooldown=10, cost=10, strength_increase=10, duration=4, action_cost=100)
+        
 
     def activate(self, entity):
         entity.add_skill(self.attached_skill(entity.parent))
@@ -544,9 +561,11 @@ class GildedArmor(BodyArmor):
         self.skill_cooldown = 15
         self.skill_cost = 20
         self.activation_chance = 0.5
-        self.attached_skill = (lambda owner : S.ShrugOff(owner, self.skill_cooldown, self.skill_cost, self.activation_chance, action_cost=100))
-
+        
         self.rarity = "Rare"
+
+    def attached_skill(self, owner):
+        return S.ShrugOff(owner, self.skill_cooldown, self.skill_cost, self.activation_chance, action_cost=100)
 
     def activate(self, entity):
         entity.add_skill(self.attached_skill(entity.parent))
@@ -570,7 +589,6 @@ class GildedArmor(BodyArmor):
         if self.activation_chance > 1.0:
             self.activation_chance = 1.0
 
-        self.attached_skill = (lambda owner : S.ShrugOff(owner, self.skill_cooldown, self.skill_cost, self.activation_chance, action_cost=100))
         if self.wearer != None:
             self.wearer.remove_skill(self.attached_skill(self.wearer.parent).name)
             self.wearer.add_skill(self.attached_skill(self.wearer.parent))
@@ -595,9 +613,16 @@ class WarlordArmor(BodyArmor):
         self.skill_duration = 3
         self.skill_activation_chance = 0.5
         self.skill_range = 2
-        self.attached_skill = (lambda owner : S.Terrify(owner, self.skill_cooldown, self.skill_cost, self.skill_duration, self.skill_activation_chance, self.skill_range))
-
+        
         self.rarity = "Legendary"
+
+    def attached_skill(self, owner):
+        return S.Terrify(owner, self.skill_cooldown, 
+                                self.skill_cost, 
+                                self.skill_duration, 
+                                self.skill_activation_chance, 
+                                self.skill_range)
+
 
     def activate(self, entity):
         entity.add_skill(self.attached_skill(entity.parent))
@@ -623,7 +648,6 @@ class WarlordArmor(BodyArmor):
         if self.skill_range > 5:
             self.skill_range = 5
 
-        self.attached_skill = (lambda owner : S.Terrify(owner, self.skill_cooldown, self.skill_cost, self.skill_duration, self.skill_activation_chance, self.skill_range))
         if self.wearer != None:
             self.wearer.remove_skill(self.attached_skill(self.wearer.parent).name)
             self.wearer.add_skill(self.attached_skill(self.wearer.parent))
@@ -711,9 +735,22 @@ class BootsOfEscape(Armor):
 
         self.skill_cooldown = 10
         self.skill_cost = 25
-        self.attached_skill = (lambda owner : S.Escape(owner, self.skill_cooldown, self.skill_cost, self_fear=False, activation_threshold=1.1, action_cost=1))
-        
+        self.dex_buff = 20
+        self.str_debuff = 10
+        self.int_debuff = 10
+        self.duration = 4
         self.rarity = "Rare"
+    
+    def attached_skill(self, owner):
+        return S.Escape(owner, self.skill_cooldown, 
+                        self.skill_cost, 
+                        self_fear=False, 
+                        dex_buff=self.dex_buff,
+                        str_debuff=self.str_debuff,
+                        int_debuff=self.int_debuff,
+                        haste_duration=self.duration,
+                        activation_threshold=1.1, 
+                        action_cost=1)
 
     def equip(self, entity):
         if entity.boots != None:
@@ -739,7 +776,16 @@ class BootsOfEscape(Armor):
         self.skill_cost -= 2
         if self.skill_cost < 10:
             self.skill_cost = 10
-        self.attached_skill = (lambda owner : S.Escape(owner, self.skill_cooldown, self.skill_cost, self_fear=False, activation_threshold=1.1, action_cost=1))
+        self.dex_buff += 2
+        self.str_debuff -= 1
+        if self.str_debuff < 5:
+            self.str_debuff = 5
+        self.int_debuff -= 1
+        if self.int_debuff < 5:
+            self.int_debuff = 5
+        self.duration += 1
+        if self.duration > 6:
+            self.duration = 6
         if self.wearer != None:
             self.wearer.remove_skill(self.attached_skill(self.wearer.parent).name)
             self.wearer.add_skill(self.attached_skill(self.wearer.parent))
@@ -838,9 +884,10 @@ class VikingHelmet(Armor):
         self.skill_threshold = 0.25
         self.strength_increase = 10
 
-        self.attached_skill = (lambda owner : S.Berserk(owner, self.skill_cooldown, self.skill_cost, self.skill_duration, self.skill_threshold, self.strength_increase, action_cost=1))
-
         self.rarity = "Rare"
+
+    def attached_skill(self, owner):
+        return S.Berserk(owner, self.skill_cooldown, self.skill_cost, self.skill_duration, self.skill_threshold, self.strength_increase, action_cost=1)
 
     def equip(self, entity):
         if entity.helmet != None:
@@ -864,7 +911,6 @@ class VikingHelmet(Armor):
         self.skill_threshold += 0.1
         if self.skill_threshold > 0.5:
             self.skill_threshold = 0.5
-        self.attached_skill = (lambda owner : S.Berserk(owner, self.skill_cooldown, self.skill_cost, self.skill_duration, self.skill_threshold, self.strength_increase, action_cost=1))
         if self.wearer != None:
             self.wearer.remove_skill(self.attached_skill(self.wearer.parent).name)
             self.wearer.add_skill(self.attached_skill(self.wearer.parent))

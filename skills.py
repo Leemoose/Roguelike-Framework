@@ -1,6 +1,7 @@
 import random
 import monster as M
 import effect as E
+import pathfinding
 
 class Skill():
     def __init__(self, name, parent, cooldown, cost, range=-1, action_cost=100):
@@ -140,6 +141,15 @@ class Teleport(Skill):
                 print(self.parent.parent.name)
                 self.parent.parent.x = startx
                 self.parent.parent.y = starty
+
+# def BlinkStrike(Skill):
+#     def __init__(self, parent, cooldown, cost, damage, range, action_cost):
+#         super().__init__("Blink Strike", parent, cooldown, cost, range, action_cost)
+#         self.damage = damage
+#         self.targetted = True
+    
+#     def activate(self, defender, generator):
+
 
 class MagicMissile(Skill):
     def __init__(self, parent, cooldown, cost, damage, range, action_cost):
@@ -330,33 +340,31 @@ class Terrify(Skill):
         if self.duration == -100:
             return self.name + "(" + str(self.cost) + " cost, " + str(self.cooldown) + " turn cooldown" + ", " + str(int(self.activation_chance * 100)) + "% chance to terrify at range " + str(self.range) + ")"
         return self.name + "(" + str(self.cost) + " cost, " + str(self.cooldown) + " turn cooldown" + ", " + str(int(self.activation_chance * 100)) + "% chance to terrify at range " + str(self.range) + "for " + str(self.duration) + " turns)"
-    
+
+
 class Escape(Skill):
-    def __init__(self, parent, cooldown, cost, self_fear, activation_threshold, action_cost):
+    def __init__(self, parent, cooldown, cost, self_fear, dex_buff, str_debuff, int_debuff, haste_duration, activation_threshold, action_cost):
         super().__init__("Escape", parent, cooldown, cost, -1, action_cost)
         self.threshold = activation_threshold
         self.self_fear = self_fear
+        self.dex_buff = dex_buff
+        self.str_debuff = str_debuff
+        self.int_debuff = int_debuff
+        self.duration = haste_duration
         self.render_tag = 911
 
     def activate(self, target, generator):
-        exit = generator.nearest_exit(self.parent)
-        if exit == None:
-            return False
-        exitx, exity = exit
-        dest = generator.nearest_empty_tile(exit)
-        if dest == None:
-            return False
-        destx, desty = dest
-        if isinstance(self.parent, M.Monster):
-            monster_map = generator.monster_map
-            x, y = self.parent.x, self.parent.y
-            monster_map.clear_location(x, y)
-            self.parent.x = destx
-            self.parent.y = desty
-            monster_map.place_thing(self.parent)
+        self.parent.character.mana -= self.cost
+        if self.duration != -100:
+            duration = self.duration + self.parent.character.skill_duration_increase()
         else:
-            self.parent.x = destx
-            self.parent.y = desty
+            duration = -100
+        haste = E.Haste(duration, self.dex_buff)
+        weak = E.Weak(duration, self.str_debuff)
+        dumb = E.Dumb(duration, self.int_debuff)
+        self.parent.character.add_status_effect(haste)
+        self.parent.character.add_status_effect(weak)
+        self.parent.character.add_status_effect(dumb)
         if self.self_fear:
             effect = E.Fear(-100, self.parent)
             self.parent.character.add_status_effect(effect)
@@ -365,9 +373,13 @@ class Escape(Skill):
         return self.basic_requirements() and self.below_threshold()
     
     def description(self):
-        if self.threshold > 1:
-            return self.name + "(" + str(self.cost) + " cost, " + str(self.cooldown) + " turn cooldown"
-        return self.name + "(" + str(self.cost) + " cost, " + str(self.cooldown) + " turn cooldown" + ", castable below " + str(self.threshold * 100) + "% health)"
+        if self.duration == -100:
+            addition = "permanently"
+        else:
+            addition = "for " + str(self.duration) + " turns"
+        if self.threshold >= 1:
+            return self.name + "(" + str(self.cost) + " cost, " + str(self.cooldown) + " turn cooldown, gain " + str(self.dex_buff) + " dexterity, lose " + str(self.str_debuff) + " strength, lose " + str(self.int_debuff) + " intelligence)" + addition
+        return self.name + "(" + str(self.cost) + " cost, " + str(self.cooldown) + " turn cooldown" + ", castable below " + str(self.threshold * 100) + "% health), gain " + str(self.dex_buff) + " dexterity, lose " + str(self.str_debuff) + " strength, lose " + str(self.int_debuff) + " intelligence)" + addition
     
 class Heal(Skill):
     def __init__(self, parent, cooldown, cost, heal_amount, activation_threshold, action_cost):
