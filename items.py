@@ -36,7 +36,6 @@ class Equipment(O.Item):
         return self.equipable
 
     def can_be_unequipped(self, entity):
-        print(self.cursed)
         return (self.equipped and not self.cursed)
 
     def get_attached_skill_description(self):
@@ -1227,7 +1226,6 @@ class BurningAttackScrorb(Scroll):
         self.rarity = "Common"
 
     def activate_once(self, entity, loop):
-        print(entity)
         entity.ready_skill = S.BurningAttack(entity.parent, 0, 0, 10, 5, 5, 5)
         loop.start_targetting()
         loop.targets.store_skill(0, entity.ready_skill, entity.parent, temp_cast=True)
@@ -1239,7 +1237,6 @@ class BlinkScrorb(Scroll):
         self.rarity = "Common"
 
     def activate_once(self, entity, loop):
-        print(entity)
         entity.ready_skill = S.BlinkToEmpty(entity.parent, 0, 0, 10, 1)
         loop.start_targetting(start_on_player=True)
         loop.targets.store_skill(0, entity.ready_skill, entity.parent, temp_cast=True)

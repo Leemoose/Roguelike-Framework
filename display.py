@@ -205,11 +205,11 @@ class Display:
                                         views_offset_from_left + views_button_offset_from_each_other_width+ (views_button_offset_from_each_other_width + views_button_width) * button_num_width,
                                         views_offset_from_top + views_button_offset_from_each_other_height+ (views_button_offset_from_each_other_height + views_button_height) * button_num_height),
                                         (views_button_width, views_button_height)),
-            text="Save",
+            text="?",
             manager=self.uiManager,
                     starting_height=800)
-        button.action = "s"
-        self.buttons.add(button, "s")
+        button.action = "?"
+        self.buttons.add(button, "?")
 
         button_num_height = 0
         button_num_width += 1

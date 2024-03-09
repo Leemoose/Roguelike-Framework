@@ -286,9 +286,7 @@ class Loops():
                     x, y = pygame.mouse.get_pos()
                     player = self.player
                     x_tile, y_tile = display.screen_to_tile(player, x, y)
-                    print(x_tile, y_tile, player.x, player.y)
                     if self.player.get_distance(x_tile,y_tile) == 0:
-                        print("hi")
                         if not self.generator.item_map.get_passable(player.x,player.y):
                             key = self.generator.item_map.track_map[player.x][player.y]
                             item = self.generator.item_dict.subjects[key]
@@ -365,7 +363,12 @@ class Loops():
                     monster.brain.rank_actions(monster, self.monster_map, self.generator.tile_map, self.generator.flood_map, self.player, self.generator, self.item_dict, self)
         if len(self.generator.summoner) > 0:
             for generation in self.generator.summoner:
-                self.generator.place_monster_at_location(generation[0], generation[1], generation[2])
+                placement = self.generator.nearest_empty_tile((generation[1], generation[2]))
+                if placement != None:
+                    self.generator.place_monster_at_location(generation[0], placement[0], placement[1])
+                else:
+                    self.add_message("The summoning fizzled.")
+            self.generator.summoner = []
 
     def render_screen(self, keyboard, display, colors, tileDict):
         if self.currentLoop == LoopType.action or self.currentLoop == LoopType.autoexplore or self.currentLoop == LoopType.search_stairs:

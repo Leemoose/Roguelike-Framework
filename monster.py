@@ -1,3 +1,4 @@
+import monster as M
 import objects as O
 import character as C
 import dice as R
@@ -66,7 +67,8 @@ class Monster_AI():
 
         # print(max_utility)
         self.parent.character.energy -= 1
-
+        if isinstance(self.parent,M.Minotaur):
+            print(utility)
         # print(f"{self.parent} is doing {called_function.__name__} with utility {max_utility}")
         called_function(loop)
 
@@ -618,10 +620,10 @@ class BossOrb(Monster):
         self.character.inventory.append(I.OrbOfYendorb())
         self.orb = True
         # self, parent, cooldown, cost, slow_duration, damage_percent, slow_amount, range, action_cost
-        self.character.skills.append(S.Torment(self, cooldown=10, cost=0, slow_duration=3, damage_percent=0.5, slow_amount=5, range=4, action_cost=100))
-  #      self.character.skills.append(S.SummonGorblin(self, cooldown=10, cost=0, range=4,action_cost=20))
-        self.character.skills.append(S.Heal(self, cooldown = 20, cost = 10, heal_amount = 30, activation_threshold = .25, action_cost = 100))
-        self.character.skills.append(S.Invinciblity(self, cooldown=1000, cost=0))
+      #  self.character.skills.append(S.Torment(self, cooldown=10, cost=0, slow_duration=3, damage_percent=0.5, slow_amount=5, range=4, action_cost=100))
+        self.character.skills.append(S.SummonGorblin(self, cooldown=20, cost=0, range=4,action_cost=20))
+      #  self.character.skills.append(S.Heal(self, cooldown = 20, cost = 10, heal_amount = 30, activation_threshold = .25, action_cost = 100))
+       # self.character.skills.append(S.Invinciblity(self, cooldown=1000, cost=0))
 
         self.character.experience_given = 1000
         self.description = "The orb of all orbs, the orbiest of orbs, the archetype of orbs... you get the idea."

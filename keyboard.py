@@ -235,8 +235,11 @@ class Keyboard():
         if key == "esc":
             return False
         elif key == "l":
-            loop.memory.load_objects()
-            loop.load_game()
+            try:
+                loop.memory.load_objects()
+                loop.load_game()
+            except:
+                pass
         else:
             loop.down_floor()
             loop.change_loop(LoopType.action)

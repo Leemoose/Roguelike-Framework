@@ -131,13 +131,11 @@ def main():
         line = ""
         for m in n:
             line += str(m)
-        print(line)
 
     start = (0,0)
     end = (7, 6)
 
     path = astar(maze, start, end)
-    print(path)
 
 if __name__=="__main__":
     main()
