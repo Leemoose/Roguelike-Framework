@@ -65,7 +65,6 @@ class Display:
         self.clock = pygame.time.Clock()
         self.buttons = Buttons()
         self.colorDict = None
-        self.target_to_display = None
         
 
     def screen_to_tile(self, player, x, y):
@@ -290,11 +289,6 @@ class Display:
     #    clear_target = self.draw_examine_window(target_to_display, tileDict, floormap, monster_map, monsterID, item_ID, player)
     #    if clear_target:
     #        target_to_display = None
-    
-        if self.target_to_display != None:
-            clear_target = self.draw_examine_window(self.target_to_display, tileDict, loop.generator.tile_map, loop.generator.monster_map, loop.monster_dict, loop.item_dict, player)
-            if clear_target:
-                self.target_to_display = None
 
         num_skill = len(player.character.skills)
         if num_skill == 0:

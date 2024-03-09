@@ -515,12 +515,10 @@ class Loops():
         if start_on_player:
             self.targets.start_target(self.player.get_location())
             self.add_target(self.player.get_location())
-            self.display.tile_to_display = (self.player.x, self.player.y)
         else:
             closest_monster = self.player.character.get_closest_monster(self.player, self.generator.monster_dict, self.generator.tile_map)
             self.targets.start_target(closest_monster.get_location())
             self.add_target(closest_monster.get_location())
-            self.display.tile_to_display = (closest_monster.x, closest_monster.y)
 
     def init_new_game(self):
         self.display.create_game_ui(self.player)
