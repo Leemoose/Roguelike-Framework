@@ -88,8 +88,7 @@ class ItemSpawner():
         self.legendaryItems = [i for i in self.ItemSpawns if i.item.rarity == "Legendary"]
 
         # useful for debugging specific items, separate from generator
-        self.forceSpawn = None
-       # self.forceSpawn = ("Blackened Boots", 1)
+        self.forceSpawn = ("Blackened Boots", 3)
         # self.forceSpawn = ("Enchant Scrorb", 3)
         # self.forceSpawn = ("Flaming Sword", 5)
         

@@ -777,11 +777,11 @@ class Boots(Armor):
         if self.level == 6:
             self.description = "Boots that are somehow incredibly comfy and tough at the same time. It's been enchanted as much as possible."
 
-class BlackenedBoots(Armor):
+class BlackenedBoots(Boots):
     def __init__(self, render_tag):
-        super().__init__(-1,-1, 0, render_tag, "Blackened Boots")
+        super().__init__(render_tag)
         self.equipment_type = "Boots"
-        self.name = "Boots"
+        self.name = "Blackened Boots"
         self.armor = 3
         self.dexterity_buff = 2
         self.cursed = True
