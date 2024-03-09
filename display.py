@@ -1116,20 +1116,20 @@ class Display:
                     else:
                         req_str_text = "Required Strength: " + str(item.required_strength) + "<br>"
                     entity_text += req_str_text
-                if isinstance(item, I.Armor):
-                    entity_text += "Armor: " + str(item.armor) + "<br>"
+                #if isinstance(item, I.Armor):
+                    #entity_text += "Armor: " + str(item.armor) + "<br>"
                 if isinstance(item, I.Weapon):
                     entity_text += "Damage: " + str(item.damage_min) + " - " + str(item.damage_max) + "<br>"
                     if item.on_hit:
                         entity_text += "On hit: " + item.on_hit_description + "<br>"
-                if item.intelligence_buff > 0:
-                    entity_text += "Intelligence: " + str(item.intelligence_buff) + "<br>"
-                if item.strength_buff > 0:
-                    entity_text += "Strength: " + str(item.strength_buff) + "<br>"
-                if item.dexterity_buff > 0:
-                    entity_text += "Dexterity: " + str(item.dexterity_buff) + "<br>"
-                if item.endurance_buff > 0:
-                    entity_text += "Endurance: " + str(item.endurance_buff) + "<br>"
+                #if item.stats. > 0:
+                #    entity_text += "Intelligence: " + str(item.intelligence_buff) + "<br>"
+                #if item.strength_buff > 0:
+                #    entity_text += "Strength: " + str(item.strength_buff) + "<br>"
+                #if item.dexterity_buff > 0:
+                #    entity_text += "Dexterity: " + str(item.dexterity_buff) + "<br>"
+                #if item.endurance_buff > 0:
+                #    entity_text += "Endurance: " + str(item.endurance_buff) + "<br>"
             if item.attached_skill_exists:
                 entity_text += "Grants skill: " + item.get_attached_skill_description() + "<br>"
 
