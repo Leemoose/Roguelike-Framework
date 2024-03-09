@@ -689,9 +689,11 @@ class BloodstainedArmor(BodyArmor):
 
     def activate(self, entity):
         self.wearer = entity
+        self.wearer.strength += self.strength_buff
         return super().activate(entity)
 
     def deactivate(self, entity):
+        self.wearer.strength -= self.strength_buff
         self.wearer = None
         return super().deactivate(entity)
 
@@ -774,6 +776,36 @@ class Boots(Armor):
             self.description += " It's been enchanted to be more protective."
         if self.level == 6:
             self.description = "Boots that are somehow incredibly comfy and tough at the same time. It's been enchanted as much as possible."
+
+class BlackenedBoots(Armor):
+    def __init__(self, render_tag):
+        super().__init__(-1,-1, 0, render_tag, "Blackened Boots")
+        self.equipment_type = "Boots"
+        self.name = "Boots"
+        self.armor = 3
+        self.dexterity_buff = 2
+        self.cursed = True
+        self.description = "A dark spirit dwells in these boots."
+
+    def activate(self, entity):
+        self.wearer = entity
+        self.wearer.dexterity += self.dexterity_buff
+        return super().activate(entity)
+
+    def deactivate(self, entity):
+        self.wearer.dexterity -= self.dexterity_buff
+        self.wearer = None
+        return super().deactivate(entity)
+
+    def level_up(self):
+        self.level += 1
+        self.armor += 1
+        self.dexterity_buff += 1
+        self.wearer.dexterity += 1
+        if self.level == 2:
+            self.description += " You see the quickest path in a sea of blood."
+        if self.level == 6:
+            self.description = "You ride on screaming winds."
 
 class BootsOfEscape(Armor):
     def __init__(self, render_tag):
