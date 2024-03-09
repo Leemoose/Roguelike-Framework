@@ -75,6 +75,22 @@ class MassTorment(Skill):
                 monster.character.health /= 2
         player.character.health /= 2
 
+class MassHeal(Skill):
+    def __init__(self, parent, cooldown, cost):
+        super().__init__("Mass Heal", parent, cooldown, cost)
+
+    def activate(self, loop, bypass = False):
+        generator = loop.generator
+        player = loop.player
+        tile_map = generator.tile_map
+        monster_map = generator.monster_map
+        monster_dict = generator.monster_dict
+        for monster_key in monster_dict.subjects:
+            monster = monster_dict.get_subject(monster_key)
+            if tile_map.track_map[monster.x][monster.y].visible:
+                monster.character.health = monster.character.max_health
+        player.character.health = player.character.max_health
+
 class Invinciblity(Skill):
     def __init__(self, parent, cooldown, cost):
         super().__init__("Invincibility", parent, cooldown, cost)

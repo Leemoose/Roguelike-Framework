@@ -1078,6 +1078,24 @@ class DexterityPotion(Potion):
         effect = E.Haste(5, 5)
         entity.add_status_effect(effect)
 
+class PermanentDexterityPotion(Potion):
+    def __init__(self, render_tag):
+        super().__init__(render_tag, "Permanent Dexterity Potiorb")
+        self.description = "Speed in a bottle"
+        self.rarity = "Rare"
+
+    def activate_once(self, entity):
+        entity.dexterity += 1
+
+class PermanentStrengthPotion(Potion):
+    def __init__(self, render_tag):
+        super().__init__(render_tag, "Permanent Dexterity Potiorb")
+        self.description = "Strength in a bottle"
+        self.rarity = "Rare"
+
+    def activate_once(self, entity):
+        entity.strength += 1
+
 class CurePotion(Potion):
     def __init__(self, render_tag):
         super().__init__(render_tag, "Cure Potiorb")
@@ -1132,3 +1150,17 @@ class BlinkScrorb(Scroll):
         entity.ready_skill = S.BlinkToEmpty(entity.parent, 0, 0, 10, 1)
         loop.start_targetting(start_on_player=True)
         loop.targets.store_skill(0, entity.ready_skill, entity.parent, temp_cast=True)
+
+class MassHealScrorb(Scroll):
+    def __init__(self, render_tag):
+        super().__init__(render_tag, "Mass Heal Scrorb")
+        self.description = "A scrorb that lets you cast mass heal once."
+        self.rarity = "Common"
+        self.skill = S.MassHeal(None, None, None)
+
+    def activate_once(self, entity, loop):
+        self.skill.parent = entity
+        self.skill.activate(loop, bypass = True)
+        self.consume_scroll(entity)
+        loop.change_loop(L.LoopType.inventory)
+
