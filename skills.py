@@ -93,13 +93,27 @@ class MassHeal(Skill):
         player.character.health = player.character.max_health
 
 class Invinciblity(Skill):
-    def __init__(self, parent, cooldown, cost):
+    def __init__(self, parent, cost, cooldown, duration, activation_threshold=1.1, by_scroll=True):
         super().__init__("Invincibility", parent, cooldown, cost)
-        self.effect = E.Invincible(10)
+        self.effect = E.Invincible(duration)
+        self.dur = duration
+        self.by_scroll = by_scroll
+        self.threshold = activation_threshold
 
     def activate(self, loop, bypass = False):
-        loop.player.character.add_status_effect(self.effect)
-        self.effect.apply_effect(loop.player.character)
+        if self.by_scroll:
+            loop.player.character.add_status_effect(self.effect)
+            self.effect.apply_effect(loop.player.character)
+        else:
+            self.parent.character.mana -= self.cost
+            self.parent.character.add_status_effect(self.effect)
+        
+
+    def castable(self, target):
+        return self.basic_requirements() and self.below_threshold()
+    
+    def description(self):
+        return self.name + "(" + str(self.cost) + " cost, " + str(self.cooldown) + " turn cooldown" + ", invincible for " + str(self.dur) + ", castable below " + str(int(self.threshold * 100)) + "% health)"
 
 class Awaken_Monsters(Skill):
     def __init__(self, parent, cooldown, cost):

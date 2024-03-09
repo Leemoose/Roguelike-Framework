@@ -560,9 +560,14 @@ class Display:
                     text = font.render(item.name, True, (255, 255, 255))
                     self.win.blit(text, (examine_offset_from_left, examine_offset_from_top + 50))
 
-                    # description 
-                    text = font.render(item.description, True, (255, 255, 255))
+                    # description item descriptions are too long
+                    # text = font.render(item.description, True, (255, 255, 255))
+                    # self.win.blit(text, (examine_offset_from_left, examine_offset_from_top + 65))
+                    # nothing_at_target = False
+
+                    text = font.render(item.equipment_type, True, (255, 255, 255))
                     self.win.blit(text, (examine_offset_from_left, examine_offset_from_top + 65))
+
                     nothing_at_target = False
 
                     # stats (if present)

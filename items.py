@@ -763,7 +763,7 @@ class GildedArmor(BodyArmor):
 class WarlordArmor(BodyArmor):
     def __init__(self, render_tag):
         super().__init__(render_tag, "Warlord Armor")
-        self.description = "Bloodstained armor that belonged to a famous warrior. Wearing it makes you stronger and your enemies more terrified."
+        self.description = "Frightening armor that belonged to a famous warrior. Wearing it makes you stronger and your enemies more terrified."
         self.armor = 3
         self.required_strength = 1
         self.strength_buff = 2
@@ -820,7 +820,7 @@ class WarlordArmor(BodyArmor):
         if self.level == 2:
             self.description += " It's been enchanted to make you more strong and frightening"
         if self.level == 6:
-            self.description = "Bloodstained armor that marks you as a famous warrior who fought in many battles. Your enemies are terrified even from a distance. It's been enchanted as much as possible."
+            self.description = "Frightening armor that marks you as a famous warrior who fought in many battles. Your enemies are terrified even from a distance. It's been enchanted as much as possible."
 
 class BloodstainedArmor(BodyArmor):
     def __init__(self, render_tag):
@@ -969,6 +969,7 @@ class BlackenedBoots(Boots):
         self.dexterity_buff = 2
         self.cursed = True
         self.description = "A dark spirit dwells in these boots."
+        self.rarity = "Legendary"
 
     def activate(self, entity):
         self.wearer = entity
@@ -1199,6 +1200,89 @@ class HealingGloves(Armor):
         if self.level == 6:
             self.description = "Gloves that lets life surge through you. It's been enchanted as much as possible."
 
+class LichHand(Armor):
+    def __init__(self, render_tag):
+        super().__init__(-1,-1, 0, render_tag, "Lich Hand")
+        self.equipment_type = "Gloves"
+        self.description = "Immense power is sworn to whoever if brave enough to sacrifice their hand and some of their max life to the hand. If you dare, it enhances all your stats and allows you to embrace the lich's immortality briefly."
+        self.name = "Lich Hand"
+        self.armor = 0
+        self.cursed = True
+
+        self.skill_cooldown = 20
+        self.skill_cost = 30
+        self.skill_duration = 2
+
+        self.int_buff = 3
+        self.dex_buff = 3
+        self.str_buff = 3
+        self.end_buff = 3
+        self.health_cost = 2
+
+
+        self.rarity = "Legendary"
+
+        self.attached_skill_exists = True
+        self.health_removed = 0
+
+    def attached_skill(self, owner):
+        self.attached_skill_exists = True
+        return S.Invinciblity(owner, self.skill_cost, self.skill_cooldown, self.skill_duration, activation_threshold=1.1, by_scroll=False)
+
+    def equip(self, entity):
+        if entity.gloves != None:
+            entity.unequip(entity.gloves)
+        entity.gloves = self
+        entity.add_skill(self.attached_skill(entity.parent))
+        entity.intelligence += self.int_buff
+        entity.dexterity += self.dex_buff
+        entity.strength += self.str_buff
+        entity.endurance += self.end_buff
+        self.health_removed = entity.max_health // self.health_cost
+        entity.max_health -= self.health_removed
+        if entity.health > entity.max_health:
+            entity.health = entity.max_health
+        self.activate(entity)
+
+    def unequip(self, entity):
+        entity.gloves = None
+        entity.remove_skill(self.attached_skill(entity.parent).name)
+        entity.intelligence -= self.int_buff
+        entity.dexterity -= self.dex_buff
+        entity.strength -= self.str_buff
+        entity.endurance -= self.end_buff
+        entity.max_health += self.health_removed
+        self.deactivate(entity)
+
+    def level_up(self):
+        self.level += 1
+        self.skill_cooldown -= 2
+        if self.skill_cooldown < 10:
+            self.skill_cooldown = 10
+        self.skill_cost -= 2
+        if self.skill_cost < 10:
+            self.skill_cost = 10
+        self.skill_duration += 1
+        if self.skill_duration > 4:
+            self.skill_duration = 4
+
+        self.int_buff += 1
+        self.dex_buff += 1
+        self.str_buff += 1
+        self.end_buff += 1
+
+        if self.wearer != None:
+            self.wearer.remove_skill(self.attached_skill(self.wearer.parent).name)
+            self.wearer.add_skill(self.attached_skill(self.wearer.parent))
+            self.wearer.intelligence += 1
+            self.wearer.dexterity += 1
+            self.wearer.strength += 1
+            self.wearer.endurance += 1
+        if self.level == 2:
+            self.description += " Your power grows."
+        if self.level == 6:
+            self.description = "A hand that lets you embrace the lich's immortality. It's been enchanted as much as possible."
+
 class Helmet(Armor):
     def __init__(self, render_tag):
         super().__init__(-1,-1, 0, render_tag, "Helmet")
@@ -1241,7 +1325,8 @@ class VikingHelmet(Armor):
         self.skill_threshold = 0.25
         self.strength_increase = 10
 
-        self.rarity = "Rare"
+        self.rarity = "Legendary"
+        self.str_buff = 3
 
         self.attached_skill_exists = True
 
@@ -1254,11 +1339,13 @@ class VikingHelmet(Armor):
             entity.unequip(entity.helmet)
         entity.helmet = self
         entity.add_skill(self.attached_skill(entity.parent))
+        entity.strength += self.str_buff
         self.activate(entity)
 
     def unequip(self, entity):
         entity.helmet = None
         entity.remove_skill(self.attached_skill(entity.parent).name)
+        entity.strength -= self.str_buff
         self.deactivate(entity)
 
     def level_up(self):
@@ -1268,12 +1355,14 @@ class VikingHelmet(Armor):
         if self.level == 6:
             self.description = "A helmet that lets you go berserk below half health. It's been enchanted as much as possible"
         self.strength_increase += 2
+        self.str_buff += 2
         self.skill_threshold += 0.1
         if self.skill_threshold > 0.5:
             self.skill_threshold = 0.5
         if self.wearer != None:
             self.wearer.remove_skill(self.attached_skill(self.wearer.parent).name)
             self.wearer.add_skill(self.attached_skill(self.wearer.parent))
+            self.wearer.strength += 2
 
 class SpartanHelmet(Armor):
     def __init__(self, render_tag):
@@ -1528,8 +1617,8 @@ class InvincibilityScroll(Scroll):
     def __init__(self, render_tag):
         super().__init__(render_tag, "Invincibility Scrorb")
         self.description = "Death cannot hold me back."
-        self.rarity = "Common"
-        self.skill = S.Invinciblity(None, None, None)
+        self.rarity = "Legendary"
+        self.skill = S.Invinciblity(self, 0, 10, 0)
 
     def activate_once(self, entity, loop):
         self.skill.parent = entity
