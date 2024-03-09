@@ -1116,21 +1116,22 @@ class Display:
                     else:
                         req_str_text = "Required Strength: " + str(item.required_strength) + "<br>"
                     entity_text += req_str_text
-                if isinstance(item, I.Armor):
-                    entity_text += "Armor: " + str(item.armor) + "<br>"
+                #if isinstance(item, I.Armor):
+                    #entity_text += "Armor: " + str(item.armor) + "<br>"
                 if isinstance(item, I.Weapon):
                     entity_text += "Damage: " + str(item.damage_min) + " - " + str(item.damage_max) + "<br>"
                     if item.on_hit:
                         entity_text += "On hit: " + item.on_hit_description + "<br>"
+
                 stats = item.stats.GetStatsForLevel(item.level)
                 if stats[2]> 0:
-                    entity_text += "Intelligence: " + str(stats[2]) + "<br>"
+                    entity_text += "Intelligence: +" + str(stats[2]) + "<br>"
                 if stats[0] > 0:
-                    entity_text += "Strength: " + str(stats[0]) + "<br>"
+                    entity_text += "Strength: +" + str(stats[0]) + "<br>"
                 if stats[1] > 0:
-                    entity_text += "Dexterity: " + str(stats[1]) + "<br>"
+                    entity_text += "Dexterity: +" + str(stats[1]) + "<br>"
                 if stats[3] > 0:
-                    entity_text += "Endurance: " + str(stats[4]) + "<br>"
+                    entity_text += "Endurance: +" + str(stats[4]) + "<br>"
             if item.attached_skill_exists:
                 entity_text += "Grants skill: " + item.get_attached_skill_description() + "<br>"
 

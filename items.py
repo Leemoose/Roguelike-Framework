@@ -7,7 +7,7 @@ import skills as S
 import loops as L
 
 class statUpgrades():
-    def __init__(self, base_str=0, max_str=0, base_dex=0, max_dex = 0, base_int = 0, max_int = 0, base_end = 0, max_end = 0):
+    def __init__(self, base_str=0, max_str=0, base_dex=0, max_dex = 0, base_int = 0, max_int = 0, base_end = 0, max_end = 0, base_arm=0, max_arm=0):
         self.base_str = base_str
         self.max_str = max_str
         self.base_dex = base_dex
@@ -16,6 +16,8 @@ class statUpgrades():
         self.max_int = max_int
         self.base_end = base_end
         self.max_end = max_end
+        self.base_arm = base_arm
+        self.max_arm = max_arm
 
     def intLerp(self, a, b, level):
         return (((b-a) * (level-1)) // 5) + a
@@ -24,7 +26,8 @@ class statUpgrades():
         return (self.intLerp(self.base_str, self.max_str, level),
                       self.intLerp(self.base_dex, self.max_dex, level),
                       self.intLerp(self.base_int, self.max_int, level),
-                      self.intLerp(self.base_end, self.max_end, level))
+                      self.intLerp(self.base_end, self.max_end, level),
+                      self.intLerp(self.base_arm, self.max_arm, level))
     
     
     def GetStatsForLevelUp(self, level):
@@ -71,26 +74,29 @@ class Equipment(O.Item):
             self.update_stats_level_up(self.wearer)
 
     def add_stats(self, entity):
-        (str, dex, intl, end) = self.stats.GetStatsForLevel(self.level)
+        (str, dex, intl, end, arm) = self.stats.GetStatsForLevel(self.level)
         entity.strength += str
         entity.dexterity += dex
         entity.intelligence += intl
         entity.endurance += end
+        entity.armor += arm
 
     #Called after level up has completed to get stats to match!
     def update_stats_level_up(self, entity):
-        (str, dex, intl, end) = self.stats.GetStatsForLevelUp(self.level)
+        (str, dex, intl, end, arm) = self.stats.GetStatsForLevelUp(self.level)
         entity.strength += str
         entity.dexterity += dex
         entity.intelligence += intl
         entity.endurance += end
+        entity.armor += arm
 
     def remove_stats(self, entity):
-        (str, dex, intl, end) = self.stats.GetStatsForLevel(self.level)
+        (str, dex, intl, end, arm) = self.stats.GetStatsForLevel(self.level)
         entity.strength -= str
         entity.dexterity -= dex
         entity.intelligence -= intl
         entity.endurance -= end
+        entity.arm -= arm
         
 
     def can_be_equipped(self, entity):
@@ -138,8 +144,8 @@ class Ax(Weapon):
         self.melee = True
         self.name = "Axe"
         self.description = "An axe with a round edge (could be rounder). A solid weapon for a solid warrior."
-        self.damage_min = 20
-        self.damage_max = 40
+        self.damage_min = 4
+        self.damage_max = 7
     
     def level_up(self):
         self.enchant()
@@ -147,8 +153,8 @@ class Ax(Weapon):
             self.description += " It's been enchanted to be more effective."
         if self.level == 6:
             self.description = "An axe with the roundest edge ever seen. It's been enchanted as much as possible."
-        self.damage_min += 10
-        self.damage_max += 10
+        self.damage_min += 1
+        self.damage_max += 3
 
 class Hammer(Weapon):
     def __init__(self, render_tag):
@@ -156,8 +162,8 @@ class Hammer(Weapon):
         self.melee = True
         self.name = "Hammer"
         self.description = "A hammer that you wish was more spherical. High damage potential but hard to get a solid hit in."
-        self.damage_min = 5
-        self.damage_max = 60
+        self.damage_min = 2
+        self.damage_max = 4
 
     def level_up(self):
         self.enchant()
@@ -165,8 +171,8 @@ class Hammer(Weapon):
             self.description += " It's been enchanted to hit harder"
         if self.level == 6:
             self.description = "A hammer with incredible damage potential. Still not the easiest to get a clean hit in. It's been enchanted as much as possible."
-        self.damage_min += 5
-        self.damage_max += 15
+        self.damage_min += 3
+        self.damage_max += 3
 
 class Dagger(Weapon):
     def __init__(self, render_tag):
@@ -174,8 +180,8 @@ class Dagger(Weapon):
         self.melee = True
         self.name = "Dagger"
         self.description = "I swear that tip is getting rounder... Larry!. Enchanting it might make it more pointy and precise."
-        self.damage_min = 3
-        self.damage_max = 20
+        self.damage_min = 1
+        self.damage_max = 3
 
     def level_up(self):
         self.enchant()
@@ -183,7 +189,7 @@ class Dagger(Weapon):
             self.description += " It's been enchanted to be more precise."
         if self.level == 6:
             self.description = "A dagger that always strikes accurately, never dealing less than full damage. It's been enchanted as much as possible."
-        self.damage_min += 10
+        self.damage_min += 0
         self.damage_max += 5
         if self.damage_min > self.damage_max:
             self.damage_min = self.damage_max
@@ -194,8 +200,8 @@ class Sword(Weapon):
         self.melee = True
         self.name = "Sworbd"
         self.description = "Could be rounder honestly."
-        self.damage_min = 25
-        self.damage_max = 30
+        self.damage_min = 4
+        self.damage_max = 12
 
     def level_up(self):
         self.enchant()
@@ -203,8 +209,8 @@ class Sword(Weapon):
             self.description += " It's been enchanted to be more damaging."
         if self.level == 6:
             self.description = "A sword that has been enchanted as much as possible."
-        self.damage_min += 10
-        self.damage_max += 10
+        self.damage_min += 1
+        self.damage_max += 2
 
 class ScreamingDagger(Dagger):
     def __init__(self, render_tag):
@@ -271,8 +277,8 @@ class SleepingSword(Sword):
         if self.level == 6:
             self.description = "Death is the greatest sleep of all."
             self.damage_max += 100
-        self.damage_min += 10
-        self.damage_max += 5
+        self.damage_min += 2
+        self.damage_max += 3
         if self.damage_min > self.damage_max:
             self.damage_min = self.damage_max
 
@@ -328,7 +334,7 @@ class FlamingSword(Weapon):
         self.melee = True
         self.name = "Flaming Sword"
         self.description = "A sword that is on fire. You can channel its fire to cast a Burning Attack at a distant foe. "
-        self.damage_min = 15
+        self.damage_min = 10
         self.damage_max = 20
 
         self.on_hit_burn = 5
@@ -365,11 +371,11 @@ class FlamingSword(Weapon):
             self.description += " It's been enchanted to hit harder and burn stronger."
         if self.level == 6:
             self.description = "A sword that burns intensely. It's burning strike has reached its maximum potency. It's been enchanted as much as possible."
-        self.damage_min += 5
-        self.damage_max += 5
-        self.on_hit_burn += 5
-        self.skill_damage += 5
-        self.skill_burn_damage += 5
+        self.damage_min += 2
+        self.damage_max += 3
+        self.on_hit_burn += 1
+        self.skill_damage += 2
+        self.skill_burn_damage += 2
         self.skill_cooldown -= 1
         if self.skill_cooldown < 2:
             self.skill_cooldown = 2
@@ -382,17 +388,6 @@ class Armor(Equipment):
     def __init__(self, x,y, id_tag, render_tag, name):
         super().__init__(-1, -1, 0, render_tag, "Armor")
         self.name = "Armor"
-        self.armor = 0
-
-    def activate(self, entity):
-        if entity.armor == None:
-            entity.armor = 0
-        entity.armor += self.armor
-        super().activate(entity)
-
-    def deactivate(self, entity):
-        entity.armor -= self.armor
-        super().deactivate(entity)
 
     def can_be_equipped(self, entity):
         return (entity.strength * entity.round_bonus()) >= self.required_strength and self.equipable
@@ -421,11 +416,10 @@ class BasicShield(Shield):
         super().__init__(render_tag, "Shield")
         self.armor = 3
         self.description = "A shield that you can use to block things."
-        self.stats = statUpgrades(base_str=3, max_str=21)
+        self.stats = statUpgrades(base_end=1, max_end=3, base_arm=1, max_arm=6)
 
     def level_up(self):
         self.enchant()
-        self.armor += 3
         if self.level == 2:
             self.description += " It's been enchanted to be more protective."
         if self.level == 6:
@@ -434,7 +428,6 @@ class BasicShield(Shield):
 class Aegis(Shield):
     def __init__(self, render_tag):
         super().__init__(render_tag, "Aegis")
-        self.armor = 5
         self.description = "A shield with the face of a horrifying monster on it. It can turn your enemies to stone"
         self.required_strength = 2
 
@@ -447,6 +440,8 @@ class Aegis(Shield):
         self.attached_skill_exists = True
 
         self.rarity = "Rare"
+        self.stats = statUpgrades(base_str=1, max_str=2, base_end=2, max_end=3, base_arm=2, max_arm=7)
+
 
     def attached_skill(self, owner):
         self.attached_skill_exists = True
@@ -466,7 +461,6 @@ class Aegis(Shield):
 
     def level_up(self):
         self.enchant()
-        self.armor += 2
 
         self.skill_activation_chance += 0.2
         if self.skill_activation_chance > 1.0:
@@ -488,26 +482,12 @@ class Aegis(Shield):
 class TowerShield(Shield):
     def __init__(self, render_tag):
         super().__init__(render_tag, "Tower Shield")
-        self.armor = 10
         self.description = "A massive shield that can block nearly anything but is unwieldy to use"
-        self.dex_debuff = 5
         self.required_strength = 3
-
-
-    def activate(self, entity):
-        entity.dexterity -= self.dex_debuff
-        return super().activate(entity)
-    
-    def deactivate(self, entity):
-        entity.dexterity += self.dex_debuff
-        return super().deactivate(entity)
+        self.stats = statUpgrades(base_str=1, max_str=2, base_dex=-2, max_dex=0, base_end=2, max_end=4, base_arm=5, max_arm=10)
 
     def level_up(self):
         self.enchant()
-        self.armor += 1
-        self.dex_debuff -= 1
-        if self.dex_debuff < 0:
-            self.dex_debuff = 0
         if self.wearer != None:
             self.wearer.dexterity += 1
         if self.level == 2:
@@ -523,21 +503,10 @@ class MagicFocus(Shield):
         self.intelligence_buff = 6
 
         self.rarity = "Rare"
-        
-    def activate(self, entity):
-        entity.intelligence += self.intelligence_buff
-        return super().activate(entity)
-
-    def deactivate(self, entity):
-        entity.intelligence -= self.intelligence_buff
-        return super().deactivate(entity)
+        self.stats = statUpgrades(base_int=2, max_int=6)
 
     def level_up(self):
         self.enchant()
-        
-        self.intelligence_buff += 2
-        if self.wearer != None:
-            self.wearer.intelligence += 2
 
         if self.level == 2:
             self.description += " It's been enchanted to be more effective."
@@ -637,13 +606,13 @@ class RingOfMana(Ring):
         entity.mana += 30
         entity.max_mana += 30
         entity.mana_regen += 5
-        entity.intelligence += 5
+        entity.intelligence += 3
 
     def deactivate(self, entity):
         entity.mana -= 30
         entity.max_mana -= 30
         entity.mana_regen -= 5
-        entity.intelligence -= 5
+        entity.intelligence -= 3
 
 class BoneRing(Ring):
     def __init__(self, render_tag):
@@ -653,14 +622,14 @@ class BoneRing(Ring):
         self.rarity = "Legendary"
 
     def activate(self, entity):
-        entity.strength += 10
-        entity.dexterity += 10
+        entity.strength += 2
+        entity.dexterity += 2
         entity.mana_regen -= 10
         entity.health_regen -= 10
         
     def deactivate(self, entity):
-        entity.strength -= 10
-        entity.dexterity -= 10
+        entity.strength -= 2
+        entity.dexterity -= 2
         entity.mana_regen += 10
         entity.health_regen += 10
 
@@ -712,7 +681,7 @@ class BodyArmor(Armor):
         self.equipment_type = "Body Armor"
         self.name = name
         self.description = "A piece of armor that covers your chest."
-        self.armor = 0
+        self.stats = statUpgrades(base_str=1, max_str=1, base_end=1, max_end=4, base_arm=1, max_arm=4)
 
     def equip(self, entity):
         if entity.main_armor != None:
@@ -728,8 +697,9 @@ class Chestarmor(BodyArmor):
     def __init__(self, render_tag):
         super().__init__(render_tag, "Chest Plate")
         self.description = "A reliable piece of armor that covers your chest."
-        self.armor = 8
         self.required_strength = 3
+        self.stats = statUpgrades(base_int=-2, max_int=0, base_arm=2, max_arm=8)
+
 
     def level_up(self):
         self.enchant()
@@ -737,30 +707,16 @@ class Chestarmor(BodyArmor):
             self.description += " It's been enchanted to be more protective."
         if self.level == 6:
             self.description = "A chest plate that absorbs most hits for you. It's been enchanted as much as possible."
-        self.armor += 5
 
 class LeatherArmor(BodyArmor):
     def __init__(self, render_tag):
         super().__init__(render_tag, "Leather Armor")
         self.description = "A comfortable piece of armor, that helps you feel lighter on your feet. "
-        self.armor = 2
-        self.dex_buff = 2
         self.wearer = None # items with stat buffs need to keep track of owner for level ups
-
-    def activate(self, entity):
-        entity.dexterity += self.dex_buff
-        return super().activate(entity)
-
-    def deactivate(self, entity):
-        entity.dexterity -= self.dex_buff
-        return super().deactivate(entity)
+        self.stats = statUpgrades(base_dex=1, max_dex=4, base_arm=1, max_arm=4)
 
     def level_up(self):
         self.enchant()
-        self.armor += 1
-        self.dex_buff += 1
-        if self.wearer != None:
-            self.wearer.dexterity += 1
         if self.level == 2:
             self.description += " It's been enchanted to make you more nimble."
         if self.level == 6:
@@ -770,7 +726,6 @@ class GildedArmor(BodyArmor):
     def __init__(self, render_tag):
         super().__init__(render_tag, "Gilded Armor")
         self.description = "A piece of golden armor studded with gems. Just wearing it makes you feel like you can ignore trivial things like status effects."
-        self.armor = 3
         self.required_strength = 1
         
         self.skill_cooldown = 15
@@ -780,6 +735,12 @@ class GildedArmor(BodyArmor):
         self.attached_skill_exists = True
         
         self.rarity = "Rare"
+
+        self.stats = statUpgrades(base_str = 1, max_str = 3,
+                                  base_dex = 1, max_dex = 1,
+                                  base_int = 1, max_int = 3,
+                                  base_end = 1, max_end = 1,
+                                  base_arm = 1, max_arm = 3)
 
     def attached_skill(self, owner):
         self.attached_skill_exists = True
@@ -795,7 +756,6 @@ class GildedArmor(BodyArmor):
 
     def level_up(self):
         self.enchant()
-        self.armor += 3
 
         self.skill_cooldown -= 1
         if self.skill_cooldown < 5:
@@ -836,6 +796,11 @@ class WarlordArmor(BodyArmor):
         
         self.rarity = "Legendary"
 
+        self.stats = statUpgrades(base_str = 2, max_str = 5,
+                                  base_dex = -3, max_dex = -1,
+                                  base_end = 1, max_end = 4,
+                                  base_arm = 2, max_arm = 5)
+
     def attached_skill(self, owner):
         self.attached_skill_exists = True
         return S.Terrify(owner, self.skill_cooldown, 
@@ -857,10 +822,6 @@ class WarlordArmor(BodyArmor):
 
     def level_up(self):
         self.enchant()
-        self.armor += 3
-        self.strength_buff += 1
-        if self.wearer != None:
-            self.wearer.strength += 1
 
         self.skill_activation_chance += 0.1
         if self.skill_activation_chance > 1.0:
@@ -882,29 +843,25 @@ class BloodstainedArmor(BodyArmor):
     def __init__(self, render_tag):
         super().__init__(render_tag, "Bloodstained Armor")
         self.description = "A maligment aura surronds this armor."
-        self.armor = 8
         self.required_strength = 3
-        self.strength_buff = 10
         self.cursed = True
         self.wearer = None  # items with stat buffs need to keep track of owner for level ups
         self.rarity = "Legendary"
+        self.stats = statUpgrades(base_str = 2, max_str = 6,
+                                  base_dex = -2, max_dex = 0,
+                                  base_end = 1, max_end = 4,
+                                  base_arm = 2, max_arm = 5)
 
     def activate(self, entity):
         self.wearer = entity
-        self.wearer.strength += self.strength_buff
         return super().activate(entity)
 
     def deactivate(self, entity):
-        self.wearer.strength -= self.strength_buff
         self.wearer = None
         return super().deactivate(entity)
 
     def level_up(self):
         self.enchant()
-        self.armor += 3
-        self.strength_buff += 1
-        if self.wearer != None:
-            self.wearer.strength += 1
         if self.level == 2:
             self.description += " It's been enchanted to make its aura stronger"
         if self.level == 6:
@@ -917,38 +874,33 @@ class WizardRobe(BodyArmor):
         self.description = "A robe that makes you feel like you can cast spells all day long."
         self.armor = 1
         self.mana_buff = 20
-        self.mana_regen_buff = 5
+        self.mana_regen_buff = 3
         self.intelligence_buff = 5
 
         self.wearer = None # items with stat buffs need to keep track of owner for level ups
 
         self.rarity = "Rare"
+        self.stats = statUpgrades(base_str = -2, max_str = 0,
+                                  base_int = 2, max_int = 5)
 
     def activate(self, entity):
-        entity.mana += self.mana_buff
         entity.max_mana += self.mana_buff
         entity.mana_regen += self.mana_regen_buff
-        entity.intelligence += self.intelligence_buff
         return super().activate(entity)
 
     def deactivate(self, entity):
-        entity.mana -= self.mana_buff
         entity.max_mana -= self.mana_buff
         entity.mana_regen -= self.mana_regen_buff
-        entity.intelligence -= self.intelligence_buff
         return super().deactivate(entity)
 
     def level_up(self):
         self.enchant()
         self.mana_buff += 10
         self.mana_regen_buff += 5
-        self.intelligence_buff += 2
 
         if self.wearer != None:
-            self.wearer.mana += 10
             self.wearer.max_mana += 10
-            self.wearer.mana_regen += 5
-            self.wearer.intelligence += 2
+            self.wearer.mana_regen += 1
 
         if self.level == 2:
             self.description += " It's been enchanted to make you more magical"
@@ -961,11 +913,15 @@ class KarateGi(BodyArmor):
         self.description = "A gi that makes your unarmed combat stronger."
         self.damage_boost = 30
 
-        self.armor = 1
-
         self.wearer = None # items with stat buffs need to keep track of owner for level ups
 
         self.rarity = "Rare"
+
+        self.stats = statUpgrades(base_str = 1, max_str = 1,
+                                  base_dex = 3, max_dex = 6,
+                                  base_int = 0, max_int = 0,
+                                  base_end = 2, max_end = 6,
+                                  base_arm = 1, max_arm = 3)
 
     def activate(self, entity):
         entity.unarmed_damage_min += self.damage_boost
@@ -979,7 +935,6 @@ class KarateGi(BodyArmor):
 
     def level_up(self):
         self.enchant()
-        self.armor += 1
         self.damage_boost += 4
         if self.wearer != None:
             self.wearer.unarmed_damage_min += 4
@@ -994,8 +949,8 @@ class Boots(Armor):
         super().__init__(-1,-1, 0, render_tag, "Boots")
         self.equipment_type = "Boots"
         self.name = "Boots"
-        self.armor = 1
         self.description = "Boots that are incredibly comfortable but only offer a little protection"
+        self.stats = statUpgrades(base_dex=1, max_dex=2, base_arm=1, max_arm=4)
 
 
     def equip(self, entity):
@@ -1010,7 +965,6 @@ class Boots(Armor):
 
     def level_up(self):
         self.enchant()
-        self.armor += 1
         if self.level == 2:
             self.description += " It's been enchanted to be more protective."
         if self.level == 6:
@@ -1021,28 +975,17 @@ class BlackenedBoots(Boots):
         super().__init__(render_tag)
         self.equipment_type = "Boots"
         self.name = "Blackened Boots"
-        self.armor = 3
-        self.dexterity_buff = 2
         self.cursed = True
         self.description = "A dark spirit dwells in these boots."
         self.rarity = "Legendary"
-
-    def activate(self, entity):
-        self.wearer = entity
-        self.wearer.dexterity += self.dexterity_buff
-        return super().activate(entity)
-
-    def deactivate(self, entity):
-        self.wearer.dexterity -= self.dexterity_buff
-        self.wearer = None
-        return super().deactivate(entity)
+        self.stats = statUpgrades(base_str = -2, max_str = 1,
+                                  base_dex = 4, max_dex = 7,
+                                  base_int = -2, max_int = 1,
+                                  base_end = -2, max_end = 0,
+                                  base_arm = 1, max_arm = 4)
 
     def level_up(self):
         self.enchant()
-        self.armor += 1
-        self.dexterity_buff += 1
-        if self.wearer != None:
-            self.wearer.dexterity += 1
         if self.level == 2:
             self.description += " You see the quickest path in a sea of blood."
         if self.level == 6:
@@ -1065,6 +1008,8 @@ class BootsOfEscape(Armor):
         self.rarity = "Rare"
 
         self.attached_skill_exists = True
+        self.stats = statUpgrades(base_dex = 3, max_dex = 8,
+                                  base_arm = 1, max_arm = 3)
     
     def attached_skill(self, owner):
         self.attached_skill_exists = True
@@ -1102,13 +1047,6 @@ class BootsOfEscape(Armor):
         self.skill_cost -= 2
         if self.skill_cost < 10:
             self.skill_cost = 10
-        self.dex_buff += 2
-        self.str_debuff -= 1
-        if self.str_debuff < 5:
-            self.str_debuff = 5
-        self.int_debuff -= 1
-        if self.int_debuff < 5:
-            self.int_debuff = 5
         self.duration += 1
         if self.duration > 6:
             self.duration = 6
@@ -1123,6 +1061,8 @@ class Gloves(Armor):
         self.description = "Gloves to keep your hands toasty warm. Enchanting is especially effective on these."
         self.name = "Gloves"
         self.armor = 1
+        self.stats = statUpgrades(base_end = 1, max_end = 8,
+                                  base_arm = 0, max_arm = 10)
 
     def equip(self, entity):
         if entity.gloves != None:
@@ -1136,7 +1076,6 @@ class Gloves(Armor):
 
     def level_up(self):
         self.enchant()
-        self.armor += 3
         if self.level == 2:
             self.description += " It's been enchanted to be more protective."
         if self.level == 6:
@@ -1148,7 +1087,9 @@ class Gauntlets(Armor):
         self.equipment_type = "Gloves"
         self.description = "Iron gauntlets that protect your hands. It's hard to enchant for some reason"
         self.name = "Gauntlets"
-        self.armor = 4
+        self.stats = statUpgrades(base_dex = -1, max_dex = 0,
+                                  base_end = 4, max_end = 10,
+                                  base_arm = 4, max_arm = 6)
 
     def equip(self, entity):
         if entity.gloves != None:
@@ -1162,7 +1103,6 @@ class Gauntlets(Armor):
 
     def level_up(self):
         self.enchant()
-        self.armor += 1
         if self.level == 2:
             self.description += " It's been slightly enchanted to be more protective."
         if self.level == 6:
@@ -1174,8 +1114,10 @@ class BoxingGloves(Armor):
         self.equipment_type = "Gloves"
         self.description = "Gloves that make your unarmed combat stronger."
         self.name = "Boxing Gloves"
-        self.armor = 0
         self.damage_boost = 30 # yeah this needs to be high to compete with basic weapons
+        self.stats = statUpgrades(base_str = 1, max_str = 5,
+                                  base_dex = 1, max_dex = 5,
+                                  base_arm = 0, max_arm = 2)
 
     def equip(self, entity):
         if entity.gloves != None:
@@ -1193,7 +1135,6 @@ class BoxingGloves(Armor):
 
     def level_up(self):
         self.enchant()
-        self.armor += 1
         self.damage_boost += 4
         if self.wearer != None:
             self.wearer.unarmed_damage_min += 4
@@ -1218,6 +1159,10 @@ class HealingGloves(Armor):
         self.activation_threshold = 1.1
         self.action_cost = 100
         self.rarity = "Rare"
+
+        self.stats = statUpgrades(base_int = 1, max_int = 3,
+                                  base_end = 1, max_end = 1,
+                                  base_arm = 2, max_arm = 5)
 
     def attached_skill(self, owner):
         self.attached_skill_exists = True
@@ -1269,17 +1214,19 @@ class LichHand(Armor):
         self.skill_cost = 30
         self.skill_duration = 2
 
-        self.int_buff = 3
-        self.dex_buff = 3
-        self.str_buff = 3
-        self.end_buff = 3
-        self.health_cost = 2
+        self.health_cost = 30
 
 
         self.rarity = "Legendary"
 
         self.attached_skill_exists = True
         self.health_removed = 0
+
+        self.stats = statUpgrades(base_str = 2, max_str = 3,
+                                  base_dex = 3, max_dex = 4,
+                                  base_int = 3, max_int = 4,
+                                  base_end = 1, max_end = 2,
+                                  base_arm = 0, max_arm = 2)
 
     def attached_skill(self, owner):
         self.attached_skill_exists = True
@@ -1290,10 +1237,6 @@ class LichHand(Armor):
             entity.unequip(entity.gloves)
         entity.gloves = self
         entity.add_skill(self.attached_skill(entity.parent))
-        entity.intelligence += self.int_buff
-        entity.dexterity += self.dex_buff
-        entity.strength += self.str_buff
-        entity.endurance += self.end_buff
         self.health_removed = entity.max_health // self.health_cost
         entity.max_health -= self.health_removed
         if entity.health > entity.max_health:
@@ -1303,10 +1246,6 @@ class LichHand(Armor):
     def unequip(self, entity):
         entity.gloves = None
         entity.remove_skill(self.attached_skill(entity.parent).name)
-        entity.intelligence -= self.int_buff
-        entity.dexterity -= self.dex_buff
-        entity.strength -= self.str_buff
-        entity.endurance -= self.end_buff
         entity.max_health += self.health_removed
         self.deactivate(entity)
 
@@ -1322,18 +1261,9 @@ class LichHand(Armor):
         if self.skill_duration > 4:
             self.skill_duration = 4
 
-        self.int_buff += 1
-        self.dex_buff += 1
-        self.str_buff += 1
-        self.end_buff += 1
-
         if self.wearer != None:
             self.wearer.remove_skill(self.attached_skill(self.wearer.parent).name)
             self.wearer.add_skill(self.attached_skill(self.wearer.parent))
-            self.wearer.intelligence += 1
-            self.wearer.dexterity += 1
-            self.wearer.strength += 1
-            self.wearer.endurance += 1
         if self.level == 2:
             self.description += " Your power grows."
         if self.level == 6:
@@ -1344,8 +1274,11 @@ class Helmet(Armor):
         super().__init__(-1,-1, 0, render_tag, "Helmet")
         self.equipment_type = "Helmet"
         self.name = "Helmet"
-        self.armor = 1
         self.description = "A helmet that protects your head. You like how round it is."
+
+        self.stats = statUpgrades(base_str = 0, max_str = 2,
+                                  base_end = 1, max_end = 1,
+                                  base_arm = 1, max_arm = 3)
 
 
     def equip(self, entity):
@@ -1360,7 +1293,6 @@ class Helmet(Armor):
 
     def level_up(self):
         self.enchant()
-        self.armor += 1
         if self.level == 2:
             self.description += " It's been enchanted to be more protective."
         if self.level == 6:
@@ -1372,7 +1304,6 @@ class VikingHelmet(Armor):
         super().__init__(-1,-1, 0, render_tag, "Viking Helmet")
         self.equipment_type = "Helmet"
         self.name = "Viking Helmet"
-        self.armor = 0
         self.description = "A helmet that lets you go berserk below a quarter health."
         
         self.skill_cooldown = 0
@@ -1385,6 +1316,11 @@ class VikingHelmet(Armor):
         self.str_buff = 3
 
         self.attached_skill_exists = True
+        self.stats = statUpgrades(base_str = 3, max_str = 6,
+                                  base_dex = 1, max_dex = 3,
+                                  base_int = -1, max_int = -3,
+                                  base_end = -1, max_end = -3,
+                                  base_arm = 1, max_arm = 3)
 
     def attached_skill(self, owner):
         self.attached_skill_exists = True
@@ -1395,13 +1331,11 @@ class VikingHelmet(Armor):
             entity.unequip(entity.helmet)
         entity.helmet = self
         entity.add_skill(self.attached_skill(entity.parent))
-        entity.strength += self.str_buff
         self.activate(entity)
 
     def unequip(self, entity):
         entity.helmet = None
         entity.remove_skill(self.attached_skill(entity.parent).name)
-        entity.strength -= self.str_buff
         self.deactivate(entity)
 
     def level_up(self):
@@ -1410,22 +1344,18 @@ class VikingHelmet(Armor):
             self.description += " It's been enchanted to raise the damage you need to take before going berserk"
         if self.level == 6:
             self.description = "A helmet that lets you go berserk below half health. It's been enchanted as much as possible"
-        self.strength_increase += 2
-        self.str_buff += 2
         self.skill_threshold += 0.1
         if self.skill_threshold > 0.5:
             self.skill_threshold = 0.5
         if self.wearer != None:
             self.wearer.remove_skill(self.attached_skill(self.wearer.parent).name)
             self.wearer.add_skill(self.attached_skill(self.wearer.parent))
-            self.wearer.strength += 2
 
 class SpartanHelmet(Armor):
     def __init__(self, render_tag):
         super().__init__(-1,-1, 0, render_tag, "Spartan Helmet")
         self.equipment_type = "Helmet"
         self.name = "Spartan Helmet"
-        self.armor = 0
         self.description = "A helmet for a mighty warrior who doesn't need things like magic to help him"
 
         self.required_strength = 2
@@ -1435,32 +1365,23 @@ class SpartanHelmet(Armor):
         self.int_debuff = 5
 
         self.rarity = "Rare"
+        self.stats = statUpgrades(base_str = 1, max_str = 3,
+                                  base_int = -5, max_int = 0,
+                                  base_end = 3, max_end = 4,
+                                  base_arm = 1, max_arm = 3)
 
     def equip(self, entity):
         if entity.helmet != None:
             entity.unequip(entity.helmet)
         entity.helmet = self
-        entity.strength += self.str_buff
-        entity.endurance += self.end_buff
-        entity.intelligence -= self.int_debuff
         self.activate(entity)
 
     def unequip(self, entity):
         entity.helmet = None
-        entity.strength -= self.str_buff
-        entity.endurance -= self.end_buff
-        entity.intelligence += self.int_debuff
         self.deactivate(entity)
 
     def level_up(self):
         self.enchant()
-        
-        self.str_buff += 1
-        self.end_buff += 1
-
-        if self.wearer != None:
-            self.wearer.strength += 1
-            self.wearer.endurance += 1
 
         if self.level == 2:
             self.description += " It's been enchanted to make you even tougher"
@@ -1479,27 +1400,21 @@ class GreatHelm(Armor):
 
         self.rarity = "Rare"
 
+        self.stats = statUpgrades(base_dex = -4, max_dex = 0,
+                                  base_arm = 4, max_arm = 8)
+
     def equip(self, entity):
         if entity.helmet != None:
             entity.unequip(entity.helmet)
         entity.helmet = self
-        entity.dexterity -= self.dex_debuff
         self.activate(entity)
 
     def unequip(self, entity):
         entity.helmet = None
-        entity.dexterity += self.dex_debuff
         self.deactivate(entity)
 
     def level_up(self):
         self.enchant()
-        self.armor += 2
-        self.dex_debuff -= 1
-        if self.dex_debuff < 0:
-            self.dex_debuff = 0
-
-        if self.wearer != None:
-            self.wearer.dexterity += 1
 
         if self.level == 2:
             self.description += " It's been enchanted to be less restrictive."
@@ -1511,7 +1426,6 @@ class ThiefHood(Armor):
         super().__init__(-1,-1, 0, render_tag, "Thief Hood")
         self.equipment_type = "Helmet"
         self.name = "Thief Hood"
-        self.armor = 0
         self.description = "A hood that helps you move faster and think more cleverly."
 
         self.dex_buff = 3
@@ -1519,28 +1433,21 @@ class ThiefHood(Armor):
 
         self.rarity = "Rare"
 
+        self.stats = statUpgrades(base_dex = 3, max_dex = 5,
+                                  base_int = 1, max_int = 4)
+
     def equip(self, entity):
         if entity.helmet != None:
             entity.unequip(entity.helmet)
         entity.helmet = self
-        entity.dexterity += self.dex_buff
-        entity.intelligence += self.int_buff
         self.activate(entity)
 
     def unequip(self, entity):
         entity.helmet = None
-        entity.dexterity -= self.dex_buff
-        entity.intelligence -= self.int_buff
         self.deactivate(entity)
 
     def level_up(self):
         self.enchant()
-        self.dex_buff += 1
-        self.int_buff += 1
-
-        if self.wearer != None:
-            self.wearer.dexterity += 1
-            self.wearer.intelligence += 1
 
         if self.level == 2:
             self.description += " It's been enchanted to be more effective."
@@ -1552,38 +1459,30 @@ class WizardHat(Armor):
         super().__init__(-1,-1, 0, render_tag, "Wizard Hat")
         self.equipment_type = "Helmet"
         self.name = "Wizard Hat"
-        self.armor = 0
         self.description = "A hat that makes you feel more magical."
-
-        self.int_buff = 5
         self.mana_buff = 20
 
         self.rarity = "Rare"
+
+        self.stats = statUpgrades(base_int = 3, max_int = 6)
 
     def equip(self, entity):
         if entity.helmet != None:
             entity.unequip(entity.helmet)
         entity.helmet = self
-        entity.intelligence += self.int_buff
-        entity.mana += self.mana_buff
         entity.max_mana += self.mana_buff
         self.activate(entity)
 
     def unequip(self, entity):
         entity.helmet = None
-        entity.intelligence -= self.int_buff
-        entity.mana -= self.mana_buff
         entity.max_mana -= self.mana_buff
         self.deactivate(entity)
 
     def level_up(self):
         self.enchant()
-        self.int_buff += 2
         self.mana_buff += 10
 
         if self.wearer != None:
-            self.wearer.intelligence += 2
-            self.wearer.mana += 10
             self.wearer.max_mana += self.mana_buff
 
         if self.level == 2:
