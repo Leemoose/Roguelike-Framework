@@ -1,5 +1,6 @@
 import objects as O
 import heapq
+import time
 
 class Node():
     """A node class for A* Pathfinding"""
@@ -9,7 +10,6 @@ class Node():
         self.position = position
 
         self.g = 0
-        self.h = 0
         self.f = 0
 
     def __eq__(self, other):
@@ -29,6 +29,9 @@ def astar_multi_goal(maze, start, goals, monster_map, player, monster_blocks = F
     """Returns a list of tuples as a path from the given start to the given end in the given maze"""
     # reverse is a flag that determines if we're moving towards end or away from it
 
+    max = 0
+    runtime = time.perf_counter()
+
     # Create start and end node
     end_node = Node(None, start) # a little counter-intuitive, but we want to end the search backwards.
     end_node.g = end_node.h = end_node.f = 0
@@ -47,7 +50,16 @@ def astar_multi_goal(maze, start, goals, monster_map, player, monster_blocks = F
     while len(open_list) > 0:
         # Get the current node
         current_node = heapq.heappop(open_list)
+        current_position = current_node.position
+
+        #By invariants - if we have already checked this, there is a faster way here.
+        if (current_position in closed_list):
+            continue
+        #Mark this one as already explored
         closed_list.add(current_node.position)
+
+        if (len(open_list) > max):
+            max = len(open_list)
 
         # Found the goal
         if current_node == end_node:
@@ -56,9 +68,10 @@ def astar_multi_goal(maze, start, goals, monster_map, player, monster_blocks = F
             while current is not None:
                 path.append(current.position)
                 current = current.parent
+            print("Max was " + str(max) + "in " + str(round((time.perf_counter() - runtime)*1000, 2)) + " ms")
             return path # Return reversed path
         
-        current_position = current_node.position
+        
         
         # Make sure walkable terrain
         if not maze[current_position[0]][current_position[1]].passable:
@@ -69,7 +82,6 @@ def astar_multi_goal(maze, start, goals, monster_map, player, monster_blocks = F
             continue
 
         # Generate children
-        children = []
         for new_position in [(0, -1), (0, 1), (-1, 0), (1, 0), (-1, -1), (-1, 1), (1, -1), (1, 1)]: # Adjacent squares
 
             # Get node position
@@ -79,25 +91,18 @@ def astar_multi_goal(maze, start, goals, monster_map, player, monster_blocks = F
             if node_position[0] > (len(maze) - 1) or node_position[0] < 0 or node_position[1] > (len(maze[len(maze)-1]) -1) or node_position[1] < 0:
                 continue
 
+            if (node_position in closed_list):
+                continue
+
             # Create new node
             new_node = Node(current_node, node_position)
 
+            new_node.g = current_node.g + 1
+            h = ((new_node.position[0] - end_node.position[0]) ** 2) + ((new_node.position[1] - end_node.position[1]) ** 2) ** 0.5
+            new_node.f = new_node.g + h
+
             # Append
-            children.append(new_node)
-
-        # Loop through children
-        for child in children:
-
-            # Child is on the closed list - by invariants, we can skip
-            if child.position in closed_list:
-                continue
-
-            # Create the f, g, and h values
-            child.g = current_node.g + 1
-            child.h = ((child.position[0] - end_node.position[0]) ** 2) + ((child.position[1] - end_node.position[1]) ** 2) ** 0.5
-            child.f = child.g + child.h
-
-            heapq.heappush(open_list, child)
+            heapq.heappush(open_list, new_node)
 
     return []
 

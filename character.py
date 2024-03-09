@@ -479,7 +479,7 @@ class Player(O.Objects):
                     else:
                         endy += 1
             end = (endx, endy)
-            self.path = pathfinding.astar_multi_goal(tile_map.track_map, start, loop.generator.get_all_unseen_tiles(), loop.generator.monster_map, loop.player)
+            self.path = pathfinding.astar_multi_goal(tile_map.track_map, start, loop.generator.get_all_frontier_tiles(), loop.generator.monster_map, loop.player)
             # if all tiles have been seen don't autoexplore
             
         x, y = self.path.pop(0)

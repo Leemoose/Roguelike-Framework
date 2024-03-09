@@ -269,14 +269,21 @@ class DungeonGenerator():
                         return False, (x, y)
         return True, (-1, -1)
     
-    def get_all_unseen_tiles(self):
+    def get_all_frontier_tiles(self):
         tiles = []
         for x in range(self.width):
             for y in range(self.height):
-                if self.tile_map.track_map[x][y].passable :
-                    if not (self.all_neighbors_seen(x, y)):
-                        tiles.append((x, y))
+                if self.tile_map.track_map[x][y].passable and self.is_frontier_tile(x, y):
+                    tiles.append((x, y))
         return tiles
+    
+    def is_frontier_tile(self, x, y):
+        if (self.tile_map.track_map[x][y].seen):
+            for neighborX in range(x-1, x+2):
+                for neighborY in range(y-1, y+2):
+                    if not (self.tile_map.track_map[neighborX][neighborY].seen):
+                        return True
+        return False
     
     def all_neighbors_seen(self, x, y):
         for neighborX in range(x-1, x+2):
