@@ -18,22 +18,26 @@ class Node():
         return str(self.position)
 
 
-def astar(maze, start, end, monster_map, player, monster_blocks = False, player_blocks = False):
+def astar(maze, start, goal, monster_map, player, monster_blocks = False, player_blocks = False):
+    return astar_multi_goal(maze, start, [goal], monster_map, player, monster_blocks, player_blocks)
+
+def astar_multi_goal(maze, start, goals, monster_map, player, monster_blocks = False, player_blocks = False):
     """Returns a list of tuples as a path from the given start to the given end in the given maze"""
     # reverse is a flag that determines if we're moving towards end or away from it
 
     # Create start and end node
-    start_node = Node(None, start)
-    start_node.g = start_node.h = start_node.f = 0
-    end_node = Node(None, end)
+    end_node = Node(None, start) # a little counter-intuitive, but we want to end the search backwards.
     end_node.g = end_node.h = end_node.f = 0
 
     # Initialize both open and closed list
     open_list = []
-    closed_list = []
+    closed_list = set()
 
     # Add the start node
-    open_list.append(start_node)
+    for position in goals:
+        node = Node(None, position)
+        node.g = node.h = node.f = 0
+        open_list.append(node)
 
     # Loop until you find the end
     while len(open_list) > 0:
@@ -47,7 +51,7 @@ def astar(maze, start, end, monster_map, player, monster_blocks = False, player_
 
         # Pop current off open list, add to closed list
         open_list.pop(current_index)
-        closed_list.append(current_node)
+        closed_list.add(current_node.position)
 
         # Found the goal
         if current_node == end_node:
@@ -56,7 +60,7 @@ def astar(maze, start, end, monster_map, player, monster_blocks = False, player_
             while current is not None:
                 path.append(current.position)
                 current = current.parent
-            return path[::-1] # Return reversed path
+            return path # Return reversed path
 
         # Generate children
         children = []
@@ -87,7 +91,7 @@ def astar(maze, start, end, monster_map, player, monster_blocks = False, player_
         for child in children:
 
             # Child is on the closed list
-            if child in closed_list:
+            if child.position in closed_list:
                 continue
 
             # Child is already in the open list
