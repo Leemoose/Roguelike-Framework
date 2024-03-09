@@ -159,14 +159,15 @@ class Character():
         return False
 
     def equip(self, item):
-        if item.equipable and (self.strength * self.round_bonus()) >= item.required_strength:
+        if item.can_be_equipped(self):
             item.equip(self)
             item.equipped = True
             item.dropable = False
             self.energy -= self.equip_cost
 
     def unequip(self, item):
-        if item.equipped and not item.cursed:
+        if item.can_be_unequipped(self):
+            print("hi")
             item.unequip(self)
             item.dropable = True
             item.equipped = False

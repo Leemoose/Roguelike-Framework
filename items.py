@@ -31,6 +31,13 @@ class Equipment(O.Item):
     def enchant(self):
         self.level += 1
 
+    def can_be_equipped(self, entity):
+        return self.equipable
+
+    def can_be_unequipped(self, entity):
+        print(self.cursed)
+        return (self.equipped and not self.cursed)
+
     def get_attached_skill_description(self):
         if self.attached_skill_exists:
             return self.attached_skill(None).description() # temporarily attach skill to nothing to get name
@@ -238,6 +245,9 @@ class Armor(Equipment):
     def deactivate(self, entity):
         entity.armor -= self.armor
         super().deactivate(entity)
+
+    def can_be_equipped(self, entity):
+        return (entity.strength * entity.round_bonus()) >= self.required_strength and self.equipable
 
 class Shield(Armor):
     def __init__(self, render_tag, name):
