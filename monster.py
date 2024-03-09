@@ -181,8 +181,7 @@ class Monster_AI():
         for skill in self.parent.character.skills:
             if skill.castable(loop.player):
                 return 95
-        return -1        
-
+        return -1
 
     def do_item_pickup(self, loop):
         # print("Picking up item")
@@ -212,6 +211,7 @@ class Monster_AI():
     def do_skill(self, loop):
         monster = self.parent
         for i in range(len(monster.character.skills)):
+            print(monster.character.skills[i].name)
             # use first castable skill
             if monster.character.skills[i].castable(loop.player):
                 skill = monster.character.skills[i]
@@ -606,3 +606,22 @@ class Tormentorb(Monster):
         self.strength = 1
         self.dexterity = 1
         self.intelligence = 15
+
+class BossOrb(Monster):
+    def __init__(self, x, y, render_tag=159, name="ORB"):
+        super().__init__(render_tag, x, y, name)
+        self.character = C.Character(self)
+        self.brain = Monster_AI(self)
+        self.character.skills = []
+        self.orb = True
+        # self, parent, cooldown, cost, slow_duration, damage_percent, slow_amount, range, action_cost
+        self.character.skills.append(S.Torment(self, cooldown=10, cost=0, slow_duration=3, damage_percent=0.5, slow_amount=5, range=4, action_cost=100))
+        self.character.skills.append(S.SummonGorblin(self, cooldown=10, cost=0, range=4,action_cost=20))
+        self.character.skills.append(S.Heal(self, cooldown = 20, cost = 10, heal_amount = 30, activation_threshold = .25, action_cost = 100))
+        self.character.experience_given = 1000
+        self.description = "The orb of all orbs, the orbiest of orbs, the archetype of orbs... you get the idea."
+
+        self.endurance = 25
+        self.strength = 25
+        self.dexterity = 25
+        self.intelligence = 25

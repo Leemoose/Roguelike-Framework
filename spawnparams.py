@@ -198,6 +198,8 @@ MonsterSpawns.append(MonsterSpawnParams(M.Raptorb(-1, -1), 8, 9, 0, 0))
 MonsterSpawns.append(MonsterSpawnParams(M.Tormentorb(-1, -1), 8, 9, 0, 0))
 MonsterSpawns.append(MonsterSpawnParams(M.Golem(-1, -1), 7, 9, 0, 0))
 MonsterSpawns.append(MonsterSpawnParams(M.Gorblem(-1, -1), 8, 9, 0, 0))
+MonsterSpawns.append(MonsterSpawnParams(M.BossOrb(-1, -1), 10, 10, 1, 1))
+
 
 Monster_Distributions = [(1.0, 0.0), # floor 1
                          (0.8, 0.2), # floor 2
@@ -217,7 +219,7 @@ class MonsterSpawner():
         self.orbMonsters = [i for i in self.MonsterSpawns if i.monster.orb == True]
 
         # useful for debugging specific items, separate from generator
-        self.forceSpawn = None
+        self.forceSpawn = ("ORB", 1)
         # self.forceSpawn = ("Hobgorblin", 5) 
 
     def countSpawn(self, depth):
