@@ -1089,12 +1089,14 @@ class Display:
         if isinstance(entity, M.Monster):
             entity_text += "Health: " + str(entity.character.health) + " / " + str(entity.character.max_health) + "<br>"
             entity_text += "Attack: " + str(entity.character.get_damage_min()) + " - " + str(entity.character.get_damage_max()) + "<br>"
-            for i, skill in enumerate(entity.character.skills):
-                if i == 0:
-                    entity_text += "Skills: "
-                entity_text += str(skill)
-                if i < len(entity.character.skills) - 1:
-                    entity_text += ", "
+            if entity.orb:
+                entity_text += "It's very round.<br>"
+                for i, skill in enumerate(entity.character.skills):
+                    if i == 0:
+                        entity_text += "Skills: "
+                    entity_text += skill.description()
+                    if i < len(entity.character.skills) - 1:
+                        entity_text += ", "
         if create == True:
             text_box = pygame_gui.elements.UITextBox(
                 relative_rect=pygame.Rect((entity_text_offset_from_left, entity_text_offset_from_top), (entity_text_width, entity_text_height)),

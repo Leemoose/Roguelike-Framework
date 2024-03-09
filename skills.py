@@ -142,6 +142,7 @@ class Teleport(Skill):
                 self.parent.parent.x = startx
                 self.parent.parent.y = starty
 
+# keep monster exclusive for now
 class BlinkStrike(Skill):
     def __init__(self, parent, cooldown, cost, damage, range, action_cost):
         super().__init__("Blink Strike", parent, cooldown, cost, range, action_cost)

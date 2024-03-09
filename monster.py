@@ -401,6 +401,38 @@ class Gorblin(Goblin):
 
         self.description = "A cowardly orb with a tiny dagger. It can blink to escape when it's afraid."
 
+class Hobgoblin(Monster):
+    def __init__(self, x, y, render_tag=104, name="Hobgoblin"):
+        super().__init__(render_tag, x, y, name)
+        self.character = C.Character(self)
+        self.brain = Monster_AI(self)
+        self.character.skills = []
+        self.character.skills.append(S.BlinkStrike(self, cooldown=10, cost=0, damage=10, range=5, action_cost=1))
+        self.character.skills.append(S.Escape(self, cooldown=100, 
+                                              cost=0, self_fear=True, 
+                                              dex_buff=30, str_debuff=20, int_debuff=20, haste_duration=-100,
+                                              activation_threshold=0.3, 
+                                              action_cost=1))
+        self.character.experience_given = 10
+        self.description = "The older cousin of its smaller green relatives."
+
+        self.endurance = 2
+        self.strength = 2
+        self.dexterity = 4
+        self.intelligence = 2
+
+class Hobgorblin(Hobgoblin):
+    def __init__(self, x, y, render_tag=154, name="Hobgorblin"):
+        super().__init__(x, y, render_tag, name)
+        self.character.experience_given += 15
+        self.orb = True
+        self.endurance = 3
+        self.strength = 4
+        self.dexterity = 8
+        self.intelligence = 3
+
+        self.description = "An orb that can blink at you to engage a fight but knows when to tactically retreat"
+
 class Gargoyle(Monster):
     def __init__(self, x, y, render_tag=106, name="Gargoyle"):
         super().__init__(render_tag, x, y, name)
