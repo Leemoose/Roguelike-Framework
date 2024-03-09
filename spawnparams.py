@@ -266,8 +266,8 @@ class MonsterSpawner():
             return random.randint(6, 9)
     
     def spawnMonsters(self, depth):
-        if depth > 9:
-            depth = 9
+        if depth > 10:
+            depth = 10
         monsters = []
         normalAtDepth = [i for i in self.normalMonsters if i.AllowedAtDepth(depth)]
         orbAtDepth = [i for i in self.orbMonsters if i.AllowedAtDepth(depth)]

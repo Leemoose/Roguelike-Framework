@@ -260,7 +260,22 @@ class SkillButton(pygame_gui.elements.UIButton):
         self.img2 = img2
         self.loop = loop
         self.set_text("")
+        self.castable = False
+        self.ready = 0
         self.draw_on_button(self, self.img2, chr(ord("1") + index), self.relative_rect.size, True)
+
+    def needs_change(self):
+        skill = self.player.character.skills[self.index]
+        closest_monster = self.player.character.get_closest_monster(self.player, self.loop.monster_dict, self.loop.generator.tile_map)
+        if closest_monster == self.player and skill.range != -1:
+            castable = False  # no monster to caste ranged skill on
+        else:
+            castable = skill.castable(closest_monster)
+        if castable != self.castable or skill.ready != self.ready:
+            self.castable = castable
+            self.ready = skill.ready
+            return True
+        return False
 
     def draw_on_button(self, button, img, letter="", button_size=None, shrink=False, offset_factor = 10, text_offset = (15, 0.8)):
         offset = (0, 0)
@@ -295,21 +310,36 @@ class SkillButton(pygame_gui.elements.UIButton):
         button.drawable_shape.states['active'].surface.blit(text, (button_size[0] // 2 - 10, button_size[1] // 2 - 10))
         button.drawable_shape.active_state.has_fresh_surface = True
 
+    def draw_box_over_button(self, button, button_size):
+        # draw box over button
+        border = 5
+        pygame.draw.rect(button.drawable_shape.states['normal'].surface, (69, 73, 78), (border, border, button_size[0] - border * 2, button_size[1] - border * 2))
+        pygame.draw.rect(button.drawable_shape.states['hovered'].surface, (69, 73, 78), (border, border, button_size[0] - border * 2, button_size[1] - border * 2))
+        pygame.draw.rect(button.drawable_shape.states['disabled'].surface, (69, 73, 78), (border, border, button_size[0] - border * 2, button_size[1] - border * 2))
+        pygame.draw.rect(button.drawable_shape.states['selected'].surface, (69, 73, 78), (border, border, button_size[0] - border * 2, button_size[1] - border * 2))
+        pygame.draw.rect(button.drawable_shape.states['active'].surface, (69, 73, 78), (border, border, button_size[0] - border * 2, button_size[1] - border * 2))
+        button.drawable_shape.active_state.has_fresh_surface = True
+
     def update(self, time_delta: float):
-        skill = self.player.character.skills[self.index]
-        closest_monster = self.player.character.get_closest_monster(self.player, self.loop.monster_dict, self.loop.generator.tile_map)
-        if closest_monster == self.player and skill.range != -1:
-            castable = False  # no monster to caste ranged skill on
-        else:
-            castable = skill.castable(closest_monster)
-        if (castable):
-            self.draw_on_button(self, self.img1, "", self.relative_rect.size, True)
-            
-        else:
-            ready = skill.ready
-            self.draw_on_button(self, self.img2, "", self.relative_rect.size, True)
-            if ready != 0:
-                self.draw_text_on_button(self, str(ready), self.relative_rect.size)
+        if (self.needs_change()):
+            skill = self.player.character.skills[self.index]
+            closest_monster = self.player.character.get_closest_monster(self.player, self.loop.monster_dict, self.loop.generator.tile_map)
+            if closest_monster == self.player and skill.range != -1:
+                castable = False  # no monster to caste ranged skill on
+            else:
+                castable = skill.castable(closest_monster)
+            if (castable):
+                self.draw_on_button(self, self.img1, str(self.index + 1), self.relative_rect.size, True)
+            else:
+                ready = skill.ready
+                if ready != 0:
+                    self.draw_box_over_button(self, self.relative_rect.size)
+                    self.draw_on_button(self, self.img2, "", self.relative_rect.size, True)
+                    self.draw_text_on_button(self, str(ready), self.relative_rect.size)
+                else:
+                    self.draw_box_over_button(self, self.relative_rect.size)
+                    self.draw_on_button(self, self.img2, str(self.index + 1), self.relative_rect.size, True)
+                    #self.draw_text_in_corner(self, str(self.index + 1), self.relative_rect.size)
 
         return super().update(time_delta)
     
