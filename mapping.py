@@ -112,6 +112,7 @@ class TileDict():
         tiles[158] = image.load('assets/monsters/minotaur_orb.png')
         tiles[159] = image.load('assets/monsters/tormentorb.png')
         tiles[160] = image.load('assets/monsters/yendorb.png')
+        tiles[161] = image.load('assets/yendorb_deactivated.png')
 
         # player assets
         tiles[200] = image.load("assets/Player.png")
@@ -564,7 +565,7 @@ class TileMap(TrackingMap):
         
         #self.cellular_caves()
         self.render_to_map(depth)
-        self.place_stairs()
+        self.place_stairs(depth)
 
     def get_tag(self, x, y):
         return self.track_map[x][y].render_tag
@@ -634,15 +635,16 @@ class TileMap(TrackingMap):
                 tile = O.Tile(x+1, y+1, 2, True)
                 self.track_map[x+1][y+1] = tile
 
-    def place_stairs(self):
-        startx = random.randint(0, self.width-1)
-        starty = random.randint(0,self.height-1)
-        while (self.track_map[startx][starty].passable == False):
+    def place_stairs(self, depth):
+        if (depth < 10):
             startx = random.randint(0, self.width-1)
             starty = random.randint(0,self.height-1)
-        tile = O.Stairs(startx, starty, 91, True, downward=True)
-        self.track_map[startx][starty] = tile
-        self.stairs.append(tile)
+            while (self.track_map[startx][starty].passable == False):
+                startx = random.randint(0, self.width-1)
+                starty = random.randint(0,self.height-1)
+            tile = O.Stairs(startx, starty, 91, True, downward=True)
+            self.track_map[startx][starty] = tile
+            self.stairs.append(tile)
 
         startx = random.randint(0, self.width - 1)
         starty = random.randint(0, self.height - 1)

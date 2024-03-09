@@ -35,6 +35,7 @@ class LoopType(Enum):
     enchant = 13
     search_stairs = 14
     level_up = 15
+    victory = 16
 
 class ColorDict():
     """
@@ -148,6 +149,8 @@ class Loops():
             self.display.create_inventory(self.player, self.limit_inventory)
         elif newLoop == LoopType.level_up:
             self.display.create_level_up(self)
+        elif newLoop == LoopType.victory:
+            self.display.create_victory_screen(self)
         elif newLoop == LoopType.equipment:
             self.display.create_equipment(self.player, self.tileDict)
         elif newLoop == LoopType.main:
@@ -217,6 +220,8 @@ class Loops():
                     keyboard.key_inventory(self, self.player, self.item_dict,key)
                 elif self.currentLoop == LoopType.level_up:
                     keyboard.key_level_up(self, key)
+                elif self.currentLoop == LoopType.victory:
+                    keyboard.key_victory(key, self, display)
                 elif self.currentLoop == LoopType.enchant:
                     keyboard.key_enchant(self, self.player, self.item_dict, key)
                 elif self.currentLoop == LoopType.equipment:
@@ -258,6 +263,9 @@ class Loops():
                     if event.ui_element.row != None:
                         self.current_stat = event.ui_element.row
                     keyboard.key_level_up(self, key)
+                elif (self.currentLoop == LoopType.victory):
+                    key = event.ui_element.action
+                    keyboard.key_victory(key, self, display)
                 elif (self.currentLoop == LoopType.equipment):
                     key = event.ui_element.action
                     keyboard.key_equipment(self, self.player, self.item_dict, key)
@@ -374,6 +382,8 @@ class Loops():
         elif self.currentLoop == LoopType.level_up:
             # display.update_display(self)
             display.update_level_up(self)
+        elif self.currentLoop == LoopType.victory:
+            display.update_victory_screen()
         elif self.currentLoop == LoopType.equipment:
             display.update_equipment(self.player, tileDict)
         elif self.currentLoop == LoopType.main:
@@ -411,6 +421,9 @@ class Loops():
                     self.target_to_display = None
                 dead_monsters.append(key)
                 for item in monster.character.inventory:
+                    if item.yendorb:
+                        monster.character.drop(item, self.item_dict, self.generator.item_map)
+                        break # only drop yendorb is monster had it
                     if item.equipped:
                         monster.character.unequip(item)
                     monster.character.drop(item, self.item_dict, self.generator.item_map)

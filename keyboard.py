@@ -277,7 +277,11 @@ class Keyboard():
         elif key == "r":
             player.character.read(item, loop, item_dict, item_map)
                 
-            
+    def key_victory(self, key, loop, display):
+        loop.change_loop(LoopType.main)
+        loop.clear_data()
+        loop.init_game(display)
+
     def key_paused(self, key, loop, display):
         if key == "esc":
             loop.change_loop(LoopType.action)

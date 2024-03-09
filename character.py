@@ -90,6 +90,7 @@ class Character():
                     effect.duration = 0
         self.health -= damage
         if not self.is_alive():
+            dealer.kill_count += 1
             if hasattr(dealer, "experience"): # acts as a check for it its a player
                 dealer.experience += self.experience_given
                 dealer.check_for_levelup()
@@ -119,6 +120,9 @@ class Character():
 
     def grab(self, key, item_ID, generated_maps, loop):
         item = item_ID.get_subject(key)
+        if item.yendorb:
+            loop.change_loop(L.LoopType.victory)
+            return
         if item.stackable:
             if not item.name in [x.name for x in self.inventory]:
                 if len(self.inventory) > self.inventory_limit:
@@ -387,6 +391,8 @@ class Player(O.Objects):
         self.max_level = 20
         self.experience = 0
         self.experience_to_next_level = 20
+
+        self.kill_count = 0
 
         self.stat_points = 0
         self.stat_decisions = [0, 0, 0, 0] # used at loop levelling to allocate points
