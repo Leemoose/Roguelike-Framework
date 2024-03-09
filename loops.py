@@ -272,6 +272,29 @@ class Loops():
                     key = event.ui_element.action
                     keyboard.key_action(self.player, self.tile_map, self.generator.monster_dict, self.monster_map, self.generator.item_dict, self, key, self.generator, display, self.memory)
 
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if (self.currentLoop == LoopType.action):
+                    x, y = pygame.mouse.get_pos()
+                    player = self.player
+                    x_tile, y_tile = display.screen_to_tile(player, x, y)
+                    print(x_tile, y_tile, player.x, player.y)
+                    if self.player.get_distance(x_tile,y_tile) == 0:
+                        print("hi")
+                        if not self.generator.item_map.get_passable(player.x,player.y):
+                            key = self.generator.item_map.track_map[player.x][player.y]
+                            item = self.generator.item_dict.subjects[key]
+                            player.character.grab(key, self.generator.item_dict, self.generator, self)
+                        elif isinstance(self.generator.tile_map.track_map[player.x][player.y], O.Stairs):
+                            if self.generator.tile_map.track_map[player.x][player.y].downward:
+                                self.down_floor()
+                            else:
+                                self.up_floor()
+                    if self.player.get_distance(x_tile, y_tile) < 1.5:
+                        xdiff = x_tile - player.x
+                        ydiff = y_tile - player.y
+                        self.player.attack_move(xdiff, ydiff, self)
+                        self.update_screen = True
+
             elif event.type == pygame.MOUSEBUTTONUP:
                 x,y = pygame.mouse.get_pos()
                 self.update_screen = True
