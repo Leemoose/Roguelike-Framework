@@ -173,6 +173,7 @@ class TileDict():
         tiles[750] = image.load("assets/gloves.png")
         tiles[751] = image.load("assets/gauntlets.png")
         tiles[752] = image.load("assets/boxing_gloves.png")
+        tiles[753] = image.load("assets/healer_gloves.png")
 
         # helmet assets
         tiles[770] = image.load("assets/helmet.png")

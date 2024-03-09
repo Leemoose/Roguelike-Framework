@@ -535,7 +535,7 @@ class Minotaurb(Minotaur):
         self.dexterity = 3
         self.intelligence = 1
 
-        self.description = "A large, angry orb wiht horns that can shrug off your status effects."
+        self.description = "A large, angry orb with horns that can shrug off your status effects."
 
 class Orc(Monster):
     def __init__(self, x, y, render_tag=101, name="Orc"):

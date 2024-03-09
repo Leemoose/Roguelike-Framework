@@ -1047,6 +1047,59 @@ class BoxingGloves(Armor):
         if self.level == 6:
             self.description = "Gloves that let you punch through anything. It's been enchanted as much as possible."
 
+class HealingGloves(Armor):
+    def __init__(self, render_tag):
+        super().__init__(-1,-1, 0, render_tag, "Healing Gloves")
+        self.equipment_type = "Gloves"
+        self.description = "Gloves that let you heal yourself."
+        self.name = "Healing Gloves"
+        self.armor = 0
+
+        # self, parent, cooldown, cost, heal_amount, activation_threshold, action_cost):
+        self.skill_cooldown = 15
+        self.skill_cost = 25
+        self.heal_amount = 20
+        self.activation_threshold = 1.1
+        self.action_cost = 100
+        self.rarity = "Rare"
+
+    def attached_skill(self, owner):
+        self.attached_skill_exists = True
+        return S.Heal(owner, self.skill_cooldown, 
+                        self.skill_cost, 
+                        self.heal_amount,
+                        self.activation_threshold,
+                        self.action_cost)
+
+    def equip(self, entity):
+        if entity.gloves != None:
+            entity.unequip(entity.gloves)
+        entity.gloves = self
+        entity.add_skill(self.attached_skill(entity.parent))
+        self.activate(entity)
+
+    def unequip(self, entity):
+        entity.gloves = None
+        entity.remove_skill(self.attached_skill(entity.parent).name)
+        self.deactivate(entity)
+
+    def level_up(self):
+        self.level += 1
+        self.skill_cooldown -= 1
+        if self.skill_cooldown < 10:
+            self.skill_cooldown = 10
+        self.skill_cost -= 5
+        if self.skill_cost < 10:
+            self.skill_cost = 10
+        self.heal_amount += 15
+        if self.wearer != None:
+            self.wearer.remove_skill(self.attached_skill(self.wearer.parent).name)
+            self.wearer.add_skill(self.attached_skill(self.wearer.parent))
+        if self.level == 2:
+            self.description += " It's been enchanted to heal more."
+        if self.level == 6:
+            self.description = "Gloves that lets life surge through you. It's been enchanted as much as possible."
+
 class Helmet(Armor):
     def __init__(self, render_tag):
         super().__init__(-1,-1, 0, render_tag, "Helmet")

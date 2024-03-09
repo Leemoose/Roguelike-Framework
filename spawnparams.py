@@ -44,6 +44,7 @@ ItemSpawns.append(ItemSpawnParams( I.Helmet(770),              1,               
 ItemSpawns.append(ItemSpawnParams( I.Gloves(750),              1,               5,          0,              0))
 ItemSpawns.append(ItemSpawnParams( I.Gauntlets(751),           2,               5,          1,              1))
 ItemSpawns.append(ItemSpawnParams( I.BoxingGloves(752),        1,               8,          1,              1))
+ItemSpawns.append(ItemSpawnParams( I.HealingGloves(753),       3,               10,          1,              1))
 
 ItemSpawns.append(ItemSpawnParams( I.HealthPotion(401),       1,               10,          0,              0))
 ItemSpawns.append(ItemSpawnParams( I.Dagger(321),             1,               5,          0,              0))
@@ -56,10 +57,14 @@ ItemSpawns.append(ItemSpawnParams( I.BloodRing(501),          3,               1
 ItemSpawns.append(ItemSpawnParams( I.RingOfMana(502),          1,               10,          0,              0))
 ItemSpawns.append(ItemSpawnParams( I.RingOfMight(503),          1,               10,          0,              0))
 ItemSpawns.append(ItemSpawnParams( I.BoneRing(504),          3,               10,          0,              0))
+
 ItemSpawns.append(ItemSpawnParams( I.ManaPotion(402),         1,               10,          0,              0))
 ItemSpawns.append(ItemSpawnParams( I.CurePotion(403),         1,               10,          0,              0))
 ItemSpawns.append(ItemSpawnParams( I.MightPotion(404),        1,               10,          0,              0))
 ItemSpawns.append(ItemSpawnParams( I.DexterityPotion(405),    1,               10,          0,              0))
+ItemSpawns.append(ItemSpawnParams( I.PermanentStrengthPotion(404),      1,               10,          0,              1))
+ItemSpawns.append(ItemSpawnParams( I.PermanentDexterityPotion(405),      1,               10,          0,              1))
+
 ItemSpawns.append(ItemSpawnParams( I.EnchantScrorb(450),     1,               10,          1,              5))
 ItemSpawns.append(ItemSpawnParams( I.BurningAttackScrorb(450),      1,               10,          1,              5))
 ItemSpawns.append(ItemSpawnParams( I.TeleportScroll(450),      1,               10,          1,              5))
@@ -69,9 +74,9 @@ ItemSpawns.append(ItemSpawnParams( I.CallingScroll(450),      1,               1
 ItemSpawns.append(ItemSpawnParams( I.SleepScroll(450),      1,               10,          1,              5))
 ItemSpawns.append(ItemSpawnParams( I.ExperienceScroll(450),      1,               10,          5,              5))
 ItemSpawns.append(ItemSpawnParams( I.BlinkScrorb(450),      1,               10,          1,              5))
-ItemSpawns.append(ItemSpawnParams( I.PermanentStrengthPotion(404),      1,               10,          0,              1))
-ItemSpawns.append(ItemSpawnParams( I.PermanentDexterityPotion(405),      1,               10,          0,              1))
 ItemSpawns.append(ItemSpawnParams( I.MassHealScrorb(450),      1,               10,          1,              5))
+
+# NEED ART
 ItemSpawns.append(ItemSpawnParams( I.BloodstainedArmor(603),        3,               10,          1,              1))
 ItemSpawns.append(ItemSpawnParams( I.BlackenedBoots(700),              5,               10,          1,              1))
 ItemSpawns.append(ItemSpawnParams( I.RingOfTeleportation(502),              5,               10,          1,              1))
@@ -97,7 +102,7 @@ class ItemSpawner():
 
         # useful for debugging specific items, separate from generator
         self.forceSpawn = None
-        # self.forceSpawn = ("Boxing Gloves", 3)
+        self.forceSpawn = ("Healing Gloves", 3)
         # self.forceSpawn = ("Enchant Scrorb", 3)
         # self.forceSpawn = ("Flaming Sword", 5)
         
