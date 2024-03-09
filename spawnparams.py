@@ -87,7 +87,7 @@ class ItemSpawner():
         # useful for debugging specific items, separate from generator
         self.forceSpawn = None
         # self.forceSpawn = ("Enchant Scrorb", 3)
-        # self.forceSpawn = ("Blink Scrorb", 5)
+        # self.forceSpawn = ("Flaming Sword", 5)
         
     def countSpawn(self, depth):
         return random.randint(int(2 + 0.25 * (10 - depth)), int(4 + 0.5 * (10 - depth)))

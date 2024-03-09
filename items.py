@@ -132,9 +132,12 @@ class MagicWand(Weapon):
         self.magic_missile_range = 6
         self.magic_missile_cost = 10
         self.magic_missile_cooldown = 3
+        self.attached_skill_exists = True
         
         self.wearer = None # items with stat buffs or skills need to keep track of owner for level ups
         self.rarity = "Common"
+
+        self.attached_skill_exists = True
 
     def attached_skill(self, owner):
         self.attached_skill_exists = True
@@ -183,6 +186,7 @@ class FlamingSword(Weapon):
         self.skill_burn_damage = 5
         self.skill_burn_duration = 10
         self.skill_range = 5
+        self.attached_skill_exists = True
 
         self.wearer = None # items with stat buffs or skills need to keep track of owner for level ups
         self.rarity = "Legendary"
@@ -279,6 +283,8 @@ class Aegis(Shield):
         self.skill_duration = 3
         self.skill_activation_chance = 0.3
         self.skill_range = 3
+
+        self.attached_skill_exists = True
 
         self.rarity = "Rare"
 
@@ -429,6 +435,7 @@ class BloodRing(Ring):
         
         # skill doesn't have an owner until equipped to an entity, so need a lambda expression here
         self.rarity = "Rare"
+        self.attached_skill_exists = True
 
     def attached_skill(self, owner):
         self.attached_skill_exists = True
@@ -565,6 +572,8 @@ class GildedArmor(BodyArmor):
         self.skill_cooldown = 15
         self.skill_cost = 20
         self.activation_chance = 0.5
+
+        self.attached_skill_exists = True
         
         self.rarity = "Rare"
 
@@ -618,6 +627,8 @@ class WarlordArmor(BodyArmor):
         self.skill_duration = 3
         self.skill_activation_chance = 0.5
         self.skill_range = 2
+
+        self.attached_skill_exists = True
         
         self.rarity = "Legendary"
 
@@ -746,6 +757,8 @@ class BootsOfEscape(Armor):
         self.int_debuff = 10
         self.duration = 4
         self.rarity = "Rare"
+
+        self.attached_skill_exists = True
     
     def attached_skill(self, owner):
         self.attached_skill_exists = True
@@ -892,6 +905,8 @@ class VikingHelmet(Armor):
         self.strength_increase = 10
 
         self.rarity = "Rare"
+
+        self.attached_skill_exists = True
 
     def attached_skill(self, owner):
         self.attached_skill_exists = True
