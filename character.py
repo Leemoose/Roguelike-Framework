@@ -24,6 +24,7 @@ class Character():
         # flags altered by status conditions
         self.movable = True
         self.flee = False
+        self.can_teleport = True
 
         self.round_bonus_factor = 1.5 # stat bonus for being rounded
 

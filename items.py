@@ -513,6 +513,46 @@ class BoneRing(Ring):
         entity.mana_regen += 10
         entity.health_regen += 10
 
+class RingOfTeleportation(Ring):
+    def __init__(self, render_tag):
+        super().__init__(render_tag, "Ring of Teleportation")
+        self.description = "The most circular thing you own, it makes you feel spry on your feet"
+        self.rarity = "Rare"
+        self.name = "Ring of Teleportation"
+
+        self.wearer = None  # items with stat buffs need to keep track of owner for level ups
+
+        self.skill_cooldown =100
+        self.skill_cost = 0
+
+        self.attached_skill_exists = True
+
+        self.rarity = "Legendary"
+
+    def attached_skill(self, owner):
+        self.attached_skill_exists = True
+        return S.Teleport(owner, self.skill_cooldown, self.skill_cost)
+
+    def activate(self, entity):
+        entity.add_skill(self.attached_skill(entity.parent))
+        self.wearer = entity
+        return super().activate(entity)
+
+    def deactivate(self, entity):
+        entity.remove_skill(self.attached_skill(entity.parent).name)
+        self.wearer = None
+        return super().deactivate(entity)
+"""
+    def level_up(self):
+        self.level += 1
+        if self.level == 2:
+            self.description += " It seems to be growing stronger?"
+        if self.level == 6:
+            self.skill_cooldown = 0
+            self.description = "Unlimited power."
+            """
+
+
 class BodyArmor(Armor):
     def __init__(self, render_tag, name):
         super().__init__(-1, -1, 0, render_tag, name)
@@ -1074,7 +1114,7 @@ class TeleportScroll(Scroll):
         self.skill = S.Teleport(None, None, None)
 
     def activate_once(self, entity, loop):
-        self.skill.parent = entity
+        self.skill.parent = entity.parent
         self.skill.activate(entity, loop.generator, bypass = True)
         self.consume_scroll(entity)
         loop.change_loop(L.LoopType.inventory)

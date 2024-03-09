@@ -128,7 +128,7 @@ class Display:
         skill_bar_width = stats_offset_from_left - skill_bar_offset_from_left
         skill_bar_offset_from_top = action_screen_height
 
-        num_skill_buttons = 6
+        num_skill_buttons = 8
         skill_button_width = (action_screen_width - skill_bar_offset_from_left) // (num_skill_buttons + 1)
         skill_button_height = (self.screen_height - action_screen_height) * 3 // 4
         skill_button_offset_from_top = (self.screen_height - action_screen_height) // 8 + skill_bar_offset_from_top
@@ -959,6 +959,11 @@ class Display:
     #Main Screen
         self.win.fill((0,0,0))
         self.uiManager.draw_ui(self.win)
+        image_size = 100
+        image_offset_from_left = (self.screen_width - image_size) // 2
+        image_offset_from_top = self.screen_height // 2
+        self.win.blit(pygame.transform.scale(pygame.image.load('assets/yendorb_deactivated.png'),(image_size,image_size)), (image_offset_from_left, image_offset_from_top))
+        font = pygame.font.Font('freesansbold.ttf', 12)
 
     def update_entity(self, entity, tileDict, player, item_screen = True, create = False):
         if create == True:

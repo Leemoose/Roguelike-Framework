@@ -143,6 +143,7 @@ class Keyboard():
             skill_num = int(key) - 1
             if skill_num < len(player.character.skills):
                 if not player.character.skills[skill_num].targetted:
+                    print(player.character.skills[skill_num].castable(player))
                     if player.character.skills[skill_num].castable(player):
                         player.character.cast_skill(skill_num, loop.player, loop)
                     else:
