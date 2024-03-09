@@ -120,7 +120,7 @@ class Display:
 
         message_offset_from_left = 0
         message_offset_from_top = action_screen_height
-        message_width = action_screen_width // 2 - 2 * message_offset_from_left
+        message_width = action_screen_width *5 // 12 - 2 * message_offset_from_left
         message_height = self.screen_height - action_screen_height
 
         skill_bar_height = self.screen_height - action_screen_height
@@ -356,7 +356,7 @@ class Display:
         stats_width = self.screen_width - stats_offset_from_left
         stats_height = self.screen_height // 3
 
-        map_tile_size = 8
+        map_tile_size = 5
         map_offset_from_left = action_screen_width
         map_offset_from_top = stats_height
         map_width = self.screen_width - action_screen_width
@@ -440,7 +440,7 @@ class Display:
         self.uiManager.draw_ui(self.win)
 
         #Making all map tiles
-
+        item_map = loop.generator.item_map
         for x in range(x_map_start, x_map_end):
             for y in range(y_map_start, y_map_end):
                 if (x < 0 or x >= floormap.width or y < 0 or y >= floormap.height):
@@ -449,10 +449,26 @@ class Display:
                     pass
                 else:
                     if floormap.track_map[x][y].passable:
-                        pygame.draw.rect(self.win, (200, 200, 200),
-                                         pygame.Rect(map_offset_from_left + map_tile_size * (x - x_map_start),
-                                                     map_offset_from_top + map_tile_size * (y - y_map_start),
-                                                     map_tile_size, map_tile_size))
+                        if floormap.track_map[x][y].visible and not monster_map.get_passable(x,y):
+                            pygame.draw.rect(self.win, (200, 0, 0),
+                                             pygame.Rect(map_offset_from_left + map_tile_size * (x - x_map_start),
+                                                         map_offset_from_top + map_tile_size * (y - y_map_start),
+                                                         map_tile_size, map_tile_size))
+                        elif not item_map.get_passable(x,y):
+                            pygame.draw.rect(self.win, (0, 200, 0),
+                                             pygame.Rect(map_offset_from_left + map_tile_size * (x - x_map_start),
+                                                         map_offset_from_top + map_tile_size * (y - y_map_start),
+                                                         map_tile_size, map_tile_size))
+                        elif isinstance(floormap.track_map[x][y], O.Stairs):
+                            pygame.draw.rect(self.win, (0, 0, 200),
+                                                 pygame.Rect(map_offset_from_left + map_tile_size * (x - x_map_start),
+                                                             map_offset_from_top + map_tile_size * (y - y_map_start),
+                                                             map_tile_size, map_tile_size))
+                        else:
+                            pygame.draw.rect(self.win, (200, 200, 200),
+                                             pygame.Rect(map_offset_from_left + map_tile_size * (x - x_map_start),
+                                                         map_offset_from_top + map_tile_size * (y - y_map_start),
+                                                         map_tile_size, map_tile_size))
                     else:
                         pygame.draw.rect(self.win, (100, 100, 100),
                                          pygame.Rect(map_offset_from_left + map_tile_size * (x - x_map_start),

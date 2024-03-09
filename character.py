@@ -211,6 +211,7 @@ class Character():
             return self.base_damage + self.main_weapon.damage_min, self.base_damage + self.main_weapon.damage_max
 
     def melee(self, defender):
+        effect = None
         if self.main_weapon == None:
             damage = R.roll_dice(self.unarmed_damage_min, self.unarmed_damage_max)[0]
         else:
@@ -220,7 +221,7 @@ class Character():
                 damage, effect = self.main_weapon.attack()
         defense = defender.character.defend()
         defender.character.take_damage(self.parent, self.base_damage + int(self.strength * self.round_bonus()) + damage - defense)
-        if self.main_weapon != None and self.main_weapon.on_hit != None:
+        if effect != None:
             effect = effect(self.parent) # some effects need an inflictor
             defender.character.add_status_effect(effect)
         self.energy -= self.attack_cost
