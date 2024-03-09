@@ -255,7 +255,7 @@ class Display:
                                         views_offset_from_left + views_button_offset_from_each_other_width+ (views_button_offset_from_each_other_width + views_button_width) * button_num_width,
                                         views_offset_from_top + views_button_offset_from_each_other_height+ (views_button_offset_from_each_other_height + views_button_height) * button_num_height),
                                         (views_button_width, views_button_height)),
-            text="Wait(.)",
+            text="Rest(z)",
             manager=self.uiManager,
                     starting_height=800)
         button.action = "."

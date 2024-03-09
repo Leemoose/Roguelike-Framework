@@ -220,7 +220,6 @@ class Character():
         if self.main_weapon != None and self.main_weapon.on_hit != None:
             effect = effect(self.parent) # some effects need an inflictor
             defender.character.add_status_effect(effect)
-        self.energy -= self.attack_cost
         return (self.base_damage + damage + int(self.strength * self.round_bonus()) - defense)
 
     def dodge(self):
@@ -398,7 +397,7 @@ class Player(O.Objects):
 
         self.path = []
 
-        self.invincible = True
+        self.invincible = False
 
         if self.invincible: # only get the gun if you're invincible at the start
             self.character.skills.extend([
