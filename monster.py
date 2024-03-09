@@ -95,6 +95,7 @@ class Monster_AI():
             return -1
 
     def rank_equip_item(self, loop): #Needs to be fixed
+        return -1
         monster = self.parent
         if len(monster.character.inventory) != 0:
             utility = -1

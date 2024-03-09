@@ -25,6 +25,15 @@
             "unfilled_bar":"#CCCCCC"
         }
     },
+        "#title_small":
+    {
+        "font":
+        {
+            "name": "title",
+            "size": "50",
+            "regular_path": "assets/fonts/Scripto/Scripto-2OR2v.ttf"
+        }
+    },
 
     "#title_label":
     {
@@ -35,6 +44,7 @@
             "regular_path": "assets/fonts/Scripto/Scripto-2OR2v.ttf"
         }
     },
+
 
     "#depth_label":
     {

@@ -255,11 +255,11 @@ class Display:
                                         views_offset_from_left + views_button_offset_from_each_other_width+ (views_button_offset_from_each_other_width + views_button_width) * button_num_width,
                                         views_offset_from_top + views_button_offset_from_each_other_height+ (views_button_offset_from_each_other_height + views_button_height) * button_num_height),
                                         (views_button_width, views_button_height)),
-            text="Rest(z)",
+            text="Pause(esc)",
             manager=self.uiManager,
                     starting_height=800)
-        button.action = "."
-        self.buttons.add(button, ".")
+        button.action = "esc"
+        self.buttons.add(button, "esc")
 
         button_num_height += 1
         button = pygame_gui.elements.UIButton(
@@ -996,12 +996,12 @@ class Display:
         entity_message_width = self.screen_width // 2
         entity_message_height = self.screen_height // 10
         entity_message_offset_from_left = self.screen_width // 4
-        entity_message_offset_from_top = self.screen_height // 4
+        entity_message_offset_from_top = self.screen_height  // 4
 
         entity_image_width = self.screen_width // 20
         entity_image_height = self.screen_width // 20
         entity_image_offset_from_left = self.screen_width // 4 + self.screen_width // 50
-        entity_image_offset_from_top = self.screen_height // 4 + self.screen_width // 50
+        entity_image_offset_from_top = self.screen_height // 4
 
         entity_button_width = self.screen_width // 10
         entity_button_height = self.screen_height // 30
@@ -1031,7 +1031,7 @@ class Display:
                                           (entity_message_width, entity_message_height)),
                 text=entity_name,
                 manager=self.uiManager,
-                object_id='#title_label')
+                object_id='#title_small')
 
         if item_screen:
             item = entity
