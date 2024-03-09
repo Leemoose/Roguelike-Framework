@@ -139,7 +139,7 @@ class Loops():
     def change_loop(self, newLoop):
         self.currentLoop = newLoop
         self.update_screen = True
-        if newLoop == LoopType.action:
+        if newLoop == LoopType.action or newLoop == LoopType.targeting or newLoop == LoopType.examine:
             self.display.create_display(self)
         elif newLoop == LoopType.autoexplore:
             pass
@@ -356,7 +356,7 @@ class Loops():
         elif self.currentLoop == LoopType.examine or self.currentLoop == LoopType.targeting:
             # display.update_display(colors, self.generator.tile_map, tileDict, self.monster_dict, self.item_dict,
             #                       self.monster_map, self.player, self.messages, self.target_to_display)
-            # display.refresh_screen(self)
+            # display.refresh_screen()
             display.update_display(self)
             display.update_examine(self.targets.target_current, self)
         elif self.currentLoop == LoopType.paused:

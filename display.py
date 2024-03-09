@@ -812,6 +812,9 @@ class Display:
         self.win.fill((0,0,0))
         self.uiManager.draw_ui(self.win)
 
+    def refresh_screen(self):
+        self.uiManager.clear_and_reset()
+
     def create_pause_screen(self):
         self.uiManager.clear_and_reset()
         pause_screen_width = self.screen_width // 3
