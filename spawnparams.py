@@ -63,6 +63,7 @@ ItemSpawns.append(ItemSpawnParams( I.Gloves(750),              1,               
 ItemSpawns.append(ItemSpawnParams( I.Gauntlets(751),           2,               5,          1,              1))
 ItemSpawns.append(ItemSpawnParams( I.BoxingGloves(752),        1,               8,          1,              1))
 ItemSpawns.append(ItemSpawnParams( I.HealingGloves(753),       3,               10,          1,              1))
+ItemSpawns.append(ItemSpawnParams( I.LichHand(754),            5,               10,          1,              1))
 
 ItemSpawns.append(ItemSpawnParams( I.RingOfSwiftness(500),               1,               10,          0,              0))
 ItemSpawns.append(ItemSpawnParams( I.RingOfTeleportation(502),              5,               10,          1,              1))
@@ -112,7 +113,7 @@ class ItemSpawner():
         # useful for debugging specific items, separate from generator
         #self.forceSpawn = None
 
-        self.forceSpawn = ("Spartan Helmet", 3)
+        self.forceSpawn = ("Lich Hand", 3)
 
         # self.forceSpawn = ("Enchant Scrorb", 3)
         # self.forceSpawn = ("Flaming Sword", 5)
