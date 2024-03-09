@@ -486,7 +486,10 @@ class Display:
     def draw_examine_window(self, target, tileDict, floormap, monster_map, monster_dict, item_dict, player):
         examine_offset_from_left = self.screen_width // 30
         examine_offset_from_top = self.screen_height // 20
-        x, y = target
+        try:
+            x, y = target
+        except:
+            return False
         if not floormap.track_map[x][y].visible:
             return
         black_screen = pygame.transform.scale(pygame.image.load("assets/black_screen.png"), (self.screen_width // 5, self.screen_height // 5))

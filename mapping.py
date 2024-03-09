@@ -154,6 +154,7 @@ class TileDict():
         tiles[602] = image.load("assets/golden_armor.png")
         tiles[603] = image.load("assets/warmonger_armor.png")
         tiles[604] = image.load("assets/wizard_robe.png")
+        tiles[605] = image.load("assets/karate_gi.png")
 
         # shield assets
         # list of shields: basic, aegis, tower, magic focus
@@ -171,6 +172,7 @@ class TileDict():
         # list of gloves: basic, gauntlets
         tiles[750] = image.load("assets/gloves.png")
         tiles[751] = image.load("assets/gauntlets.png")
+        tiles[752] = image.load("assets/boxing_gloves.png")
 
         # helmet assets
         tiles[770] = image.load("assets/helmet.png")
