@@ -126,6 +126,7 @@ class Loops():
         self.monster_dict = None
         self.generator = None #Dungeon Generator
         self.messages = []
+        self.dirty_messages = True # ;)
         self.targets = T.Target()
         self.target_to_display = None
         self.tileDict = tileDict
@@ -480,6 +481,7 @@ class Loops():
         if len(self.messages) >= 5:
             self.messages.pop(0)
         self.messages.append(message)
+        self.dirty_messages = True
 
     def add_target(self, target):
         self.prev_target = self.target_to_display
