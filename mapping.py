@@ -129,6 +129,7 @@ class TileDict():
         tiles[321] = image.load("assets/dagger.png")
         tiles[331] = image.load("assets/burning_sword.png")
         tiles[332] = image.load("assets/magic_wand.png")
+        tiles[340] = image.load("assets/sword.png")
 
         # potion assets
         tiles[401] = image.load("assets/health_orb_bigger.png")

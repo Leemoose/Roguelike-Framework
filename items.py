@@ -129,6 +129,24 @@ class Dagger(Weapon):
         if self.damage_min > self.damage_max:
             self.damage_min = self.damage_max
 
+class Sword(Weapon):
+    def __init__(self, render_tag):
+        super().__init__(-1, -1, 0, render_tag, "Sworbd")
+        self.melee = True
+        self.name = "Sworbd"
+        self.description = "Could be rounder honestly."
+        self.damage_min = 25
+        self.damage_max = 30
+
+    def level_up(self):
+        self.level += 1
+        if self.level == 2:
+            self.description += " It's been enchanted to be more damaging."
+        if self.level == 6:
+            self.description = "A sword that has been enchanted as much as possible."
+        self.damage_min += 10
+        self.damage_max += 10
+
 class ScreamingDagger(Dagger):
     def __init__(self, render_tag):
         super().__init__(render_tag)
@@ -148,7 +166,7 @@ class ScreamingDagger(Dagger):
     def attack(self):
         return (super().attack(), self.on_hit)
 
-class SleepingSword(Dagger):
+class SleepingSword(Sword):
     def __init__(self, render_tag):
         super().__init__(render_tag)
         self.melee = True
