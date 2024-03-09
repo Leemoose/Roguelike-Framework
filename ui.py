@@ -1,14 +1,25 @@
 import pygame, pygame_gui
+import character
 
 class HealthBar(pygame_gui.elements.UIProgressBar):
     def __init__(self, rect, manager, player):
         super().__init__(relative_rect=rect, manager=manager)
         self.player = player
+        self.health = -1
+        self.max_health = -1
+
+    def needs_update(self, character):
+        if (self.health != character.health or self.max_health != character.max_health):
+            self.health = character.health
+            self.max_health = character.max_health
+            return True
+        return False
 
     def update(self, time_delta: float):
-        self.maximum_progress = max(1.0, self.player.character.max_health)
-        self.current_progress = self.player.character.health
-        self.percent_full = 100 * self.current_progress / self.maximum_progress
+        if (self.needs_update(self.player.character)):
+            self.maximum_progress = max(1.0, self.player.character.max_health)
+            self.current_progress = self.player.character.health
+            self.percent_full = 100 * self.current_progress / self.maximum_progress
 
         return super().update(time_delta)
     
@@ -16,11 +27,21 @@ class ManaBar(pygame_gui.elements.UIProgressBar):
     def __init__(self, rect, manager, player):
         super().__init__(relative_rect=rect, manager=manager)
         self.player = player
+        self.mana = -1
+        self.max_mana = -1
+
+    def needs_update(self, character):
+        if (self.mana != character.mana or self.max_mana != character.max_mana):
+            self.mana = character.mana
+            self.max_mana = character.max_mana
+            return True
+        return False
 
     def update(self, time_delta: float):
-        self.maximum_progress = max(1.0, self.player.character.max_mana)
-        self.current_progress = self.player.character.mana
-        self.percent_full = 100 * self.current_progress / self.maximum_progress
+        if (self.needs_update(self.player.character)):
+            self.maximum_progress = max(1.0, self.player.character.max_mana)
+            self.current_progress = self.player.character.mana
+            self.percent_full = 100 * self.current_progress / self.maximum_progress
 
         return super().update(time_delta)
     
@@ -72,12 +93,18 @@ class MessageBox(pygame_gui.elements.UITextBox):
     def __init__(self, rect, manager, loop):
         super().__init__(relative_rect=rect, manager=manager, html_text="Error")
         self.loop = loop #Store loop to retrieve messages
+        self.set_message()
 
     def update(self, time_delta: float):
         
-        self.set_text(html_text="".join([message + "<br>" for message in (self.loop.messages)]))
+        if (self.loop.dirty_messages):
+            self.set_message()
 
         return super().update(time_delta)
+    
+    def set_message(self):
+        self.set_text(html_text="".join([message + "<br>" for message in (self.loop.messages)]))
+        self.loop.dirty_messages = False
     
 class LevelUpHeader(pygame_gui.elements.UILabel):
     def __init__(self, rect, manager, player):
@@ -129,6 +156,55 @@ class StatBox(pygame_gui.elements.UITextBox):
     def __init__(self, rect, manager, player):
         super().__init__(relative_rect=rect, manager=manager, html_text="Error")
         self.player = player
+        self.status = 'N'
+        self.status_effects = []
+        self.stat_points = -1
+        self.level = -1
+        self.experience = -1
+        self.experience_to_next_level = -1
+        self.rounded = False
+        self.strength = -1
+        self.dexterity = -1
+        self.endurance = -1
+        self.intelligence = -1
+
+    def NeedsUpdate(self, entity):
+        if not (self.CompareStats(entity)):
+            self.SetCompareStats(entity)
+            return True
+        return False
+
+    def CompareStats(self, entity):
+        return (self.status == self.get_health_status(entity) and
+                self.status_effects == entity.character.status_effects and
+                self.stat_points == entity.stat_points and
+                self.level == entity.level and
+                self.experience == entity.experience and
+                self.experience_to_next_level == entity.experience_to_next_level and
+                self.rounded == entity.character.rounded() and
+                self.strength == entity.character.strength and
+                self.dexterity ==entity.character.dexterity and
+                self.endurance == entity.character.endurance and
+                self.intelligence == entity.character.intelligence)
+
+    def SetCompareStats(self, entity):
+        self.status = self.get_health_status(entity)
+        self.status_effects = entity.character.status_effects
+        self.stat_points = entity.stat_points
+        self.level = entity.level
+        self.experience = entity.experience
+        self.experience_to_next_level = entity.experience_to_next_level
+        self.rounded = entity.character.rounded()
+        self.strength = entity.character.strength
+        self.dexterity = entity.character.dexterity
+        self.endurance = entity.character.endurance
+        self.intelligence = entity.character.intelligence
+
+    def get_health_status(self, entity):
+        if entity.character.health < entity.character.max_health // 3 * 2:
+            return 'W'
+        else:
+            return 'H'
 
     #HORRIBLE HACK - THIS IS ALSO DEFINED IN DISPLAY.PY - KEEP THEM SYNCED!
     def get_status_text(self, entity):
@@ -161,14 +237,15 @@ class StatBox(pygame_gui.elements.UITextBox):
             return "<br>"
 
     def update(self, time_delta: float):
-        self.set_text(html_text="Player:<br>" +
-                        "Strength: " + self.stat_text(self.player, self.player.character.strength) + "<br>"
-                        "Dexterity: " + self.stat_text(self.player, self.player.character.dexterity) + "<br>"
-                        "Endurance: " + self.stat_text(self.player, self.player.character.endurance) + "<br>"
-                        "Intelligence: " + self.stat_text(self.player, self.player.character.intelligence) + "<br>" + \
-                        self.round_text(self.player) + \
-                        "Status: " + self.get_status_text(self.player) + "<br>" + \
-                        self.get_level_text(self.player) + "<br>")
+        if (self.NeedsUpdate(self.player)):
+            self.set_text(html_text="Player:<br>" +
+                            "Strength: " + self.stat_text(self.player, self.player.character.strength) + "<br>"
+                            "Dexterity: " + self.stat_text(self.player, self.player.character.dexterity) + "<br>"
+                            "Endurance: " + self.stat_text(self.player, self.player.character.endurance) + "<br>"
+                            "Intelligence: " + self.stat_text(self.player, self.player.character.intelligence) + "<br>" + \
+                            self.round_text(self.player) + \
+                            "Status: " + self.get_status_text(self.player) + "<br>" + \
+                            self.get_level_text(self.player) + "<br>")
 
         return super().update(time_delta)
     
@@ -176,8 +253,11 @@ class DepthDisplay(pygame_gui.elements.UILabel):
     def __init__(self, rect, manager, loop):
         super().__init__(relative_rect=rect, manager=manager, text="Error")
         self.loop = loop
+        self.last_depth = -1
 
     def update(self, time_delta: float):
-        self.set_text("Depth " + str(self.loop.generator.depth))
+        if (self.last_depth != self.loop.generator.depth):
+            self.set_text("Depth " + str(self.loop.generator.depth))
+            self.last_depth = self.loop.generator.depth
 
         return super().update(time_delta)

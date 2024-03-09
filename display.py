@@ -77,6 +77,11 @@ class Display:
 
     def create_display(self, loop):
         self.uiManager.clear_and_reset()
+        #FPS counter
+        fps_counter = ui.FPSCounter(
+            pygame.Rect((0,0),(400,40)),
+            self.uiManager
+        )
 
         tileDict = loop.tileDict
         monsterID = loop.monster_dict
@@ -159,8 +164,7 @@ class Display:
                                                                 (map_message_width, map_message_height)),
                                     manager=self.uiManager,
                                     loop=loop)
-
-
+        
         stat_box = ui.StatBox(
             pygame.Rect((stats_offset_from_left, stats_offset_from_top), (stats_width, stats_height)),
             self.uiManager,
@@ -280,17 +284,11 @@ class Display:
                     starting_height=800)
         button.action = "g"
         self.buttons.add(button, "g")
-        #FPS counter
-        fps_counter = ui.FPSCounter(
-            pygame.Rect((0,0),(400,40)),
-            self.uiManager
-        )
 
     #if target_to_display != None:
     #    clear_target = self.draw_examine_window(target_to_display, tileDict, floormap, monster_map, monsterID, item_ID, player)
     #    if clear_target:
     #        target_to_display = None
-
 
         num_skill = len(player.character.skills)
         if num_skill == 0:
@@ -324,6 +322,7 @@ class Display:
                 self.draw_on_button(button, img, chr(ord("1") + i), (skill_button_width, skill_button_height), shrink=True,
                                     offset_factor=10, text_offset=(12, (0.6)))
                 self.buttons.add(button, chr(ord("1") + i))
+        
 
         healthBar = ui.HealthBar(pygame.Rect((self.screen_width - 120, 0), (120, 40)), self.uiManager, player)
         manaBar = ui.ManaBar(pygame.Rect((self.screen_width - 120, 50), (120, 40)), self.uiManager, player)
