@@ -321,8 +321,8 @@ class Display:
                 self.buttons.add(button, chr(ord("1") + i))
         
 
-        healthBar = ui.HealthBar(pygame.Rect((self.screen_width - 120, 0), (120, 40)), self.uiManager, player)
-        manaBar = ui.ManaBar(pygame.Rect((self.screen_width - 120, 50), (120, 40)), self.uiManager, player)
+        healthBar = ui.HealthBar(pygame.Rect((stats_offset_from_left + 70, stats_offset_from_top + 12), (stats_width//3, stats_height//12)), self.uiManager, player)
+        manaBar = ui.ManaBar(pygame.Rect((stats_offset_from_left + 70, stats_offset_from_top + 38), (stats_width//3, stats_height//12)), self.uiManager, player)
 
     def update_display(self, loop):
         self.win.fill((0,0,0))
