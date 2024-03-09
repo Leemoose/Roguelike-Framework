@@ -242,6 +242,8 @@ class Keyboard():
                 loop.load_game()
             except:
                 pass
+        elif key == "h":
+            loop.change_loop(LoopType.help)
         else:
             loop.down_floor()
             loop.change_loop(LoopType.action)
@@ -397,4 +399,8 @@ class Keyboard():
             loop.player.find_stairs(loop)
         else:
             loop.change_loop(LoopType.action)
+
+    def key_help(self, key, loop):
+        if key == "esc":
+            loop.change_loop(LoopType.main)
 
