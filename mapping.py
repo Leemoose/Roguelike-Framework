@@ -139,7 +139,7 @@ class TileDict():
         tiles[405] = image.load("assets/haste_orb_bigger.png")
 
         # scroll assets
-        tiles[450] = image.load("assets/scrorb.png")
+        tiles[450] = image.load("assets/scroll.png")
 
         # ring assets
         tiles[500] = image.load("assets/green_ring_gold.png")
