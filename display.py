@@ -65,6 +65,7 @@ class Display:
         self.clock = pygame.time.Clock()
         self.buttons = Buttons()
         self.colorDict = None
+        self.target_to_display = None
         
 
     def screen_to_tile(self, player, x, y):
@@ -205,11 +206,11 @@ class Display:
                                         views_offset_from_left + views_button_offset_from_each_other_width+ (views_button_offset_from_each_other_width + views_button_width) * button_num_width,
                                         views_offset_from_top + views_button_offset_from_each_other_height+ (views_button_offset_from_each_other_height + views_button_height) * button_num_height),
                                         (views_button_width, views_button_height)),
-            text="?",
+            text="Rest(z)",
             manager=self.uiManager,
                     starting_height=800)
-        button.action = "?"
-        self.buttons.add(button, "?")
+        button.action = "z"
+        self.buttons.add(button, "z")
 
         button_num_height = 0
         button_num_width += 1
@@ -289,6 +290,11 @@ class Display:
     #    clear_target = self.draw_examine_window(target_to_display, tileDict, floormap, monster_map, monsterID, item_ID, player)
     #    if clear_target:
     #        target_to_display = None
+    
+        if self.target_to_display != None:
+            clear_target = self.draw_examine_window(self.target_to_display, tileDict, loop.generator.tile_map, loop.generator.monster_map, loop.monster_dict, loop.item_dict, player)
+            if clear_target:
+                self.target_to_display = None
 
         num_skill = len(player.character.skills)
         if num_skill == 0:

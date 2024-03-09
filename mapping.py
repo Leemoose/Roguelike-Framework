@@ -231,6 +231,7 @@ class DungeonGenerator():
         self.tile_map = TileMap(self.mapData, depth)
         self.item_map = TrackingMap(self.width, self.height)
         self.player = None
+        self.summoner = []
 
         self.monster_dict = L.ID() #Unique to this floor
         self.item_dict = L.ID() #Unique to this floor

@@ -171,7 +171,6 @@ class Character():
 
     def unequip(self, item):
         if item.can_be_unequipped(self):
-            print("hi")
             item.unequip(self)
             item.dropable = True
             item.equipped = False
