@@ -1025,10 +1025,13 @@ class Display:
                         object_id='#title_addition')
             pretext = ""
             action = ""
+            show = True
             if item.equipable:
                 if item.equipped:
                     pretext = "Unequip"
                     action = "u"
+                    if item.cursed:
+                        show = False
                 else:
                     pretext = "Equip"
                     action = "e"
@@ -1039,13 +1042,14 @@ class Display:
                 pretext = "Read"
                 action = "r"
             if create == True:
-                button = pygame_gui.elements.UIButton(
-                    relative_rect=pygame.Rect((entity_button_offset_from_left, entity_button_offset_from_top),
-                                              (entity_button_width, entity_button_height)),
-                    text=pretext,
-                    manager=self.uiManager)
-                button.action = action
-                buttons.add(button, pretext)
+                if show:
+                    button = pygame_gui.elements.UIButton(
+                        relative_rect=pygame.Rect((entity_button_offset_from_left, entity_button_offset_from_top),
+                                                  (entity_button_width, entity_button_height)),
+                        text=pretext,
+                        manager=self.uiManager)
+                    button.action = action
+                    buttons.add(button, pretext)
                 buttons_drawn += 1
 
                 button = pygame_gui.elements.UIButton(
@@ -1074,6 +1078,8 @@ class Display:
             if isinstance(entity, I.Equipment):
                 if item.equipped:
                     entity_text += "Currently equipped<br>"
+                if item.cursed:
+                    entity_text += "<shadow size=1 offset=0,0 color=#901010><font color=#E0F0FF>" + "Once equipped, it cannot be taken off" +  "</font></shadow><br>"
                 entity_text += "Equipment type: " + item.equipment_type + "<br>"
                 if item.required_strength > 0:
                     if player.character.strength < item.required_strength:

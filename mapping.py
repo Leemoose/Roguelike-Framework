@@ -337,10 +337,10 @@ class DungeonGenerator():
       #  import pdb; pdb.set_trace()
         if location == None:
             return None
-        if self.monster_map.get_passable(location[0], location[1]) and self.not_on_player(location[0], location[1]):
+        if self.monster_map.get_passable(location[0], location[1]) and self.not_on_player(location[0], location[1]) and self.tile_map.get_passable(location[0], location[1]):
             return location
         for direction in [(0, -1), (0, 1), (-1, 0), (1, 0), (-1, -1), (-1, 1), (1, -1), (1, 1)]:
-            if self.monster_map.get_passable(location[0] + direction[0], location[1] + direction[1]) and self.not_on_player(location[0] + direction[0], location[1] + direction[1]):
+            if self.monster_map.get_passable(location[0] + direction[0], location[1] + direction[1]) and self.not_on_player(location[0] + direction[0], location[1] + direction[1]) and self.tile_map.get_passable(location[0] + direction[0], location[1] + direction[1]):
                 return (location[0] + direction[0], location[1] + direction[1])
         return None
 

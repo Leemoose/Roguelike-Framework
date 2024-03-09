@@ -17,6 +17,7 @@ class Equipment(O.Item):
         self.can_be_levelled = True
         self.equipped = False
         self.wearer = None
+        self.cursed = False
         self.rarity = "Common"
         self.required_strength = 0
         self.attached_skill_exists = False
@@ -673,6 +674,38 @@ class WarlordArmor(BodyArmor):
             self.description += " It's been enchanted to make you more strong and frightening"
         if self.level == 6:
             self.description = "Bloodstained armor that marks you as a famous warrior who fought in many battles. Your enemies are terrified even from a distance. It's been enchanted as much as possible."
+
+
+class BloodstainedArmor(BodyArmor):
+    def __init__(self, render_tag):
+        super().__init__(render_tag, "Bloodstained Armor")
+        self.description = "A maligment aura surronds this armor."
+        self.armor = 8
+        self.required_strength = 3
+        self.strength_buff = 10
+        self.cursed = True
+        self.wearer = None  # items with stat buffs need to keep track of owner for level ups
+        self.rarity = "Legendary"
+
+    def activate(self, entity):
+        self.wearer = entity
+        return super().activate(entity)
+
+    def deactivate(self, entity):
+        self.wearer = None
+        return super().deactivate(entity)
+
+    def level_up(self):
+        self.level += 1
+        self.armor += 3
+        self.strength_buff += 1
+        if self.wearer != None:
+            self.wearer.strength += 1
+        if self.level == 2:
+            self.description += " It's been enchanted to make you more strong and frightening"
+        if self.level == 6:
+            self.description = "Bloodstained armor that marks you as a famous warrior who fought in many battles. Your enemies are terrified even from a distance. It's been enchanted as much as possible."
+
 
 class WizardRobe(BodyArmor):
     def __init__(self, render_tag):
