@@ -219,6 +219,7 @@ class Character():
         if self.main_weapon != None and self.main_weapon.on_hit != None:
             effect = effect(self.parent) # some effects need an inflictor
             defender.character.add_status_effect(effect)
+        self.energy -= self.attack_cost
         return (self.base_damage + damage + int(self.strength * self.round_bonus()) - defense)
 
     def dodge(self):
@@ -396,7 +397,7 @@ class Player(O.Objects):
 
         self.path = []
 
-        self.invincible = False
+        self.invincible = True
 
         if self.invincible: # only get the gun if you're invincible at the start
             self.character.skills.extend([
@@ -441,6 +442,7 @@ class Player(O.Objects):
 
     def attack(self, defender, loop):
         self.character.energy -= (self.character.attack_cost - int(self.character.dexterity * self.character.round_bonus()))
+        loop.screen_focus = (defender.x, defender.y)
         if not self.character.dodge():
             damage = self.character.melee(defender)
             if damage < 0:

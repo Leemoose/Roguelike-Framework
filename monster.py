@@ -257,7 +257,7 @@ class Monster_AI():
             return
 
         update_target = False
-        if loop.target_to_display == (monster.x, monster.y):
+        if loop.screen_focus == (monster.x, monster.y):
             update_target = True
 
         start = (monster.x, monster.y)
@@ -271,6 +271,7 @@ class Monster_AI():
             monster.move(xmove - monster.x, ymove-monster.y, tile_map, monster, monster_map, player)
         if update_target:
             loop.add_target((monster.x, monster.y))
+            loop.screen_focus = (monster.x, monster.y)
 
     def do_ungroup(self, loop):
         tile_map = loop.generator.tile_map

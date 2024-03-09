@@ -376,11 +376,17 @@ class Loops():
             self.clean_up()
             shadowcasting.compute_fov(self.player.get_location(), self.generator.tile_map.track_map)
             display.update_display(self)
+            
             if self.currentLoop == LoopType.action:
                 mos_x, mos_y = pygame.mouse.get_pos()
                 (x,y) = display.screen_to_tile(self.player, mos_x,mos_y)
                 if self.generator.tile_map.in_map(x,y):
                     display.draw_examine_window((x,y), self.tileDict, self.generator.tile_map, self.monster_map, self.monster_dict, self.item_dict, self.player)
+                else:
+                    if self.screen_focus != None:
+                        clear_target = display.draw_examine_window(self.screen_focus, self.tileDict, self.generator.tile_map, self.monster_map, self.monster_dict, self.item_dict, self.player)
+                        if clear_target:
+                            self.screen_focus = None
         elif self.currentLoop == LoopType.inventory or self.currentLoop == LoopType.enchant:
             display.update_inventory(self.player, self.limit_inventory)
         elif self.currentLoop == LoopType.level_up:
@@ -399,6 +405,10 @@ class Loops():
             #                       self.monster_map, self.player, self.messages, self.target_to_display)
             # display.refresh_screen()
             display.update_display(self)
+            if self.screen_focus != None:
+                clear_target = display.draw_examine_window(self.screen_focus, self.tileDict, self.generator.tile_map, self.monster_map, self.monster_dict, self.item_dict, self.player)
+                if clear_target:
+                    self.screen_focus = None
             display.update_examine(self.targets.target_current, self)
         elif self.currentLoop == LoopType.paused:
             display.update_pause_screen()
@@ -516,10 +526,12 @@ class Loops():
         if start_on_player:
             self.targets.start_target(self.player.get_location())
             self.add_target(self.player.get_location())
+            self.screen_focus = self.player.get_location()
         else:
             closest_monster = self.player.character.get_closest_monster(self.player, self.generator.monster_dict, self.generator.tile_map)
             self.targets.start_target(closest_monster.get_location())
             self.add_target(closest_monster.get_location())
+            self.screen_focus = closest_monster.get_location()
 
     def init_new_game(self):
         self.display.create_game_ui(self.player)
