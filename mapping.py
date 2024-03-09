@@ -227,6 +227,7 @@ class DungeonGenerator():
         self.flood_map = FloodMap(self.width, self.height)
         self.tile_map = TileMap(self.mapData, depth)
         self.item_map = TrackingMap(self.width, self.height)
+        self.player = None
 
         self.monster_dict = L.ID() #Unique to this floor
         self.item_dict = L.ID() #Unique to this floor
@@ -301,14 +302,20 @@ class DungeonGenerator():
                     adjacent_to_exit = (closest_exit[0] + direction[0], closest_exit[1] + direction[1])
                     break
         return adjacent_to_exit
+    
+    def not_on_player(self, x, y):
+        if self.player == None:
+            return True
+        else:
+            return (x != self.player.x or y != self.player.y)
 
     def nearest_empty_tile(self, location):
         if location == None:
             return None
-        if self.monster_map.get_passable(location[0], location[1]) and self.tile_map.get_tag(location[0], location[1]) != 200:
+        if self.monster_map.get_passable(location[0], location[1]) and self.not_on_player(location[0], location[1]):
             return location
         for direction in [(0, -1), (0, 1), (-1, 0), (1, 0), (-1, -1), (-1, 1), (1, -1), (1, 1)]:
-            if self.monster_map.get_passable(location[0] + direction[0], location[1] + direction[1]) and self.tile_map.get_tag(location[0] + direction[0], location[1] + direction[1]) != 200:
+            if self.monster_map.get_passable(location[0] + direction[0], location[1] + direction[1]) and self.not_on_player(location[0] + direction[0], location[1] + direction[1]):
                 return (location[0] + direction[0], location[1] + direction[1])
         return None
 

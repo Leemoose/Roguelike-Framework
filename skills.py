@@ -343,7 +343,7 @@ class Escape(Skill):
         if exit == None:
             return False
         exitx, exity = exit
-        dest = generator.nearest_empty_tile((exitx, exity))
+        dest = generator.nearest_empty_tile(exit)
         if dest == None:
             return False
         destx, desty = dest

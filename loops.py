@@ -415,6 +415,7 @@ class Loops():
 
                 self.memory.explored_levels += 1
                 self.generator = generator
+                self.generator.player = self.player
                 self.memory.generators[self.floor_level] = generator
 
             else:

@@ -293,7 +293,6 @@ class Display:
         manaBar = ui.ManaBar(pygame.Rect((self.screen_width - 120, 50), (120, 40)), self.uiManager, player)
 
     def update_display(self, loop):
-        self.uiManager.clear_and_reset()
         self.win.fill((0,0,0))
 
         floormap = loop.generator.tile_map
