@@ -502,3 +502,5 @@ class SummonGorblin(Skill):
 
     def castable(self, target):
         return self.basic_requirements()
+
+

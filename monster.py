@@ -415,6 +415,27 @@ class Goblin(Monster):
         self.dexterity = 3
         self.intelligence = 1
 
+class GorblinShaman(Monster):
+    def __init__(self, x, y, render_tag=162, name="Gorblin Shaman", activation_threshold=0.4):
+        super().__init__(render_tag, x, y, name)
+        self.character = C.Character(self)
+        self.brain = Monster_AI(self)
+        self.orb = True
+        self.character.skills = []
+        self.character.skills.append(S.SummonGorblin(self, cooldown=15, cost=0, range=4,action_cost=20))
+        self.character.skills.append(S.Escape(self, cooldown=100,
+                                              cost=0, self_fear=True,
+                                              dex_buff=20, str_debuff=20, int_debuff=20, haste_duration=-100,
+                                              activation_threshold=activation_threshold,
+                                              action_cost=1))
+        self.character.experience_given = 25
+        self.description = "What's more cowardly than summoning your pals?"
+
+        self.endurance = 1
+        self.strength = 1
+        self.dexterity = 3
+        self.intelligence = 5
+
 class Gorblin(Goblin):
     def __init__(self, x, y, render_tag=153, name="Gorblin", activation_threshold=0.4):
         super().__init__(x, y, render_tag, name, activation_threshold)
@@ -620,10 +641,10 @@ class BossOrb(Monster):
         self.character.inventory.append(I.OrbOfYendorb())
         self.orb = True
         # self, parent, cooldown, cost, slow_duration, damage_percent, slow_amount, range, action_cost
-      #  self.character.skills.append(S.Torment(self, cooldown=10, cost=0, slow_duration=3, damage_percent=0.5, slow_amount=5, range=4, action_cost=100))
+        self.character.skills.append(S.Torment(self, cooldown=10, cost=0, slow_duration=3, damage_percent=0.5, slow_amount=5, range=4, action_cost=100))
         self.character.skills.append(S.SummonGorblin(self, cooldown=20, cost=0, range=4,action_cost=20))
-      #  self.character.skills.append(S.Heal(self, cooldown = 20, cost = 10, heal_amount = 30, activation_threshold = .25, action_cost = 100))
-       # self.character.skills.append(S.Invinciblity(self, cooldown=1000, cost=0))
+        self.character.skills.append(S.Heal(self, cooldown = 20, cost = 10, heal_amount = 30, activation_threshold = .25, action_cost = 100))
+        self.character.skills.append(S.Invinciblity(self, cooldown=1000, cost=0))
 
         self.character.experience_given = 1000
         self.description = "The orb of all orbs, the orbiest of orbs, the archetype of orbs... you get the idea."
