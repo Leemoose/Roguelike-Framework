@@ -356,6 +356,7 @@ class Loops():
         elif self.currentLoop == LoopType.examine or self.currentLoop == LoopType.targeting:
             # display.update_display(colors, self.generator.tile_map, tileDict, self.monster_dict, self.item_dict,
             #                       self.monster_map, self.player, self.messages, self.target_to_display)
+            # display.refresh_screen(self)
             display.update_display(self)
             display.update_examine(self.targets.target_current, self)
         elif self.currentLoop == LoopType.paused:
