@@ -130,7 +130,7 @@ class Display:
         skill_button_offset_from_each_other_width = (action_screen_width - skill_bar_offset_from_left) // (num_skill_buttons + 1)// (num_skill_buttons + 1)
 
         views_num_buttons_height = 3
-        views_num_buttons_width = 2
+        views_num_buttons_width = 3
         views_offset_from_left = action_screen_width
         views_offset_from_top = map_offset_from_top + map_height
         views_width = (self.screen_width - action_screen_width)
@@ -208,7 +208,7 @@ class Display:
         self.buttons.add(button, "s")
 
         button_num_height = 0
-        button_num_width = 1
+        button_num_width += 1
         button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect((
                                         views_offset_from_left + views_button_offset_from_each_other_width+ (views_button_offset_from_each_other_width + views_button_width) * button_num_width,
@@ -244,6 +244,42 @@ class Display:
         button.action = "o"
         self.buttons.add(button, "o")
 
+        button_num_height = 0
+        button_num_width += 1
+        button = pygame_gui.elements.UIButton(
+            relative_rect=pygame.Rect((
+                                        views_offset_from_left + views_button_offset_from_each_other_width+ (views_button_offset_from_each_other_width + views_button_width) * button_num_width,
+                                        views_offset_from_top + views_button_offset_from_each_other_height+ (views_button_offset_from_each_other_height + views_button_height) * button_num_height),
+                                        (views_button_width, views_button_height)),
+            text="Wait(.)",
+            manager=self.uiManager,
+                    starting_height=800)
+        button.action = "."
+        self.buttons.add(button, ".")
+
+        button_num_height += 1
+        button = pygame_gui.elements.UIButton(
+            relative_rect=pygame.Rect((
+                                        views_offset_from_left + views_button_offset_from_each_other_width+ (views_button_offset_from_each_other_width + views_button_width) * button_num_width,
+                                        views_offset_from_top + views_button_offset_from_each_other_height+ (views_button_offset_from_each_other_height + views_button_height) * button_num_height),
+                                        (views_button_width, views_button_height)),
+            text="(S)tairs",
+            manager=self.uiManager,
+                    starting_height=800)
+        button.action = "s"
+        self.buttons.add(button, "s")
+
+        button_num_height += 1
+        button = pygame_gui.elements.UIButton(
+            relative_rect=pygame.Rect((
+                                        views_offset_from_left + views_button_offset_from_each_other_width+ (views_button_offset_from_each_other_width + views_button_width) * button_num_width,
+                                        views_offset_from_top + views_button_offset_from_each_other_height+ (views_button_offset_from_each_other_height + views_button_height) * button_num_height),
+                                        (views_button_width, views_button_height)),
+            text="(G)rab",
+            manager=self.uiManager,
+                    starting_height=800)
+        button.action = "g"
+        self.buttons.add(button, "g")
         #FPS counter
         fps_counter = ui.FPSCounter(
             pygame.Rect((0,0),(100,40)),
