@@ -154,3 +154,15 @@ class Tormented(StatusEffect):
 
     def remove(self, target):
         pass
+
+class ArmorShredding(StatusEffect):
+    def __init__(self, duration, inflictor = None):
+        super().__init__(806, "Shredded", "armor is shredded", duration)
+        self.armor_shredded = 0
+    def apply_effect(self, target):
+        target.armor -= 5
+        self.armor_shredded += 5
+
+    def remove(self, target):
+        target.armor += self.armor_shredded
+        self.armor_shredded = 0

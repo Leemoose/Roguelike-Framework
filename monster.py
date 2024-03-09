@@ -174,7 +174,7 @@ class Monster_AI():
                 self.move_path = (pathfinding.astar_multi_goal(tile_map.track_map, (x, y), goals,
                                              monster_map, player, True, True))
                 if len(self.move_path) > 0:
-                    return 90
+                    return random.randint(60-100)
         return -1
     
     def rank_skill(self, loop):

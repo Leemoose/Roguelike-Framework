@@ -29,9 +29,10 @@ ItemSpawns.append(ItemSpawnParams( I.Dagger(321),             1,               5
 ItemSpawns.append(ItemSpawnParams( I.MagicWand(332),          2,               8,          1,              1))
 ItemSpawns.append(ItemSpawnParams( I.Sword(340),           1,               10,          1,              5))
 
-ItemSpawns.append(ItemSpawnParams( I.ScreamingDagger(321),           1,               10,          1,              1))
-ItemSpawns.append(ItemSpawnParams( I.SleepingSword(340),           5,               10,          1,              1))
-ItemSpawns.append(ItemSpawnParams( I.FlamingSword(331),       3,               10,          0,              0))
+ItemSpawns.append(ItemSpawnParams( I.ScreamingDagger(322),           1,               10,          1,              1))
+ItemSpawns.append(ItemSpawnParams( I.SleepingSword(341),           5,               10,          1,              1))
+ItemSpawns.append(ItemSpawnParams( I.FlamingSword(331),       3,               10,          1,              1))
+ItemSpawns.append(ItemSpawnParams( I.CrushingHammer(302),       3,               10,          1,              1))
 
 ItemSpawns.append(ItemSpawnParams( I.BasicShield(311),             1,               5,          0,              0))
 ItemSpawns.append(ItemSpawnParams( I.Aegis(312),              3,               10,          1,              1))
@@ -44,11 +45,11 @@ ItemSpawns.append(ItemSpawnParams( I.GildedArmor(602),         3,               
 ItemSpawns.append(ItemSpawnParams( I.WarlordArmor(603),        3,               10,          1,              1))
 ItemSpawns.append(ItemSpawnParams( I.WizardRobe(604),          2,               5,          1,              1))
 ItemSpawns.append(ItemSpawnParams( I.KarateGi(605),            2,               8,          1,              1))
-ItemSpawns.append(ItemSpawnParams( I.BloodstainedArmor(603),        3,               10,          1,              1))
+ItemSpawns.append(ItemSpawnParams( I.BloodstainedArmor(606),        3,               10,          1,              1))
 
 ItemSpawns.append(ItemSpawnParams( I.Boots(700),              1,               5,          0,              0))
 ItemSpawns.append(ItemSpawnParams( I.BootsOfEscape(701),      3,               7,          0,              0))
-ItemSpawns.append(ItemSpawnParams( I.BlackenedBoots(700),              5,               10,          1,              1))
+ItemSpawns.append(ItemSpawnParams( I.BlackenedBoots(702),              5,               10,          1,              1))
 
 ItemSpawns.append(ItemSpawnParams( I.Helmet(770),              1,               5,          0,              0))
 ItemSpawns.append(ItemSpawnParams( I.VikingHelmet(771),       2,               8,          0,              0))
@@ -105,7 +106,7 @@ class ItemSpawner():
         # useful for debugging specific items, separate from generator
         #self.forceSpawn = None
 
-        self.forceSpawn = ("Screaming Dagger", 3)
+        self.forceSpawn = ("Crushing Hammer", 3)
 
         # self.forceSpawn = ("Enchant Scrorb", 3)
         # self.forceSpawn = ("Flaming Sword", 5)

@@ -1123,6 +1123,9 @@ class Display:
         if isinstance(entity, M.Monster):
             entity_text += "Health: " + str(entity.character.health) + " / " + str(entity.character.max_health) + "<br>"
             entity_text += "Attack: " + str(entity.character.get_damage_min()) + " - " + str(entity.character.get_damage_max()) + "<br>"
+            entity_text += "Armor: " + str(entity.character.armor) + "<br>"
+            for skill in entity.character.skills:
+                entity_text += "Has skill: " + str(skill.name)+ "<br>"
             if entity.orb:
                 entity_text += "It's very round.<br>"
                 for i, skill in enumerate(entity.character.skills):

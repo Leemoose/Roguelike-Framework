@@ -133,6 +133,7 @@ class Teleport(Skill):
     def __init__(self, parent, cooldown, cost):
         super().__init__("Teleport", parent, cooldown, cost)
         self.can_teleport = True
+        self.render_tag = 914
 
     def activate(self, target, generator, bypass = False):
         # teleport is assumed to be self-targetting for now, so target does nothing
