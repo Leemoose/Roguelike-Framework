@@ -299,28 +299,25 @@ class Display:
                                 skill_bar_width, skill_bar_height)
 
             for i, skill in enumerate(player.character.skills):
-                closest_monster = player.character.get_closest_monster(player, monsterID, loop.generator.tile_map)
-                if closest_monster == player and skill.range != -1:
-                    castable = False  # no monster to caste ranged skill on
-                else:
-                    castable = skill.castable(closest_monster)
-                if castable:
-                    img = pygame.transform.scale(tileDict.tiles[skill.render_tag],
+                img1 = pygame.transform.scale(tileDict.tiles[skill.render_tag],
                                                     (skill_button_width, skill_button_height))
-                else:
-                    img = pygame.transform.scale(tileDict.tiles[-skill.render_tag],
+                img2 = pygame.transform.scale(tileDict.tiles[-skill.render_tag],
                                                     (skill_button_width, skill_button_height))
-                button = pygame_gui.elements.UIButton(
-                    relative_rect=pygame.Rect((
+                button = ui.SkillButton(
+                    rect=pygame.Rect((
                                                 skill_bar_offset_from_left + skill_button_offset_from_each_other_width +(skill_button_offset_from_each_other_width + skill_button_width) * i,
                                                 skill_button_offset_from_top),
                                                 (skill_button_width, skill_button_height)),
-                    text="",
                     manager=self.uiManager,
+                    player=player,
+                    index=i,
+                    img1=img1,
+                    img2=img2,
+                    loop=loop,
                     object_id='#skill_button')
                 button.action = chr(ord("1") + i)
-                self.draw_on_button(button, img, chr(ord("1") + i), (skill_button_width, skill_button_height), shrink=True,
-                                    offset_factor=10, text_offset=(12, (0.6)))
+                # self.draw_on_button(button, img, chr(ord("1") + i), (skill_button_width, skill_button_height), shrink=True,
+                #                     offset_factor=10, text_offset=(12, (0.6)))
                 self.buttons.add(button, chr(ord("1") + i))
         
 
@@ -1154,7 +1151,7 @@ class Display:
 
         pygame.draw.rect(self.win, (0, 0, 0), pygame.Rect(entity_offset_from_left - border_width // 2, entity_offset_from_top - border_height // 2, entity_screen_width + border_width, entity_screen_height+border_height))
         pygame.draw.rect(self.win, (112,128,144), pygame.Rect(entity_offset_from_left, entity_offset_from_top, entity_screen_width, entity_screen_height))
-        pygame.draw.rect(self.win, (0, 0, 0), pygame.Rect((0,0),(100,40)))
+        pygame.draw.rect(self.win, (0, 0, 0), pygame.Rect((0,0),(self.screen_width // 2,40)))
 
         stat_line_offset_from_left = entity_offset_from_left + entity_screen_width // 6
         stat_line_offset_from_top = entity_offset_from_top + entity_screen_height // 4
@@ -1262,30 +1259,29 @@ class Display:
         stat_outline_height = stat_line_height + entity_screen_height // 20
 
         for i in range(4):
-            if player.stat_decisions[i] > 0:
-                stat_change_left = pygame.transform.scale(tileDict.tiles[51],
+            stat_change_left = pygame.transform.scale(tileDict.tiles[51],
                                         (stat_change_button_width, stat_change_button_height))
-            else:
-                stat_change_left = pygame.transform.scale(tileDict.tiles[-51],
+            stat_change_left_dark = pygame.transform.scale(tileDict.tiles[-51],
                                         (stat_change_button_width, stat_change_button_height))
-            if player.stat_points > sum(player.stat_decisions):
-                stat_change_right = pygame.transform.scale(tileDict.tiles[50],
+            stat_change_right = pygame.transform.scale(tileDict.tiles[50],
                                         (stat_change_button_width, stat_change_button_height))
-            else:
-                stat_change_right = pygame.transform.scale(tileDict.tiles[-50],
+            stat_change_right_dark = pygame.transform.scale(tileDict.tiles[-50],
                                         (stat_change_button_width, stat_change_button_height))
             
-            button = pygame_gui.elements.UIButton(
-                relative_rect=pygame.Rect((stat_change_button_offset_from_left, 
-                                           stat_change_button_offset_from_top + i * (stat_line_height + stat_change_button_offset_from_each_other_height)),
-                                          (stat_change_button_width, stat_change_button_height)),
-                text = "",
-                manager=self.uiManager)
+            button = ui.StatDownButton(
+                rect=pygame.Rect((stat_change_button_offset_from_left, 
+                                  stat_change_button_offset_from_top + i * (stat_line_height + stat_change_button_offset_from_each_other_height)),
+                                 (stat_change_button_width, stat_change_button_height)),
+                manager=self.uiManager,
+                player=player,
+                img1=stat_change_left,
+                img2=stat_change_left_dark,
+                index=i)
             
             button.action = "left"
             button.row = i
             
-            self.draw_on_button(button, stat_change_left, letter = "", button_size=(stat_change_button_width, stat_change_button_height), shrink=False, offset_factor=12, text_offset=(15, 0.8))
+            # self.draw_on_button(button, stat_change_left, letter = "", button_size=(stat_change_button_width, stat_change_button_height), shrink=False, offset_factor=12, text_offset=(15, 0.8))
 
             ui.StatChangeText(
                 rect=pygame.Rect(
@@ -1296,14 +1292,17 @@ class Display:
                 player=player,
                 index=i)
             
-            button_2 = pygame_gui.elements.UIButton(
-                relative_rect=pygame.Rect((stat_change_button_offset_from_left + stat_change_button_width + stat_change_offset_from_each_other_width, 
+            button_2 = ui.StatUpButton(
+                rect=pygame.Rect((stat_change_button_offset_from_left + stat_change_button_width + stat_change_offset_from_each_other_width, 
                                            stat_change_button_offset_from_top + i * (stat_line_height + stat_change_button_offset_from_each_other_height)),
                                           (stat_change_button_width, stat_change_button_height)),
-                text = "",
-                manager=self.uiManager)
+                manager=self.uiManager,
+                player=player,
+                img1=stat_change_right,
+                img2=stat_change_right_dark,
+                index=i)
             
-            self.draw_on_button(button_2, stat_change_right, letter = "", button_size=(stat_change_button_width, stat_change_button_height), shrink=False, offset_factor=12, text_offset=(15, 0.8))
+            # self.draw_on_button(button_2, stat_change_right, letter = "", button_size=(stat_change_button_width, stat_change_button_height), shrink=False, offset_factor=12, text_offset=(15, 0.8))
             
             button_2.action = "right"
             button_2.row = i
