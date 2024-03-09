@@ -449,8 +449,9 @@ class Player(O.Objects):
         monster_dict = loop.monster_dict
         tile_map = loop.generator.tile_map
         for monster_key in monster_dict.subjects:
-            if monster_dict.get_subject(monster_key).brain.is_awake:
-                loop.add_message("You cannot autoexplore while enemies are tracking you.")
+            monster_loc = monster_dict.get_subject(monster_key).get_location()
+            if tile_map.track_map[monster_loc[0]][monster_loc[1]].visible:
+                loop.add_message("You cannot autoexplore while enemies are visible.")
                 loop.change_loop(L.LoopType.action)
                 return
         while len(self.path) <= 1:
@@ -488,7 +489,8 @@ class Player(O.Objects):
         monster_dict = loop.monster_dict
         tile_map = loop.generator.tile_map
         for monster_key in monster_dict.subjects:
-            if monster_dict.get_subject(monster_key).brain.is_awake:
+            monster_loc = monster_dict.get_subject(monster_key).get_location()
+            if tile_map.track_map[monster_loc[0]][monster_loc[1]].visible:
                 loop.add_message("You cannot autoexplore while enemies are tracking you.")
                 loop.change_loop(L.LoopType.action)
                 return
