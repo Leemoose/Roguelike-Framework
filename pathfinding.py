@@ -1,4 +1,5 @@
 import objects as O
+import heapq
 
 class Node():
     """A node class for A* Pathfinding"""
@@ -13,6 +14,9 @@ class Node():
 
     def __eq__(self, other):
         return self.position == other.position
+    
+    def __lt__(self, other):
+        return self.f < other.f
 
     def __str__(self):
         return str(self.position)
@@ -37,20 +41,12 @@ def astar_multi_goal(maze, start, goals, monster_map, player, monster_blocks = F
     for position in goals:
         node = Node(None, position)
         node.g = node.h = node.f = 0
-        open_list.append(node)
+        heapq.heappush(open_list, node)
 
     # Loop until you find the end
     while len(open_list) > 0:
         # Get the current node
-        current_node = open_list[0]
-        current_index = 0
-        for index, item in enumerate(open_list):
-            if item.f < current_node.f:
-                current_node = item
-                current_index = index
-
-        # Pop current off open list, add to closed list
-        open_list.pop(current_index)
+        current_node = heapq.heappop(open_list)
         closed_list.add(current_node.position)
 
         # Found the goal
@@ -61,6 +57,16 @@ def astar_multi_goal(maze, start, goals, monster_map, player, monster_blocks = F
                 path.append(current.position)
                 current = current.parent
             return path # Return reversed path
+        
+        current_position = current_node.position
+        
+        # Make sure walkable terrain
+        if not maze[current_position[0]][current_position[1]].passable:
+            continue
+        if monster_blocks == True and (not monster_map.get_passable(current_position[0],current_position[1])): # and not start == (node_position[0],node_position[1])):
+            continue
+        if player_blocks == True and (player.x == current_position[0] and player.y == current_position[1]):
+            continue
 
         # Generate children
         children = []
@@ -73,14 +79,6 @@ def astar_multi_goal(maze, start, goals, monster_map, player, monster_blocks = F
             if node_position[0] > (len(maze) - 1) or node_position[0] < 0 or node_position[1] > (len(maze[len(maze)-1]) -1) or node_position[1] < 0:
                 continue
 
-            # Make sure walkable terrain
-            if not maze[node_position[0]][node_position[1]].passable:
-                continue
-            if monster_blocks == True and (not monster_map.get_passable(node_position[0],node_position[1])): # and not start == (node_position[0],node_position[1])):
-                continue
-            if player_blocks == True and (player.x == node_position[0] and player.y == node_position[1]):
-                continue
-
             # Create new node
             new_node = Node(current_node, node_position)
 
@@ -90,24 +88,17 @@ def astar_multi_goal(maze, start, goals, monster_map, player, monster_blocks = F
         # Loop through children
         for child in children:
 
-            # Child is on the closed list
+            # Child is on the closed list - by invariants, we can skip
             if child.position in closed_list:
                 continue
 
-            # Child is already in the open list
-            if child in open_list:
-                if current_node.g + 1 < child.g:
-                    child.g = current_node.g + 1
-                    child.parent = current_node
-            else:
-                # Create the f, g, and h values
-                child.g = current_node.g + 1
-                child.h = ((child.position[0] - end_node.position[0]) ** 2) + ((child.position[1] - end_node.position[1]) ** 2) ** 0.5
-                child.f = child.g + child.h
-                
+            # Create the f, g, and h values
+            child.g = current_node.g + 1
+            child.h = ((child.position[0] - end_node.position[0]) ** 2) + ((child.position[1] - end_node.position[1]) ** 2) ** 0.5
+            child.f = child.g + child.h
 
-                # Add the child to the open list
-                open_list.append(child)
+            heapq.heappush(open_list, child)
+
     return []
 
 

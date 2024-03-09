@@ -28,20 +28,43 @@ class FPSCounter(pygame_gui.elements.UILabel):
     def __init__(self, rect, manager):
         super().__init__(relative_rect=rect, manager=manager, text="Debug")
         self.times = []
+        self.FPS = 0.0
+        self.best = 0.0
+        self.worst = 1000.0
         
-    def compute_average(self):
+    def compute_values(self):
         average = 0.0
+        lowest = 1000
+        highest = 0.0
         for val in self.times:
             average += val
-        return 1 / (average / len(self.times))
+            if (val < lowest):
+                lowest = val
+            if (val > highest):
+                highest = val
+        self.FPS = 1 / (average / len(self.times))
+        self.best = 1 / lowest
+        self.worst = 1 / highest
+
+    def truncate(self, f, n):
+        #Truncates/pads a float f to n decimal places without rounding
+        s = '{}'.format(f)
+        if 'e' in s or 'E' in s:
+            return '{0:.{1}f}'.format(f, n)
+        i, p, d = s.partition('.')
+        return '.'.join([i, (d+'0'*n)[:n]])
 
 
     def update(self, time_delta: float):
         self.times.append(time_delta)
-        if (len(self.times) > 10):
-            self.times.remove(self.times[0])
+        if (len(self.times) > 300):
+            self.times.pop(0)
 
-        self.set_text("FPS: " + str(self.compute_average()))
+        self.compute_values()
+
+        self.set_text("FPS:   " + self.truncate(self.FPS, 2) + "    " +
+                      "Worst: " + self.truncate(self.worst, 2) + "    " +
+                      "Best:  " + self.truncate(self.best, 2))
 
         return super().update(time_delta)
     

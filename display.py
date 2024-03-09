@@ -282,7 +282,7 @@ class Display:
         self.buttons.add(button, "g")
         #FPS counter
         fps_counter = ui.FPSCounter(
-            pygame.Rect((0,0),(100,40)),
+            pygame.Rect((0,0),(400,40)),
             self.uiManager
         )
 
