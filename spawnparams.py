@@ -114,7 +114,7 @@ class ItemSpawner():
         # useful for debugging specific items, separate from generator
         self.forceSpawn = []
 
-        self.forceSpawn.append(("Shield", 3))
+        self.forceSpawn.append(("Bloodstained Armor", 3))
 
         self.forceSpawn.append(("Enchant Scrorb", 3))
         # self.forceSpawn = ("Flaming Sword", 5)

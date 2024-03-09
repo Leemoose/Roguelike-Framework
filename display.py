@@ -1122,14 +1122,15 @@ class Display:
                     entity_text += "Damage: " + str(item.damage_min) + " - " + str(item.damage_max) + "<br>"
                     if item.on_hit:
                         entity_text += "On hit: " + item.on_hit_description + "<br>"
-                if item.intelligence_buff > 0:
-                    entity_text += "Intelligence: " + str(item.intelligence_buff) + "<br>"
-                if item.strength_buff > 0:
-                    entity_text += "Strength: " + str(item.strength_buff) + "<br>"
-                if item.dexterity_buff > 0:
-                    entity_text += "Dexterity: " + str(item.dexterity_buff) + "<br>"
-                if item.endurance_buff > 0:
-                    entity_text += "Endurance: " + str(item.endurance_buff) + "<br>"
+                stats = item.stats.GetStatsForLevel(item.level)
+                if stats[2]> 0:
+                    entity_text += "Intelligence: " + str(stats[2]) + "<br>"
+                if stats[0] > 0:
+                    entity_text += "Strength: " + str(stats[0]) + "<br>"
+                if stats[1] > 0:
+                    entity_text += "Dexterity: " + str(stats[1]) + "<br>"
+                if stats[3] > 0:
+                    entity_text += "Endurance: " + str(stats[4]) + "<br>"
             if item.attached_skill_exists:
                 entity_text += "Grants skill: " + item.get_attached_skill_description() + "<br>"
 
