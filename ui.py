@@ -231,16 +231,18 @@ class StatBox(pygame_gui.elements.UITextBox):
         
     def round_text(self, entity):
         if entity.character.rounded():
-            return "You feel the dungeon enhancing your well-rounded stats.<br><br>"
+            return "Your stats are well rounded.<br><br>"
         else:
-            return "<br>"
+            return "Your stats are not well rounded.<br><br>"
 
     def update(self, time_delta: float):
         if (self.NeedsUpdate(self.player)):
-            self.set_text(html_text="Player:<br>" +
-                            "Strength: " + self.stat_text(self.player, self.player.character.strength) + "<br>"
+            self.set_text(html_text=
+                            "Health: " + "<br>" +
+                            "Mana: " + "<br>" +
+                            "Strength: " + self.stat_text(self.player, self.player.character.strength) + " "
                             "Dexterity: " + self.stat_text(self.player, self.player.character.dexterity) + "<br>"
-                            "Endurance: " + self.stat_text(self.player, self.player.character.endurance) + "<br>"
+                            "Endurance: " + self.stat_text(self.player, self.player.character.endurance) + " "
                             "Intelligence: " + self.stat_text(self.player, self.player.character.intelligence) + "<br>" + \
                             self.round_text(self.player) + \
                             "Status: " + self.get_status_text(self.player) + "<br>" + \

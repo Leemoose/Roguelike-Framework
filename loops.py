@@ -36,6 +36,7 @@ class LoopType(Enum):
     search_stairs = 14
     level_up = 15
     victory = 16
+    help = 17
 
 class ColorDict():
     """
@@ -167,6 +168,8 @@ class Loops():
             self.display.create_pause_screen()
         elif newLoop == LoopType.specific_examine:
             pass
+        elif newLoop == LoopType.help:
+            self.display.create_help_screen()
     def action_loop(self, keyboard, display):
         """
         This is responsible for undergoing any inputs when screen is clicked
@@ -249,6 +252,8 @@ class Loops():
                         return False
                 elif self.currentLoop == LoopType.specific_examine:
                     keyboard.key_specific_examine(key, self, display)
+                elif self.currentLoop == LoopType.help:
+                    keyboard.key_help(key, self)
 
                 self.update_screen = True
 
@@ -280,6 +285,9 @@ class Loops():
                 elif (self.currentLoop == LoopType.action):
                     key = event.ui_element.action
                     keyboard.key_action(self.player, self.tile_map, self.generator.monster_dict, self.monster_map, self.generator.item_dict, self, key, self.generator, display, self.memory)
+                elif (self.currentLoop == LoopType.help):
+                    key = event.ui_element.action
+                    keyboard.key_help(key, self)
 
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if (self.currentLoop == LoopType.action):
@@ -412,6 +420,8 @@ class Loops():
             display.update_pause_screen()
         elif self.currentLoop == LoopType.specific_examine:
             display.update_entity(self.screen_focus, tileDict, self.player, item_screen=False, create = True)
+        elif self.currentLoop == LoopType.help:
+            display.update_help()
         pygame.display.update()
         self.update_screen = False
 

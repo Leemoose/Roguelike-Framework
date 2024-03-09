@@ -126,10 +126,14 @@ class TileDict():
         # weapon assets
         tiles[300] = image.load("assets/basic_ax.png")
         tiles[301] = image.load("assets/hammer.png")
+        tiles[302] = image.load("assets/crushing_hammer.png")
         tiles[321] = image.load("assets/dagger.png")
+        tiles[322] = image.load("assets/screaming_dagger.png")
         tiles[331] = image.load("assets/burning_sword.png")
         tiles[332] = image.load("assets/magic_wand.png")
         tiles[340] = image.load("assets/sword.png")
+        tiles[341] = image.load("assets/sleeping_sword.png")
+
 
         # potion assets
         tiles[401] = image.load("assets/health_orb_bigger.png")
@@ -156,6 +160,7 @@ class TileDict():
         tiles[603] = image.load("assets/warmonger_armor.png")
         tiles[604] = image.load("assets/wizard_robe.png")
         tiles[605] = image.load("assets/karate_gi.png")
+        tiles[606] = image.load("assets/bloodstained_armor.png")
 
         # shield assets
         # list of shields: basic, aegis, tower, magic focus
@@ -168,6 +173,7 @@ class TileDict():
         # list of boots: basic, escape
         tiles[700] = image.load("assets/boots.png")
         tiles[701] = image.load("assets/boots_of_escape.png")
+        tiles[702] = image.load("assets/blackened_boots.png")
 
         # gloves assets
         # list of gloves: basic, gauntlets
@@ -220,6 +226,8 @@ class TileDict():
         tiles[-912] = image.load("assets/Heal_skill_icon_dark.png")
         tiles[913] = image.load("assets/Torment_skill_icon.png")
         tiles[-913] = image.load("assets/Torment_skill_icon_dark.png")
+        tiles[914] = image.load("assets/teleport_skill_icon.png")
+        tiles[-914] = image.load("assets/teleport_skill_icon_dark.png")
 
         self.tiles = tiles
 
