@@ -6,6 +6,37 @@ import effect as E
 import skills as S
 import loops as L
 
+class statUpgrades():
+    def __init__(self, base_str=0, max_str=0, base_dex=0, max_dex = 0, base_int = 0, max_int = 0, base_end = 0, max_end = 0):
+        self.base_str = base_str
+        self.max_str = max_str
+        self.base_dex = base_dex
+        self.max_dex = max_dex
+        self.base_int = base_int
+        self.max_int = max_int
+        self.base_end = base_end
+        self.max_end = max_end
+
+    def intLerp(self, a, b, level):
+        return (((b-a) * (level-1)) // 5) + a
+    
+    def GetStatsForLevel(self, level):
+        return (self.intLerp(self.base_str, self.max_str, level),
+                      self.intLerp(self.base_dex, self.max_dex, level),
+                      self.intLerp(self.base_int, self.max_int, level),
+                      self.intLerp(self.base_end, self.max_end, level))
+    
+    
+    def GetStatsForLevelUp(self, level):
+        prev_level = self.GetStatsForLevel(level-1)
+        
+        this_level = self.GetStatsForLevel(level)
+        
+        return tuple(map(lambda i, j: i - j, this_level, prev_level))
+
+    
+        
+
 """
 All detailed items are initialized here.
 """
@@ -24,15 +55,43 @@ class Equipment(O.Item):
         self.required_strength = 0
         self.attached_skill_exists = False
         self.yendorb = False
+        self.stats = statUpgrades()
 
     def activate(self, entity):
         self.wearer = entity
+        self.add_stats(entity)
 
     def deactivate(self, entity):
         self.wearer = None
+        self.remove_stats(entity)
 
     def enchant(self):
         self.level += 1
+        if (self.wearer):
+            self.update_stats_level_up(self.wearer)
+
+    def add_stats(self, entity):
+        (str, dex, intl, end) = self.stats.GetStatsForLevel(self.level)
+        entity.strength += str
+        entity.dexterity += dex
+        entity.intelligence += intl
+        entity.endurance += end
+
+    #Called after level up has completed to get stats to match!
+    def update_stats_level_up(self, entity):
+        (str, dex, intl, end) = self.stats.GetStatsForLevelUp(self.level)
+        entity.strength += str
+        entity.dexterity += dex
+        entity.intelligence += intl
+        entity.endurance += end
+
+    def remove_stats(self, entity):
+        (str, dex, intl, end) = self.stats.GetStatsForLevel(self.level)
+        entity.strength -= str
+        entity.dexterity -= dex
+        entity.intelligence -= intl
+        entity.endurance -= end
+        
 
     def can_be_equipped(self, entity):
         return self.equipable
@@ -83,7 +142,7 @@ class Ax(Weapon):
         self.damage_max = 40
     
     def level_up(self):
-        self.level += 1
+        self.enchant()
         if self.level == 2:
             self.description += " It's been enchanted to be more effective."
         if self.level == 6:
@@ -101,7 +160,7 @@ class Hammer(Weapon):
         self.damage_max = 60
 
     def level_up(self):
-        self.level += 1
+        self.enchant()
         if self.level == 2:
             self.description += " It's been enchanted to hit harder"
         if self.level == 6:
@@ -119,7 +178,7 @@ class Dagger(Weapon):
         self.damage_max = 20
 
     def level_up(self):
-        self.level += 1
+        self.enchant()
         if self.level == 2:
             self.description += " It's been enchanted to be more precise."
         if self.level == 6:
@@ -139,7 +198,7 @@ class Sword(Weapon):
         self.damage_max = 30
 
     def level_up(self):
-        self.level += 1
+        self.enchant()
         if self.level == 2:
             self.description += " It's been enchanted to be more damaging."
         if self.level == 6:
@@ -206,7 +265,7 @@ class SleepingSword(Sword):
             return (super().attack(), None)
 
     def level_up(self):
-        self.level += 1
+        self.enchant()
         if self.level == 2:
             self.description += " the cradle will rock."
         if self.level == 6:
@@ -245,7 +304,7 @@ class MagicWand(Weapon):
                                      action_cost=100)
 
     def level_up(self):
-        self.level += 1
+        self.enchant()
         if self.level == 2:
             self.description += " It's been enchanted cast a stronger magic missile"
         if self.level == 6:
@@ -301,7 +360,7 @@ class FlamingSword(Weapon):
         return (super().attack(), self.on_hit)
     
     def level_up(self):
-        self.level += 1
+        self.enchant()
         if self.level == 2:
             self.description += " It's been enchanted to hit harder and burn stronger."
         if self.level == 6:
@@ -362,9 +421,10 @@ class BasicShield(Shield):
         super().__init__(render_tag, "Shield")
         self.armor = 3
         self.description = "A shield that you can use to block things."
+        self.stats = statUpgrades(base_str=3, max_str=21)
 
     def level_up(self):
-        self.level += 1
+        self.enchant()
         self.armor += 3
         if self.level == 2:
             self.description += " It's been enchanted to be more protective."
@@ -405,7 +465,7 @@ class Aegis(Shield):
         return super().deactivate(entity)
 
     def level_up(self):
-        self.level += 1
+        self.enchant()
         self.armor += 2
 
         self.skill_activation_chance += 0.2
@@ -443,7 +503,7 @@ class TowerShield(Shield):
         return super().deactivate(entity)
 
     def level_up(self):
-        self.level += 1
+        self.enchant()
         self.armor += 1
         self.dex_debuff -= 1
         if self.dex_debuff < 0:
@@ -473,7 +533,7 @@ class MagicFocus(Shield):
         return super().deactivate(entity)
 
     def level_up(self):
-        self.level += 1
+        self.enchant()
         
         self.intelligence_buff += 2
         if self.wearer != None:
@@ -637,7 +697,7 @@ class RingOfTeleportation(Ring):
         return super().deactivate(entity)
 """
     def level_up(self):
-        self.level += 1
+        self.enchant()
         if self.level == 2:
             self.description += " It seems to be growing stronger?"
         if self.level == 6:
@@ -672,7 +732,7 @@ class Chestarmor(BodyArmor):
         self.required_strength = 3
 
     def level_up(self):
-        self.level += 1
+        self.enchant()
         if self.level == 2:
             self.description += " It's been enchanted to be more protective."
         if self.level == 6:
@@ -696,7 +756,7 @@ class LeatherArmor(BodyArmor):
         return super().deactivate(entity)
 
     def level_up(self):
-        self.level += 1
+        self.enchant()
         self.armor += 1
         self.dex_buff += 1
         if self.wearer != None:
@@ -734,7 +794,7 @@ class GildedArmor(BodyArmor):
         return super().deactivate(entity)
 
     def level_up(self):
-        self.level += 1
+        self.enchant()
         self.armor += 3
 
         self.skill_cooldown -= 1
@@ -796,7 +856,7 @@ class WarlordArmor(BodyArmor):
         return super().deactivate(entity)
 
     def level_up(self):
-        self.level += 1
+        self.enchant()
         self.armor += 3
         self.strength_buff += 1
         if self.wearer != None:
@@ -817,7 +877,6 @@ class WarlordArmor(BodyArmor):
             self.description += " It's been enchanted to make you more strong and frightening"
         if self.level == 6:
             self.description = "Frightening armor that marks you as a famous warrior who fought in many battles. Your enemies are terrified even from a distance. It's been enchanted as much as possible."
-
 
 class BloodstainedArmor(BodyArmor):
     def __init__(self, render_tag):
@@ -841,7 +900,7 @@ class BloodstainedArmor(BodyArmor):
         return super().deactivate(entity)
 
     def level_up(self):
-        self.level += 1
+        self.enchant()
         self.armor += 3
         self.strength_buff += 1
         if self.wearer != None:
@@ -880,7 +939,7 @@ class WizardRobe(BodyArmor):
         return super().deactivate(entity)
 
     def level_up(self):
-        self.level += 1
+        self.enchant()
         self.mana_buff += 10
         self.mana_regen_buff += 5
         self.intelligence_buff += 2
@@ -919,7 +978,7 @@ class KarateGi(BodyArmor):
         return super().deactivate(entity)
 
     def level_up(self):
-        self.level += 1
+        self.enchant()
         self.armor += 1
         self.damage_boost += 4
         if self.wearer != None:
@@ -950,7 +1009,7 @@ class Boots(Armor):
         self.deactivate(entity)
 
     def level_up(self):
-        self.level += 1
+        self.enchant()
         self.armor += 1
         if self.level == 2:
             self.description += " It's been enchanted to be more protective."
@@ -979,7 +1038,7 @@ class BlackenedBoots(Boots):
         return super().deactivate(entity)
 
     def level_up(self):
-        self.level += 1
+        self.enchant()
         self.armor += 1
         self.dexterity_buff += 1
         if self.wearer != None:
@@ -1032,7 +1091,7 @@ class BootsOfEscape(Armor):
         self.deactivate(entity)
 
     def level_up(self):
-        self.level += 1
+        self.enchant()
         if self.level == 2:
             self.description += " It's been enchanted to let you flee on a shorter cooldown."
         if self.level == 6:
@@ -1076,7 +1135,7 @@ class Gloves(Armor):
         self.deactivate(entity)
 
     def level_up(self):
-        self.level += 1
+        self.enchant()
         self.armor += 3
         if self.level == 2:
             self.description += " It's been enchanted to be more protective."
@@ -1102,7 +1161,7 @@ class Gauntlets(Armor):
         self.deactivate(entity)
 
     def level_up(self):
-        self.level += 1
+        self.enchant()
         self.armor += 1
         if self.level == 2:
             self.description += " It's been slightly enchanted to be more protective."
@@ -1133,7 +1192,7 @@ class BoxingGloves(Armor):
         self.deactivate(entity)
 
     def level_up(self):
-        self.level += 1
+        self.enchant()
         self.armor += 1
         self.damage_boost += 4
         if self.wearer != None:
@@ -1181,7 +1240,7 @@ class HealingGloves(Armor):
         self.deactivate(entity)
 
     def level_up(self):
-        self.level += 1
+        self.enchant()
         self.skill_cooldown -= 1
         if self.skill_cooldown < 10:
             self.skill_cooldown = 10
@@ -1252,7 +1311,7 @@ class LichHand(Armor):
         self.deactivate(entity)
 
     def level_up(self):
-        self.level += 1
+        self.enchant()
         self.skill_cooldown -= 2
         if self.skill_cooldown < 10:
             self.skill_cooldown = 10
@@ -1300,7 +1359,7 @@ class Helmet(Armor):
         self.deactivate(entity)
 
     def level_up(self):
-        self.level += 1
+        self.enchant()
         self.armor += 1
         if self.level == 2:
             self.description += " It's been enchanted to be more protective."
@@ -1346,7 +1405,7 @@ class VikingHelmet(Armor):
         self.deactivate(entity)
 
     def level_up(self):
-        self.level += 1
+        self.enchant()
         if self.description == 2:
             self.description += " It's been enchanted to raise the damage you need to take before going berserk"
         if self.level == 6:
@@ -1394,7 +1453,7 @@ class SpartanHelmet(Armor):
         self.deactivate(entity)
 
     def level_up(self):
-        self.level += 1
+        self.enchant()
         
         self.str_buff += 1
         self.end_buff += 1
@@ -1433,7 +1492,7 @@ class GreatHelm(Armor):
         self.deactivate(entity)
 
     def level_up(self):
-        self.level += 1
+        self.enchant()
         self.armor += 2
         self.dex_debuff -= 1
         if self.dex_debuff < 0:
@@ -1475,7 +1534,7 @@ class ThiefHood(Armor):
         self.deactivate(entity)
 
     def level_up(self):
-        self.level += 1
+        self.enchant()
         self.dex_buff += 1
         self.int_buff += 1
 
@@ -1518,7 +1577,7 @@ class WizardHat(Armor):
         self.deactivate(entity)
 
     def level_up(self):
-        self.level += 1
+        self.enchant()
         self.int_buff += 2
         self.mana_buff += 10
 

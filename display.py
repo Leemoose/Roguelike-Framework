@@ -1122,6 +1122,14 @@ class Display:
                     entity_text += "Damage: " + str(item.damage_min) + " - " + str(item.damage_max) + "<br>"
                     if item.on_hit:
                         entity_text += "On hit: " + item.on_hit_description + "<br>"
+                if item.intelligence_buff > 0:
+                    entity_text += "Intelligence: " + str(item.intelligence_buff) + "<br>"
+                if item.strength_buff > 0:
+                    entity_text += "Strength: " + str(item.strength_buff) + "<br>"
+                if item.dexterity_buff > 0:
+                    entity_text += "Dexterity: " + str(item.dexterity_buff) + "<br>"
+                if item.endurance_buff > 0:
+                    entity_text += "Endurance: " + str(item.endurance_buff) + "<br>"
             if item.attached_skill_exists:
                 entity_text += "Grants skill: " + item.get_attached_skill_description() + "<br>"
 
@@ -1496,8 +1504,9 @@ class Display:
             html_text = "Action Screen: <br>" +
             "Inventory: i || Equipments: e || Potions: q || Scrolls: r <br>" +
             "Autoexplore: o || Find Stairs: s || Wait: . || Rest: z <br>" +
-            "Examine: x || Save: s || Pause: esc <br>" +
+            "Examine: x || Save: / || Pause: esc <br>" +
             "Grab: g || Allocate stats: l <br>" +
+            "Downstairs: > || Upstairs: < <br>" +
             "Skills: 1-8 <br>" +
             "Up / Down / Left / Right --> Arrow keys <br>" +
             "Up - Left / Up - Right / Down - Left / Down - Right --> y / u / n / b <br>"
