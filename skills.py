@@ -11,6 +11,7 @@ class Skill():
         self.name = name
         self.range = range
         self.targetted = False
+        self.targets_monster = True 
         self.action_cost = action_cost
         self.threshold = 0.0
         self.render_tag = 902 # placeholder icon, skill assets are fixed so not given in user input
@@ -413,3 +414,19 @@ class Torment(Skill):
         if self.duration == -100:
             return self.name + "(" + str(self.cost) + " cost, " + str(self.cooldown) + " turn cooldown" + ", " + str(int(self.damage_percent * 100)) + "% of target's health as damage, " + str(self.slow_amount) + " strength slow permanently)"
         return self.name + "(" + str(self.cost) + " cost, " + str(self.cooldown) + " turn cooldown" + ", " + str(int(self.damage_percent * 100)) + "% of target's health as damage, " + str(self.slow_amount) + " strength slow for " + str(self.duration) + " turns)"
+    
+class SummonGorblin(Skill):
+    def __init__(self, parent, cooldown, cost, range, action_cost):
+        super().__init__("Summon Gorblin", parent, cooldown, cost, range, action_cost)
+        self.targetted = True
+        self.targets_monster = False
+    
+    def activate(self, target, generator):
+        self.parent.character.mana -= self.cost
+        x, y = target
+        gorblin = M.Gorblin(-1, -1, activation_threshold=1.1)
+        generator.place_monster_at_location(gorblin, x, y)
+        return True
+
+    def castable(self, target):
+        return self.basic_requirements()

@@ -83,7 +83,7 @@ class ItemSpawner():
 
         # useful for debugging specific items, separate from generator
         self.forceSpawn = None
-        self.forceSpawn = ("Experience Scroll", 3)
+        self.forceSpawn = ("Enchant Scrorb", 3)
         # self.forceSpawn = ("Flame Scrorb", 5)
 
     def countSpawn(self, depth):

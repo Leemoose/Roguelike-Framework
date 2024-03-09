@@ -169,7 +169,6 @@ class Keyboard():
             loop.change_loop(LoopType.action)
             loop.limit_inventory = None
             player.character.ready_scroll = None
-
         for i in range(len(player.character.inventory)):
             if chr(ord("a")+i) == key:
                 item = player.character.inventory[i]
@@ -276,8 +275,8 @@ class Keyboard():
             if player.character.quaff(item, item_dict, item_map):
                 loop.change_loop(LoopType.inventory)
         elif key == "r":
-            if player.character.read(item, loop, item_dict, item_map):
-                loop.change_loop(LoopType.inventory)
+            player.character.read(item, loop, item_dict, item_map)
+                
             
     def key_paused(self, key, loop, display):
         if key == "esc":

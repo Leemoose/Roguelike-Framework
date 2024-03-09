@@ -369,12 +369,12 @@ class Korbold(Kobold):
         self.description = "A scaly orb with a penchant for setting things on fire. Including you."
 
 class Goblin(Monster):
-    def __init__(self, x, y, render_tag=103, name="Goblin"):
+    def __init__(self, x, y, render_tag=103, name="Goblin", activation_threshold=0.4):
         super().__init__(render_tag, x, y, name)
         self.character = C.Character(self)
         self.brain = Monster_AI(self)
         self.character.skills = []
-        self.character.skills.append(S.Escape(self, cooldown=100, cost=0, self_fear=True, activation_threshold=0.4, action_cost=1))
+        self.character.skills.append(S.Escape(self, cooldown=100, cost=0, self_fear=True, activation_threshold=activation_threshold, action_cost=1))
         self.character.experience_given = 10
         self.description = "A cowardly creature with a tiny dagger"
 
@@ -384,8 +384,8 @@ class Goblin(Monster):
         self.intelligence = 1
 
 class Gorblin(Goblin):
-    def __init__(self, x, y, render_tag=153, name="Gorblin"):
-        super().__init__(x, y, render_tag, name)
+    def __init__(self, x, y, render_tag=153, name="Gorblin", activation_threshold=0.4):
+        super().__init__(x, y, render_tag, name, activation_threshold)
         self.character.experience_given += 15
         self.orb = True
         self.endurance = 1

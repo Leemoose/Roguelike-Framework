@@ -237,9 +237,6 @@ class Character():
     def read(self, scroll, loop, item_dict, item_map):
         if scroll.consumeable and scroll.equipment_type == "Scrorb":
             scroll.activate(self, loop)
-            if scroll.stacks == 1:
-                self.drop(scroll, item_dict, item_map)
-                scroll.destroy = True
             self.energy -= self.read_cost
             return True
     
@@ -399,6 +396,7 @@ class Player(O.Objects):
         if self.invincible: # only get the gun if you're invincible
             self.character.skills.extend([
                 S.Gun(self), # 1
+                S.SummonGorblin(self, cooldown=0, cost=10, range=10, action_cost=1), # 2
                 # S.BurningAttack(self, cooldown=0, cost=10, damage=20, burn_damage=10, burn_duration=10, range=10), #2
                 # S.Petrify(self, cooldown=0, cost=10, duration=3, activation_chance=1, range=10), #3
                 # S.ShrugOff(self, cooldown=0, cost=10, activation_chance=1.0, action_cost=1), #4

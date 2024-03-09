@@ -65,6 +65,7 @@ class Display:
         self.clock = pygame.time.Clock()
         self.buttons = Buttons()
         self.colorDict = None
+        
 
     def screen_to_tile(self, player, x, y):
         xplayerscreen, yplayerscreen = self.r_x * self.textSize + self.textSize // 2, self.r_y * self.textSize + self.textSize // 2

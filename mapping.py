@@ -263,7 +263,7 @@ class DungeonGenerator():
     def all_seen(self):
         for x in range(self.width):
             for y in range(self.height):
-                if self.tile_map.track_map[x][y].passable:
+                if self.tile_map.track_map[x][y].passable :
                     if not (self.tile_map.track_map[x][y].seen):
                         return False, (x, y)
         return True, (-1, -1)
@@ -380,13 +380,13 @@ class DungeonGenerator():
             starty = random.randint(0,self.height-1)
             check_on_stairs = self.on_stairs(startx, starty, self.tile_map.stairs)
         
-        creature.x = startx
-        creature.y = starty
+        self.place_monster_at_location(creature, startx, starty)
 
+    def place_monster_at_location(self, creature, x, y):
+        creature.x = x
+        creature.y = y
         self.monster_dict.tag_subject(creature)
         self.monster_map.place_thing(creature)
-    
-    
 
     def place_items(self, depth):
         itemSpawns = Spawns.item_spawner.spawnItems(depth)

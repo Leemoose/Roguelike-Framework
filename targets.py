@@ -51,7 +51,13 @@ class Target:
                 loop.add_message("You can't cast " + self.skill_to_cast.name + " on " + monster.name + " right now")
                 self.void_skill()
         else:
-            loop.add_message("Not a valid target there")
+            if not self.skill_to_cast.targets_monster:
+                self.caster.cast_skill(self.index_to_cast, (x, y), loop)
+                loop.add_message("You cast " + str(self.skill_to_cast.name))
+                self.void_skill()
+            else:
+                loop.add_message("Not a valid target there")
+            
 
 
     def explain_target(self, loop):

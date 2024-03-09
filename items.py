@@ -917,10 +917,11 @@ class Scroll(O.Item):
         if self.stacks == 0:
             self.destroy = True
             entity.inventory.remove(self)
+        
 
 class TeleportScroll(Scroll):
     def __init__(self, render_tag):
-        super().__init__(render_tag, "Teleport Scroll")
+        super().__init__(render_tag, "Teleport Scrorb")
         self.description = "Let's go for a ride."
         self.rarity = "Common"
         self.skill = S.Teleport(None, None, None)
@@ -928,10 +929,12 @@ class TeleportScroll(Scroll):
     def activate_once(self, entity, loop):
         self.skill.parent = entity
         self.skill.activate(entity, loop.generator, bypass = True)
+        self.consume_scroll(entity)
+        loop.change_loop(L.LoopType.inventory)
 
 class MassTormentScroll(Scroll):
     def __init__(self, render_tag):
-        super().__init__(render_tag, "Mass Torment Scroll")
+        super().__init__(render_tag, "Mass Torment Scrorb")
         self.description = "Must kill everything."
         self.rarity = "Common"
         self.skill = S.MassTorment(None, None, None)
@@ -939,10 +942,12 @@ class MassTormentScroll(Scroll):
     def activate_once(self, entity, loop):
         self.skill.parent = entity
         self.skill.activate(loop, bypass = True)
+        self.consume_scroll(entity)
+        loop.change_loop(L.LoopType.inventory)
 
 class InvincibilityScroll(Scroll):
     def __init__(self, render_tag):
-        super().__init__(render_tag, "Invincibility Scroll")
+        super().__init__(render_tag, "Invincibility Scrorb")
         self.description = "Death cannot hold me back."
         self.rarity = "Common"
         self.skill = S.Invinciblity(None, None, None)
@@ -950,30 +955,36 @@ class InvincibilityScroll(Scroll):
     def activate_once(self, entity, loop):
         self.skill.parent = entity
         self.skill.activate(loop, bypass = True)
+        self.consume_scroll(entity)
+        loop.change_loop(L.LoopType.inventory)
 
 class CallingScroll(Scroll):
     def __init__(self, render_tag):
-        super().__init__(render_tag, "The Scroll of Calling")
+        super().__init__(render_tag, "The Scrorb of Calling")
         self.description = "Read at your own peril."
         self.rarity = "Common"
         self.skill = S.Awaken_Monsters(None, None, None)
 
     def activate_once(self, entity, loop):
         self.skill.activate(loop, bypass = True)
+        self.consume_scroll(entity)
+        loop.change_loop(L.LoopType.inventory)
 
 class SleepScroll(Scroll):
     def __init__(self, render_tag):
-        super().__init__(render_tag, "Sleeping Scroll")
+        super().__init__(render_tag, "Sleeping Scrorb")
         self.description = "A guide to monster lullabies."
         self.rarity = "Common"
         self.skill = S.Monster_Lullaby(None, None, None)
 
     def activate_once(self, entity, loop):
         self.skill.activate(loop, bypass = True)
+        self.consume_scroll(entity)
+        loop.change_loop(L.LoopType.inventory)
 
 class ExperienceScroll(Scroll):
     def __init__(self, render_tag):
-        super().__init__(render_tag, "Experience Scroll")
+        super().__init__(render_tag, "Experience Scrorb")
         self.description = "Orb you glad you picked this up."
         self.rarity = "Common"
         self.experience = 50
@@ -981,6 +992,8 @@ class ExperienceScroll(Scroll):
     def activate_once(self, entity, loop):
         entity.parent.experience += 50
         entity.parent.check_for_levelup()
+        self.consume_scroll(entity)
+        loop.change_loop(L.LoopType.inventory)
 
 class HealthPotion(Potion):
     def __init__(self, render_tag):
@@ -1040,6 +1053,7 @@ class EnchantScrorb(Scroll):
     def activate_once(self, entity, loop):
         loop.limit_inventory = "Enchantable"
         loop.change_loop(L.LoopType.enchant)
+        print("read enchant")
 
 class BurningAttackScrorb(Scroll):
     def __init__(self, render_tag):
