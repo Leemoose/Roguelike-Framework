@@ -19,7 +19,7 @@ class HealthBar(pygame_gui.elements.UIProgressBar):
         if (self.needs_update(self.player.character)):
             self.maximum_progress = max(1.0, self.player.character.max_health)
             self.current_progress = self.player.character.health
-            self.percent_full = 100 * self.current_progress / self.maximum_progress
+            self.percent_full = self.current_progress / self.maximum_progress
 
         return super().update(time_delta)
     
@@ -319,6 +319,19 @@ class StatDownButton(pygame_gui.elements.UIButton):
             self.draw_on_button(self, self.img1)
         else:
             self.draw_on_button(self, self.img2)
+
+        return super().update(time_delta)
+    
+class ExamineWindow(pygame_gui.elements.UITextBox):
+    def __init__(self, rect, manager, loop):
+        super().__init__(relative_rect=rect, manager=manager, html_text="Error")
+        self.loop = loop
+        self.last_examine = -1
+
+    def update(self, time_delta: float):
+        if (self.last_examine != self.loop.examine):
+            self.set_text(html_text=self.loop.examine)
+            self.last_examine = self.loop.examine
 
         return super().update(time_delta)
     

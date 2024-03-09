@@ -205,11 +205,11 @@ class Display:
                                         views_offset_from_left + views_button_offset_from_each_other_width+ (views_button_offset_from_each_other_width + views_button_width) * button_num_width,
                                         views_offset_from_top + views_button_offset_from_each_other_height+ (views_button_offset_from_each_other_height + views_button_height) * button_num_height),
                                         (views_button_width, views_button_height)),
-            text="?",
+            text="Rest(z)",
             manager=self.uiManager,
                     starting_height=800)
-        button.action = "?"
-        self.buttons.add(button, "?")
+        button.action = "z"
+        self.buttons.add(button, "z")
 
         button_num_height = 0
         button_num_width += 1
