@@ -70,9 +70,7 @@ def astar_multi_goal(maze, start, goals, monster_map, player, monster_blocks = F
                 current = current.parent
             print("Max was " + str(max) + "in " + str(round((time.perf_counter() - runtime)*1000, 2)) + " ms")
             return path # Return reversed path
-        
-        
-        
+
         # Make sure walkable terrain
         if not maze[current_position[0]][current_position[1]].passable:
             continue

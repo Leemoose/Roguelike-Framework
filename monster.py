@@ -12,6 +12,7 @@ class Monster_AI():
         self.frontier = None
         self.is_awake = False
         self.parent = parent
+        self.grouped = False
 
     """
     Think it would be better to first rank each action depending on the circumstances with a number between 1-100 and 
@@ -138,14 +139,40 @@ class Monster_AI():
             xdiff = xplayer - x
             ydiff = yplayer - y
             grouped = False
+            goals = []
             if xdiff != 0:
-                if not tile_map.get_passable(x,y + 1) and not tile_map.get_passable(x,y - 1) and not monster_map.get_passable(x-xdiff,y):
-                    grouped = True
+                if (not tile_map.get_passable(x,y + 1) and not tile_map.get_passable(x,y - 1) and not monster_map.get_passable(x-xdiff,y)):
+                    self.grouped = True
+                    goals = [(xplayer, yplayer + 1), (xplayer, yplayer - 1), (xplayer + xdiff, yplayer +ydiff)]
+                for position in [(xplayer, yplayer + 1), (xplayer, yplayer - 1), (xplayer + xdiff, yplayer +ydiff)]:
+                    xposition, yposition = position
+                    if not monster_map.get_passable(xposition,yposition):
+                        monster = loop.generator.monster_dict.get_subject(monster_map.track_map[xposition][yposition])
+                        if monster.brain.grouped:
+                            self.grouped = True
+                            xdiff = xplayer - monster.x
+                            ydiff = yplayer - monster.y
+                            goals = [(xplayer + xdiff, yplayer + ydiff)]
+                            break
             elif ydiff != 0:
                 if not tile_map.get_passable(x - 1,y) and not tile_map.get_passable(x + 1,y) and not monster_map.get_passable(x,y-ydiff):
-                    grouped = True
-            if grouped == True and tile_map.get_passable(xplayer + xdiff, yplayer + ydiff): #opposite side of player
-                return 90
+                    self.grouped = True
+                    goals = [(xplayer + 1, yplayer), (xplayer -1, yplayer), (xplayer + xdiff, yplayer + ydiff)]
+                for position in [(xplayer + 1, yplayer), (xplayer -1, yplayer), (xplayer + xdiff, yplayer + ydiff)]:
+                    xposition, yposition = position
+                    if not monster_map.get_passable(xposition,yposition):
+                        monster = loop.generator.monster_dict.get_subject(monster_map.track_map[xposition][yposition])
+                        if monster.brain.grouped:
+                            self.grouped = True
+                            xdiff = xplayer - monster.x
+                            ydiff = yplayer - monster.y
+                            goals = [(xplayer + xdiff, yplayer + ydiff)]
+                            break
+            if (self.grouped == True):
+                self.move_path = (pathfinding.astar_multi_goal(tile_map.track_map, (x, y), goals,
+                                             monster_map, player, True, True))
+                if len(self.move_path) > 0:
+                    return 90
         return -1
     
     def rank_skill(self, loop):
@@ -257,17 +284,12 @@ class Monster_AI():
         if loop.target_to_display == (monster.x, monster.y):
             update_target = True
 
-        xplayer, yplayer = player.get_location()
-        xdiff = xplayer - x
-        ydiff = yplayer - y
-
-        start = (monster.x, monster.y)
-        end = (xplayer + xdiff, yplayer + ydiff)
         if player.get_distance(monster.x, monster.y) <= 2.5:
-            moves = pathfinding.astar(tile_map.track_map, start, end, monster_map, loop.player, monster_blocks=True, player_blocks=True)
+            moves = self.move_path
         if len(moves) > 1:
             xmove, ymove = moves.pop(1)
             monster.move(xmove - monster.x, ymove-monster.y, tile_map, monster, monster_map, player)
+            self.grouped = False
         if update_target:
             loop.add_target((monster.x, monster.y))
     def do_flee(self, loop):
