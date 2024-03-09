@@ -1,6 +1,7 @@
 import random
 import monster as M
 import effect as E
+import character as C
 import pathfinding
 
 class Skill():
@@ -145,17 +146,27 @@ class Teleport(Skill):
             while (tile_map.get_passable(startx, starty) == False):
                 startx = random.randint(0, width - 1)
                 starty = random.randint(0, height - 1)
-
-            if isinstance(self.parent.parent, M.Monster):
+            if isinstance(self.parent, C.Player):
+                self.parent.x = startx
+                self.parent.y = starty
+                return
+            elif isinstance(self.parent, M.Monster):
                 monster_map = generator.monster_map
-                x, y = self.parent.parent.x, self.parent.parent.y
+                x, y = self.parent.x, self.parent.y
                 monster_map.clear_location(x, y)
-                self.parent.parent.x = startx
-                self.parent.parent.y = starty
-                monster_map.place_thing(self.parent.parent)
-            else:
-                self.parent.parent.x = startx
-                self.parent.parent.y = starty
+                self.parent.x = startx
+                self.parent.y = starty
+                monster_map.place_thing(self.parent)
+
+
+    def basic_requirements(self):
+        if self.ready == 0 and self.parent.character.mana >= self.cost:
+            return True
+        return False
+
+    def castable(self, target):
+      #  print(self.ready, self.cost)
+       return self.basic_requirements()
 
 # !!! keep monster exclusive for now, pathing breaks if a player tries to use it !!!
 class BlinkStrike(Skill):

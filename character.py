@@ -24,6 +24,7 @@ class Character():
         # flags altered by status conditions
         self.movable = True
         self.flee = False
+        self.can_teleport = True
 
         self.round_bonus_factor = 1.5 # stat bonus for being rounded
 
@@ -171,7 +172,6 @@ class Character():
 
     def unequip(self, item):
         if item.can_be_unequipped(self):
-            print("hi")
             item.unequip(self)
             item.dropable = True
             item.equipped = False
@@ -397,7 +397,7 @@ class Player(O.Objects):
 
         self.path = []
 
-        self.invincible = False
+        self.invincible = True
 
         if self.invincible: # only get the gun if you're invincible at the start
             self.character.skills.extend([

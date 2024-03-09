@@ -67,8 +67,6 @@ class Monster_AI():
 
         # print(max_utility)
         self.parent.character.energy -= 1
-        if isinstance(self.parent,M.Minotaur):
-            print(utility)
         # print(f"{self.parent} is doing {called_function.__name__} with utility {max_utility}")
         called_function(loop)
 
@@ -215,7 +213,6 @@ class Monster_AI():
     def do_skill(self, loop):
         monster = self.parent
         for i in range(len(monster.character.skills)):
-            print(monster.character.skills[i].name)
             # use first castable skill
             if monster.character.skills[i].castable(loop.player):
                 skill = monster.character.skills[i]

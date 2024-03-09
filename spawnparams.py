@@ -67,6 +67,7 @@ ItemSpawns.append(ItemSpawnParams( I.PermanentDexterityPotion(405),      1,     
 ItemSpawns.append(ItemSpawnParams( I.MassHealScrorb(450),      1,               10,          1,              5))
 ItemSpawns.append(ItemSpawnParams( I.BloodstainedArmor(603),        3,               10,          1,              1))
 ItemSpawns.append(ItemSpawnParams( I.BlackenedBoots(700),              5,               10,          1,              1))
+ItemSpawns.append(ItemSpawnParams( I.RingOfTeleportation(502),              5,               10,          1,              1))
 
 
 Floor_Distributions = [(0.9, 0.1, 0.0), # floor 1
@@ -88,8 +89,8 @@ class ItemSpawner():
         self.legendaryItems = [i for i in self.ItemSpawns if i.item.rarity == "Legendary"]
 
         # useful for debugging specific items, separate from generator
-        self.forceSpawn = None
-        # self.forceSpawn = ("Blackened Boots", 3)
+        #self.forceSpawn = None
+        self.forceSpawn = ("Teleport Scrorb", 3)
         # self.forceSpawn = ("Enchant Scrorb", 3)
         # self.forceSpawn = ("Flaming Sword", 5)
         
