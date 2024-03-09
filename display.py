@@ -120,7 +120,7 @@ class Display:
 
         message_offset_from_left = 0
         message_offset_from_top = action_screen_height
-        message_width = action_screen_width // 2 - 2 * message_offset_from_left
+        message_width = action_screen_width *5 // 12 - 2 * message_offset_from_left
         message_height = self.screen_height - action_screen_height
 
         skill_bar_height = self.screen_height - action_screen_height

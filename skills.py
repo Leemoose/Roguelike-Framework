@@ -159,15 +159,6 @@ class Teleport(Skill):
                 monster_map.place_thing(self.parent)
 
 
-    def basic_requirements(self):
-        if self.ready == 0 and self.parent.character.mana >= self.cost:
-            return True
-        return False
-
-    def castable(self, target):
-      #  print(self.ready, self.cost)
-       return self.basic_requirements()
-
 # !!! keep monster exclusive for now, pathing breaks if a player tries to use it !!!
 class BlinkStrike(Skill):
     def __init__(self, parent, cooldown, cost, damage, range, action_cost):

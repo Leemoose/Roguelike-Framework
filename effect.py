@@ -129,7 +129,7 @@ class Fear(StatusEffect):
 
 class Invincible(StatusEffect):
     def __init__(self, duration, inflictor = None):
-        super().__init__(806, "Invincible", "I can't be killed", duration)
+        super().__init__(806, "Invincible", "can't be killed", duration)
     def apply_effect(self, target):
         target.invincible = True
 
@@ -147,3 +147,11 @@ class Asleep(StatusEffect):
     def remove(self, target):
         actual = target.parent
         actual.asleep = False
+class Tormented(StatusEffect):
+    def __init__(self, duration, inflictor = None):
+        super().__init__(806, "Tormented", "is tormented", duration)
+    def apply_effect(self, target):
+        target.health /= 2
+
+    def remove(self, target):
+        pass

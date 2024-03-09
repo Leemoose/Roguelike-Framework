@@ -127,6 +127,53 @@ class Dagger(Weapon):
         if self.damage_min > self.damage_max:
             self.damage_min = self.damage_max
 
+class ScreamingDagger(Dagger):
+    def __init__(self, render_tag):
+        super().__init__(-1, -1, 0, render_tag, "Screaming Dagger")
+        self.melee = True
+        self.name = "Screaming Dagger"
+        self.description = "The sound of thousands dead souls. "
+        self.damage_min = 1
+        self.damage_max = 1
+        self.can_be_levelled = False
+
+        self.on_hit = (lambda inflictor: E.Tormented(5))
+        self.on_hit_description = f"Torments the target for half health damage over."
+
+        self.wearer = None  # items with stat buffs or skills need to keep track of owner for level ups
+        self.rarity = "Legendary"
+
+    def attack(self):
+        return (super().attack(), self.on_hit)
+
+class SleepingSword(Dagger):
+    def __init__(self, render_tag):
+        super().__init__(-1, -1, 0, render_tag, "Sleeping Sword")
+        self.melee = True
+        self.name = "Sleeping Sword"
+        self.description = "...on the treetops. When the wind blows"
+        self.can_be_levelled = False
+
+        self.on_hit = (lambda inflictor: E.Asleep(8))
+        self.on_hit_description = f"The target is sleeping."
+
+        self.wearer = None  # items with stat buffs or skills need to keep track of owner for level ups
+        self.rarity = "Legendary"
+
+    def attack(self):
+        return (super().attack(), self.on_hit)
+
+    def level_up(self):
+        self.level += 1
+        if self.level == 2:
+            self.description += " the cradle will rock."
+        if self.level == 6:
+            self.description = "Death is the greatest sleep of all."
+            self.damage_max += 100
+        self.damage_min += 10
+        self.damage_max += 5
+        if self.damage_min > self.damage_max:
+            self.damage_min = self.damage_max
 
 class MagicWand(Weapon):
     def __init__(self, render_tag):
@@ -1104,7 +1151,6 @@ class Scroll(O.Item):
         if self.stacks == 0:
             self.destroy = True
             entity.inventory.remove(self)
-        
 
 class TeleportScroll(Scroll):
     def __init__(self, render_tag):

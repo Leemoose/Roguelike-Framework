@@ -340,42 +340,41 @@ class Loops():
     def monster_loop(self, energy):
         for monster_key in self.monster_dict.subjects:
             monster = self.monster_dict.subjects[monster_key]
-            
-            # do status effect stuff
-            monster.character.tick_all_status_effects()
-            status_messages = [monster.name + " " + mes for mes in monster.character.status_messages()]
-            for message in status_messages:
-                self.add_message(message)
-            
-            # tick skill cooldowns
-            monster.character.tick_cooldowns()
+            if monster.character.alive:
+                # do status effect stuff
+                monster.character.tick_all_status_effects()
+                status_messages = [monster.name + " " + mes for mes in monster.character.status_messages()]
+                for message in status_messages:
+                    self.add_message(message)
 
-            # tick regen
-            monster.character.tick_regen()
+                # tick skill cooldowns
+                monster.character.tick_cooldowns()
 
-            if self.generator.tile_map.track_map[monster.x][monster.y].seen:
-                monster.brain.is_awake = True
+                # tick regen
+                monster.character.tick_regen()
 
-            # do action stuff
-            if monster.brain.is_awake == True and not monster.asleep:
-                monster.character.energy += energy
-                while monster.character.energy > 0:
-                    monster.brain.rank_actions(monster, self.monster_map, self.generator.tile_map, self.generator.flood_map, self.player, self.generator, self.item_dict, self)
-        if len(self.generator.summoner) > 0:
-            for generation in self.generator.summoner:
-                placement = self.generator.nearest_empty_tile((generation[1], generation[2]))
-                if placement != None:
-                    self.generator.place_monster_at_location(generation[0], placement[0], placement[1])
-                else:
-                    self.add_message("The summoning fizzled.")
-            self.generator.summoner = []
+                if self.generator.tile_map.track_map[monster.x][monster.y].seen:
+                    monster.brain.is_awake = True
+
+                # do action stuff
+                if monster.brain.is_awake == True and not monster.asleep:
+                    monster.character.energy += energy
+                    while monster.character.energy > 0:
+                        monster.brain.rank_actions(monster, self.monster_map, self.generator.tile_map, self.generator.flood_map, self.player, self.generator, self.item_dict, self)
+            if len(self.generator.summoner) > 0:
+                for generation in self.generator.summoner:
+                    placement = self.generator.nearest_empty_tile((generation[1], generation[2]))
+                    if placement != None:
+                        self.generator.place_monster_at_location(generation[0], placement[0], placement[1])
+                    else:
+                        self.add_message("The summoning fizzled.")
+                self.generator.summoner = []
 
     def render_screen(self, keyboard, display, colors, tileDict):
         if self.currentLoop == LoopType.action or self.currentLoop == LoopType.autoexplore or self.currentLoop == LoopType.search_stairs:
             self.clean_up()
             shadowcasting.compute_fov(self.player.get_location(), self.generator.tile_map.track_map)
             display.update_display(self)
-            
             if self.currentLoop == LoopType.action:
                 mos_x, mos_y = pygame.mouse.get_pos()
                 (x,y) = display.screen_to_tile(self.player, mos_x,mos_y)
