@@ -88,9 +88,11 @@ class ItemSpawner():
         self.legendaryItems = [i for i in self.ItemSpawns if i.item.rarity == "Legendary"]
 
         # useful for debugging specific items, separate from generator
-        self.forceSpawn = None
-        # self.forceSpawn = ("Blackened Boots", 3)
-        # self.forceSpawn = ("Enchant Scrorb", 3)
+        self.forceSpawn = []
+
+        self.forceSpawn.append(("Shield", 3))
+
+        self.forceSpawn.append(("Enchant Scrorb", 3))
         # self.forceSpawn = ("Flaming Sword", 5)
         
     def countSpawn(self, depth):
@@ -113,9 +115,9 @@ class ItemSpawner():
             commonWeapons = [i for i in commonAtDepth if i.item.equipment_type == "Weapon"]
             items.append(random.choice(commonWeapons).GetFreshCopy())
 
-        if self.forceSpawn:
-            for _ in range(self.forceSpawn[1]):
-                item_spawn = [i for i in self.ItemSpawns if i.item.name == self.forceSpawn[0]][0]
+        for itemToSpawn in self.forceSpawn:
+            for _ in range(itemToSpawn[1]):
+                item_spawn = [i for i in self.ItemSpawns if i.item.name == itemToSpawn[0]][0]
                 item = item_spawn.GetFreshCopy()
                 items.append(item)
         
