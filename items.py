@@ -714,9 +714,9 @@ class BloodstainedArmor(BodyArmor):
         if self.wearer != None:
             self.wearer.strength += 1
         if self.level == 2:
-            self.description += " It's been enchanted to make you more strong and frightening"
+            self.description += " It's been enchanted to make its aura stronger"
         if self.level == 6:
-            self.description = "Bloodstained armor that marks you as a famous warrior who fought in many battles. Your enemies are terrified even from a distance. It's been enchanted as much as possible."
+            self.description = "An immensely menacing aura surround you and this armor bounds to your soul. It's been enchanted as much as possible."
 
 
 class WizardRobe(BodyArmor):
@@ -811,7 +811,8 @@ class BlackenedBoots(Boots):
         self.level += 1
         self.armor += 1
         self.dexterity_buff += 1
-        self.wearer.dexterity += 1
+        if self.wearer != None:
+            self.wearer.dexterity += 1
         if self.level == 2:
             self.description += " You see the quickest path in a sea of blood."
         if self.level == 6:

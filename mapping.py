@@ -408,6 +408,7 @@ class DungeonGenerator():
         
         while ((self.tile_map.get_passable(startx, starty) == False) or 
                (self.monster_map.get_passable(startx, starty) == False) or
+               (self.tile_map.track_map[startx][starty].visible) or
                check_on_stairs):
             startx = random.randint(0, self.width-1)
             starty = random.randint(0,self.height-1)
