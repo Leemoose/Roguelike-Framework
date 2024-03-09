@@ -189,6 +189,7 @@ MonsterSpawns.append(MonsterSpawnParams(M.Hobgoblin(-1, -1), 1, 3, 0, 0))
 MonsterSpawns.append(MonsterSpawnParams(M.Hobgorblin(-1, -1), 2, 5, 0, 0))
 MonsterSpawns.append(MonsterSpawnParams(M.Kobold(-1, -1), 1, 3, 0, 0))
 MonsterSpawns.append(MonsterSpawnParams(M.Korbold(-1, -1), 2, 5, 0, 0))
+MonsterSpawns.append(MonsterSpawnParams(M.GorblinShaman(-1, -1), 3, 5, 0, 0))
 
 MonsterSpawns.append(MonsterSpawnParams(M.Gargoyle(-1, -1), 4, 6, 0, 0))
 MonsterSpawns.append(MonsterSpawnParams(M.Gorbgoyle(-1, -1), 6, 8, 0, 0))
@@ -223,8 +224,8 @@ class MonsterSpawner():
         self.orbMonsters = [i for i in self.MonsterSpawns if i.monster.orb == True]
 
         # useful for debugging specific items, separate from generator
-        self.forceSpawn = None 
-        # self.forceSpawn = ("ORB OF YENDORB", 1)
+        self.forceSpawn = None
+        #self.forceSpawn = ("Gorblin Shaman", 1)
         # self.forceSpawn = ("Hobgorblin", 5) 
 
     def countSpawn(self, depth):

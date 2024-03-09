@@ -100,6 +100,7 @@ class TileDict():
         tiles[152] = image.load('assets/monsters/golem_orb.png')
         tiles[103] = image.load('assets/monsters/goblin.png')
         tiles[153] = image.load('assets/monsters/goblin_orb.png')
+        tiles[162] = image.load('assets/monsters/gorblin_shaman.png')
         tiles[104] = image.load('assets/monsters/hobgoblin.png')
         tiles[154] = image.load('assets/monsters/hobgoblin_orb.png')
         tiles[105] = image.load('assets/monsters/kobold.png')

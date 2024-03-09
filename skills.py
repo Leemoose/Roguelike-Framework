@@ -154,7 +154,6 @@ class Teleport(Skill):
                 self.parent.parent.y = starty
                 monster_map.place_thing(self.parent.parent)
             else:
-                print(self.parent.parent.name)
                 self.parent.parent.x = startx
                 self.parent.parent.y = starty
 
@@ -496,10 +495,12 @@ class SummonGorblin(Skill):
         x, y = target.get_location()
         location = generator.nearest_empty_tile((x,y))
         if location != None:
-            gorblin = M.Gorblin(-1, -1, activation_threshold=1.1)
+            gorblin = M.Gorblin(-1, -1)
             generator.summoner.append((gorblin, location[0], location[1]))
             return True
         return False
 
     def castable(self, target):
         return self.basic_requirements()
+
+
