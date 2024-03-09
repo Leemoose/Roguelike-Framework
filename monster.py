@@ -301,13 +301,14 @@ class Monster_AI():
         monster_map = loop.generator.monster_map
         player = loop.player
 
+
         if not monster.character.movable:
             monster.character.energy -= (monster.character.move_cost - monster.character.dexterity)
             loop.add_message(f"{monster} is petrified and cannot move.")
             return
 
         update_target = False
-        if loop.target_to_display == (monster.x, monster.y):
+        if loop.screen_focus == (monster.x, monster.y):
             update_target = True
 
         start = (monster.x, monster.y)
@@ -328,6 +329,8 @@ class Monster_AI():
                 loop.add_message(f"{monster} cowers in a corner since it can't run further.")
         if update_target:
             loop.add_target((monster.x, monster.y))
+            loop.screen_focus = (monster.x, monster.y)
+        
 
     def do_nothing(self,loop):
         # print("doing nothing")
@@ -445,7 +448,7 @@ class Gorblin(Goblin):
         self.dexterity = 5
         self.intelligence = 1
 
-        self.description = "A cowardly orb with a tiny dagger. It can blink to escape when it's afraid."
+        self.description = "A cowardly orb with a tiny dagger. It will run away when low on health"
 
 class Hobgoblin(Monster):
     def __init__(self, x, y, render_tag=104, name="Hobgoblin"):
