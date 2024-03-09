@@ -448,7 +448,7 @@ class Heal(Skill):
 
     def activate(self, target, generator):
         self.parent.character.mana -= self.cost
-        target.character.gain_heal(self.heal_amount + self.parent.character.skill_damage_increase())
+        target.character.gain_health(self.heal_amount + self.parent.character.skill_damage_increase())
         return True
 
     def castable(self, target):

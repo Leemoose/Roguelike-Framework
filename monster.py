@@ -1,6 +1,7 @@
 import objects as O
 import character as C
 import dice as R
+import items as I
 import random
 
 import pathfinding
@@ -342,6 +343,7 @@ class Monster(O.Objects):
         self.brain = Monster_AI(self)
         self.skills = []
         self.orb = False
+        self.kill_count = 0
         self.rarity = "Common"
 
         self.description = f"This is a {self.name}. It wants to eat you."
@@ -608,11 +610,12 @@ class Tormentorb(Monster):
         self.intelligence = 15
 
 class BossOrb(Monster):
-    def __init__(self, x, y, render_tag=159, name="ORB"):
+    def __init__(self, x, y, render_tag=160, name="ORB OF YENDORB"):
         super().__init__(render_tag, x, y, name)
         self.character = C.Character(self)
         self.brain = Monster_AI(self)
         self.character.skills = []
+        self.character.inventory.append(I.OrbOfYendorb())
         self.orb = True
         # self, parent, cooldown, cost, slow_duration, damage_percent, slow_amount, range, action_cost
         self.character.skills.append(S.Torment(self, cooldown=10, cost=0, slow_duration=3, damage_percent=0.5, slow_amount=5, range=4, action_cost=100))

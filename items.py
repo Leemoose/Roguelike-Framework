@@ -20,6 +20,7 @@ class Equipment(O.Item):
         self.rarity = "Common"
         self.required_strength = 0
         self.attached_skill_exists = False
+        self.yendorb = False
 
     def activate(self, entity):
         self.wearer = entity
@@ -950,6 +951,7 @@ class Potion(O.Item):
         self.attached_skill_exists = False
         self.description = "A potiorb that does something."
         self.rarity = "Common"
+        self.yendorb = False
 
     def activate_once(self, entity):
         pass
@@ -971,6 +973,7 @@ class Scroll(O.Item):
         self.stacks = 1
         self.attached_skill_exists = False
         self.description = "A scrorb that does something."
+        self.yendorb = False
 
         self.rarity = "Common"
 
@@ -1095,7 +1098,7 @@ class DexterityPotion(Potion):
 
 class PermanentDexterityPotion(Potion):
     def __init__(self, render_tag):
-        super().__init__(render_tag, "Permanent Dexterity Potiorb")
+        super().__init__(render_tag, "Permanent Dex Potiorb")
         self.description = "Speed in a bottle"
         self.rarity = "Rare"
 
@@ -1104,7 +1107,7 @@ class PermanentDexterityPotion(Potion):
 
 class PermanentStrengthPotion(Potion):
     def __init__(self, render_tag):
-        super().__init__(render_tag, "Permanent Dexterity Potiorb")
+        super().__init__(render_tag, "Permanent Str Potiorb")
         self.description = "Strength in a bottle"
         self.rarity = "Rare"
 
@@ -1179,3 +1182,17 @@ class MassHealScrorb(Scroll):
         self.consume_scroll(entity)
         loop.change_loop(L.LoopType.inventory)
 
+class OrbOfYendorb(O.Item):
+    def __init__(self):
+        super().__init__(-1, -1, 0, 161, "Orb of Yendorb")
+        self.equipable = False
+        self.description = "Its the all-powerful orb of yendorb. The magic animating it has deactivated"
+        self.stackable = False
+        self.level = 1
+        self.can_be_levelled = False
+        self.equipped = False
+        self.wearer = None
+        self.rarity = "Common"
+        self.required_strength = 0
+        self.attached_skill_exists = False
+        self.yendorb = True

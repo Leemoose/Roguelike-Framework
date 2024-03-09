@@ -112,6 +112,7 @@ class TileDict():
         tiles[158] = image.load('assets/monsters/minotaur_orb.png')
         tiles[159] = image.load('assets/monsters/tormentorb.png')
         tiles[160] = image.load('assets/monsters/yendorb.png')
+        tiles[161] = image.load('assets/yendorb_deactivated.png')
 
         # player assets
         tiles[200] = image.load("assets/Player.png")

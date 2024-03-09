@@ -219,7 +219,7 @@ class MonsterSpawner():
         self.orbMonsters = [i for i in self.MonsterSpawns if i.monster.orb == True]
 
         # useful for debugging specific items, separate from generator
-        self.forceSpawn = ("ORB", 1)
+        self.forceSpawn = ("ORB OF YENDORB", 1)
         # self.forceSpawn = ("Hobgorblin", 5) 
 
     def countSpawn(self, depth):
