@@ -281,6 +281,18 @@ class SkillButton(pygame_gui.elements.UIButton):
             button.drawable_shape.states['active'].surface.blit(text, (button_size[0] // text_offset[0], button_size[1] * text_offset[1]))
         button.drawable_shape.active_state.has_fresh_surface = True
 
+    def draw_text_on_button(self, button, text, button_size):
+        # draw text on middle of button
+        font_size = 20
+        font = pygame.font.Font('freesansbold.ttf', font_size)
+        text = font.render(text, True, (255, 255, 255))
+        button.drawable_shape.states['normal'].surface.blit(text, (button_size[0] // 2 - 10, button_size[1] // 2 - 10))
+        button.drawable_shape.states['hovered'].surface.blit(text, (button_size[0] // 2 - 10, button_size[1] // 2 - 10))
+        button.drawable_shape.states['disabled'].surface.blit(text, (button_size[0] // 2 - 10, button_size[1] // 2 - 10))
+        button.drawable_shape.states['selected'].surface.blit(text, (button_size[0] // 2 - 10, button_size[1] // 2 - 10))
+        button.drawable_shape.states['active'].surface.blit(text, (button_size[0] // 2 - 10, button_size[1] // 2 - 10))
+        button.drawable_shape.active_state.has_fresh_surface = True
+
     def update(self, time_delta: float):
         skill = self.player.character.skills[self.index]
         closest_monster = self.player.character.get_closest_monster(self.player, self.loop.monster_dict, self.loop.generator.tile_map)
@@ -290,8 +302,12 @@ class SkillButton(pygame_gui.elements.UIButton):
             castable = skill.castable(closest_monster)
         if (castable):
             self.draw_on_button(self, self.img1, "", self.relative_rect.size, True)
+            
         else:
+            ready = skill.ready
             self.draw_on_button(self, self.img2, "", self.relative_rect.size, True)
+            if ready != 0:
+                self.draw_text_on_button(self, str(ready), self.relative_rect.size)
 
         return super().update(time_delta)
     

@@ -53,10 +53,17 @@ ItemSpawns.append(ItemSpawnParams( I.BlackenedBoots(702),              5,       
 
 ItemSpawns.append(ItemSpawnParams( I.Helmet(770),              1,               5,          0,              0))
 ItemSpawns.append(ItemSpawnParams( I.VikingHelmet(771),       2,               8,          0,              0))
+# spartan helmet, great helm, thief hood, wizard hat
+ItemSpawns.append(ItemSpawnParams( I.SpartanHelmet(772),       3,               10,          1,              1))
+ItemSpawns.append(ItemSpawnParams( I.GreatHelm(773),       3,               10,          1,              1))
+ItemSpawns.append(ItemSpawnParams( I.ThiefHood(774),       3,               10,          1,              1))
+ItemSpawns.append(ItemSpawnParams( I.WizardHat(775),       3,               10,          1,              1))
+
 
 ItemSpawns.append(ItemSpawnParams( I.Gloves(750),              1,               5,          0,              0))
 ItemSpawns.append(ItemSpawnParams( I.Gauntlets(751),           2,               5,          1,              1))
 ItemSpawns.append(ItemSpawnParams( I.BoxingGloves(752),        1,               8,          1,              1))
+ItemSpawns.append(ItemSpawnParams( I.HealingGloves(753),       3,               10,          1,              1))
 
 ItemSpawns.append(ItemSpawnParams( I.RingOfSwiftness(500),               1,               10,          0,              0))
 ItemSpawns.append(ItemSpawnParams( I.RingOfTeleportation(502),              5,               10,          1,              1))
@@ -104,9 +111,7 @@ class ItemSpawner():
         self.legendaryItems = [i for i in self.ItemSpawns if i.item.rarity == "Legendary"]
 
         # useful for debugging specific items, separate from generator
-        #self.forceSpawn = None
-
-        self.forceSpawn = ("Crushing Hammer", 3)
+        self.forceSpawn = None
 
         # self.forceSpawn = ("Enchant Scrorb", 3)
         # self.forceSpawn = ("Flaming Sword", 5)

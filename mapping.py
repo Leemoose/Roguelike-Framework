@@ -180,10 +180,15 @@ class TileDict():
         tiles[750] = image.load("assets/gloves.png")
         tiles[751] = image.load("assets/gauntlets.png")
         tiles[752] = image.load("assets/boxing_gloves.png")
+        tiles[753] = image.load("assets/healer_gloves.png")
 
         # helmet assets
         tiles[770] = image.load("assets/helmet.png")
         tiles[771] = image.load("assets/viking_helmet.png")
+        tiles[772] = image.load("assets/spartan_helmet.png")
+        tiles[773] = image.load("assets/great_helm.png")
+        tiles[774] = image.load("assets/thief_hood.png")
+        tiles[775] = image.load("assets/wizard_hat.png")
 
         # empty equipment assets
         tiles[801] = image.load("assets/empty_armor.png")
