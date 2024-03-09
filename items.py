@@ -24,6 +24,10 @@ class Equipment(O.Item):
         self.required_strength = 0
         self.attached_skill_exists = False
         self.yendorb = False
+        self.strength_buff = 0
+        self.dexterity_buff = 0
+        self.endurance_buff = 0
+        self.intelligence_buff = 0
 
     def activate(self, entity):
         self.wearer = entity
@@ -817,7 +821,6 @@ class WarlordArmor(BodyArmor):
             self.description += " It's been enchanted to make you more strong and frightening"
         if self.level == 6:
             self.description = "Bloodstained armor that marks you as a famous warrior who fought in many battles. Your enemies are terrified even from a distance. It's been enchanted as much as possible."
-
 
 class BloodstainedArmor(BodyArmor):
     def __init__(self, render_tag):

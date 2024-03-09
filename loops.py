@@ -369,14 +369,14 @@ class Loops():
                     monster.character.energy += energy
                     while monster.character.energy > 0:
                         monster.brain.rank_actions(monster, self.monster_map, self.generator.tile_map, self.generator.flood_map, self.player, self.generator, self.item_dict, self)
-            if len(self.generator.summoner) > 0:
-                for generation in self.generator.summoner:
-                    placement = self.generator.nearest_empty_tile((generation[1], generation[2]))
-                    if placement != None:
-                        self.generator.place_monster_at_location(generation[0], placement[0], placement[1])
-                    else:
-                        self.add_message("The summoning fizzled.")
-                self.generator.summoner = []
+        if len(self.generator.summoner) > 0:
+            for generation in self.generator.summoner:
+                placement = self.generator.nearest_empty_tile((generation[1], generation[2]))
+                if placement != None:
+                    self.generator.place_monster_at_location(generation[0], placement[0], placement[1])
+                else:
+                    self.add_message("The summoning fizzled.")
+            self.generator.summoner = []
 
     def render_screen(self, keyboard, display, colors, tileDict):
         if self.currentLoop == LoopType.action or self.currentLoop == LoopType.autoexplore or self.currentLoop == LoopType.search_stairs:

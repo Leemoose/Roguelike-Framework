@@ -126,7 +126,7 @@ class Keyboard():
             loop.update_screen = True
         elif key == "o":
             loop.change_loop(LoopType.autoexplore)
-        elif key == "s":
+        elif key == "/":
             memory.save_objects()
         # elif key == "t":
         #     escape_test = S.Escape(player, 0, 0, False, 1.1, 1)
