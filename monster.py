@@ -12,6 +12,7 @@ class Monster_AI():
         self.frontier = None
         self.is_awake = False
         self.parent = parent
+        self.grouped = False
 
     """
     Think it would be better to first rank each action depending on the circumstances with a number between 1-100 and 
@@ -138,14 +139,40 @@ class Monster_AI():
             xdiff = xplayer - x
             ydiff = yplayer - y
             grouped = False
+            goals = []
             if xdiff != 0:
-                if not tile_map.get_passable(x,y + 1) and not tile_map.get_passable(x,y - 1) and not monster_map.get_passable(x-xdiff,y):
-                    grouped = True
+                if (not tile_map.get_passable(x,y + 1) and not tile_map.get_passable(x,y - 1) and not monster_map.get_passable(x-xdiff,y)):
+                    self.grouped = True
+                    goals = [(xplayer, yplayer + 1), (xplayer, yplayer - 1), (xplayer + xdiff, yplayer +ydiff)]
+                for position in [(xplayer, yplayer + 1), (xplayer, yplayer - 1), (xplayer + xdiff, yplayer +ydiff)]:
+                    xposition, yposition = position
+                    if not monster_map.get_passable(xposition,yposition):
+                        monster = loop.generator.monster_dict.get_subject(monster_map.track_map[xposition][yposition])
+                        if monster.brain.grouped:
+                            self.grouped = True
+                            xdiff = xplayer - monster.x
+                            ydiff = yplayer - monster.y
+                            goals = [(xplayer + xdiff, yplayer + ydiff)]
+                            break
             elif ydiff != 0:
                 if not tile_map.get_passable(x - 1,y) and not tile_map.get_passable(x + 1,y) and not monster_map.get_passable(x,y-ydiff):
-                    grouped = True
-            if grouped == True and tile_map.get_passable(xplayer + xdiff, yplayer + ydiff): #opposite side of player
-                return 90
+                    self.grouped = True
+                    goals = [(xplayer + 1, yplayer), (xplayer -1, yplayer), (xplayer + xdiff, yplayer + ydiff)]
+                for position in [(xplayer + 1, yplayer), (xplayer -1, yplayer), (xplayer + xdiff, yplayer + ydiff)]:
+                    xposition, yposition = position
+                    if not monster_map.get_passable(xposition,yposition):
+                        monster = loop.generator.monster_dict.get_subject(monster_map.track_map[xposition][yposition])
+                        if monster.brain.grouped:
+                            self.grouped = True
+                            xdiff = xplayer - monster.x
+                            ydiff = yplayer - monster.y
+                            goals = [(xplayer + xdiff, yplayer + ydiff)]
+                            break
+            if (self.grouped == True):
+                self.move_path = (pathfinding.astar_multi_goal(tile_map.track_map, (x, y), goals,
+                                             monster_map, player, True, True))
+                if len(self.move_path) > 0:
+                    return 90
         return -1
     
     def rank_skill(self, loop):
@@ -154,8 +181,7 @@ class Monster_AI():
         for skill in self.parent.character.skills:
             if skill.castable(loop.player):
                 return 95
-        return -1        
-
+        return -1
 
     def do_item_pickup(self, loop):
         # print("Picking up item")
@@ -185,6 +211,7 @@ class Monster_AI():
     def do_skill(self, loop):
         monster = self.parent
         for i in range(len(monster.character.skills)):
+            print(monster.character.skills[i].name)
             # use first castable skill
             if monster.character.skills[i].castable(loop.player):
                 skill = monster.character.skills[i]
@@ -257,17 +284,12 @@ class Monster_AI():
         if loop.target_to_display == (monster.x, monster.y):
             update_target = True
 
-        xplayer, yplayer = player.get_location()
-        xdiff = xplayer - x
-        ydiff = yplayer - y
-
-        start = (monster.x, monster.y)
-        end = (xplayer + xdiff, yplayer + ydiff)
         if player.get_distance(monster.x, monster.y) <= 2.5:
-            moves = pathfinding.astar(tile_map.track_map, start, end, monster_map, loop.player, monster_blocks=True, player_blocks=True)
+            moves = self.move_path
         if len(moves) > 1:
             xmove, ymove = moves.pop(1)
             monster.move(xmove - monster.x, ymove-monster.y, tile_map, monster, monster_map, player)
+            self.grouped = False
         if update_target:
             loop.add_target((monster.x, monster.y))
     def do_flee(self, loop):
@@ -584,3 +606,22 @@ class Tormentorb(Monster):
         self.strength = 1
         self.dexterity = 1
         self.intelligence = 15
+
+class BossOrb(Monster):
+    def __init__(self, x, y, render_tag=159, name="ORB"):
+        super().__init__(render_tag, x, y, name)
+        self.character = C.Character(self)
+        self.brain = Monster_AI(self)
+        self.character.skills = []
+        self.orb = True
+        # self, parent, cooldown, cost, slow_duration, damage_percent, slow_amount, range, action_cost
+        self.character.skills.append(S.Torment(self, cooldown=10, cost=0, slow_duration=3, damage_percent=0.5, slow_amount=5, range=4, action_cost=100))
+        self.character.skills.append(S.SummonGorblin(self, cooldown=10, cost=0, range=4,action_cost=20))
+        self.character.skills.append(S.Heal(self, cooldown = 20, cost = 10, heal_amount = 30, activation_threshold = .25, action_cost = 100))
+        self.character.experience_given = 1000
+        self.description = "The orb of all orbs, the orbiest of orbs, the archetype of orbs... you get the idea."
+
+        self.endurance = 25
+        self.strength = 25
+        self.dexterity = 25
+        self.intelligence = 25

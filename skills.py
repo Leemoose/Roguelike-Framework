@@ -493,10 +493,13 @@ class SummonGorblin(Skill):
     
     def activate(self, target, generator):
         self.parent.character.mana -= self.cost
-        x, y = target
-        gorblin = M.Gorblin(-1, -1, activation_threshold=1.1)
-        generator.place_monster_at_location(gorblin, x, y)
-        return True
+        x, y = target.get_location()
+        location = generator.nearest_empty_tile((x,y))
+        if location != None:
+            gorblin = M.Gorblin(-1, -1, activation_threshold=1.1)
+            generator.summoner.append((gorblin, location[0], location[1]))
+            return True
+        return False
 
     def castable(self, target):
         return self.basic_requirements()

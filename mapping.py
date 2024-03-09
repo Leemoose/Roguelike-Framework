@@ -223,6 +223,7 @@ class DungeonGenerator():
         self.depth = depth
         self.width = self.mapData.width
         self.height = self.mapData.height
+        self.summoner = []
         self.monster_map = TrackingMap(self.width, self.height) #Should I include items as well?
         self.flood_map = FloodMap(self.width, self.height)
         self.tile_map = TileMap(self.mapData, depth)
@@ -333,7 +334,7 @@ class DungeonGenerator():
             return (x != self.player.x or y != self.player.y)
 
     def nearest_empty_tile(self, location):
-        import pdb; pdb.set_trace()
+      #  import pdb; pdb.set_trace()
         if location == None:
             return None
         if self.monster_map.get_passable(location[0], location[1]) and self.not_on_player(location[0], location[1]):
