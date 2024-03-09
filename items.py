@@ -800,6 +800,40 @@ class WizardRobe(BodyArmor):
         if self.level == 6:
             self.description = "A robe that makes you feel like you can cast spells for all eternity. It's been enchanted as much as possible."
 
+class KarateGi(BodyArmor):
+    def __init__(self, render_tag):
+        super().__init__(render_tag, "Karate Gi")
+        self.description = "A gi that makes your unarmed combat stronger."
+        self.damage_boost = 30
+
+        self.armor = 1
+
+        self.wearer = None # items with stat buffs need to keep track of owner for level ups
+
+        self.rarity = "Rare"
+
+    def activate(self, entity):
+        entity.unarmed_damage_min += self.damage_boost
+        entity.unarmed_damage_max += self.damage_boost
+        return super().activate(entity)
+
+    def deactivate(self, entity):
+        entity.unarmed_damage_min -= self.damage_boost
+        entity.unarmed_damage_max -= self.damage_boost
+        return super().deactivate(entity)
+
+    def level_up(self):
+        self.level += 1
+        self.armor += 1
+        self.damage_boost += 4
+        if self.wearer != None:
+            self.wearer.unarmed_damage_min += 4
+            self.wearer.unarmed_damage_max += 4
+        if self.level == 2:
+            self.description += " It's been enchanted to make your fists stronger"
+        if self.level == 6:
+            self.description = "A gi that lets you punch through anything. It's been enchanted as much as possible."
+
 class Boots(Armor):
     def __init__(self, render_tag):
         super().__init__(-1,-1, 0, render_tag, "Boots")
@@ -977,6 +1011,41 @@ class Gauntlets(Armor):
             self.description += " It's been slightly enchanted to be more protective."
         if self.level == 6:
             self.description = "Iron gauntlets that feel stronger than adamantium. It's been enchanted as much as possible."
+
+class BoxingGloves(Armor):
+    def __init__(self, render_tag):
+        super().__init__(-1,-1, 0, render_tag, "Boxing Gloves")
+        self.equipment_type = "Gloves"
+        self.description = "Gloves that make your unarmed combat stronger."
+        self.name = "Boxing Gloves"
+        self.armor = 0
+        self.damage_boost = 30 # yeah this needs to be high to compete with basic weapons
+
+    def equip(self, entity):
+        if entity.gloves != None:
+            entity.unequip(entity.gloves)
+        entity.gloves = self
+        entity.unarmed_damage_min += self.damage_boost
+        entity.unarmed_damage_max += self.damage_boost
+        self.activate(entity)
+
+    def unequip(self, entity):
+        entity.gloves = None
+        entity.unarmed_damage_min -= self.damage_boost
+        entity.unarmed_damage_max -= self.damage_boost
+        self.deactivate(entity)
+
+    def level_up(self):
+        self.level += 1
+        self.armor += 1
+        self.damage_boost += 4
+        if self.wearer != None:
+            self.wearer.unarmed_damage_min += 4
+            self.wearer.unarmed_damage_max += 4
+        if self.level == 2:
+            self.description += " It's been enchanted to make your fists stronger"
+        if self.level == 6:
+            self.description = "Gloves that let you punch through anything. It's been enchanted as much as possible."
 
 class Helmet(Armor):
     def __init__(self, render_tag):
