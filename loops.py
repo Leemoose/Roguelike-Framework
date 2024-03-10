@@ -134,6 +134,7 @@ class Loops():
         self.tileDict = tileDict
         self.screen_focus = None
         self.current_stat = 0 # index of stat for levelling up
+        self.prev_energy = None
 
         #Start the game by going to the main screen
 
@@ -178,6 +179,10 @@ class Loops():
         """
 
         action = None
+
+        if self.prev_energy != self.player.character.energy:
+            self.prev_energy = self.player.character.energy
+            print("Energy: ", self.prev_energy)
         if self.currentLoop == LoopType.autoexplore:
             all_seen, _ = self.generator.all_seen()
             if all_seen:

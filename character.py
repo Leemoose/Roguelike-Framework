@@ -21,6 +21,8 @@ class Character():
         self.health_regen = health_regen
         self.mana_regen = mana_regen
 
+        self.level = 1
+
         # flags altered by status conditions
         self.movable = True
         self.flee = False
@@ -184,6 +186,7 @@ class Character():
         self.energy -=  self.move_cost
 
     def level_up(self, strength_up=1, dexterity_up=1, endurance_up=1, intelligence_up=1):
+        self.level += 1 # separate from player level which is stored in player object
         self.level_up_stats(strength_up, dexterity_up, endurance_up, intelligence_up)
         self.level_up_max_health_and_mana()
         

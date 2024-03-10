@@ -306,8 +306,13 @@ class MonsterSpawnParams:
         for _ in range(depth):
             if (depth % 2 == 1):
                 copied.character.level_up(1,0,1,0)
+                copied.character.health = copied.character.max_health
+                copied.character.mana = copied.character.max_mana
             else:
                 copied.character.level_up(0,1,0,1)
+                copied.character.health = copied.character.max_health
+                copied.character.mana = copied.character.max_mana
+                
 
         return copied
     
@@ -364,9 +369,9 @@ class MonsterSpawner():
     
     def random_level(self, depth):
         if depth < 4:
-            return random.randint(0, 3)
+            return random.randint(0, 1)
         elif depth < 7:
-            return random.randint(3, 6)
+            return random.randint(2, 5)
         else:
             return random.randint(6, 9)
     

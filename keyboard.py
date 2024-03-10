@@ -387,6 +387,7 @@ class Keyboard():
     def key_specific_examine(self, key, loop, display):
         if key == "esc":
             loop.change_loop(LoopType.examine)
+            loop.screen_focus = loop.targets.target_current
 
     def key_autoexplore(self, key, loop):
         if key == "o":

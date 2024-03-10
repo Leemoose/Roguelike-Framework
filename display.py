@@ -530,25 +530,30 @@ class Display:
             # name
             text = font.render(monster.name, True, (255, 255, 255))
             self.win.blit(text, (examine_offset_from_left, examine_offset_from_top + 50))
+
+            # level
+            text = font.render("Level: " + str(monster.character.level), True, (255, 255, 255))
+            self.win.blit(text, (examine_offset_from_left, examine_offset_from_top + 65))
             
             # health
             text = font.render("Health: " + str(monster.character.health) + "/" + str(monster.character.max_health), True, (255, 255, 255))
-            self.win.blit(text, (examine_offset_from_left, examine_offset_from_top + 65))
+            self.win.blit(text, (examine_offset_from_left, examine_offset_from_top + 80))
                 
             # status
             status = self.get_status_text(monster)
             text = font.render("Status: " + status, True, (255, 255, 255))
-            self.win.blit(text, (examine_offset_from_left, examine_offset_from_top + 80))
+            self.win.blit(text, (examine_offset_from_left, examine_offset_from_top + 95))
 
             # description
             description = monster.description
             text = font.render(description, True, (255, 255, 255))
-            self.win.blit(text, (examine_offset_from_left, examine_offset_from_top + 95))
+            self.win.blit(text, (examine_offset_from_left, examine_offset_from_top + 110))
             nothing_at_target = False
         else:
             # find item at target
             for key in item_dict.subjects:
                 item = item_dict.get_subject(key)
+                count = 0
                 if item.x == x and item.y == y:
                     # draw item
                     to_draw = item.render_tag
@@ -584,6 +589,10 @@ class Display:
                         text = font.render("Consumable", True, (255, 255, 255))
                         self.win.blit(text, (examine_offset_from_left, examine_offset_from_top + next_text))
                         next_text += 15
+                    examine_offset_from_top = examine_offset_from_top + next_text + 30
+                    count += 1
+                    if count > 6:
+                        break
         # find player at target
         if nothing_at_target:
             if player.x == x and player.y == y:

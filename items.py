@@ -702,6 +702,7 @@ class BodyArmor(Armor):
         self.stats = statUpgrades(base_str=1, max_str=1, base_end=1, max_end=4, base_arm=1, max_arm=4)
 
     def equip(self, entity):
+        print("equipping")
         if entity.main_armor != None:
             entity.unequip(entity.main_armor)
         entity.main_armor = self
@@ -1547,6 +1548,12 @@ class Potion(O.Item):
         self.rarity = "Common"
         self.yendorb = False
 
+    def can_be_equipped(self, entity):
+        return False
+    
+    def can_be_unequipped(self, entity):
+        return False
+
     def activate_once(self, entity):
         pass
 
@@ -1570,6 +1577,12 @@ class Scroll(O.Item):
         self.yendorb = False
 
         self.rarity = "Common"
+
+    def can_be_equipped(self, entity):
+        return False
+    
+    def can_be_unequipped(self, entity):
+        return False
 
     def activate_once(self, entity, loop):
         pass
