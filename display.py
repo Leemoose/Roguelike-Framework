@@ -1480,7 +1480,7 @@ class Display:
         return buttons
 
     def create_help_screen(self):
-        button_width = self.screen_width // 6
+        button_width = self.screen_width // 4
         button_height = self.screen_height // 8
         button_offset_from_bottom = self.screen_height * 95 // 100 - button_height
         button_offset_from_left = (self.screen_width -button_width) // 2
@@ -1500,10 +1500,10 @@ class Display:
         buttons = Buttons()
 
         button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((button_offset_from_left, button_offset_from_bottom), (button_width, button_height)),
-                                                 text='Quit',
+                                                 text='Return to Main Menu',
                                                  manager=self.uiManager)
         button.action = "esc"
-        buttons.add(button, "quit")
+        buttons.add(button, "Return to Main Menu")
 
         pygame_gui.elements.UILabel(relative_rect=pygame.Rect((title_offset_from_left, title_offset_from_top), (title_width, title_height)),
                                     text="Action Shortcuts",

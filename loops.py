@@ -293,6 +293,9 @@ class Loops():
                 elif (self.currentLoop == LoopType.help):
                     key = event.ui_element.action
                     keyboard.key_help(key, self)
+                elif self.currentLoop == LoopType.enchant:
+                    key = event.ui_element.action
+                    keyboard.key_enchant(self, self.player, self.item_dict, key)
 
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if (self.currentLoop == LoopType.action):
