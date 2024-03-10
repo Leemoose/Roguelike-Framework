@@ -506,10 +506,11 @@ class Loops():
                 if monster.get_location() == self.screen_focus: # on kill stop observing a space
                     self.screen_focus = None
                 dead_monsters.append(key)
-                for item in monster.character.inventory:
+                items_copy = [item for item in monster.character.inventory]
+                for item in items_copy:
                     if item.yendorb:
                         monster.character.drop(item, self.item_dict, self.generator.item_map)
-                        break # only drop yendorb is monster had it
+                        break # only drop yendorb if monster had it
                     if item.equipped:
                         monster.character.unequip(item)
                     monster.character.drop(item, self.item_dict, self.generator.item_map)

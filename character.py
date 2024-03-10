@@ -164,6 +164,9 @@ class Character():
             while self.inventory[i].id_tag != item.id_tag and i < len(self.inventory):
                 i += 1
             if i < len(self.inventory):
+                # print(self.inventory)
+                # print(i)
+                # import pdb; pdb.set_trace()
                 self.inventory.pop(i)
                 item_dict.add_subject(item)
                 item.x = self.parent.x
@@ -256,6 +259,7 @@ class Character():
             potion.activate(self)
             print(potion.stacks)
             if potion.stacks < 1:
+                print("drop potion now")
                 self.drop(potion, item_dict, item_map)
                 potion.destroy = True
             self.energy -= self.quaff_cost
