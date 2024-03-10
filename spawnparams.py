@@ -147,7 +147,10 @@ class ItemSpawner():
 
         # self.forceSpawn.append(("Lich Hand", 3))
         # self.forceSpawn.append(("Invincibility Scrorb", 3))
-
+        # self.forceSpawn.append(("Chest Plate", 3))
+        # self.forceSpawn.append(("Ring of Might", 4))
+        # self.forceSpawn.append(("Gilded Armor", 3))
+        # self.forceSpawn.append(("Leather Armor", 3))
         # self.forceSpawn.append(("Bloodstained Armor", 3))
         # self.forceSpawn.append(("Boxing Gloves", 3))
         # self.forceSpawn.append(("Blackened Boots", 5))

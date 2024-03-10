@@ -408,7 +408,7 @@ class Armor(Equipment):
         self.name = "Armor"
 
     def can_be_equipped(self, entity):
-        return (entity.strength * entity.round_bonus()) >= self.required_strength and self.equipable
+        return (entity.strength + entity.round_bonus()) >= self.required_strength and self.equipable
 
 class Shield(Armor):
     def __init__(self, render_tag, name):
@@ -724,6 +724,7 @@ class Chestarmor(BodyArmor):
         super().__init__(render_tag, "Chest Plate")
         self.description = "A reliable piece of armor that covers your chest."
         self.required_strength = 3
+        self.wearer = None
         self.stats = statUpgrades(base_int=-2, max_int=0, base_arm=2, max_arm=8)
 
 
