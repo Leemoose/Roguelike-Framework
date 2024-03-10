@@ -60,7 +60,7 @@ class Display:
         self.textWidth = textWidth
         self.textHeight = textHeight
         self.textSize = textSize
-        self.uiManager = pygame_gui.UIManager((width, height), "theme.json")
+        self.uiManager = pygame_gui.UIManager((width, height), "assets/theme.json")
         self.windows = []
         self.clock = pygame.time.Clock()
         self.buttons = Buttons()
