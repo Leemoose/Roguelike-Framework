@@ -434,7 +434,7 @@ class Loops():
                 draw_screen_focus = True
                 if self.generator.tile_map.in_map(x,y):
                     if self.generator.tile_map.track_map[x][y].visible and self.generator.tile_map.get_passable(x,y) and ((not self.generator.monster_map.get_passable(x,y)) or (not self.generator.item_map.get_passable(x,y))):
-                        print(self.generator.monster_map.get_passable(x,y), self.generator.item_map.get_passable(x,y))
+                        # print(self.generator.monster_map.get_passable(x,y), self.generator.item_map.get_passable(x,y))
                         display.draw_examine_window((x,y), self.tileDict, self.generator.tile_map, self.monster_map, self.monster_dict, self.item_dict, self.player)
                         draw_screen_focus = False
                 if draw_screen_focus:
@@ -462,9 +462,12 @@ class Loops():
             display.update_display(self)
             mos_x, mos_y = pygame.mouse.get_pos()
             (x,y) = display.screen_to_tile(self.player, mos_x,mos_y)
+            self.draw_screen_focus = True
             if self.generator.tile_map.in_map(x,y):
-                display.draw_examine_window((x,y), self.tileDict, self.generator.tile_map, self.monster_map, self.monster_dict, self.item_dict, self.player)
-            else:
+                if self.generator.tile_map.track_map[x][y].visible and self.generator.tile_map.get_passable(x,y) and ((not self.generator.monster_map.get_passable(x,y)) or (not self.generator.item_map.get_passable(x,y))):
+                    display.draw_examine_window((x,y), self.tileDict, self.generator.tile_map, self.monster_map, self.monster_dict, self.item_dict, self.player)
+                    self.draw_screen_focus = False
+            if self.draw_screen_focus:
                 if self.screen_focus != None:
                     clear_target = display.draw_examine_window(self.screen_focus, self.tileDict, self.generator.tile_map, self.monster_map, self.monster_dict, self.item_dict, self.player)
                     if clear_target:

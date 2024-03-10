@@ -767,6 +767,7 @@ class Display:
             available_slot = False
             for item in player.character.inventory:
                 if item.equipment_type == "Ring" and (not item.equipped):
+                    print(item.equipped)
                     available_slot = True
                     break
             if available_slot == True:
@@ -793,7 +794,7 @@ class Display:
         if player.character.ring_2 == None:
             available_slot = False
             for item in player.character.inventory:
-                if item.equipment_type == "Ring":
+                if item.equipment_type == "Ring" and (not item.equipped):
                     available_slot = True
                     break
             if available_slot == True:
