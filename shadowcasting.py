@@ -18,7 +18,7 @@ def compute_fov(origin, tile_map):
 
         def reveal(tile):
             x, y = quadrant.transform(tile)
-            if (distance(tile) < 12): #Need a better place to put this shadowing number
+            if (distance(tile) < 8): #Need a better place to put this shadowing number
                 tile_map[x][y].seen = True
                 tile_map[x][y].visible = True
 
