@@ -94,6 +94,7 @@ class Memory():
         save = [self.explored_levels, self.floor_level, self.generators, self.player]
         try:
             with open("data.dill", "wb") as f:
+                print("Saved the game")
                 dill.dump(save, f)
         except Exception as ex:
             print("Error during pickling object (Possibly unsupported):", ex)
@@ -101,6 +102,7 @@ class Memory():
     def load_objects(self):
         with open('data.dill', 'rb') as f:
             # Call load method to deserialze
+            print("Loaded the game")
             save = dill.load(f)
         self.explored_levels = save [0]
         self.floor_level = save [1]

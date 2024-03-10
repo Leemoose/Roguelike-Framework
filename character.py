@@ -227,7 +227,7 @@ class Character():
                 damage = self.main_weapon.attack()
             else:
                 damage, effect = self.main_weapon.attack()
-            damage += random.randint(1, int(11 + self.dexterity * 1.5))
+            damage += random.randint(1, max(1,int(11 + self.dexterity * 1.5)))
         defense = defender.character.defend()
         finalDamage = self.base_damage + int(self.strength * 3) + damage - defense
         defender.character.take_damage(self.parent, finalDamage)
