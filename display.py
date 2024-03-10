@@ -292,12 +292,13 @@ class Display:
 
         num_skill = len(player.character.skills)
         if num_skill == 0:
-            pass
+            self.draw_empty_box(skill_bar_offset_from_left,
+                                skill_bar_offset_from_top,
+                                skill_bar_width, skill_bar_height)
         else:
             self.draw_empty_box(skill_bar_offset_from_left,
                                 skill_bar_offset_from_top,
                                 skill_bar_width, skill_bar_height)
-
             for i, skill in enumerate(player.character.skills):
                 img1 = pygame.transform.scale(tileDict.tiles[skill.render_tag],
                                                     (skill_button_width, skill_button_height))
