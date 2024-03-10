@@ -161,11 +161,9 @@ class Character():
             if item.equipable and item.equipped:
                 self.unequip(item)
             i = 0
-            while self.inventory[i].id_tag != item.id_tag and i < len(self.inventory):
+            while (self.inventory[i] != item) and i < len(self.inventory):
                 i += 1
             if i < len(self.inventory):
-                # print(self.inventory)
-                # print(i)
                 # import pdb; pdb.set_trace()
                 self.inventory.pop(i)
                 item_dict.add_subject(item)
