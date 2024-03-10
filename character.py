@@ -161,9 +161,10 @@ class Character():
             if item.equipable and item.equipped:
                 self.unequip(item)
             i = 0
-            while self.inventory[i].id_tag != item.id_tag and i < len(self.inventory):
+            while (self.inventory[i] != item) and i < len(self.inventory):
                 i += 1
             if i < len(self.inventory):
+                # import pdb; pdb.set_trace()
                 self.inventory.pop(i)
                 item_dict.add_subject(item)
                 item.x = self.parent.x
@@ -208,6 +209,7 @@ class Character():
 
         self.max_health += (strength_up * 2)
         self.max_health += (endurance_up * 10)
+        self.max_mana += (intelligence_up * 2)
 
     def get_damage_min(self):
         return self.get_damage()[0]
@@ -255,6 +257,7 @@ class Character():
             potion.activate(self)
             print(potion.stacks)
             if potion.stacks < 1:
+                print("drop potion now")
                 self.drop(potion, item_dict, item_map)
                 potion.destroy = True
             self.energy -= self.quaff_cost
