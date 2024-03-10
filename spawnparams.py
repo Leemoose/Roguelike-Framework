@@ -26,14 +26,14 @@ ItemSpawns = []                                                         # minFlo
 ItemSpawns.append(ItemSpawnParams( I.Ax(300),                 1,               5,          1,              1))
 ItemSpawns.append(ItemSpawnParams( I.Hammer(301),             1,               5,          0,              0))
 ItemSpawns.append(ItemSpawnParams( I.Dagger(321),             1,               5,          0,              0))
-ItemSpawns.append(ItemSpawnParams( I.MagicWand(332),          2,               8,          1,              1))
-ItemSpawns.append(ItemSpawnParams( I.Sword(340),           1,               10,          1,              5))
+ItemSpawns.append(ItemSpawnParams( I.MagicWand(332),          2,               10,          1,              1))
+ItemSpawns.append(ItemSpawnParams( I.Sword(340),           1,               5,          1,              5))
 
 ItemSpawns.append(ItemSpawnParams( I.ScreamingDagger(322),           1,               10,          1,              1))
-ItemSpawns.append(ItemSpawnParams( I.SleepingSword(341),           5,               10,          1,              1))
+ItemSpawns.append(ItemSpawnParams( I.SleepingSword(341),           3,               10,          1,              1))
 ItemSpawns.append(ItemSpawnParams( I.FlamingSword(331),       3,               10,          1,              1))
-ItemSpawns.append(ItemSpawnParams( I.CrushingHammer(302),       3,               10,          1,              1))
-ItemSpawns.append(ItemSpawnParams( I.SlicingAx(303),       3,               10,          1,              1))
+ItemSpawns.append(ItemSpawnParams( I.CrushingHammer(302),       2,               10,          1,              1))
+ItemSpawns.append(ItemSpawnParams( I.SlicingAx(303),       2,               10,          1,              1))
 
 ItemSpawns.append(ItemSpawnParams( I.BasicShield(311),             1,               5,          0,              0))
 ItemSpawns.append(ItemSpawnParams( I.Aegis(312),              3,               10,          1,              1))
@@ -55,7 +55,6 @@ ItemSpawns.append(ItemSpawnParams( I.AssassinBoots(703),              2,        
 
 ItemSpawns.append(ItemSpawnParams( I.Helmet(770),              1,               5,          0,              0))
 ItemSpawns.append(ItemSpawnParams( I.VikingHelmet(771),       2,               8,          0,              0))
-# spartan helmet, great helm, thief hood, wizard hat
 ItemSpawns.append(ItemSpawnParams( I.SpartanHelmet(772),       3,               10,          1,              1))
 ItemSpawns.append(ItemSpawnParams( I.GreatHelm(773),       3,               10,          1,              1))
 ItemSpawns.append(ItemSpawnParams( I.ThiefHood(774),       3,               10,          1,              1))
@@ -145,6 +144,9 @@ class ItemSpawner():
 
         # useful for debugging specific items, separate from generator
         self.forceSpawn = []
+
+        # self.forceSpawn.append(("Lich Hand", 3))
+        # self.forceSpawn.append(("Invincibility Scrorb", 3))
 
         # self.forceSpawn.append(("Bloodstained Armor", 3))
         # self.forceSpawn.append(("Boxing Gloves", 3))
