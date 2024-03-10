@@ -13,8 +13,9 @@ pygame.font.init()
 
 #Size of tiles
 textSize = 32
-width = 1920 #1920 * 4/5
-height = 1080 #1080 * 4/5
+infoObject = pygame.display.Info()
+width = infoObject.current_w #1920 * 4/5
+height = infoObject.current_h #1080 * 4/5
 textWidth = int(width / textSize)
 textHeight = int(height / textSize)
 #Haven't used yet
