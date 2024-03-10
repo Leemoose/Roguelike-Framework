@@ -1566,7 +1566,7 @@ class Potion(O.Item):
     def activate(self, entity):
         self.activate_once(entity)
         self.stacks -= 1
-        if self.stacks == 0:
+        if self.stacks <= 0:
             self.destroy = True
 
 class Scroll(O.Item):

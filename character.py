@@ -96,6 +96,8 @@ class Character():
             for effect in self.status_effects:
                 if isinstance(effect, E.Asleep):
                     effect.duration = 0
+        if damage < 0:
+            damage = 0
         self.health -= damage
         if not self.is_alive():
             dealer.kill_count += 1
