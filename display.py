@@ -1221,14 +1221,24 @@ class Display:
                 stats = item.stats.GetStatsForLevel(item.level)
                 if stats[2]> 0:
                     entity_text += "Intelligence: +" + str(stats[2]) + "<br>"
+                elif stats[2]<0:
+                    entity_text += "Intelligence: -" + str(stats[2]) + "<br>"
                 if stats[0] > 0:
+                    entity_text += "Strength: +" + str(stats[0]) + "<br>"
+                elif stats[0]<0:
                     entity_text += "Strength: +" + str(stats[0]) + "<br>"
                 if stats[1] > 0:
                     entity_text += "Dexterity: +" + str(stats[1]) + "<br>"
+                elif stats[1]<0:
+                    entity_text += "Dexterity: +" + str(stats[1]) + "<br>"
                 if stats[3] > 0:
+                    entity_text += "Endurance: +" + str(stats[3]) + "<br>"
+                elif stats[3]<0:
                     entity_text += "Endurance: +" + str(stats[3]) + "<br>"
                 if stats[4] > 0:
                     entity_text += "Armor: +" + str(stats[4]) + "<br>"
+                elif stats[4]<0:
+                    entity_text += "Armor: -" + str(stats[4]) + "<br>"
             elif isinstance(entity, I.Potion) or isinstance(entity, I.Ring):
                 entity_text += "Effect: " + str(entity.action_description) + "<br>"
             if item.attached_skill_exists:
