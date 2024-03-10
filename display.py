@@ -1235,7 +1235,7 @@ class Display:
                     entity_text += "<shadow size=1 offset=0,0 color=#901010><font color=#E0F0FF>" + "Once equipped, it cannot be taken off" +  "</font></shadow><br>"
                 entity_text += "Equipment type: " + item.equipment_type + "<br>"
                 if item.required_strength >= 0:
-                    if player.character.strength < item.required_strength:
+                    if player.character.strength+player.character.rounded() < item.required_strength:
                         req_str_text = "<shadow size=1 offset=0,0 color=#901010><font color=#E0F0FF>Required Strength: " + str(item.required_strength) + "(Unequippable) </font></shadow><br>"
                     else:
                         req_str_text = "Required Strength: " + str(item.required_strength) + "<br>"
@@ -1516,7 +1516,7 @@ class Display:
             object_id='#stat_label')
         
         # endurance
-        description = "En (currently " + str(player.character.endurance) + ") - increase your defense and your health growth"
+        description = "En (currently " + str(player.character.endurance) + ") - increase your defense and your max health"
         pygame_gui.elements.UILabel(
             relative_rect=pygame.Rect((stat_line_offset_from_left, stat_line_offset_from_top + 2 * (stat_line_height + stat_line_offset_from_each_other)), 
                                       (stat_line_width, stat_line_height)),
@@ -1525,7 +1525,7 @@ class Display:
             object_id='#stat_label')
         
         # intelligence
-        description = "Int (currently " + str(player.character.intelligence) + ") - increase your mana growth and skill damage"
+        description = "Int (currently " + str(player.character.intelligence) + ") - increase your max mana and skill damage"
         pygame_gui.elements.UILabel(
             relative_rect=pygame.Rect((stat_line_offset_from_left, stat_line_offset_from_top + 3 * (stat_line_height + stat_line_offset_from_each_other)), 
                                       (stat_line_width, stat_line_height)),

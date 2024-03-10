@@ -96,6 +96,8 @@ class Character():
             for effect in self.status_effects:
                 if isinstance(effect, E.Asleep):
                     effect.duration = 0
+        if damage < 0:
+            damage = 0
         self.health -= damage
         if not self.is_alive():
             dealer.kill_count += 1
@@ -206,6 +208,7 @@ class Character():
 
         self.max_health += (strength_up * 2)
         self.max_health += (endurance_up * 10)
+        self.max_mana += (intelligence_up * 2)
 
     def get_damage_min(self):
         return self.get_damage()[0]
