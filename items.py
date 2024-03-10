@@ -1054,6 +1054,26 @@ class BootsOfEscape(Armor):
             self.wearer.remove_skill(self.attached_skill(self.wearer.parent).name)
             self.wearer.add_skill(self.attached_skill(self.wearer.parent))
 
+class AssassinBoots(Boots):
+    def __init__(self, render_tag):
+        super().__init__(render_tag)
+        self.equipment_type = "Boots"
+        self.name = "Assassin Boots"
+        self.description = "Boots to help you move in the shadows."
+        self.rarity = "Rare"
+        self.stats = statUpgrades(base_dex = 2, max_dex = 5,
+                                  base_str = -2, max_str = 0,
+                                  base_int = 1, max_int = 3,
+                                  base_end = -2, max_end = 0,
+                                  base_arm = 1, max_arm = 3)
+
+    def level_up(self):
+        self.enchant()
+        if self.level == 2:
+            self.description += " It's been enchanted to make you feel more nimble."
+        if self.level == 6:
+            self.description = "Boots to help you move in the shadows. It's been enchanted as much as possible."
+
 class Gloves(Armor):
     def __init__(self, render_tag):
         super().__init__(-1,-1, 0, render_tag, "Gloves")
