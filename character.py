@@ -152,7 +152,7 @@ class Character():
         item_ID.remove_subject(key)
         itemx, itemy = item.get_location()
         generated_maps.item_map.clear_location(itemx, itemy)
-        loop.add_message("The " + str(self.parent.name) + " picked up an item!")
+        loop.add_message("The " + str(self.parent.name) + " picked up a " + str(item.name))
 
     def drop(self, item, item_dict,  item_map):
         if len(self.inventory) != 0 and item.dropable:
@@ -228,8 +228,11 @@ class Character():
                 damage = self.main_weapon.attack()
             else:
                 damage, effect = self.main_weapon.attack()
+            # this formula is pumping damage numbers way up
             damage += random.randint(1, max(1,int(11 + self.dexterity * 1.5)))
         defense = defender.character.defend()
+        if defense < 0:
+            defense = 0
         finalDamage = self.base_damage + int(self.strength * 3) + damage - defense
         defender.character.take_damage(self.parent, finalDamage)
         if effect != None:
@@ -417,7 +420,7 @@ class Player(O.Objects):
 
         self.path = []
 
-        self.invincible = False
+        self.invincible = True
 
         if self.invincible: # only get the gun if you're invincible at the start
             self.character.skills.extend([

@@ -926,7 +926,7 @@ class WizardRobe(BodyArmor):
 
         if self.wearer != None:
             self.wearer.max_mana += 10
-            self.wearer.mana_regen += 1
+            self.wearer.mana_regen += 5
 
         if self.level == 2:
             self.description += " It's been enchanted to make you more magical"
@@ -1264,7 +1264,7 @@ class LichHand(Armor):
         self.skill_cost = 30
         self.skill_duration = 4
 
-        self.health_cost = 30
+        self.health_cost = 2 # 1 / health cost is how much is removed
 
 
         self.rarity = "Legendary"
