@@ -152,7 +152,7 @@ class ItemSpawner():
         # self.forceSpawn.append(("Boxing Gloves", 3))
         # self.forceSpawn.append(("Blackened Boots", 5))
         # self.forceSpawn.append(("Ring of Teleportation", 3))
-        # self.forceSpawn = ("Flaming Sword", 5)
+        # self.forceSpawn.append(("Flaming Sword", 5))
         
     def countEquipment(self, depth):
         return random.randint(int(1 + 0.25 * (depth)), int(2 + 0.5 * (depth)))
@@ -367,6 +367,8 @@ class MonsterSpawner():
         # self.forceSpawn = ("Hobgorblin", 5) 
 
     def countSpawn(self, depth):
+        if depth == 10:
+            return 1
         return random.randint(int(2 + 0.5 * (depth)), int(4 + 1.0 * (depth)))
     
     def random_level(self, depth):

@@ -271,6 +271,7 @@ class SkillButton(pygame_gui.elements.UIButton):
         self.loop = loop
         self.set_text("")
         self.castable = False
+        self.active_state = self.drawable_shape.active_state
         self.ready = 0
         self.draw_on_button(self, self.img2, chr(ord("1") + index), self.relative_rect.size, True)
 
@@ -281,9 +282,10 @@ class SkillButton(pygame_gui.elements.UIButton):
             castable = False  # no monster to caste ranged skill on
         else:
             castable = skill.castable(closest_monster)
-        if castable != self.castable or skill.ready != self.ready:
+        if castable != self.castable or skill.ready != self.ready or self.active_state != self.drawable_shape.active_state:
             self.castable = castable
             self.ready = skill.ready
+            self.active_state = self.drawable_shape.active_state
             return True
         return False
 
