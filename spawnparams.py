@@ -67,7 +67,7 @@ ItemSpawns.append(ItemSpawnParams( I.HealingGloves(753),       3,               
 ItemSpawns.append(ItemSpawnParams( I.LichHand(754),            5,               10,          1,              1))
 
 ItemSpawns.append(ItemSpawnParams( I.RingOfSwiftness(500),               1,               10,          0,              0))
-ItemSpawns.append(ItemSpawnParams( I.RingOfTeleportation(502),              5,               10,          1,              1))
+ItemSpawns.append(ItemSpawnParams( I.RingOfTeleportation(505),              5,               10,          1,              1))
 ItemSpawns.append(ItemSpawnParams( I.BloodRing(501),          3,               10,          0,              0))
 ItemSpawns.append(ItemSpawnParams( I.RingOfMana(502),          1,               10,          0,              0))
 ItemSpawns.append(ItemSpawnParams( I.RingOfMight(503),          1,               10,          0,              0))
@@ -93,34 +93,73 @@ ItemSpawns.append(ItemSpawnParams( I.BlinkScrorb(450),      1,               10,
 ItemSpawns.append(ItemSpawnParams( I.MassHealScrorb(450),      1,               10,          1,              5))
 
 
-Floor_Distributions = [(0.9, 0.1, 0.0), # floor 1
-                       (0.7, 0.3, 0.0), # floor 2
-                       (0.5, 0.4, 0.1), # floor 3
-                       (0.3, 0.6, 0.1), # floor 4
-                       (0.3, 0.5, 0.2), # floor 5
-                       (0.3, 0.5, 0.2), # floor 6
-                       (0.3, 0.4, 0.3), # floor 7
-                       (0.3, 0.4, 0.3), # floor 8
-                       (0.3, 0.3, 0.4), # floor 9
-                       (0.3, 0.3, 0.4)] # floor 10
+Item_Equipment_Distributions = [(0.9, 0.1, 0.0), # floor 1
+                                (0.7, 0.3, 0.0), # floor 2
+                                (0.5, 0.4, 0.1), # floor 3
+                                (0.3, 0.6, 0.1), # floor 4
+                                (0.3, 0.5, 0.2), # floor 5
+                                (0.3, 0.5, 0.2), # floor 6
+                                (0.3, 0.4, 0.3), # floor 7
+                                (0.3, 0.4, 0.3), # floor 8
+                                (0.3, 0.3, 0.4), # floor 9
+                                (0.3, 0.3, 0.4)] # floor 10
+
+# no legendary potiorbs exist
+Item_Potiorb_Distributions = [(0.7, 0.3), # floor 1
+                              (0.7, 0.3), # floor 2
+                              (0.7, 0.3), # floor 3
+                              (0.7, 0.3), # floor 4
+                              (0.7, 0.3), # floor 5
+                              (0.7, 0.3), # floor 6
+                              (0.7, 0.3), # floor 7
+                              (0.7, 0.3), # floor 8
+                              (0.7, 0.3), # floor 9
+                              (0.7, 0.3)] # floor 10
+
+Item_Scrorb_Distributions = [(0.7, 0.3, 0.0), # floor 1
+                             (0.7, 0.3, 0.0), # floor 2
+                             (0.5, 0.4, 0.1), # floor 3
+                             (0.5, 0.4, 0.2), # floor 4
+                             (0.4, 0.4, 0.2), # floor 5
+                             (0.4, 0.4, 0.2), # floor 6
+                             (0.4, 0.4, 0.2), # floor 7
+                             (0.4, 0.4, 0.2), # floor 8
+                             (0.4, 0.4, 0.2), # floor 9
+                             (0.4, 0.4, 0.2)] # floor 10
+
 
 class ItemSpawner():
     def __init__(self, ItemSpawns):
         self.ItemSpawns = ItemSpawns
-        self.commonItems = [i for i in self.ItemSpawns if i.item.rarity == "Common"]
-        self.rareItems = [i for i in self.ItemSpawns if i.item.rarity == "Rare"]
-        self.legendaryItems = [i for i in self.ItemSpawns if i.item.rarity == "Legendary"]
+        self.commonEquip = [i for i in self.ItemSpawns if i.item.rarity == "Common" and i.item.equipable]
+        self.commonPotiorbs = [i for i in self.ItemSpawns if i.item.rarity == "Common" and i.item.equipment_type == "Potiorb"]
+        self.commonScrorbs = [i for i in self.ItemSpawns if i.item.rarity == "Common" and i.item.equipment_type == "Scrorb"]   
+        self.rareEquip = [i for i in self.ItemSpawns if i.item.rarity == "Rare" and i.item.equipable]
+        self.rarePotiorbs = [i for i in self.ItemSpawns if i.item.rarity == "Rare" and i.item.equipment_type == "Potiorb"]
+        self.rareScrorbs = [i for i in self.ItemSpawns if i.item.rarity == "Rare" and i.item.equipment_type == "Scrorb"]
+        self.legendaryEquip = [i for i in self.ItemSpawns if i.item.rarity == "Legendary" and i.item.equipable]
+        self.legendaryScrorbs = [i for i in self.ItemSpawns if i.item.rarity == "Legendary" and i.item.equipment_type == "Scrorb"]
+        self.ExtraCommon = [i for i in self.ItemSpawns if i.item.rarity == "Extra Common"]
 
         # useful for debugging specific items, separate from generator
         self.forceSpawn = []
 
         self.forceSpawn.append(("Bloodstained Armor", 3))
 
-        self.forceSpawn.append(("Enchant Scrorb", 3))
+        # self.forceSpawn.append(("Ring of Teleportation", 3))
         # self.forceSpawn = ("Flaming Sword", 5)
         
-    def countSpawn(self, depth):
-        return random.randint(int(2 + 0.25 * (10 - depth)), int(4 + 0.5 * (10 - depth)))
+    def countEquipment(self, depth):
+        return random.randint(int(2 + 0.25 * (depth)), int(3 + 0.5 * (depth)))
+    
+    def countPotiorbs(self, depth):
+        return random.randint(int(2 + 0.25 * (depth)), int(4 + 0.5 * (depth)))
+    
+    def countExtraCommon(self, depth):
+        return random.randint(1 + (depth - 1), 1 + 2 * (depth - 1))
+    
+    def countScrorbs(self, depth):
+        return random.randint(int(2 + 0.25 * (depth)), int(4 + 0.5 * (depth)))
     
     def random_level(self, depth):
         if depth < 4:
@@ -134,42 +173,49 @@ class ItemSpawner():
         if depth > 10:
             depth = 10
         items = []
-        commonAtDepth = [i for i in self.commonItems if i.AllowedAtDepth(depth)]
-        if depth == 1:
-            commonWeapons = [i for i in commonAtDepth if i.item.equipment_type == "Weapon"]
-            items.append(random.choice(commonWeapons).GetFreshCopy())
 
         for itemToSpawn in self.forceSpawn:
             for _ in range(itemToSpawn[1]):
                 item_spawn = [i for i in self.ItemSpawns if i.item.name == itemToSpawn[0]][0]
                 item = item_spawn.GetFreshCopy()
                 items.append(item)
+
+        commonEquipAtDepth = [i for i in self.commonEquip if i.AllowedAtDepth(depth)]
+        commonPotiorbsAtDepth = [i for i in self.commonPotiorbs if i.AllowedAtDepth(depth)]
+        commonScrorbsAtDepth = [i for i in self.commonScrorbs if i.AllowedAtDepth(depth)]
+        if depth == 1:
+            commonWeapons = [i for i in commonEquipAtDepth if i.item.equipment_type == "Weapon"]
+            items.append(random.choice(commonWeapons).GetFreshCopy())
         
-        rareAtDepth = [i for i in self.rareItems if i.AllowedAtDepth(depth)]
-        if rareAtDepth == []:
-            rareAtDepth = commonAtDepth
-        legendaryAtDepth = [i for i in self.legendaryItems if i.AllowedAtDepth(depth)]
-        if legendaryAtDepth == []: # downgrade if no legendary items available
-            if rareAtDepth == []:
-                legendaryAtDepth = commonAtDepth
+        rareEquipAtDepth = [i for i in self.rareEquip if i.AllowedAtDepth(depth)]
+        rarePotiorbsAtDepth = [i for i in self.rarePotiorbs if i.AllowedAtDepth(depth)]
+        rareScrorbsAtDepth = [i for i in self.rareScrorbs if i.AllowedAtDepth(depth)]
+        if rareEquipAtDepth == []:
+            rareEquipAtDepth = commonEquipAtDepth
+        legendaryEquipAtDepth = [i for i in self.legendaryEquip if i.AllowedAtDepth(depth)]
+        legendaryScrorbsAtDepth = [i for i in self.legendaryScrorbs if i.AllowedAtDepth(depth)]
+        if legendaryEquipAtDepth == []: # downgrade if no legendary items available
+            if rareEquipAtDepth == []:
+                legendaryAtDepth = commonEquipAtDepth
             else:
-                legendaryAtDepth = rareAtDepth
-        for i in range(self.countSpawn(depth)):
+                legendaryAtDepth = rareEquipAtDepth
+
+        for i in range(self.countEquipment(depth)):
             rarity = random.random()
-            if rarity < Floor_Distributions[depth-1][0]:
-                item_spawn = random.choice(commonAtDepth)
+            if rarity < Item_Equipment_Distributions[depth-1][0]:
+                item_spawn = random.choice(commonEquipAtDepth)
                 item = item_spawn.GetFreshCopy()
                 if item.can_be_levelled:
                     for _ in range(self.random_level(depth)):
                         item.level_up()
                 items.append(item)
-            elif rarity < Floor_Distributions[depth-1][0] + Floor_Distributions[depth-1][1]:
-                item_spawn = random.choice(rareAtDepth)
+            elif rarity < Item_Equipment_Distributions[depth-1][0] + Item_Equipment_Distributions[depth-1][1]:
+                item_spawn = random.choice(rareEquipAtDepth)
                 item = item_spawn.GetFreshCopy()
                 if item.can_be_levelled:
                     for _ in range(self.random_level(depth)):
                         item.level_up()
-                items.append(item)
+                items.append(item)     
             else:
                 item_spawn = random.choice(legendaryAtDepth)
                 item = item_spawn.GetFreshCopy()
@@ -177,6 +223,59 @@ class ItemSpawner():
                     for _ in range(self.random_level(depth)):
                         item.level_up()
                 items.append(item)
+        for i in range(self.countPotiorbs(depth)):
+            rarity = random.random()
+            if rarity < Item_Potiorb_Distributions[depth-1][0]:
+                item_spawn = random.choice(commonPotiorbsAtDepth)
+                item = item_spawn.GetFreshCopy()
+                items.append(item)
+            else:
+                item_spawn = random.choice(rarePotiorbsAtDepth)
+                item = item_spawn.GetFreshCopy()
+                items.append(item)
+        for i in range(self.countScrorbs(depth)):
+            rarity = random.random()
+            if rarity < Item_Scrorb_Distributions[depth-1][0]:
+                item_spawn = random.choice(commonScrorbsAtDepth)
+                item = item_spawn.GetFreshCopy()
+                items.append(item)
+            elif rarity < Item_Scrorb_Distributions[depth-1][0] + Item_Scrorb_Distributions[depth-1][1]:
+                item_spawn = random.choice(rareScrorbsAtDepth)
+                item = item_spawn.GetFreshCopy()
+                items.append(item)
+            else:
+                item_spawn = random.choice(legendaryScrorbsAtDepth)
+                item = item_spawn.GetFreshCopy()
+                items.append(item)
+        for i in range(self.countExtraCommon(depth)):
+            item_spawn = random.choice(self.ExtraCommon)
+            item = item_spawn.GetFreshCopy()
+            items.append(item)
+
+
+        # for i in range(self.countSpawn(depth)):
+        #     rarity = random.random()
+        #     if rarity < Floor_Distributions[depth-1][0]:
+        #         item_spawn = random.choice(commonAtDepth)
+        #         item = item_spawn.GetFreshCopy()
+        #         if item.can_be_levelled:
+        #             for _ in range(self.random_level(depth)):
+        #                 item.level_up()
+        #         items.append(item)
+        #     elif rarity < Floor_Distributions[depth-1][0] + Floor_Distributions[depth-1][1]:
+        #         item_spawn = random.choice(rareAtDepth)
+        #         item = item_spawn.GetFreshCopy()
+        #         if item.can_be_levelled:
+        #             for _ in range(self.random_level(depth)):
+        #                 item.level_up()
+        #         items.append(item)
+        #     else:
+        #         item_spawn = random.choice(legendaryAtDepth)
+        #         item = item_spawn.GetFreshCopy()
+        #         if item.can_be_levelled:
+        #             for _ in range(self.random_level(depth)):
+        #                 item.level_up()
+        #         items.append(item)
         return items
     
 item_spawner = ItemSpawner(ItemSpawns)

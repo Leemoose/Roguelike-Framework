@@ -1559,7 +1559,7 @@ class MassTormentScroll(Scroll):
     def __init__(self, render_tag):
         super().__init__(render_tag, "Mass Torment Scrorb")
         self.description = "Must kill everything."
-        self.rarity = "Common"
+        self.rarity = "Rare"
         self.skill = S.MassTorment(None, None, None)
 
     def activate_once(self, entity, loop):
@@ -1585,7 +1585,7 @@ class CallingScroll(Scroll):
     def __init__(self, render_tag):
         super().__init__(render_tag, "The Scrorb of Calling")
         self.description = "Read at your own peril."
-        self.rarity = "Common"
+        self.rarity = "Rare"
         self.skill = S.Awaken_Monsters(None, None, None)
 
     def activate_once(self, entity, loop):
@@ -1597,7 +1597,7 @@ class SleepScroll(Scroll):
     def __init__(self, render_tag):
         super().__init__(render_tag, "Sleeping Scrorb")
         self.description = "A guide to monster lullabies."
-        self.rarity = "Common"
+        self.rarity = "Rare"
         self.skill = S.Monster_Lullaby(None, None, None)
 
     def activate_once(self, entity, loop):
@@ -1609,7 +1609,7 @@ class ExperienceScroll(Scroll):
     def __init__(self, render_tag):
         super().__init__(render_tag, "Experience Scrorb")
         self.description = "Orb you glad you picked this up."
-        self.rarity = "Common"
+        self.rarity = "Rare"
         self.experience = 50
 
     def activate_once(self, entity, loop):
@@ -1689,7 +1689,7 @@ class EnchantScrorb(Scroll):
     def __init__(self, render_tag):
         super().__init__(render_tag, "Enchant Scrorb")
         self.description = "A scrorb that enchants an item."
-        self.rarity = "Common"
+        self.rarity = "Extra Common"
 
     def activate_once(self, entity, loop):
         loop.limit_inventory = "Enchantable"
@@ -1711,7 +1711,7 @@ class BlinkScrorb(Scroll):
     def __init__(self, render_tag):
         super().__init__(render_tag, "Blink Scrorb")
         self.description = "A scrorb that lets you cast blink once."
-        self.rarity = "Common"
+        self.rarity = "Rare"
 
     def activate_once(self, entity, loop):
         entity.ready_skill = S.BlinkToEmpty(entity.parent, 0, 0, 10, 1)
@@ -1722,7 +1722,7 @@ class MassHealScrorb(Scroll):
     def __init__(self, render_tag):
         super().__init__(render_tag, "Mass Heal Scrorb")
         self.description = "A scrorb that lets you cast mass heal once."
-        self.rarity = "Common"
+        self.rarity = "Rare"
         self.skill = S.MassHeal(None, None, None)
 
     def activate_once(self, entity, loop):
@@ -1741,7 +1741,7 @@ class OrbOfYendorb(O.Item):
         self.can_be_levelled = False
         self.equipped = False
         self.wearer = None
-        self.rarity = "Common"
+        self.rarity = "YENDORB"
         self.required_strength = 0
         self.attached_skill_exists = False
         self.yendorb = True
