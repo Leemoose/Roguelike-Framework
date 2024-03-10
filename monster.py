@@ -38,7 +38,7 @@ class Monster_AI():
         utility = self.rank_find_item(loop)
         if utility > max_utility:
             max_utility = utility
-            called_function = self.do_item_pickup
+            called_function = self.do_find_item
 
         utility = self.rank_equip_item(loop) #Needs to be fixed so that works with shields and swords
         if utility > max_utility:
@@ -155,7 +155,7 @@ class Monster_AI():
         if item == None:
             return
         else:
-            moves = pathfinding.astar(monster.get_location(), item.get_location(),loop.generator.monster_map.track_map, loop.player)
+            moves = pathfinding.astar(loop.generator.tile_map.track_map,monster.get_location(), item.get_location(),loop.generator.monster_map.track_map, loop.player)
             if len(moves) > 1:
                 xmove, ymove = moves.pop(1)
                 monster.move(xmove - monster.x, ymove - monster.y, loop.generator.tile_map, monster, loop.generator.monster_map, loop.player)
