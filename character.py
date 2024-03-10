@@ -551,7 +551,7 @@ class Player(O.Objects):
             # self.character.level_up()
             # self.awaiting_level_up = True
             self.character.level_up_max_health_and_mana()
-            self.stat_points += 4
+            self.stat_points += 2
             exp_taken = self.experience_to_next_level
             self.experience_to_next_level += 20 + self.experience_to_next_level // 4
             self.experience -= exp_taken
