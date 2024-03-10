@@ -159,6 +159,7 @@ class StatBox(pygame_gui.elements.UITextBox):
         self.player = player
         self.status = 'N'
         self.status_effects = []
+        self.status_effect_durations = []
         self.stat_points = -1
         self.level = -1
         self.experience = -1
@@ -176,8 +177,12 @@ class StatBox(pygame_gui.elements.UITextBox):
         return False
 
     def CompareStats(self, entity):
+        curr_status_effect_durations = []
+        for effect in entity.character.status_effects:
+            curr_status_effect_durations.append(effect.duration)
         return (self.status == self.get_health_status(entity) and
                 self.status_effects == entity.character.status_effects and
+                self.status_effect_durations == curr_status_effect_durations and
                 self.stat_points == entity.stat_points and
                 self.level == entity.level and
                 self.experience == entity.experience and
@@ -191,6 +196,9 @@ class StatBox(pygame_gui.elements.UITextBox):
     def SetCompareStats(self, entity):
         self.status = self.get_health_status(entity)
         self.status_effects = entity.character.status_effects
+        self.status_effect_durations = []
+        for effect in self.status_effects:
+            self.status_effect_durations.append(effect.duration)
         self.stat_points = entity.stat_points
         self.level = entity.level
         self.experience = entity.experience
