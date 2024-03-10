@@ -1558,7 +1558,7 @@ class Display:
             relative_rect=pygame.Rect((message_offset_from_left,message_offset_from_top), (message_width, message_height)),
             html_text = "You have died."
             ,
-            manager=self.uiManager
+            manager=self.uiManager, starting_height=1000
         )
 
         return buttons
