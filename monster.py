@@ -525,7 +525,7 @@ class Hobgoblin(Monster):
         self.character.armor = 0
 
 class Hobgorblin(Hobgoblin):
-    def __init__(self, x, y, render_tag=154, name="Hobgorblin"):
+    def __init__(self, x, y, render_tag=154, name="Horbgorblin"):
         super().__init__(x, y, render_tag, name)
         self.character.experience_given += 15
         self.orb = True
