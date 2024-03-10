@@ -227,7 +227,6 @@ class Monster_AI():
         generated_maps = loop.generator
         monster = self.parent
         item_key = item_map.locate(monster.x, monster.y)
-        print(item_key)
         monster.character.grab(item_key, item_dict, generated_maps, loop)
 
 

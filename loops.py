@@ -192,7 +192,6 @@ class Loops():
 
         if self.prev_energy != self.player.character.energy:
             self.prev_energy = self.player.character.energy
-            print("Energy: ", self.prev_energy)
         if self.currentLoop == LoopType.autoexplore:
             if self.player.character.needs_rest():
                 self.player.character.rest(self, LoopType.autoexplore)
@@ -279,7 +278,6 @@ class Loops():
                 self.update_screen = True
 
             elif event.type == pygame_gui.UI_BUTTON_PRESSED and hasattr(event.ui_element, "action"):
-                print(event.ui_element.action)
                 if (self.currentLoop == LoopType.main):
                     return keyboard.key_main_screen(event.ui_element.action, self)
                 elif (self.currentLoop == LoopType.inventory):

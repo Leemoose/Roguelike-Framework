@@ -255,9 +255,7 @@ class Character():
     def quaff(self, potion, item_dict, item_map):
         if potion.consumeable and potion.equipment_type == "Potiorb":
             potion.activate(self)
-            print(potion.stacks)
             if potion.stacks < 1:
-                print("drop potion now")
                 self.drop(potion, item_dict, item_map)
                 potion.destroy = True
             self.energy -= self.quaff_cost

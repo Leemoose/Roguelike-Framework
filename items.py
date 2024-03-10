@@ -709,7 +709,6 @@ class BodyArmor(Armor):
         self.stats = statUpgrades(base_str=1, max_str=1, base_end=1, max_end=4, base_arm=1, max_arm=4)
 
     def equip(self, entity):
-        print("equipping")
         if entity.main_armor != None:
             entity.unequip(entity.main_armor)
         entity.main_armor = self
