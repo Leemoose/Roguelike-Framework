@@ -1235,7 +1235,7 @@ class Display:
                     entity_text += "<shadow size=1 offset=0,0 color=#901010><font color=#E0F0FF>" + "Once equipped, it cannot be taken off" +  "</font></shadow><br>"
                 entity_text += "Equipment type: " + item.equipment_type + "<br>"
                 if item.required_strength >= 0:
-                    if player.character.strength < item.required_strength:
+                    if player.character.strength+player.character.rounded() < item.required_strength:
                         req_str_text = "<shadow size=1 offset=0,0 color=#901010><font color=#E0F0FF>Required Strength: " + str(item.required_strength) + "(Unequippable) </font></shadow><br>"
                     else:
                         req_str_text = "Required Strength: " + str(item.required_strength) + "<br>"
