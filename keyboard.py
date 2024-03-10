@@ -245,6 +245,8 @@ class Keyboard():
                 pass
         elif key == "h":
             loop.change_loop(LoopType.help)
+        elif key == "s":
+            loop.change_loop(LoopType.story)
         else:
             loop.down_floor()
             loop.change_loop(LoopType.action)

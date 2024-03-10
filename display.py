@@ -1552,7 +1552,7 @@ class Display:
 
 
     def create_main_screen(self):
-        num_buttons = 4
+        num_buttons = 5
         button_width = self.screen_width // (num_buttons + 1)
         button_height = self.screen_height // 8
         button_offset_from_bottom = self.screen_height * 95 // 100 - button_height
@@ -1584,12 +1584,20 @@ class Display:
         button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect(
             (button_offset_from_left + button_width * 2 + button_offset_from_each_other * 2, button_offset_from_bottom),
             (button_width, button_height)),
+                                              text='The Story So Far',
+                                              manager=self.uiManager)
+        button.action = "s"
+        buttons.add(button, "story")
+
+        button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect(
+            (button_offset_from_left + button_width * 3 + button_offset_from_each_other * 3, button_offset_from_bottom),
+            (button_width, button_height)),
                                               text='Help',
                                               manager=self.uiManager)
         button.action = "h"
         buttons.add(button, "help")
 
-        button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((button_offset_from_left+ button_width * 3 + button_offset_from_each_other * 3, button_offset_from_bottom), (button_width, button_height)),
+        button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((button_offset_from_left+ button_width * 4 + button_offset_from_each_other * 4, button_offset_from_bottom), (button_width, button_height)),
                                                  text='Quit',
                                                  manager=self.uiManager)
         button.action = "esc"
@@ -1652,6 +1660,58 @@ class Display:
 
     def update_help(self):
     #Main Screen
+        self.win.fill((0,0,0))
+        self.uiManager.draw_ui(self.win)
+
+    def create_story_screen(self):
+        button_width = self.screen_width // 4
+        button_height = self.screen_height // 8
+        button_offset_from_bottom = self.screen_height * 95 // 100 - button_height
+        button_offset_from_left = (self.screen_width -button_width) // 2
+
+        message_width = self.screen_width // 2
+        message_height = self.screen_height // 2
+        message_offset_from_left = self.screen_width // 4
+        message_offset_from_top = self.screen_height // 4
+
+        title_width = self.screen_width // 2
+        title_height = self.screen_height // 10
+        title_offset_from_left = self.screen_width // 4
+        title_offset_from_top = self.screen_height // 10
+
+
+        self.uiManager.clear_and_reset()
+        buttons = Buttons()
+
+        button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((button_offset_from_left, button_offset_from_bottom), (button_width, button_height)),
+                                                 text='Return to Main Menu',
+                                                 manager=self.uiManager)
+        button.action = "esc"
+        buttons.add(button, "Return to Main Menu")
+
+        pygame_gui.elements.UILabel(relative_rect=pygame.Rect((title_offset_from_left, title_offset_from_top), (title_width, title_height)),
+                                    text="The Story So Far",
+                                   manager=self.uiManager,
+                                    object_id='#title_label')
+
+        text_box = pygame_gui.elements.UITextBox(
+            relative_rect=pygame.Rect((message_offset_from_left,message_offset_from_top), (message_width, message_height)),
+            html_text = 
+            "Awakened by recent excavations, a terrible evil has descened up on the land. <br><br>" +
+            "The ORB of YENDORB - an ancient, malignant artifact designed to bring orbiness<br>" +
+            "into the world. The device has grown a dungeon around itself, and filled it<br>" +
+            "with unspeakable horrors to defend it. While it waits, it expands its magical power - <br>" +
+            "should it finish charging, all of existence will be made round.<br><br>" +
+            "As a Cornerian knight, you cannot let this evil continue! Delve deep into this<br>" +
+            "incomprehensible place, where roundess is power. Slay the aberrations that defend it, and<br>" +
+            "retrieve the orb before it completes its task. The fate of the world depends on you!<br>"
+            ,
+            manager=self.uiManager
+        )
+
+        return buttons
+    
+    def update_story_screen(self):
         self.win.fill((0,0,0))
         self.uiManager.draw_ui(self.win)
 
