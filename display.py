@@ -633,6 +633,7 @@ class Display:
         self.uiManager.clear_and_reset()
         pygame.draw.rect(self.win, (0,0,0), pygame.Rect(inventory_offset_from_left, inventory_offset_from_top, inventory_screen_width, inventory_screen_height))
 
+        self.draw_escape_button(inventory_button_offset_from_left, inventory_button_offset_from_top, inventory_screen_width, inventory_screen_height)
 
         pygame_gui.elements.UILabel(relative_rect=pygame.Rect((inventory_message_offset_from_left, inventory_message_offset_from_top),
                                                               (inventory_message_width, inventory_message_height)),
@@ -724,6 +725,8 @@ class Display:
 
         self.uiManager.clear_and_reset()
         pygame.draw.rect(self.win, (0,0,0), pygame.Rect(equipment_offset_from_left, equipment_offset_from_top, equipment_screen_width, equipment_screen_height))
+
+        self.draw_escape_button(equipment_message_offset_from_left, equipment_message_offset_from_top, equipment_screen_width, equipment_screen_height)
 
 
         pygame_gui.elements.UILabel(relative_rect=pygame.Rect((equipment_message_offset_from_left, equipment_message_offset_from_top),
@@ -1082,6 +1085,21 @@ class Display:
             manager=self.uiManager
         )
 
+    def draw_escape_button(self, windowX, windowY, window_width, window_height):
+        buttonWidth = 40
+        buttonHeight = 40
+
+        buttonX = windowX + window_width - buttonWidth
+        buttonY = windowY
+
+        esc_button = pygame_gui.elements.UIButton(
+            relative_rect=pygame.Rect((buttonX, buttonY), (buttonWidth, buttonHeight)),
+            text="X",
+            manager=self.uiManager,
+            starting_height=1000)
+        esc_button.action = "esc"
+
+
     def update_main(self):
     #Main Screen
         self.win.fill((0,0,0))
@@ -1131,6 +1149,9 @@ class Display:
         pygame.draw.rect(self.win, (112,128,144), pygame.Rect(entity_offset_from_left, entity_offset_from_top, entity_screen_width, entity_screen_height))
 
         self.win.blit(entity_image, (entity_image_offset_from_left, entity_image_offset_from_top))
+
+        if (create == True):
+            self.draw_escape_button(entity_offset_from_left, entity_offset_from_top, entity_screen_width, entity_screen_height)
 
         entity_name = entity.name
         if create == True:
@@ -1457,6 +1478,8 @@ class Display:
             
             button_2.action = "right"
             button_2.row = i
+
+        self.draw_escape_button(entity_message_offset_from_left, entity_message_offset_from_top, stat_line_width + stat_change_offset_from_each_other_width, entity_screen_height)
 
 
         #stat_line_outline_offset_from_left = stat_change_button_offset_from_left - entity_screen_width // 24
