@@ -294,7 +294,8 @@ class SleepingSword(Sword):
             self.description += " the cradle will rock."
         if self.level == 6:
             self.description = "Death is the greatest sleep of all."
-            self.damage_max += 100
+            self.damage_min = 1
+            self.damage_max = 100
         self.damage_min += 2
         self.damage_max += 3
         if self.damage_min > self.damage_max:
@@ -537,6 +538,8 @@ class Ring(Equipment):
         self.name = name
         self.description = "A ring that does something."
         self.can_be_levelled = False
+        self.required_strength = -100
+        self.action_description = "Power courses through your hands"
 
     def equip(self, entity):
         if self.equipped:
@@ -567,6 +570,7 @@ class RingOfSwiftness(Ring):
         super().__init__(render_tag, "Ring of Swiftness")
         self.description = "The most circular thing you own, it makes you feel spry on your feet"
         self.rarity = "Rare"
+        self.action_description = "You move a fifth faster"
 
     def activate(self, entity):
         entity.move_cost -= 20
@@ -578,6 +582,7 @@ class BloodRing(Ring):
     def __init__(self, render_tag):
         super().__init__(render_tag, "Blood Ring")
         self.description = "Pricking your finger on the spikes of this ring makes you feel alive."
+        self.action_description = "Gain the Blood Pact skill."
         
         # skill doesn't have an owner until equipped to an entity, so need a lambda expression here
         self.rarity = "Rare"
@@ -603,7 +608,7 @@ class RingOfMight(Ring):
         self.equipment_type = "Ring"
         self.name = "Ring of Might"
         self.description = "A ring that makes you feel stronger."
-
+        self.action_description = "Gain 4 strength"
         self.rarity = "Rare"
 
     def activate(self, entity):
@@ -616,7 +621,7 @@ class RingOfMana(Ring):
     def __init__(self, render_tag):
         super().__init__(render_tag, "Ring of Mana")
         self.description = "A ring that every spellcaster is given on their 10th birthday"
-
+        self.action_description = "Gain 20 mana, 3 intelligence and extra mana regen."
         self.rarity = "Rare"
 
     def activate(self, entity):
@@ -635,7 +640,7 @@ class BoneRing(Ring):
     def __init__(self, render_tag):
         super().__init__(render_tag, "Bone Ring")
         self.description = "An eerie ring that makes you much stronger and faster while wearing it but rapidly drains your health and mana"
-
+        self.action_description = "Gain 4 strength and 4 dexterity but lose health and mana over time."
         self.rarity = "Legendary"
 
     def activate(self, entity):
@@ -658,6 +663,7 @@ class RingOfTeleportation(Ring):
         self.description = "The most circular thing you own, it makes you feel spry on your feet"
         self.rarity = "Rare"
         self.name = "Ring of Teleportation"
+        self.action_description = "Gain the teleport skill."
 
         self.wearer = None  # items with stat buffs need to keep track of owner for level ups
 
@@ -1543,6 +1549,7 @@ class Potion(O.Item):
         self.can_be_levelled = False
         self.attached_skill_exists = False
         self.description = "A potiorb that does something."
+        self.action_description = "Something flows through your body"
         self.rarity = "Common"
         self.yendorb = False
 
@@ -1675,6 +1682,7 @@ class HealthPotion(Potion):
     def __init__(self, render_tag):
         super().__init__(render_tag, "Health Potiorb")
         self.description = "A potiorb that heals you."
+        self.action_description = "Heal by 20 + 10% max health."
         self.rarity = "Common"
 
     def activate_once(self, entity):
@@ -1685,6 +1693,7 @@ class MightPotion(Potion):
         super().__init__(render_tag, "Might Potiorb")
         self.description = "A potiorb that makes you stronger for a few turns."
         self.rarity = "Rare"
+        self.action_description = "Gain 5 strength temporarily."
 
     def activate_once(self, entity):
         effect = E.Might(5, 5)
@@ -1694,6 +1703,7 @@ class DexterityPotion(Potion):
     def __init__(self, render_tag):
         super().__init__(render_tag, "Dexterity Potiorb")
         self.description = "A potiorb that makes you more dexterous for a few turns."
+        self.action_description = "Gain 5 dexterity temporarily."
         self.rarity = "Rare"
 
     def activate_once(self, entity):
@@ -1704,6 +1714,7 @@ class PermanentDexterityPotion(Potion):
     def __init__(self, render_tag):
         super().__init__(render_tag, "Permanent Dex Potiorb")
         self.description = "Speed in a bottle"
+        self.action_description = "Gain 1 dexterity."
         self.rarity = "Rare"
 
     def activate_once(self, entity):
@@ -1713,6 +1724,7 @@ class PermanentStrengthPotion(Potion):
     def __init__(self, render_tag):
         super().__init__(render_tag, "Permanent Str Potiorb")
         self.description = "Strength in a bottle"
+        self.action_description = "Gain 1 strength."
         self.rarity = "Rare"
 
     def activate_once(self, entity):
@@ -1722,6 +1734,7 @@ class CurePotion(Potion):
     def __init__(self, render_tag):
         super().__init__(render_tag, "Cure Potiorb")
         self.description = "A potiorb that cures you of all status effects."
+        self.action_description = "Remove all status effects."
         self.rarity = "Rare"
 
     def activate_once(self, entity):
@@ -1734,6 +1747,7 @@ class ManaPotion(Potion):
     def __init__(self, render_tag):
         super().__init__(render_tag, "Mana Potiorb")
         self.description = "A potiorb that restores your mana."
+        self.action_description = "Gain 20 + 10% max mana."
         self.rarity = "Common"
 
     def activate_once(self, entity):

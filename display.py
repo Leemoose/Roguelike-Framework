@@ -1114,7 +1114,7 @@ class Display:
                 if item.cursed:
                     entity_text += "<shadow size=1 offset=0,0 color=#901010><font color=#E0F0FF>" + "Once equipped, it cannot be taken off" +  "</font></shadow><br>"
                 entity_text += "Equipment type: " + item.equipment_type + "<br>"
-                if item.required_strength > 0:
+                if item.required_strength >= 0:
                     if player.character.strength < item.required_strength:
                         req_str_text = "<shadow size=1 offset=0,0 color=#901010><font color=#E0F0FF>Required Strength: " + str(item.required_strength) + "(Unequippable) </font></shadow><br>"
                     else:
@@ -1136,6 +1136,8 @@ class Display:
                     entity_text += "Dexterity: +" + str(stats[1]) + "<br>"
                 if stats[3] > 0:
                     entity_text += "Endurance: +" + str(stats[4]) + "<br>"
+            elif isinstance(entity, I.Potion) or isinstance(entity, I.Ring):
+                entity_text += "Effect: " + str(entity.action_description) + "<br>"
             if item.attached_skill_exists:
                 entity_text += "Grants skill: " + item.get_attached_skill_description() + "<br>"
 
