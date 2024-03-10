@@ -40,6 +40,7 @@ class LoopType(Enum):
     victory = 16
     help = 17
     death = 18
+    story = 19
 
 class ColorDict():
     """
@@ -176,6 +177,8 @@ class Loops():
             pass
         elif newLoop == LoopType.help:
             self.display.create_help_screen()
+        elif newLoop == LoopType.story:
+            self.display.create_story_screen()
         elif newLoop == LoopType.death:
             self.display.create_death_screen()
     def action_loop(self, keyboard, display):
@@ -268,7 +271,7 @@ class Loops():
                         return False
                 elif self.currentLoop == LoopType.specific_examine:
                     keyboard.key_specific_examine(key, self, display)
-                elif self.currentLoop == LoopType.help:
+                elif self.currentLoop == LoopType.help or self.currentLoop == LoopType.story:
                     keyboard.key_help(key, self)
                 elif self.currentLoop == LoopType.death:
                     keyboard.key_death(key, self)
@@ -305,7 +308,7 @@ class Loops():
                 elif (self.currentLoop == LoopType.action):
                     key = event.ui_element.action
                     keyboard.key_action(self.player, self.tile_map, self.generator.monster_dict, self.monster_map, self.generator.item_dict, self, key, self.generator, display, self.memory)
-                elif (self.currentLoop == LoopType.help):
+                elif (self.currentLoop == LoopType.help or self.currentLoop == LoopType.story):
                     key = event.ui_element.action
                     keyboard.key_help(key, self)
                 elif self.currentLoop == LoopType.enchant:
@@ -479,6 +482,8 @@ class Loops():
             display.update_entity(self.screen_focus, tileDict, self.player, item_screen=False, create = True)
         elif self.currentLoop == LoopType.help:
             display.update_help()
+        elif self.currentLoop == LoopType.story:
+            display.update_story_screen()
         elif self.currentLoop == LoopType.death:
             display.update_death_screen()
         pygame.display.update()
