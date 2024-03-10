@@ -380,6 +380,7 @@ class Kobold(Monster):
         self.skills = []
         self.character.skills.append(S.BurningAttack(self, cooldown=10, cost=0, damage=10, burn_damage=5, burn_duration=5, range=1.5))
         self.character.experience_given = 10
+        self.character.health = 10
         self.character.max_health = 10
         self.endurance = 0
         self.strength = 0
@@ -397,7 +398,7 @@ class Korbold(Kobold):
         self.strength = 1
         self.dexterity = 1
         self.intelligence = 1
-
+        self.character.health = 15
         self.character.max_health = 15
 
         self.description = "A scaly orb with a penchant for setting things on fire. Including you."
@@ -415,7 +416,7 @@ class Goblin(Monster):
                                               action_cost=1))
         self.character.experience_given = 10
         self.description = "A cowardly creature with a tiny dagger"
-
+        self.character.health = 10
         self.character.max_health = 10
         self.strength = 1
         self.dexterity = 1
@@ -438,7 +439,7 @@ class GorblinShaman(Monster):
                                               action_cost=1))
         self.character.experience_given = 25
         self.description = "What's more cowardly than summoning your pals?"
-
+        self.character.health = 10
         self.character.max_health = 10
         self.strength = 1
         self.dexterity = 1
@@ -457,7 +458,7 @@ class Gorblin(Goblin):
         self.intelligence = 1
 
         self.description = "A cowardly orb with a tiny dagger. It will run away when low on health"
-
+        self.character.health = 10
         self.character.max_health = 10
         self.strength = 1
         self.dexterity = 1
@@ -479,7 +480,7 @@ class Hobgoblin(Monster):
                                               action_cost=1))
         self.character.experience_given = 10
         self.description = "The older cousin of its smaller green relatives."
-
+        self.character.health = 10
         self.character.max_health = 10
         self.strength = 5
         self.dexterity = 1
@@ -498,7 +499,7 @@ class Hobgorblin(Hobgoblin):
         self.intelligence = 3
 
         self.description = "An orb that can blink at you to engage a fight but knows when to tactically retreat"
-
+        self.character.health = 15
         self.character.max_health = 15
         self.strength = 3
         self.dexterity = 3
@@ -520,7 +521,7 @@ class Gargoyle(Monster):
         self.character.experience_given = 20
 
         self.description = "A stone creature that you feel could petrify you if it was rounder."
-
+        self.character.health = 20
         self.character.max_health = 20
         self.strength = 2
         self.dexterity = 0
@@ -539,7 +540,7 @@ class Gorbgoyle(Gargoyle):
         self.intelligence = 4
 
         self.description = "A stone orb that can petrify you with its gaze."
-
+        self.character.health = 30
         self.character.max_health = 30
         self.strength = 4
         self.dexterity = 4
@@ -556,7 +557,7 @@ class Minotaur(Monster):
         self.character.skills.append(S.ShrugOff(self, cooldown=3, cost=0, activation_chance=0.75, action_cost=1))
         self.character.experience_given = 20
         self.description = "A large, angry bull with mighty horns."
-
+        self.character.health = 40
         self.character.max_health = 40
         self.strength = 5
         self.dexterity = 2
@@ -571,7 +572,7 @@ class Minotaurb(Minotaur):
         self.orb = True
 
         self.description = "A large, angry orb with horns that can shrug off your status effects."
-
+        self.character.health = 45
         self.character.max_health = 45
         self.strength = 4
         self.dexterity = 4
@@ -589,7 +590,7 @@ class Orc(Monster):
         self.character.skills.append(S.Berserk(self, cooldown=0, cost=0, duration=-100, activation_threshold=0.25, strength_increase=25, action_cost=1))
         self.character.experience_given = 20
         self.description = "A strong humanoid with anger issues."
-
+        self.character.health = 30
         self.character.max_health = 30
         self.strength = 3
         self.dexterity = 0
@@ -602,6 +603,7 @@ class Orbc(Orc):
         super().__init__(x, y, render_tag, name)
         self.character.experience_given += 25
         self.orb = True
+        self.character.health = 30
         self.character.max_health = 30
         self.strength = 3
         self.dexterity = 3
@@ -619,7 +621,7 @@ class Golem(Monster):
         self.character.skills = []
         self.character.experience_given = 30
         self.description = "A large, slow creature made of stone."
-
+        self.character.health = 25
         self.character.max_health = 25
         self.strength = 2
         self.dexterity = 10
@@ -632,7 +634,7 @@ class Gorblem(Golem):
         super().__init__(x, y, render_tag, name)
         self.character.experience_given += 35
         self.orb = True
-        
+        self.character.health = 30
         self.character.max_health = 30
         self.strength = 4
         self.dexterity = 4
@@ -646,7 +648,7 @@ class Raptor(Monster):
     def __init__(self, x, y, render_tag=107, name="Velociraptor"):
         super().__init__(render_tag, x, y, name)
         self.character = C.Character(self)
-        
+        self.character.health = 20
         self.character.max_health = 20
         self.strength = 5
         self.dexterity = 12
@@ -663,6 +665,7 @@ class Raptorb(Raptor):
         super().__init__(x, y, render_tag, name)
         self.character.experience_given += 35
         self.orb = True
+        self.character.health = 45
         self.character.max_health = 45
         self.strength = 5
         self.dexterity = 5
@@ -683,7 +686,7 @@ class Tormentorb(Monster):
         self.character.skills.append(S.Torment(self, cooldown=10, cost=0, slow_duration=3, damage_percent=0.5, slow_amount=5, range=4, action_cost=100))
         self.character.experience_given = 65
         self.description = "A floating orb that can torment and slow you with its gaze."
-
+        self.character.health = 45
         self.character.max_health = 45
         self.strength = 8
         self.dexterity = 8
@@ -707,7 +710,7 @@ class BossOrb(Monster):
 
         self.character.experience_given = 1000
         self.description = "The orb of all orbs, the orbiest of orbs, the archetype of orbs... you get the idea."
-
+        self.character.health = 45
         self.character.max_health = 45
         self.strength = 12
         self.dexterity = 12

@@ -188,9 +188,9 @@ class Character():
         
     def level_up_max_health_and_mana(self):
         self.max_health += 5
-        self.health = self.max_health
+     #   self.health = self.max_health
         self.max_mana += 3
-        self.mana = self.max_mana
+      #  self.mana = self.max_mana
         self.base_damage += 1
 
     def level_up_stats(self, strength_up=1, dexterity_up=1, endurance_up=1, intelligence_up=1):

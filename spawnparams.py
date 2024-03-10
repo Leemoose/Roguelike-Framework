@@ -199,9 +199,9 @@ class ItemSpawner():
         legendaryScrorbsAtDepth = [i for i in self.legendaryScrorbs if i.AllowedAtDepth(depth)]
         if legendaryEquipAtDepth == []: # downgrade if no legendary items available
             if rareEquipAtDepth == []:
-                legendaryAtDepth = commonEquipAtDepth
+                legendaryEquipAtDepth = commonEquipAtDepth
             else:
-                legendaryAtDepth = rareEquipAtDepth
+                legendaryEquipAtDepth = rareEquipAtDepth
 
         for i in range(self.countEquipment(depth)):
             rarity = random.random()
@@ -220,7 +220,7 @@ class ItemSpawner():
                         item.level_up()
                 items.append(item)     
             else:
-                item_spawn = random.choice(legendaryAtDepth)
+                item_spawn = random.choice(legendaryEquipAtDepth)
                 item = item_spawn.GetFreshCopy()
                 if item.can_be_levelled:
                     for _ in range(self.random_level(depth)):
