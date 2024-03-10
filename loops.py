@@ -307,7 +307,7 @@ class Loops():
                 elif self.currentLoop == LoopType.death:
                     key = event.ui_element.action
                     keyboard.key_death(key, self)
-
+            
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if (self.currentLoop == LoopType.action):
                     x, y = pygame.mouse.get_pos()
@@ -328,6 +328,19 @@ class Loops():
                         ydiff = y_tile - player.y
                         self.player.attack_move(xdiff, ydiff, self)
                         self.update_screen = True
+                elif (self.currentLoop == LoopType.targeting):
+                    x, y = pygame.mouse.get_pos()
+                    player = self.player
+                    x_tile, y_tile = display.screen_to_tile(player, x, y)
+                    if self.generator.tile_map.in_map(x_tile, y_tile):
+                        if x_tile != self.targets.target_current[0] or y_tile != self.targets.target_current[1]:
+                            if self.generator.tile_map.get_passable(x_tile, y_tile):
+                                self.targets.target_current = (x_tile, y_tile)
+                                self.add_target((x_tile, y_tile))
+                                self.screen_focus = (x_tile, y_tile)
+                                self.update_screen = True
+                        else:
+                            keyboard.key_targeting_screen("return", self)
 
             elif event.type == pygame.MOUSEBUTTONUP:
                 x,y = pygame.mouse.get_pos()
@@ -434,10 +447,15 @@ class Loops():
             #                       self.monster_map, self.player, self.messages, self.target_to_display)
             # display.refresh_screen()
             display.update_display(self)
-            if self.screen_focus != None:
-                clear_target = display.draw_examine_window(self.screen_focus, self.tileDict, self.generator.tile_map, self.monster_map, self.monster_dict, self.item_dict, self.player)
-                if clear_target:
-                    self.screen_focus = None
+            mos_x, mos_y = pygame.mouse.get_pos()
+            (x,y) = display.screen_to_tile(self.player, mos_x,mos_y)
+            if self.generator.tile_map.in_map(x,y):
+                display.draw_examine_window((x,y), self.tileDict, self.generator.tile_map, self.monster_map, self.monster_dict, self.item_dict, self.player)
+            else:
+                if self.screen_focus != None:
+                    clear_target = display.draw_examine_window(self.screen_focus, self.tileDict, self.generator.tile_map, self.monster_map, self.monster_dict, self.item_dict, self.player)
+                    if clear_target:
+                        self.screen_focus = None
             display.update_examine(self.targets.target_current, self)
         elif self.currentLoop == LoopType.paused:
             display.update_pause_screen()
