@@ -375,7 +375,7 @@ class Loops():
 
             self.player.character.tick_regen()
 
-        if not self.player.character.is_alive() and not self.player.invincible:
+        if not self.player.character.is_alive() and not self.player.character.invincible and not self.player.invincible:
             self.change_loop(LoopType.death)
 
         #After everything, update the display clock

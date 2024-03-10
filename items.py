@@ -1803,6 +1803,7 @@ class OrbOfYendorb(O.Item):
     def __init__(self):
         super().__init__(-1, -1, 0, 161, "Orb of Yendorb")
         self.equipable = False
+        self.equipment_type = "Orb of Yendorb"
         self.description = "Its the all-powerful orb of yendorb. The magic animating it has deactivated"
         self.stackable = False
         self.level = 1

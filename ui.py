@@ -64,7 +64,7 @@ class FPSCounter(pygame_gui.elements.UILabel):
             if (val > highest):
                 highest = val
         self.FPS = 1 / (average / len(self.times))
-        self.best = 1 / lowest
+        self.best = 1 / max(1,lowest)
         self.worst = 1 / highest
 
     def truncate(self, f, n):
