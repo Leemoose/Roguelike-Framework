@@ -169,6 +169,7 @@ class StatBox(pygame_gui.elements.UITextBox):
         self.dexterity = -1
         self.endurance = -1
         self.intelligence = -1
+        self.rounded = 0
 
     def NeedsUpdate(self, entity):
         if not (self.CompareStats(entity)):
@@ -191,7 +192,9 @@ class StatBox(pygame_gui.elements.UITextBox):
                 self.strength == entity.character.strength and
                 self.dexterity ==entity.character.dexterity and
                 self.endurance == entity.character.endurance and
-                self.intelligence == entity.character.intelligence)
+                self.intelligence == entity.character.intelligence and
+                self.armor == entity.character.armor and
+                self.rounded == entity.character.round_bonus())
 
     def SetCompareStats(self, entity):
         self.status = self.get_health_status(entity)
@@ -208,6 +211,8 @@ class StatBox(pygame_gui.elements.UITextBox):
         self.dexterity = entity.character.dexterity
         self.endurance = entity.character.endurance
         self.intelligence = entity.character.intelligence
+        self.armor = entity.character.armor
+        self.rounded = entity.character.round_bonus()
 
     def get_health_status(self, entity):
         if entity.character.health < entity.character.max_health // 3 * 2:
@@ -233,15 +238,15 @@ class StatBox(pygame_gui.elements.UITextBox):
             to_next_level = str(format(entity.experience / entity.experience_to_next_level, ".1%"))
             return "Level: " + str(entity.level) + " (" + to_next_level + " there to next level)"
 
-    def stat_text(self, entity, stat):
-        if entity.character.rounded():
-            return str(stat) + " (+" + str(int(stat * entity.character.round_bonus()) - stat) + ")"
+    def stat_text(self, entity, stat, useRounded=True):
+        if entity.character.rounded() and useRounded:
+            return str(stat) + " (+" + str(entity.character.round_bonus()) + ")"
         else:
             return str(stat)
         
     def round_text(self, entity):
         if entity.character.rounded():
-            return "Your stats are well rounded.<br><br>"
+            return "You feel stronger due to your well-rounded-ness.<br><br>"
         else:
             return "Your stats are not well rounded.<br><br>"
 
@@ -254,6 +259,7 @@ class StatBox(pygame_gui.elements.UITextBox):
                             "Dexterity: " + self.stat_text(self.player, self.player.character.dexterity) + "<br>"
                             "Endurance: " + self.stat_text(self.player, self.player.character.endurance) + " "
                             "Intelligence: " + self.stat_text(self.player, self.player.character.intelligence) + "<br>" + \
+                            "Armor: " + self.stat_text(self.player, self.player.character.armor, False) + "<br>" + \
                             self.round_text(self.player) + \
                             "Status: " + self.get_status_text(self.player) + "<br>" + \
                             self.get_level_text(self.player) + "<br>")

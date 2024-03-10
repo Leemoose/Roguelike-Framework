@@ -29,7 +29,7 @@ class Character():
         self.can_teleport = True
         self.safe_rest = True
 
-        self.round_bonus_factor = 1.5 # stat bonus for being rounded
+        self.round_bonus_factor = 2 # stat bonus for being rounded
 
         self.inventory_limit = 18
 
@@ -82,7 +82,7 @@ class Character():
     def round_bonus(self):
         if self.rounded():
             return self.round_bonus_factor
-        return 1
+        return 0
 
     def is_alive(self):
         # print(self.invincible)
@@ -116,14 +116,14 @@ class Character():
             self.mana = self.max_mana
 
     def defend(self):
-        defense = self.armor + (int(self.endurance  * self.round_bonus()) // 3)
+        defense = self.armor + ((self.endurance + self.round_bonus()) // 3)
         return defense
 
     def skill_damage_increase(self):
-        return int((self.intelligence * 1.5 * self.round_bonus()) // 2)
+        return int(((self.intelligence + self.round_bonus()) * 1.5 ) // 2)
 
     def skill_duration_increase(self):
-        return (int(self.intelligence  * self.round_bonus()) // 4)
+        return ((self.intelligence + self.round_bonus()) // 3)
 
 
     def grab(self, key, item_ID, generated_maps, loop):
@@ -229,11 +229,11 @@ class Character():
             else:
                 damage, effect = self.main_weapon.attack()
             # this formula is pumping damage numbers way up
-            damage += random.randint(1, max(1,int(11 + self.dexterity * 1.5)))
+            damage += random.randint(1, max(1,int(11 + (self.dexterity + self.round_bonus())* 1.5)))
         defense = defender.character.defend()
         if defense < 0:
             defense = 0
-        finalDamage = self.base_damage + int(self.strength * 3) + damage - defense
+        finalDamage = self.base_damage + int((self.strength + self.round_bonus()) * 3) + damage - defense
         defender.character.take_damage(self.parent, finalDamage)
         if effect != None:
             effect = effect(self.parent) # some effects need an inflictor
@@ -243,7 +243,7 @@ class Character():
 
     def dodge(self):
         dodge_chance = random.randint(1,100)
-        if dodge_chance <= int(self.dexterity * self.round_bonus()):
+        if dodge_chance <= (int(self.dexterity + self.round_bonus()) * 2):
             return True
         else:
             return False
@@ -438,7 +438,7 @@ class Player(O.Objects):
 
     def attack_move(self, move_x, move_y, loop):
         if not self.character.movable:           
-            self.character.energy -= (self.character.move_cost - int(self.character.dexterity * self.character.round_bonus()))
+            self.character.energy -= (self.character.move_cost - int(self.character.dexterity + self.character.round_bonus()))
             loop.add_message("The player is petrified and cannot move.")
             return
         x = self.x + move_x
@@ -452,7 +452,7 @@ class Player(O.Objects):
 
     def move(self, move_x, move_y, loop):
         if loop.generator.tile_map.get_passable(self.x + move_x, self.y + move_y) and loop.generator.monster_map.get_passable(self.x + move_x, self.y + move_y):
-            self.character.energy -= int(self.character.move_cost/ (1.01**self.character.dexterity))
+            self.character.energy -= int(self.character.move_cost/ (1.02**(self.character.dexterity + self.character.round_bonus())))
             self.y += move_y
             self.x += move_x
         loop.add_message("The player moved.")
@@ -464,7 +464,7 @@ class Player(O.Objects):
         self.move(move_x,move_y, loop)
 
     def attack(self, defender, loop):
-        self.character.energy -= int(self.character.attack_cost / (1.05**self.character.dexterity))
+        self.character.energy -= int(self.character.attack_cost / (1.05**(self.character.dexterity + self.character.round_bonus())))
         loop.screen_focus = (defender.x, defender.y)
         if not self.character.dodge():
             damage = self.character.melee(defender)

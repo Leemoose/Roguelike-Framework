@@ -1226,7 +1226,9 @@ class Display:
                 if stats[1] > 0:
                     entity_text += "Dexterity: +" + str(stats[1]) + "<br>"
                 if stats[3] > 0:
-                    entity_text += "Endurance: +" + str(stats[4]) + "<br>"
+                    entity_text += "Endurance: +" + str(stats[3]) + "<br>"
+                if stats[4] > 0:
+                    entity_text += "Armor: +" + str(stats[4]) + "<br>"
             elif isinstance(entity, I.Potion) or isinstance(entity, I.Ring):
                 entity_text += "Effect: " + str(entity.action_description) + "<br>"
             if item.attached_skill_exists:
