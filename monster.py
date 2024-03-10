@@ -35,6 +35,11 @@ class Monster_AI():
             max_utility = utility
             called_function = self.do_item_pickup
 
+        utility = self.rank_find_item(loop)
+        if utility > max_utility:
+            max_utility = utility
+            called_function = self.do_item_pickup
+
         utility = self.rank_equip_item(loop) #Needs to be fixed so that works with shields and swords
         if utility > max_utility:
             max_utility = utility
@@ -73,6 +78,11 @@ class Monster_AI():
     def rank_flee(self, loop):
         if self.parent.character.flee:
             return 1000 # must flee if flag is set
+        return -1
+
+    def rank_find_item(self, loop):
+        if isinstance(self.parent, M.Goblin):
+            return 55
         return -1
 
     def rank_combat(self, loop):
@@ -130,6 +140,25 @@ class Monster_AI():
 
     def rank_move(self, loop):
         return 20
+
+    def do_find_item(self, loop):
+        monster = self.parent
+        item_dict = loop.generator.item_dict
+        distance = 1000
+        item = None
+        for key in item_dict.subjects:
+            temp_item = item_dict.get_subject(key)
+            temp_distance = monster.get_distance(temp_item.x, temp_item.y)
+            if temp_distance < distance:
+                distance = temp_distance
+                item = temp_item
+        if item == None:
+            return
+        else:
+            moves = pathfinding.astar(monster.get_location(), item.get_location(),loop.generator.monster_map.track_map, loop.player)
+            if len(moves) > 1:
+                xmove, ymove = moves.pop(1)
+                monster.move(xmove - monster.x, ymove - monster.y, loop.generator.tile_map, monster, loop.generator.monster_map, loop.player)
 
     def rank_ungroup(self, loop):
         player = loop.player
@@ -192,7 +221,9 @@ class Monster_AI():
         generated_maps = loop.generator
         monster = self.parent
         item_key = item_map.locate(monster.x, monster.y)
+        print(item_key)
         monster.character.grab(item_key, item_dict, generated_maps, loop)
+
 
     def do_combat(self, loop):
         # print("Attacking player")
