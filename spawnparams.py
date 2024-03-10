@@ -202,7 +202,10 @@ class MonsterSpawnParams:
         # level = depth + random.randint(-self.levelVariance, self.levelVariance)
 
         for _ in range(depth):
-            copied.character.level_up()
+            if (depth % 2 == 1):
+                copied.character.level_up(1,0,1,0)
+            else:
+                copied.character.level_up(0,1,0,1)
 
         return copied
     

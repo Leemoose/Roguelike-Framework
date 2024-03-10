@@ -380,10 +380,11 @@ class Kobold(Monster):
         self.skills = []
         self.character.skills.append(S.BurningAttack(self, cooldown=10, cost=0, damage=10, burn_damage=5, burn_duration=5, range=1.5))
         self.character.experience_given = 10
-        self.endurance = 2
-        self.strength = 2
-        self.dexterity = 1
-        self.intelligence = 1
+        self.character.max_health = 10
+        self.endurance = 0
+        self.strength = 0
+        self.dexterity = 4
+        self.intelligence = 4
 
         self.description = "A small, scaly creature with a mysterious satchel on its back."
 
@@ -392,10 +393,12 @@ class Korbold(Kobold):
         super().__init__(x, y, render_tag, name)
         self.character.experience_given += 15
         self.orb = True
-        self.endurance = 2
-        self.strength = 2
-        self.dexterity = 2
-        self.intelligence = 2
+        self.endurance = 1
+        self.strength = 1
+        self.dexterity = 1
+        self.intelligence = 1
+
+        self.character.max_health = 15
 
         self.description = "A scaly orb with a penchant for setting things on fire. Including you."
 
@@ -413,10 +416,12 @@ class Goblin(Monster):
         self.character.experience_given = 10
         self.description = "A cowardly creature with a tiny dagger"
 
-        self.endurance = 1
+        self.character.max_health = 10
         self.strength = 1
-        self.dexterity = 3
-        self.intelligence = 1
+        self.dexterity = 1
+        self.endurance = 0
+        self.intelligence = 0
+        self.character.armor = 0
 
 class GorblinShaman(Monster):
     def __init__(self, x, y, render_tag=162, name="Gorblin Shaman", activation_threshold=0.4):
@@ -434,10 +439,12 @@ class GorblinShaman(Monster):
         self.character.experience_given = 25
         self.description = "What's more cowardly than summoning your pals?"
 
-        self.endurance = 1
+        self.character.max_health = 10
         self.strength = 1
-        self.dexterity = 3
-        self.intelligence = 5
+        self.dexterity = 1
+        self.endurance = 1
+        self.intelligence = 1
+        self.character.armor = 0
 
 class Gorblin(Goblin):
     def __init__(self, x, y, render_tag=153, name="Gorblin", activation_threshold=0.4):
@@ -450,6 +457,13 @@ class Gorblin(Goblin):
         self.intelligence = 1
 
         self.description = "A cowardly orb with a tiny dagger. It will run away when low on health"
+
+        self.character.max_health = 10
+        self.strength = 1
+        self.dexterity = 1
+        self.endurance = 1
+        self.intelligence = 1
+        self.character.armor = 0
 
 class Hobgoblin(Monster):
     def __init__(self, x, y, render_tag=104, name="Hobgoblin"):
@@ -466,10 +480,12 @@ class Hobgoblin(Monster):
         self.character.experience_given = 10
         self.description = "The older cousin of its smaller green relatives."
 
-        self.endurance = 2
-        self.strength = 2
-        self.dexterity = 4
-        self.intelligence = 2
+        self.character.max_health = 10
+        self.strength = 5
+        self.dexterity = 1
+        self.endurance = 3
+        self.intelligence = 0
+        self.character.armor = 0
 
 class Hobgorblin(Hobgoblin):
     def __init__(self, x, y, render_tag=154, name="Hobgorblin"):
@@ -482,6 +498,12 @@ class Hobgorblin(Hobgoblin):
         self.intelligence = 3
 
         self.description = "An orb that can blink at you to engage a fight but knows when to tactically retreat"
+
+        self.character.max_health = 15
+        self.strength = 3
+        self.dexterity = 3
+        self.endurance = 3
+        self.intelligence = 3
 
 class Gargoyle(Monster):
     def __init__(self, x, y, render_tag=106, name="Gargoyle"):
@@ -499,6 +521,13 @@ class Gargoyle(Monster):
 
         self.description = "A stone creature that you feel could petrify you if it was rounder."
 
+        self.character.max_health = 20
+        self.strength = 2
+        self.dexterity = 0
+        self.endurance = 6
+        self.intelligence = 5
+        self.character.armor = 3
+
 class Gorbgoyle(Gargoyle):
     def __init__(self, x, y, render_tag=156, name="Gorbgoyle"):
         super().__init__(x, y, render_tag, name)
@@ -511,6 +540,13 @@ class Gorbgoyle(Gargoyle):
 
         self.description = "A stone orb that can petrify you with its gaze."
 
+        self.character.max_health = 30
+        self.strength = 4
+        self.dexterity = 4
+        self.endurance = 4
+        self.intelligence = 4
+        self.character.armor = 4
+
 class Minotaur(Monster):
     def __init__(self, x, y, render_tag=108, name="Minotaur"):
         super().__init__(render_tag, x, y, name)
@@ -521,22 +557,27 @@ class Minotaur(Monster):
         self.character.experience_given = 20
         self.description = "A large, angry bull with mighty horns."
 
-        self.endurance = 4
-        self.strength = 4
-        self.dexterity = 1
-        self.intelligence = 1
+        self.character.max_health = 40
+        self.strength = 5
+        self.dexterity = 2
+        self.endurance = 3
+        self.intelligence = 0
+        self.character.armor = 0
 
 class Minotaurb(Minotaur):
     def __init__(self, x, y, render_tag=158, name="Minotaurb"):
         super().__init__(x, y, render_tag, name)
         self.character.experience_given += 25
         self.orb = True
-        self.endurance = 8
-        self.strength = 8
-        self.dexterity = 3
-        self.intelligence = 1
 
         self.description = "A large, angry orb with horns that can shrug off your status effects."
+
+        self.character.max_health = 45
+        self.strength = 4
+        self.dexterity = 4
+        self.endurance = 4
+        self.intelligence = 4
+        self.character.armor = 0
 
 class Orc(Monster):
     def __init__(self, x, y, render_tag=101, name="Orc"):
@@ -549,20 +590,24 @@ class Orc(Monster):
         self.character.experience_given = 20
         self.description = "A strong humanoid with anger issues."
 
+        self.character.max_health = 30
+        self.strength = 3
+        self.dexterity = 0
         self.endurance = 3
-        self.strength = 7
-        self.dexterity = 3
-        self.intelligence = 1
+        self.intelligence = 0
+        self.character.armor = 1
 
 class Orbc(Orc):
     def __init__(self, x, y, render_tag=151, name="Orbc"):
         super().__init__(x, y, render_tag, name)
         self.character.experience_given += 25
         self.orb = True
-        self.endurance = 4
-        self.strength = 10
-        self.dexterity = 4
-        self.intelligence = 1
+        self.character.max_health = 30
+        self.strength = 3
+        self.dexterity = 3
+        self.endurance = 3
+        self.intelligence = 3
+        self.character.armor = 1
 
         self.description = "A strong orb that can channel its anger issues to make itself stronger."
 
@@ -575,20 +620,25 @@ class Golem(Monster):
         self.character.experience_given = 30
         self.description = "A large, slow creature made of stone."
 
-        self.endurance = 10
-        self.strength = 8
-        self.dexterity = -3
-        self.intelligence = 1
+        self.character.max_health = 25
+        self.strength = 2
+        self.dexterity = 10
+        self.endurance = 2
+        self.intelligence = 2
+        self.character.armor = 1
     
 class Gorblem(Golem):
     def __init__(self, x, y, render_tag=152, name="Gorblem"):
         super().__init__(x, y, render_tag, name)
         self.character.experience_given += 35
         self.orb = True
-        self.endurance = 15
-        self.strength = 15
-        self.dexterity = -5
-        self.intelligence = 1
+        
+        self.character.max_health = 30
+        self.strength = 4
+        self.dexterity = 4
+        self.endurance = 4
+        self.intelligence = 4
+        self.character.armor = 1
 
         self.description = "A large, slow orb made of stone. Don't let it catch up to you but that shouldn't be hard."
 
@@ -597,10 +647,12 @@ class Raptor(Monster):
         super().__init__(render_tag, x, y, name)
         self.character = C.Character(self)
         
-        self.endurance = 1
+        self.character.max_health = 20
         self.strength = 5
-        self.dexterity = 10
-        self.intelligence = 1
+        self.dexterity = 12
+        self.endurance = 0
+        self.intelligence = 0
+        self.character.armor = 0
 
         self.brain = Monster_AI(self)
         self.character.experience_given = 30
@@ -611,10 +663,12 @@ class Raptorb(Raptor):
         super().__init__(x, y, render_tag, name)
         self.character.experience_given += 35
         self.orb = True
-        self.endurance = 1
-        self.strength = 9
-        self.dexterity = 20
-        self.intelligence = 1
+        self.character.max_health = 45
+        self.strength = 5
+        self.dexterity = 5
+        self.endurance = 5
+        self.intelligence = 5
+        self.character.armor = 0
 
         self.description = "A ferocious orb that can move and attack with great speed."
 
@@ -630,10 +684,12 @@ class Tormentorb(Monster):
         self.character.experience_given = 65
         self.description = "A floating orb that can torment and slow you with its gaze."
 
-        self.endurance = 5
-        self.strength = 1
-        self.dexterity = 1
-        self.intelligence = 15
+        self.character.max_health = 45
+        self.strength = 8
+        self.dexterity = 8
+        self.endurance = 8
+        self.intelligence = 8
+        self.character.armor = 6
 
 class BossOrb(Monster):
     def __init__(self, x, y, render_tag=160, name="ORB OF YENDORB"):
@@ -652,7 +708,9 @@ class BossOrb(Monster):
         self.character.experience_given = 1000
         self.description = "The orb of all orbs, the orbiest of orbs, the archetype of orbs... you get the idea."
 
-        self.endurance = 25
-        self.strength = 25
-        self.dexterity = 25
-        self.intelligence = 25
+        self.character.max_health = 45
+        self.strength = 12
+        self.dexterity = 12
+        self.endurance = 12
+        self.intelligence = 12
+        self.character.armor = 6

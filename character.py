@@ -187,16 +187,20 @@ class Character():
         self.level_up_max_health_and_mana()
         
     def level_up_max_health_and_mana(self):
-        self.max_health += int(5 + (self.endurance  * self.round_bonus()) * 2)
+        self.max_health += 5
         self.health = self.max_health
-        self.max_mana += int(5 + (self.intelligence * self.round_bonus()))
+        self.max_mana += 3
         self.mana = self.max_mana
+        self.base_damage += 1
 
     def level_up_stats(self, strength_up=1, dexterity_up=1, endurance_up=1, intelligence_up=1):
         self.endurance += endurance_up
         self.intelligence += intelligence_up
         self.dexterity += dexterity_up
         self.strength += strength_up
+
+        self.max_health += (strength_up * 2)
+        self.max_health += (endurance_up * 10)
 
     def get_damage_min(self):
         return self.get_damage()[0]
@@ -219,13 +223,15 @@ class Character():
                 damage = self.main_weapon.attack()
             else:
                 damage, effect = self.main_weapon.attack()
+            damage += random.randint(1, int(11 + self.dexterity * 1.5))
         defense = defender.character.defend()
-        defender.character.take_damage(self.parent, self.base_damage + int(self.strength * self.round_bonus()) + damage - defense)
+        finalDamage = self.base_damage + int(self.strength * 3) + damage - defense
+        defender.character.take_damage(self.parent, finalDamage)
         if effect != None:
             effect = effect(self.parent) # some effects need an inflictor
             defender.character.add_status_effect(effect)
         self.energy -= self.attack_cost
-        return (self.base_damage + damage + int(self.strength * self.round_bonus()) - defense)
+        return (finalDamage)
 
     def dodge(self):
         dodge_chance = random.randint(1,100)
@@ -419,7 +425,7 @@ class Player(O.Objects):
             ])
 
     def attack_move(self, move_x, move_y, loop):
-        if not self.character.movable:
+        if not self.character.movable:           
             self.character.energy -= (self.character.move_cost - int(self.character.dexterity * self.character.round_bonus()))
             loop.add_message("The player is petrified and cannot move.")
             return
@@ -434,7 +440,7 @@ class Player(O.Objects):
 
     def move(self, move_x, move_y, loop):
         if loop.generator.tile_map.get_passable(self.x + move_x, self.y + move_y) and loop.generator.monster_map.get_passable(self.x + move_x, self.y + move_y):
-            self.character.energy -= (self.character.move_cost - int(self.character.dexterity * self.character.round_bonus()))
+            self.character.energy -= int(self.character.move_cost/ (1.05**self.character.dexterity))
             self.y += move_y
             self.x += move_x
         loop.add_message("The player moved.")
@@ -446,7 +452,7 @@ class Player(O.Objects):
         self.move(move_x,move_y, loop)
 
     def attack(self, defender, loop):
-        self.character.energy -= (self.character.attack_cost - int(self.character.dexterity * self.character.round_bonus()))
+        self.character.energy -= int(self.character.attack_cost / (1.05**self.character.dexterity))
         loop.screen_focus = (defender.x, defender.y)
         if not self.character.dodge():
             damage = self.character.melee(defender)
