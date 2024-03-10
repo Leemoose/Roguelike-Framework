@@ -159,7 +159,7 @@ class ItemSpawner():
         return random.randint(int(1 + 0.25 * (depth)), int(3 + 0.5 * (depth)))
     
     def countExtraCommon(self, depth):
-        return random.randint(1 + 0.25 * (depth - 1), 1 + 0.5 * (depth - 1))
+        return random.randint(int(1 + 0.25 * (depth - 1)), int(1 + 0.5 * (depth - 1)))
     
     def countScrorbs(self, depth):
         return random.randint(int(1 + 0.25 * (depth)), int(2 + 0.5 * (depth)))

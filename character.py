@@ -420,7 +420,7 @@ class Player(O.Objects):
 
         self.path = []
 
-        self.invincible = False
+        self.invincible = True
 
         if self.invincible: # only get the gun if you're invincible at the start
             self.character.skills.extend([
