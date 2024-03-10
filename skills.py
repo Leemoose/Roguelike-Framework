@@ -99,6 +99,7 @@ class Invinciblity(Skill):
         self.dur = duration
         self.by_scroll = by_scroll
         self.threshold = activation_threshold
+        self.render_tag = 915
 
     def activate(self, loop, bypass = False):
         if self.by_scroll:

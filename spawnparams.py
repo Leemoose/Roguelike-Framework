@@ -146,7 +146,7 @@ class ItemSpawner():
         self.forceSpawn = []
 
         # self.forceSpawn.append(("Bloodstained Armor", 3))
-        # self.forceSpawn.append(("Assassin Boots", 4))
+        # self.forceSpawn.append(("Boxing Gloves", 3))
         # self.forceSpawn.append(("Blackened Boots", 5))
         # self.forceSpawn.append(("Ring of Teleportation", 3))
         # self.forceSpawn = ("Flaming Sword", 5)

@@ -911,7 +911,8 @@ class KarateGi(BodyArmor):
     def __init__(self, render_tag):
         super().__init__(render_tag, "Karate Gi")
         self.description = "A gi that makes your unarmed combat stronger."
-        self.damage_boost = 30
+        self.damage_boost_min = 3
+        self.damage_boost_max = 4
 
         self.wearer = None # items with stat buffs need to keep track of owner for level ups
 
@@ -924,21 +925,22 @@ class KarateGi(BodyArmor):
                                   base_arm = 1, max_arm = 3)
 
     def activate(self, entity):
-        entity.unarmed_damage_min += self.damage_boost
-        entity.unarmed_damage_max += self.damage_boost
+        entity.unarmed_damage_min += self.damage_boost_min
+        entity.unarmed_damage_max += self.damage_boost_max
         return super().activate(entity)
 
     def deactivate(self, entity):
-        entity.unarmed_damage_min -= self.damage_boost
-        entity.unarmed_damage_max -= self.damage_boost
+        entity.unarmed_damage_min -= self.damage_boost_min
+        entity.unarmed_damage_max -= self.damage_boost_max
         return super().deactivate(entity)
 
     def level_up(self):
         self.enchant()
-        self.damage_boost += 4
+        self.damage_boost_min += 2
+        self.damage_boost_max += 3
         if self.wearer != None:
-            self.wearer.unarmed_damage_min += 4
-            self.wearer.unarmed_damage_max += 4
+            self.wearer.unarmed_damage_min += 2
+            self.wearer.unarmed_damage_max += 3
         if self.level == 2:
             self.description += " It's been enchanted to make your fists stronger"
         if self.level == 6:
@@ -1134,7 +1136,8 @@ class BoxingGloves(Armor):
         self.equipment_type = "Gloves"
         self.description = "Gloves that make your unarmed combat stronger."
         self.name = "Boxing Gloves"
-        self.damage_boost = 30 # yeah this needs to be high to compete with basic weapons
+        self.damage_boost_min = 3
+        self.damage_boost_max = 6
         self.stats = statUpgrades(base_str = 1, max_str = 5,
                                   base_dex = 1, max_dex = 5,
                                   base_arm = 0, max_arm = 2)
@@ -1143,22 +1146,23 @@ class BoxingGloves(Armor):
         if entity.gloves != None:
             entity.unequip(entity.gloves)
         entity.gloves = self
-        entity.unarmed_damage_min += self.damage_boost
-        entity.unarmed_damage_max += self.damage_boost
+        entity.unarmed_damage_min += self.damage_boost_min
+        entity.unarmed_damage_max += self.damage_boost_max
         self.activate(entity)
 
     def unequip(self, entity):
         entity.gloves = None
-        entity.unarmed_damage_min -= self.damage_boost
-        entity.unarmed_damage_max -= self.damage_boost
+        entity.unarmed_damage_min -= self.damage_boost_min
+        entity.unarmed_damage_max -= self.damage_boost_max
         self.deactivate(entity)
 
     def level_up(self):
         self.enchant()
-        self.damage_boost += 4
+        self.damage_boost_min += 2
+        self.damage_boost_max += 2
         if self.wearer != None:
-            self.wearer.unarmed_damage_min += 4
-            self.wearer.unarmed_damage_max += 4
+            self.wearer.unarmed_damage_min += 2
+            self.wearer.unarmed_damage_max += 2
         if self.level == 2:
             self.description += " It's been enchanted to make your fists stronger"
         if self.level == 6:
@@ -1714,7 +1718,7 @@ class EnchantScrorb(Scroll):
     def activate_once(self, entity, loop):
         loop.limit_inventory = "Enchantable"
         loop.change_loop(L.LoopType.enchant)
-        print("read enchant")
+        # print("read enchant")
 
 class BurningAttackScrorb(Scroll):
     def __init__(self, render_tag):

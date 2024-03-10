@@ -70,7 +70,7 @@ class Character():
         self.mana_partial = 0.0
 
         self.unarmed_damage_min = 1
-        self.unarmed_damage_max = 20
+        self.unarmed_damage_max = 2
 
     def rounded(self):
         # check all stats are equal
@@ -82,6 +82,7 @@ class Character():
         return 1
 
     def is_alive(self):
+        # print(self.invincible)
         if self.health <= 0 and not self.invincible:
             self.alive = False
             return False
@@ -402,7 +403,7 @@ class Player(O.Objects):
 
         self.path = []
 
-        self.invincible = True
+        self.invincible = False
 
         if self.invincible: # only get the gun if you're invincible at the start
             self.character.skills.extend([

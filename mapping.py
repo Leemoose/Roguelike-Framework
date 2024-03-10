@@ -230,6 +230,8 @@ class TileDict():
         tiles[-913] = image.load("assets/Torment_skill_icon_dark.png")
         tiles[914] = image.load("assets/teleport_skill_icon.png")
         tiles[-914] = image.load("assets/teleport_skill_icon_dark.png")
+        tiles[915] = image.load("assets/invincible_skill_icon.png")
+        tiles[-915] = image.load("assets/invincible_skill_icon_dark.png")
 
         self.tiles = tiles
 
