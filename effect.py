@@ -143,9 +143,6 @@ class Fear(StatusEffect):
     def remove(self, target):
         target.flee = False
 
-
-
-
 class Invincible(StatusEffect):
     def __init__(self, duration, inflictor = None):
         super().__init__(806, "Invincible", "can't be killed", duration)
@@ -188,3 +185,25 @@ class ArmorShredding(StatusEffect):
     def remove(self, target):
         target.armor += self.armor_shredded
         self.armor_shredded = 0
+
+class Bleed(StatusEffect):
+    def __init__(self, duration, damage, inflictor):
+        super().__init__(801, "Bleed", "is Bleeding", duration)
+        self.damage = damage
+        self.inflictor = inflictor
+
+    def apply_effect(self, target):
+        pass
+
+    def tick(self, target):
+        if self.duration == -100: # -100 is a special value that means the effect lasts forever, -1 probably works too but made it larger just in case
+            return
+        self.duration -= 1
+        if self.duration <= 0:
+            self.active = False
+        else:
+            target.take_damage(self.inflictor, self.damage)
+            self.duration -= 1
+
+    def remove(self, target):
+        pass
