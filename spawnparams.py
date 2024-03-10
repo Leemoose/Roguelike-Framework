@@ -367,6 +367,8 @@ class MonsterSpawner():
         # self.forceSpawn = ("Hobgorblin", 5) 
 
     def countSpawn(self, depth):
+        if depth == 10:
+            return 1
         return random.randint(int(2 + 0.5 * (depth)), int(4 + 1.0 * (depth)))
     
     def random_level(self, depth):
