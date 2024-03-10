@@ -123,7 +123,7 @@ class Keyboard():
             loop.change_loop(LoopType.examine)
             loop.targets.start_target(loop.player.get_location())
             loop.add_target(loop.player.get_location())
-            self.screen_focus = loop.targets.target_current
+            loop.screen_focus = loop.targets.target_current
             loop.update_screen = True
         elif key == "o":
             loop.change_loop(LoopType.autoexplore)
@@ -151,6 +151,7 @@ class Keyboard():
                         loop.add_message("You can't cast " + player.character.skills[skill_num].name + " right now.")
                 else:
                     loop.start_targetting(start_on_player=(not player.character.skills[skill_num].targets_monster))
+                    loop.screen_focus = loop.targets.target_current
                     loop.targets.store_skill(skill_num, player.character.skills[skill_num], player.character)
 
     def key_inventory(self, loop, player, item_dict, key):

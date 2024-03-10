@@ -766,7 +766,8 @@ class Display:
         if player.character.ring_1 == None:
             available_slot = False
             for item in player.character.inventory:
-                if item.equipment_type == "Ring":
+                if item.equipment_type == "Ring" and (not item.equipped):
+                    print(item.equipped)
                     available_slot = True
                     break
             if available_slot == True:
@@ -793,7 +794,7 @@ class Display:
         if player.character.ring_2 == None:
             available_slot = False
             for item in player.character.inventory:
-                if item.equipment_type == "Ring":
+                if item.equipment_type == "Ring" and (not item.equipped):
                     available_slot = True
                     break
             if available_slot == True:
@@ -1040,7 +1041,7 @@ class Display:
 
     def stat_text(self, entity, stat):
         if entity.character.rounded():
-            return str(stat) + " (+" + str(int(stat * entity.character.round_bonus()) - stat) + ")"
+            return str(stat) + " +" + str(int(stat * entity.character.round_bonus()) - stat)
         else:
             return str(stat)
         
@@ -1049,6 +1050,13 @@ class Display:
             return "You feel the dungeon enhancing your well-rounded stats.<br><br>"
         else:
             return "<br>"
+        
+    def stat_modifier(self, entity, stat):
+        if stat >= 0:
+            return "+" + str(stat)
+        else:
+            return str(stat)
+
 
     def draw_character_stats(self, player, margin_from_left, margin_from_top, width, height):
         if player.character.strength >= 0:
@@ -1074,7 +1082,7 @@ class Display:
                         "Skill Damage Bonus: " + str(player.character.skill_damage_increase()) + "<br>"
                         "Effect Duration Bonus: " + str(player.character.skill_duration_increase()) + "<br>"
                         "<br>Known Skills:<br>"
-                        + "<br>".join([str(i + 1) + ". " + skill.name for i, skill in enumerate(player.character.skills)])
+                        + "<br>".join([str(i + 1) + ". " + skill.description() for i, skill in enumerate(player.character.skills)])
                         ,
             manager=self.uiManager
         )
@@ -1243,23 +1251,23 @@ class Display:
                 if stats[2]> 0:
                     entity_text += "Intelligence: +" + str(stats[2]) + "<br>"
                 elif stats[2]<0:
-                    entity_text += "Intelligence: -" + str(stats[2]) + "<br>"
+                    entity_text += "Intelligence: " + str(stats[2]) + "<br>"
                 if stats[0] > 0:
                     entity_text += "Strength: +" + str(stats[0]) + "<br>"
                 elif stats[0]<0:
-                    entity_text += "Strength: +" + str(stats[0]) + "<br>"
+                    entity_text += "Strength: " + str(stats[0]) + "<br>"
                 if stats[1] > 0:
                     entity_text += "Dexterity: +" + str(stats[1]) + "<br>"
                 elif stats[1]<0:
-                    entity_text += "Dexterity: +" + str(stats[1]) + "<br>"
+                    entity_text += "Dexterity: " + str(stats[1]) + "<br>"
                 if stats[3] > 0:
                     entity_text += "Endurance: +" + str(stats[3]) + "<br>"
                 elif stats[3]<0:
-                    entity_text += "Endurance: +" + str(stats[3]) + "<br>"
+                    entity_text += "Endurance: " + str(stats[3]) + "<br>"
                 if stats[4] > 0:
                     entity_text += "Armor: +" + str(stats[4]) + "<br>"
                 elif stats[4]<0:
-                    entity_text += "Armor: -" + str(stats[4]) + "<br>"
+                    entity_text += "Armor: " + str(stats[4]) + "<br>"
             elif isinstance(entity, I.Potion) or isinstance(entity, I.Ring):
                 entity_text += "Effect: " + str(entity.action_description) + "<br>"
             if item.attached_skill_exists:
