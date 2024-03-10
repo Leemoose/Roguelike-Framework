@@ -51,6 +51,7 @@ ItemSpawns.append(ItemSpawnParams( I.BloodstainedArmor(606),        3,          
 ItemSpawns.append(ItemSpawnParams( I.Boots(700),              1,               5,          0,              0))
 ItemSpawns.append(ItemSpawnParams( I.BootsOfEscape(701),      3,               7,          0,              0))
 ItemSpawns.append(ItemSpawnParams( I.BlackenedBoots(702),              5,               10,          1,              1))
+ItemSpawns.append(ItemSpawnParams( I.AssassinBoots(703),              2,               10,          1,              1))
 
 ItemSpawns.append(ItemSpawnParams( I.Helmet(770),              1,               5,          0,              0))
 ItemSpawns.append(ItemSpawnParams( I.VikingHelmet(771),       2,               8,          0,              0))
@@ -145,8 +146,9 @@ class ItemSpawner():
         # useful for debugging specific items, separate from generator
         self.forceSpawn = []
 
-        self.forceSpawn.append(("Slicing Ax", 3))
-
+        # self.forceSpawn.append(("Bloodstained Armor", 3))
+        # self.forceSpawn.append(("Assassin Boots", 4))
+        # self.forceSpawn.append(("Blackened Boots", 5))
         # self.forceSpawn.append(("Ring of Teleportation", 3))
         # self.forceSpawn = ("Flaming Sword", 5)
         
