@@ -27,6 +27,7 @@ class Character():
         self.movable = True
         self.flee = False
         self.can_teleport = True
+        self.safe_rest = True
 
         self.round_bonus_factor = 1.5 # stat bonus for being rounded
 
@@ -327,6 +328,10 @@ class Character():
     
     def rest(self, loop):
         #print("in_rest")
+        if not self.safe_rest:
+            loop.add_message("Your ring is draining your health, it is not safe to rest now.")
+            loop.change_loop(L.LoopType.action)
+            return
         monster_dict = loop.monster_dict
         tile_map = loop.generator.tile_map
         no_monster_active = True

@@ -308,7 +308,7 @@ class MagicWand(Weapon):
         self.description = "A wand that you can use to cast magic missile. You can also use it in melee but why would you?"
         self.damage_min = 1
         self.damage_max = 5
-        self.magic_missile_damage = 25
+        self.magic_missile_damage = 6
         self.magic_missile_range = 6
         self.magic_missile_cost = 10
         self.magic_missile_cooldown = 3
@@ -335,7 +335,7 @@ class MagicWand(Weapon):
             self.description = "A wand that you can use to cast an immensely powerful magic missile. It's been enchanted as much as possible."
 
         # level up improves magic missile
-        self.magic_missile_damage += 5
+        self.magic_missile_damage += 2
         self.magic_missile_range += 1
         self.magic_missile_cooldown -= 1
         if self.magic_missile_cooldown < 0:
@@ -352,20 +352,20 @@ class FlamingSword(Weapon):
         self.melee = True
         self.name = "Flaming Sword"
         self.description = "A sword that is on fire. You can channel its fire to cast a Burning Attack at a distant foe. "
-        self.damage_min = 10
-        self.damage_max = 20
+        self.damage_min = 5
+        self.damage_max = 8
 
-        self.on_hit_burn = 5
+        self.on_hit_burn = 4
         self.on_hit_burn_duration = 3
         self.on_hit = (lambda inflictor : E.Burn(self.on_hit_burn, self.on_hit_burn_duration, inflictor))
         self.on_hit_description = f"Burns the target for {self.on_hit_burn} damage over {self.on_hit_burn_duration} turns."
 
-        self.skill_cooldown = 5
-        self.skill_cost = 10
-        self.skill_damage = 10
-        self.skill_burn_damage = 5
-        self.skill_burn_duration = 10
-        self.skill_range = 5
+        self.skill_cooldown = 8
+        self.skill_cost = 20
+        self.skill_damage = 3
+        self.skill_burn_damage = 4
+        self.skill_burn_duration = 3
+        self.skill_range = 4
         self.attached_skill_exists = True
 
         self.wearer = None # items with stat buffs or skills need to keep track of owner for level ups
@@ -391,12 +391,11 @@ class FlamingSword(Weapon):
             self.description = "A sword that burns intensely. It's burning strike has reached its maximum potency. It's been enchanted as much as possible."
         self.damage_min += 2
         self.damage_max += 3
-        self.on_hit_burn += 1
+        
         self.skill_damage += 2
-        self.skill_burn_damage += 2
         self.skill_cooldown -= 1
-        if self.skill_cooldown < 2:
-            self.skill_cooldown = 2
+        if self.skill_cooldown < 5:
+            self.skill_cooldown = 5
         
         if self.wearer != None:
             self.wearer.remove_skill(self.attached_skill(self.wearer.parent).name)
@@ -449,7 +448,7 @@ class Aegis(Shield):
         self.description = "A shield with the face of a horrifying monster on it. It can turn your enemies to stone"
         self.required_strength = 2
 
-        self.skill_cooldown = 10
+        self.skill_cooldown = 12
         self.skill_cost = 20
         self.skill_duration = 3
         self.skill_activation_chance = 0.3
@@ -457,7 +456,7 @@ class Aegis(Shield):
 
         self.attached_skill_exists = True
 
-        self.rarity = "Rare"
+        self.rarity = "Legendary"
         self.stats = statUpgrades(base_str=1, max_str=2, base_end=2, max_end=3, base_arm=2, max_arm=7)
 
 
@@ -586,7 +585,7 @@ class BloodRing(Ring):
 
     def attached_skill(self, owner):
         self.attached_skill_exists = True
-        return S.BloodPact(owner, cooldown=10, cost=10, strength_increase=10, duration=4, action_cost=100)
+        return S.BloodPact(owner, cooldown=10, cost=25, strength_increase=5, duration=5, action_cost=100)
         
 
     def activate(self, entity):
@@ -608,10 +607,10 @@ class RingOfMight(Ring):
         self.rarity = "Rare"
 
     def activate(self, entity):
-        entity.strength += 10
+        entity.strength += 4
 
     def deactivate(self, entity):
-        entity.strength -= 10
+        entity.strength -= 4
 
 class RingOfMana(Ring):
     def __init__(self, render_tag):
@@ -621,15 +620,15 @@ class RingOfMana(Ring):
         self.rarity = "Rare"
 
     def activate(self, entity):
-        entity.mana += 30
-        entity.max_mana += 30
-        entity.mana_regen += 5
+        entity.mana += 20
+        entity.max_mana += 20
+        entity.mana_regen += 4
         entity.intelligence += 3
 
     def deactivate(self, entity):
-        entity.mana -= 30
-        entity.max_mana -= 30
-        entity.mana_regen -= 5
+        entity.mana -= 20
+        entity.max_mana -= 20
+        entity.mana_regen -= 4
         entity.intelligence -= 3
 
 class BoneRing(Ring):
@@ -640,14 +639,16 @@ class BoneRing(Ring):
         self.rarity = "Legendary"
 
     def activate(self, entity):
-        entity.strength += 2
-        entity.dexterity += 2
+        self.entity.safe_rest = False
+        entity.strength += 4
+        entity.dexterity += 4
         entity.mana_regen -= 10
-        entity.health_regen -= 10
+        entity.health_regen -= 10 # intended to kill you if you don't take it off after a few turns
         
     def deactivate(self, entity):
-        entity.strength -= 2
-        entity.dexterity -= 2
+        self.entity.safe_rest = True
+        entity.strength -= 4
+        entity.dexterity -= 4
         entity.mana_regen += 10
         entity.health_regen += 10
 
@@ -660,8 +661,8 @@ class RingOfTeleportation(Ring):
 
         self.wearer = None  # items with stat buffs need to keep track of owner for level ups
 
-        self.skill_cooldown =100
-        self.skill_cost = 0
+        self.skill_cooldown = 40
+        self.skill_cost = 30
 
         self.attached_skill_exists = True
 
@@ -747,8 +748,8 @@ class GildedArmor(BodyArmor):
         self.description = "A piece of golden armor studded with gems. Just wearing it makes you feel like you can ignore trivial things like status effects."
         self.required_strength = 1
         
-        self.skill_cooldown = 15
-        self.skill_cost = 20
+        self.skill_cooldown = 5
+        self.skill_cost = 15
         self.activation_chance = 0.5
 
         self.attached_skill_exists = True
@@ -777,12 +778,12 @@ class GildedArmor(BodyArmor):
         self.enchant()
 
         self.skill_cooldown -= 1
-        if self.skill_cooldown < 5:
-            self.skill_cooldown = 5
+        if self.skill_cooldown < 3:
+            self.skill_cooldown = 3
         self.skill_cost -= 2
-        if self.skill_cost < 10:
-            self.skill_cost = 10
-        self.activation_chance += 0.2
+        if self.skill_cost < 8:
+            self.skill_cost = 8
+        self.activation_chance += 0.1
         if self.activation_chance > 1.0:
             self.activation_chance = 1.0
 
@@ -805,7 +806,7 @@ class WarlordArmor(BodyArmor):
 
         self.wearer = None # items with stat buffs need to keep track of owner for level ups
 
-        self.skill_cooldown = 10
+        self.skill_cooldown = 12
         self.skill_cost = 10
         self.skill_duration = 3
         self.skill_activation_chance = 0.5
@@ -930,7 +931,7 @@ class KarateGi(BodyArmor):
     def __init__(self, render_tag):
         super().__init__(render_tag, "Karate Gi")
         self.description = "A gi that makes your unarmed combat stronger."
-        self.damage_boost_min = 3
+        self.damage_boost_min = 2
         self.damage_boost_max = 4
 
         self.wearer = None # items with stat buffs need to keep track of owner for level ups
@@ -955,8 +956,8 @@ class KarateGi(BodyArmor):
 
     def level_up(self):
         self.enchant()
-        self.damage_boost_min += 2
-        self.damage_boost_max += 3
+        self.damage_boost_min += 1
+        self.damage_boost_max += 2
         if self.wearer != None:
             self.wearer.unarmed_damage_min += 2
             self.wearer.unarmed_damage_max += 3
@@ -1020,11 +1021,11 @@ class BootsOfEscape(Armor):
         self.armor = 0
         self.description = "Boots that let you cast the skill flee"
 
-        self.skill_cooldown = 10
+        self.skill_cooldown = 40
         self.skill_cost = 25
-        self.dex_buff = 20
-        self.str_debuff = 10
-        self.int_debuff = 10
+        self.dex_buff = 10
+        self.str_debuff = 5
+        self.int_debuff = 5
         self.duration = 4
         self.rarity = "Rare"
 
@@ -1062,7 +1063,7 @@ class BootsOfEscape(Armor):
             self.description += " It's been enchanted to let you flee on a shorter cooldown."
         if self.level == 6:
             self.description = "Boots that let you flee at the drop of a hat. It's been enchanted as much as possible."
-        self.skill_cooldown -= 1
+        self.skill_cooldown -= 5
         if self.skill_cooldown < 5:
             self.skill_cooldown = 5
         self.skill_cost -= 2
@@ -1155,8 +1156,8 @@ class BoxingGloves(Armor):
         self.equipment_type = "Gloves"
         self.description = "Gloves that make your unarmed combat stronger."
         self.name = "Boxing Gloves"
-        self.damage_boost_min = 3
-        self.damage_boost_max = 6
+        self.damage_boost_min = 2
+        self.damage_boost_max = 4
         self.stats = statUpgrades(base_str = 1, max_str = 5,
                                   base_dex = 1, max_dex = 5,
                                   base_arm = 0, max_arm = 2)
@@ -1177,8 +1178,8 @@ class BoxingGloves(Armor):
 
     def level_up(self):
         self.enchant()
-        self.damage_boost_min += 2
-        self.damage_boost_max += 2
+        self.damage_boost_min += 1
+        self.damage_boost_max += 3
         if self.wearer != None:
             self.wearer.unarmed_damage_min += 2
             self.wearer.unarmed_damage_max += 2
@@ -1198,7 +1199,7 @@ class HealingGloves(Armor):
         # self, parent, cooldown, cost, heal_amount, activation_threshold, action_cost):
         self.skill_cooldown = 15
         self.skill_cost = 25
-        self.heal_amount = 20
+        self.heal_amount = 35
         self.activation_threshold = 1.1
         self.action_cost = 100
         self.rarity = "Rare"
@@ -1255,7 +1256,7 @@ class LichHand(Armor):
 
         self.skill_cooldown = 20
         self.skill_cost = 30
-        self.skill_duration = 2
+        self.skill_duration = 4
 
         self.health_cost = 30
 
@@ -1300,9 +1301,6 @@ class LichHand(Armor):
         self.skill_cost -= 2
         if self.skill_cost < 10:
             self.skill_cost = 10
-        self.skill_duration += 1
-        if self.skill_duration > 4:
-            self.skill_duration = 4
 
         if self.wearer != None:
             self.wearer.remove_skill(self.attached_skill(self.wearer.parent).name)
@@ -1350,10 +1348,10 @@ class VikingHelmet(Armor):
         self.description = "A helmet that lets you go berserk below a quarter health."
         
         self.skill_cooldown = 0
-        self.skill_cost = 10
+        self.skill_cost = 0
         self.skill_duration = 10
         self.skill_threshold = 0.25
-        self.strength_increase = 10
+        self.strength_increase = 5
 
         self.rarity = "Legendary"
         self.str_buff = 3
@@ -1384,12 +1382,12 @@ class VikingHelmet(Armor):
     def level_up(self):
         self.enchant()
         if self.description == 2:
-            self.description += " It's been enchanted to raise the damage you need to take before going berserk"
+            self.description += " It's been enchanted to lower the damage you need to take before going berserk"
         if self.level == 6:
-            self.description = "A helmet that lets you go berserk below half health. It's been enchanted as much as possible"
-        self.skill_threshold += 0.1
-        if self.skill_threshold > 0.5:
-            self.skill_threshold = 0.5
+            self.description = "A helmet that lets you go berserk below three quarters. It's been enchanted as much as possible"
+        self.skill_threshold += 0.2
+        if self.skill_threshold > 0.75:
+            self.skill_threshold = 0.75
         if self.wearer != None:
             self.wearer.remove_skill(self.attached_skill(self.wearer.parent).name)
             self.wearer.add_skill(self.attached_skill(self.wearer.parent))
@@ -1628,7 +1626,7 @@ class InvincibilityScroll(Scroll):
         super().__init__(render_tag, "Invincibility Scrorb")
         self.description = "Death cannot hold me back."
         self.rarity = "Legendary"
-        self.skill = S.Invinciblity(self, 0, 10, 0)
+        self.skill = S.Invinciblity(self, 0, 5, 0)
 
     def activate_once(self, entity, loop):
         self.skill.parent = entity
@@ -1664,11 +1662,11 @@ class ExperienceScroll(Scroll):
     def __init__(self, render_tag):
         super().__init__(render_tag, "Experience Scrorb")
         self.description = "Orb you glad you picked this up."
-        self.rarity = "Rare"
+        self.rarity = "Legendary"
         self.experience = 50
 
     def activate_once(self, entity, loop):
-        entity.parent.experience += 50
+        entity.parent.experience += entity.parent.experience_to_next_level
         entity.parent.check_for_levelup()
         self.consume_scroll(entity)
         loop.change_loop(L.LoopType.inventory)
@@ -1680,7 +1678,7 @@ class HealthPotion(Potion):
         self.rarity = "Common"
 
     def activate_once(self, entity):
-        entity.gain_health(20)
+        entity.gain_health(20 + (entity.max_health // 10))
 
 class MightPotion(Potion):
     def __init__(self, render_tag):
@@ -1728,7 +1726,8 @@ class CurePotion(Potion):
 
     def activate_once(self, entity):
         for effect in entity.status_effects:
-            effect.remove(entity)
+            if not effect.positive:
+                effect.remove(entity)
         entity.status_effects = []
 
 class ManaPotion(Potion):
@@ -1738,7 +1737,7 @@ class ManaPotion(Potion):
         self.rarity = "Common"
 
     def activate_once(self, entity):
-        entity.gain_mana(20)
+        entity.gain_mana(20 + (entity.max_mana // 10))
 
 class EnchantScrorb(Scroll):
     def __init__(self, render_tag):
@@ -1758,7 +1757,7 @@ class BurningAttackScrorb(Scroll):
         self.rarity = "Common"
 
     def activate_once(self, entity, loop):
-        entity.ready_skill = S.BurningAttack(entity.parent, 0, 0, 10, 5, 5, 5)
+        entity.ready_skill = S.BurningAttack(entity.parent, 0, 0, 5, 4, 6, 7)
         loop.start_targetting()
         loop.targets.store_skill(0, entity.ready_skill, entity.parent, temp_cast=True)
 
