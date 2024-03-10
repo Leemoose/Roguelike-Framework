@@ -96,7 +96,7 @@ class Equipment(O.Item):
         entity.dexterity -= dex
         entity.intelligence -= intl
         entity.endurance -= end
-        entity.arm -= arm
+        entity.armor -= arm
         
 
     def can_be_equipped(self, entity):
@@ -155,6 +155,24 @@ class Ax(Weapon):
             self.description = "An axe with the roundest edge ever seen. It's been enchanted as much as possible."
         self.damage_min += 1
         self.damage_max += 3
+
+
+class SlicingAx(Ax):
+    def __init__(self, render_tag):
+        super().__init__(render_tag)
+        self.melee = True
+        self.name = "Slicing Ax"
+        self.description = "Like cutting paper "
+        self.can_be_levelled = True
+
+        self.on_hit = (lambda inflictor: E.Bleed(3, 4, self.wearer))
+        self.on_hit_description = f"The target starts to bleed."
+
+        self.wearer = None  # items with stat buffs or skills need to keep track of owner for level ups
+        self.rarity = "Rare"
+
+    def attack(self):
+        return (super().attack(), self.on_hit)
 
 class Hammer(Weapon):
     def __init__(self, render_tag):
@@ -1054,6 +1072,26 @@ class BootsOfEscape(Armor):
             self.wearer.remove_skill(self.attached_skill(self.wearer.parent).name)
             self.wearer.add_skill(self.attached_skill(self.wearer.parent))
 
+class AssassinBoots(Boots):
+    def __init__(self, render_tag):
+        super().__init__(render_tag)
+        self.equipment_type = "Boots"
+        self.name = "Assassin Boots"
+        self.description = "Boots to help you move in the shadows."
+        self.rarity = "Rare"
+        self.stats = statUpgrades(base_dex = 2, max_dex = 5,
+                                  base_str = -2, max_str = 0,
+                                  base_int = 1, max_int = 3,
+                                  base_end = -2, max_end = 0,
+                                  base_arm = 1, max_arm = 3)
+
+    def level_up(self):
+        self.enchant()
+        if self.level == 2:
+            self.description += " It's been enchanted to make you feel more nimble."
+        if self.level == 6:
+            self.description = "Boots to help you move in the shadows. It's been enchanted as much as possible."
+
 class Gloves(Armor):
     def __init__(self, render_tag):
         super().__init__(-1,-1, 0, render_tag, "Gloves")
@@ -1559,7 +1597,7 @@ class MassTormentScroll(Scroll):
     def __init__(self, render_tag):
         super().__init__(render_tag, "Mass Torment Scrorb")
         self.description = "Must kill everything."
-        self.rarity = "Common"
+        self.rarity = "Rare"
         self.skill = S.MassTorment(None, None, None)
 
     def activate_once(self, entity, loop):
@@ -1585,7 +1623,7 @@ class CallingScroll(Scroll):
     def __init__(self, render_tag):
         super().__init__(render_tag, "The Scrorb of Calling")
         self.description = "Read at your own peril."
-        self.rarity = "Common"
+        self.rarity = "Rare"
         self.skill = S.Awaken_Monsters(None, None, None)
 
     def activate_once(self, entity, loop):
@@ -1597,7 +1635,7 @@ class SleepScroll(Scroll):
     def __init__(self, render_tag):
         super().__init__(render_tag, "Sleeping Scrorb")
         self.description = "A guide to monster lullabies."
-        self.rarity = "Common"
+        self.rarity = "Rare"
         self.skill = S.Monster_Lullaby(None, None, None)
 
     def activate_once(self, entity, loop):
@@ -1609,7 +1647,7 @@ class ExperienceScroll(Scroll):
     def __init__(self, render_tag):
         super().__init__(render_tag, "Experience Scrorb")
         self.description = "Orb you glad you picked this up."
-        self.rarity = "Common"
+        self.rarity = "Rare"
         self.experience = 50
 
     def activate_once(self, entity, loop):
@@ -1689,7 +1727,7 @@ class EnchantScrorb(Scroll):
     def __init__(self, render_tag):
         super().__init__(render_tag, "Enchant Scrorb")
         self.description = "A scrorb that enchants an item."
-        self.rarity = "Common"
+        self.rarity = "Extra Common"
 
     def activate_once(self, entity, loop):
         loop.limit_inventory = "Enchantable"
@@ -1711,7 +1749,7 @@ class BlinkScrorb(Scroll):
     def __init__(self, render_tag):
         super().__init__(render_tag, "Blink Scrorb")
         self.description = "A scrorb that lets you cast blink once."
-        self.rarity = "Common"
+        self.rarity = "Rare"
 
     def activate_once(self, entity, loop):
         entity.ready_skill = S.BlinkToEmpty(entity.parent, 0, 0, 10, 1)
@@ -1722,7 +1760,7 @@ class MassHealScrorb(Scroll):
     def __init__(self, render_tag):
         super().__init__(render_tag, "Mass Heal Scrorb")
         self.description = "A scrorb that lets you cast mass heal once."
-        self.rarity = "Common"
+        self.rarity = "Rare"
         self.skill = S.MassHeal(None, None, None)
 
     def activate_once(self, entity, loop):
@@ -1741,7 +1779,7 @@ class OrbOfYendorb(O.Item):
         self.can_be_levelled = False
         self.equipped = False
         self.wearer = None
-        self.rarity = "Common"
+        self.rarity = "YENDORB"
         self.required_strength = 0
         self.attached_skill_exists = False
         self.yendorb = True

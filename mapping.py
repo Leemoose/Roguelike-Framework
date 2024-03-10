@@ -125,6 +125,7 @@ class TileDict():
 
         # weapon assets
         tiles[300] = image.load("assets/basic_ax.png")
+        tiles[303] = image.load("assets/bleeding_ax.png")
         tiles[301] = image.load("assets/hammer.png")
         tiles[302] = image.load("assets/crushing_hammer.png")
         tiles[321] = image.load("assets/dagger.png")
@@ -151,6 +152,7 @@ class TileDict():
         tiles[502] = image.load("assets/blue_ring.png")
         tiles[503] = image.load("assets/red_ring.png")
         tiles[504] = image.load("assets/bone_ring.png")
+        tiles[505] = image.load("assets/ring_of_teleport.png")
 
         # armor assets
         # list of armor: basic, leather, golden, warmonger, wizard robe
@@ -174,6 +176,7 @@ class TileDict():
         tiles[700] = image.load("assets/boots.png")
         tiles[701] = image.load("assets/boots_of_escape.png")
         tiles[702] = image.load("assets/blackened_boots.png")
+        tiles[703] = image.load("assets/assassin_boots.png")
 
         # gloves assets
         # list of gloves: basic, gauntlets
