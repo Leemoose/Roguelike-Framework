@@ -96,7 +96,7 @@ class Equipment(O.Item):
         entity.dexterity -= dex
         entity.intelligence -= intl
         entity.endurance -= end
-        entity.arm -= arm
+        entity.armor -= arm
         
 
     def can_be_equipped(self, entity):
