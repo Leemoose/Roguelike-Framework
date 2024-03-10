@@ -452,7 +452,7 @@ class Player(O.Objects):
 
     def move(self, move_x, move_y, loop):
         if loop.generator.tile_map.get_passable(self.x + move_x, self.y + move_y) and loop.generator.monster_map.get_passable(self.x + move_x, self.y + move_y):
-            self.character.energy -= int(self.character.move_cost/ (1.05**self.character.dexterity))
+            self.character.energy -= int(self.character.move_cost/ (1.01**self.character.dexterity))
             self.y += move_y
             self.x += move_x
         loop.add_message("The player moved.")

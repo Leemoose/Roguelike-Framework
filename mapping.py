@@ -202,6 +202,13 @@ class TileDict():
         tiles[805] = image.load("assets/empty_weapon.png")
         tiles[806] = image.load("assets/empty_shield.png")
         tiles[807] = image.load("assets/empty_ring.png")
+        tiles[811] = image.load("assets/empty_armor_open.png")
+        tiles[812] = image.load("assets/empty_boots_open.png")
+        tiles[813] = image.load("assets/empty_gloves_open.png")
+        tiles[814] = image.load("assets/empty_helmet_open.png")
+        tiles[815] = image.load("assets/empty_weapon_open.png")
+        tiles[816] = image.load("assets/empty_shield_open.png")
+        tiles[817] = image.load("assets/empty_ring_open.png")
 
         # skill assets
         tiles[901] = image.load("assets/target.png")

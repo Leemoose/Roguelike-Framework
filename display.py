@@ -734,8 +734,19 @@ class Display:
 
         # equipment_slots = ["shield", "ring", "ring", "helmet", "armor", "boots", "weapon", "gloves"]:
         if player.character.main_shield == None:
-            pre_text = "equip "
-            img = pygame.transform.scale(tileMap.tiles[806], (medium_button_width, medium_button_height))
+            available_slot = False
+            for item in player.character.inventory:
+                if item.equipment_type == "Shield":
+                    available_slot = True
+                    break
+            if available_slot == True:
+                pre_text = "change "
+                img = pygame.transform.scale(tileMap.tiles[816],
+                                             (medium_button_width, medium_button_height))
+            else:
+                pre_text = "no options "
+                img = pygame.transform.scale(tileMap.tiles[806], (medium_button_width, medium_button_height))
+
         else:
             pre_text = "change "
             img = pygame.transform.scale(tileMap.tiles[player.character.main_shield.render_tag], (medium_button_width, medium_button_height))
@@ -750,8 +761,19 @@ class Display:
         button.action = 'q'
 
         if player.character.ring_1 == None:
-            pre_text = "equip "
-            img = pygame.transform.scale(tileMap.tiles[807], (small_button_width, small_button_height))
+            available_slot = False
+            for item in player.character.inventory:
+                if item.equipment_type == "Ring":
+                    available_slot = True
+                    break
+            if available_slot == True:
+                pre_text = "change "
+                img = pygame.transform.scale(tileMap.tiles[817],
+                                             (small_button_width, small_button_height))
+            else:
+                pre_text = "no options "
+                img = pygame.transform.scale(tileMap.tiles[807], (small_button_width, small_button_height))
+
         else:
             pre_text = "change "
             img = pygame.transform.scale(tileMap.tiles[player.character.ring_1.render_tag], (small_button_width, small_button_height))
@@ -764,10 +786,20 @@ class Display:
                     object_id='#equipment_button')
         self.draw_on_button(button, img, "a", (small_button_width, small_button_height))
         button.action = 'a'
-        
+
         if player.character.ring_2 == None:
-            pre_text = "equip "
-            img = pygame.transform.scale(tileMap.tiles[807], (small_button_width, small_button_height))
+            available_slot = False
+            for item in player.character.inventory:
+                if item.equipment_type == "Ring":
+                    available_slot = True
+                    break
+            if available_slot == True:
+                pre_text = "change "
+                img = pygame.transform.scale(tileMap.tiles[817],
+                                             (small_button_width, small_button_height))
+            else:
+                pre_text = "no options "
+                img = pygame.transform.scale(tileMap.tiles[807], (small_button_width, small_button_height))
         else:
             pre_text = "change "
             img = pygame.transform.scale(tileMap.tiles[player.character.ring_2.render_tag], (small_button_width, small_button_height))
@@ -780,10 +812,21 @@ class Display:
                     object_id='#equipment_button')
         self.draw_on_button(button, img, "z", (small_button_width, small_button_height))
         button.action = 'z'
-        
+
         if player.character.helmet == None:
-            pre_text = "equip "
-            img = pygame.transform.scale(tileMap.tiles[804], (medium_button_width, medium_button_height))
+            available_slot = False
+            for item in player.character.inventory:
+                if item.equipment_type == "Helmet":
+                    available_slot = True
+                    break
+            if available_slot == True:
+                pre_text = "change "
+                img = pygame.transform.scale(tileMap.tiles[814],
+                                             (medium_button_width, medium_button_height))
+            else:
+                pre_text = "no options "
+                img = pygame.transform.scale(tileMap.tiles[804], (medium_button_width, medium_button_height))
+
         else:
             pre_text = "change "
             img = pygame.transform.scale(tileMap.tiles[player.character.helmet.render_tag], (medium_button_width, medium_button_height))
@@ -796,11 +839,21 @@ class Display:
                     object_id='#equipment_button')
         self.draw_on_button(button, img, "w", (medium_button_width, medium_button_height))
         button.action = 'w'
-        
-        
+
         if player.character.main_armor == None:
-            pre_text = "equip "
-            img = pygame.transform.scale(tileMap.tiles[801], (medium_button_width, medium_button_height))
+            available_slot = False
+            for item in player.character.inventory:
+                if item.equipment_type == "Body Armor":
+                    available_slot = True
+                    break
+            if available_slot == True:
+                pre_text = "change "
+                img = pygame.transform.scale(tileMap.tiles[811],
+                                             (medium_button_width, medium_button_height))
+            else:
+                pre_text = "no options "
+                img = pygame.transform.scale(tileMap.tiles[801], (medium_button_width, medium_button_height))
+
         else:
             pre_text = "change "
             img = pygame.transform.scale(tileMap.tiles[player.character.main_armor.render_tag], (medium_button_width, medium_button_height))
@@ -814,10 +867,21 @@ class Display:
         
         self.draw_on_button(button, img, "s", (medium_button_width, medium_button_height))
         button.action = 's'
-    
+
         if player.character.boots == None:
-            pre_text = "equip "
-            img = pygame.transform.scale(tileMap.tiles[802], (medium_button_width, medium_button_height))
+            available_slot = False
+            for item in player.character.inventory:
+                if item.equipment_type == "Boots":
+                    available_slot = True
+                    break
+            if available_slot == True:
+                pre_text = "change "
+                img = pygame.transform.scale(tileMap.tiles[812],
+                                             (medium_button_width, medium_button_height))
+            else:
+                pre_text = "no options "
+                img = pygame.transform.scale(tileMap.tiles[802], (medium_button_width, medium_button_height))
+
         else:
             pre_text = "change "
             img = pygame.transform.scale(tileMap.tiles[player.character.boots.render_tag], (medium_button_width, medium_button_height))
@@ -832,10 +896,21 @@ class Display:
 
         self.draw_on_button(button, img, "x", (medium_button_width, medium_button_height))
         button.action = 'x'
-        
+
         if player.character.main_weapon == None:
-            pre_text = "equip "
-            img = pygame.transform.scale(tileMap.tiles[805], (medium_button_width, medium_button_height))
+            available_slot = False
+            for item in player.character.inventory:
+                if item.equipment_type== "Weapon":
+                    available_slot = True
+                    break
+            if available_slot == True:
+                pre_text = "change "
+                img = pygame.transform.scale(tileMap.tiles[815],
+                                             (medium_button_width, medium_button_height))
+            else:
+                pre_text = "no options "
+                img = pygame.transform.scale(tileMap.tiles[805], (medium_button_width, medium_button_height))
+
         else:
             pre_text = "change "
             img = pygame.transform.scale(tileMap.tiles[player.character.main_weapon.render_tag], (medium_button_width, medium_button_height))
@@ -852,8 +927,19 @@ class Display:
         button.action = 'd'
 
         if player.character.gloves == None:
-            pre_text = "equip "
-            img = pygame.transform.scale(tileMap.tiles[803], (medium_button_width, medium_button_height))
+            available_slot = False
+            for item in player.character.inventory:
+                if item.equipment_type == "Gloves":
+                    available_slot = True
+                    break
+            if available_slot == True:
+                pre_text = "change "
+                img = pygame.transform.scale(tileMap.tiles[813],
+                                             (medium_button_width, medium_button_height))
+            else:
+                pre_text = "no options "
+                img = pygame.transform.scale(tileMap.tiles[803], (medium_button_width, medium_button_height))
+
         else:
             pre_text = "change "
             img = pygame.transform.scale(tileMap.tiles[player.character.gloves.render_tag], (medium_button_width, medium_button_height))

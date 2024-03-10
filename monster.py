@@ -450,6 +450,7 @@ class Goblin(Monster):
         self.description = "A cowardly creature with a tiny dagger"
         self.character.health = 10
         self.character.max_health = 10
+        self.character.move_cost = 75
         self.strength = 1
         self.dexterity = 1
         self.endurance = 0
@@ -591,6 +592,7 @@ class Minotaur(Monster):
         self.description = "A large, angry bull with mighty horns."
         self.character.health = 40
         self.character.max_health = 40
+        self.character.move_cost = 80
         self.strength = 5
         self.dexterity = 2
         self.endurance = 3
@@ -655,6 +657,7 @@ class Golem(Monster):
         self.description = "A large, slow creature made of stone."
         self.character.health = 25
         self.character.max_health = 25
+        self.character.move_cost = 200
         self.strength = 2
         self.dexterity = 10
         self.endurance = 2
@@ -680,6 +683,7 @@ class Raptor(Monster):
     def __init__(self, x, y, render_tag=107, name="Velociraptor"):
         super().__init__(render_tag, x, y, name)
         self.character = C.Character(self)
+        self.character.move_cost = 50
         self.character.health = 20
         self.character.max_health = 20
         self.strength = 5
@@ -744,6 +748,8 @@ class BossOrb(Monster):
         self.description = "The orb of all orbs, the orbiest of orbs, the archetype of orbs... you get the idea."
         self.character.health = 45
         self.character.max_health = 45
+        self.character.move_cost = 75
+        self.character.attack_cost = 75
         self.strength = 12
         self.dexterity = 12
         self.endurance = 12

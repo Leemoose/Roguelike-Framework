@@ -165,7 +165,7 @@ class SlicingAx(Ax):
         self.description = "Like cutting paper "
         self.can_be_levelled = True
 
-        self.on_hit = (lambda inflictor: E.Bleed(3, 4, self.wearer))
+        self.on_hit = (lambda inflictor: E.Bleed(3, 4, inflictor))
         self.on_hit_description = f"The target starts to bleed."
 
         self.wearer = None  # items with stat buffs or skills need to keep track of owner for level ups
