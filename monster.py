@@ -410,7 +410,7 @@ class Kobold(Monster):
     def __init__(self, x, y, render_tag=105, name="Kobold"):
         super().__init__(render_tag, x, y, name)
         self.skills = []
-        self.character.skills.append(S.BurningAttack(self, cooldown=10, cost=0, damage=10, burn_damage=5, burn_duration=5, range=1.5))
+        self.character.skills.append(S.BurningAttack(self, cooldown=10, cost=0, damage=10, burn_damage=4, burn_duration=5, range=1.5))
         self.character.experience_given = 10
         self.character.health = 10
         self.character.max_health = 10
@@ -430,8 +430,8 @@ class Korbold(Kobold):
         self.strength = 1
         self.dexterity = 1
         self.intelligence = 1
-        self.character.health = 15
-        self.character.max_health = 15
+        self.character.health = 20
+        self.character.max_health = 20
 
         self.description = "A scaly orb with a penchant for setting things on fire. Including you."
 
@@ -448,8 +448,8 @@ class Goblin(Monster):
                                               action_cost=1))
         self.character.experience_given = 10
         self.description = "A cowardly creature with a tiny dagger"
-        self.character.health = 10
-        self.character.max_health = 10
+        self.character.health = 15
+        self.character.max_health = 15
         self.strength = 1
         self.dexterity = 1
         self.endurance = 0
@@ -471,8 +471,8 @@ class GorblinShaman(Monster):
                                               action_cost=1))
         self.character.experience_given = 25
         self.description = "What's more cowardly than summoning your pals?"
-        self.character.health = 10
-        self.character.max_health = 10
+        self.character.health = 20
+        self.character.max_health = 20
         self.strength = 1
         self.dexterity = 1
         self.endurance = 1
@@ -490,8 +490,8 @@ class Gorblin(Goblin):
         self.intelligence = 1
 
         self.description = "A cowardly orb with a tiny dagger. It will run away when low on health"
-        self.character.health = 10
-        self.character.max_health = 10
+        self.character.health = 20
+        self.character.max_health = 20
         self.strength = 1
         self.dexterity = 1
         self.endurance = 1
@@ -504,7 +504,7 @@ class Hobgoblin(Monster):
         self.character = C.Character(self)
         self.brain = Monster_AI(self)
         self.character.skills = []
-        self.character.skills.append(S.BlinkStrike(self, cooldown=10, cost=0, damage=10, range=5, action_cost=1))
+        self.character.skills.append(S.BlinkStrike(self, cooldown=10, cost=0, damage=35, range=5, action_cost=1))
         self.character.skills.append(S.Escape(self, cooldown=100, 
                                               cost=0, self_fear=True, 
                                               dex_buff=30, str_debuff=20, int_debuff=20, haste_duration=-100,
@@ -512,8 +512,8 @@ class Hobgoblin(Monster):
                                               action_cost=1))
         self.character.experience_given = 10
         self.description = "The older cousin of its smaller green relatives."
-        self.character.health = 10
-        self.character.max_health = 10
+        self.character.health = 25
+        self.character.max_health = 25
         self.strength = 5
         self.dexterity = 1
         self.endurance = 3
@@ -531,8 +531,8 @@ class Hobgorblin(Hobgoblin):
         self.intelligence = 3
 
         self.description = "An orb that can blink at you to engage a fight but knows when to tactically retreat"
-        self.character.health = 15
-        self.character.max_health = 15
+        self.character.health = 25
+        self.character.max_health = 25
         self.strength = 3
         self.dexterity = 3
         self.endurance = 3
@@ -548,8 +548,8 @@ class Gargoyle(Monster):
         self.dexterity = 1
         self.intelligence = 1
         self.skills = []
-        # 20% chance to petrify for 2 turns
-        self.character.skills.append(S.Petrify(self, cooldown=10, cost=0, duration=2, activation_chance=0.2, range=3))
+        # 30% chance to petrify for 3 turns
+        self.character.skills.append(S.Petrify(self, cooldown=10, cost=0, duration=3, activation_chance=0.3, range=3))
         self.character.experience_given = 20
 
         self.description = "A stone creature that you feel could petrify you if it was rounder."
@@ -619,7 +619,7 @@ class Orc(Monster):
         self.brain = Monster_AI(self)
         self.character.skills = []
         # below 25% health, gains 25 strength
-        self.character.skills.append(S.Berserk(self, cooldown=0, cost=0, duration=-100, activation_threshold=0.25, strength_increase=25, action_cost=1))
+        self.character.skills.append(S.Berserk(self, cooldown=0, cost=0, duration=-100, activation_threshold=0.25, strength_increase=10, action_cost=1))
         self.character.experience_given = 20
         self.description = "A strong humanoid with anger issues."
         self.character.health = 30
@@ -744,8 +744,8 @@ class BossOrb(Monster):
         self.description = "The orb of all orbs, the orbiest of orbs, the archetype of orbs... you get the idea."
         self.character.health = 45
         self.character.max_health = 45
-        self.strength = 12
-        self.dexterity = 12
-        self.endurance = 12
-        self.intelligence = 12
-        self.character.armor = 6
+        self.strength = 18
+        self.dexterity = 18
+        self.endurance = 18
+        self.intelligence = 18
+        self.character.armor = 10

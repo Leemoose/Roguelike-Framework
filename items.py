@@ -963,10 +963,10 @@ class KarateGi(BodyArmor):
     def level_up(self):
         self.enchant()
         self.damage_boost_min += 1
-        self.damage_boost_max += 2
+        self.damage_boost_max += 1
         if self.wearer != None:
-            self.wearer.unarmed_damage_min += 2
-            self.wearer.unarmed_damage_max += 3
+            self.wearer.unarmed_damage_min += 1
+            self.wearer.unarmed_damage_max += 1
         if self.level == 2:
             self.description += " It's been enchanted to make your fists stronger"
         if self.level == 6:
@@ -1162,8 +1162,8 @@ class BoxingGloves(Armor):
         self.equipment_type = "Gloves"
         self.description = "Gloves that make your unarmed combat stronger."
         self.name = "Boxing Gloves"
-        self.damage_boost_min = 2
-        self.damage_boost_max = 4
+        self.damage_boost_min = 1
+        self.damage_boost_max = 3
         self.stats = statUpgrades(base_str = 1, max_str = 5,
                                   base_dex = 1, max_dex = 5,
                                   base_arm = 0, max_arm = 2)
@@ -1187,8 +1187,8 @@ class BoxingGloves(Armor):
         self.damage_boost_min += 1
         self.damage_boost_max += 3
         if self.wearer != None:
-            self.wearer.unarmed_damage_min += 2
-            self.wearer.unarmed_damage_max += 2
+            self.wearer.unarmed_damage_min += 1
+            self.wearer.unarmed_damage_max += 3
         if self.level == 2:
             self.description += " It's been enchanted to make your fists stronger"
         if self.level == 6:
