@@ -78,10 +78,10 @@ class Display:
     def create_display(self, loop):
         self.uiManager.clear_and_reset()
         #FPS counter
-        fps_counter = ui.FPSCounter(
-            pygame.Rect((0,0),(400,40)),
-            self.uiManager
-        )
+        #fps_counter = ui.FPSCounter(
+        #   pygame.Rect((0,0),(400,40)),
+        #    self.uiManager
+        #)
 
         tileDict = loop.tileDict
         monsterID = loop.monster_dict
