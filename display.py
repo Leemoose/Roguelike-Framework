@@ -655,6 +655,8 @@ class Display:
                 item_level = item.level
                 if item_level > 1:
                     item_name = item_name + " (+" + str(item_level - 1) + ")"
+            if item.equipped:
+                item_name = item_name + " (equipped)"
             button = pygame_gui.elements.UIButton(
                 relative_rect=pygame.Rect((inventory_button_offset_from_left, inventory_button_offset_from_top + inventory_button_offset_from_each_other * i + inventory_button_height * i),
                                                               (inventory_button_width, inventory_button_height)),
