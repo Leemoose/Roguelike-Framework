@@ -1,3 +1,5 @@
+import random
+
 import pygame, pygame_gui
 import display as D
 import mapping as M
@@ -342,8 +344,11 @@ class Loops():
             (self.currentLoop == LoopType.rest and self.player.character.energy < 0)):
             self.monster_loop(-self.player.character.energy)
             self.player.character.energy = 0
-            self.player.character.gain_health(max(1, self.player.character.max_health // 100))
-            self.player.character.gain_mana(max(1, self.player.character.max_mana // 100))
+
+            healing = random.randint(1,3)
+            if healing == 1:
+                self.player.character.gain_health(max(1, self.player.character.max_health // 100))
+                self.player.character.gain_mana(max(1, self.player.character.max_mana // 100))
             
             # do status effect stuff
             self.player.character.tick_all_status_effects()

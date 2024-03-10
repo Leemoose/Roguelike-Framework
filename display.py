@@ -1019,9 +1019,9 @@ class Display:
 
         entity_button_width = self.screen_width // 10
         entity_button_height = self.screen_height // 30
-        entity_button_offset_from_left = entity_offset_from_left+ self.screen_width // 20
+        entity_button_offset_from_left = (self.screen_width) // 2 - entity_button_width * 3 //2
         entity_button_offset_from_top = entity_screen_height + entity_offset_from_top - entity_button_height - self.screen_height // 50
-        entity_button_offset_from_each_other = self.screen_width // 20
+        entity_button_offset_from_each_other =  entity_button_width // 2
 
         entity_text_offset_from_left = entity_offset_from_left + entity_screen_width // 20
         entity_text_offset_from_top = entity_image_offset_from_top + entity_message_height
@@ -1099,14 +1099,6 @@ class Display:
                 buttons.add(button, "Drop")
                 buttons_drawn += 1
 
-                button = pygame_gui.elements.UIButton(
-                    relative_rect=pygame.Rect((entity_button_offset_from_left + (entity_button_width + entity_button_offset_from_each_other) * buttons_drawn, entity_button_offset_from_top),
-                                              (entity_button_width, entity_button_height)),
-                    text='Destroy',
-                    manager=self.uiManager)
-                button.action = "b"
-                buttons.add(button, "Destroy")
-                buttons_drawn += 1
 
         entity_text = ""
         entity_text += entity.description  + "<br><br>"
@@ -1533,7 +1525,6 @@ class Display:
         self.uiManager.draw_ui(self.win)
 
     def create_death_screen(self):
-
         message_width = self.screen_width // 8
         message_height = self.screen_height // 12
         message_offset_from_left = (self.screen_width - message_width) // 2
