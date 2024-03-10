@@ -1531,3 +1531,37 @@ class Display:
     #Main Screen
         self.win.fill((0,0,0))
         self.uiManager.draw_ui(self.win)
+
+    def create_death_screen(self):
+
+        message_width = self.screen_width // 8
+        message_height = self.screen_height // 12
+        message_offset_from_left = (self.screen_width - message_width) // 2
+        message_offset_from_top = (self.screen_height - message_height) // 2
+
+        button_width = self.screen_width // 8
+        button_height = self.screen_height // 12
+        button_offset_from_top = message_offset_from_top + message_height + button_height
+        button_offset_from_left = (self.screen_width -button_width) // 2
+
+
+        self.uiManager.clear_and_reset()
+        buttons = Buttons()
+
+        button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((button_offset_from_left, button_offset_from_top), (button_width, button_height)),
+                                                 text='Return to Main Menu',
+                                                 manager=self.uiManager)
+        button.action = "esc"
+        buttons.add(button, "Return to Main Menu")
+
+        text_box = pygame_gui.elements.UITextBox(
+            relative_rect=pygame.Rect((message_offset_from_left,message_offset_from_top), (message_width, message_height)),
+            html_text = "You have died."
+            ,
+            manager=self.uiManager
+        )
+
+        return buttons
+
+    def update_death_screen(self):
+        self.uiManager.draw_ui(self.win)

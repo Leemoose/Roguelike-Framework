@@ -37,6 +37,7 @@ class LoopType(Enum):
     level_up = 15
     victory = 16
     help = 17
+    death = 18
 
 class ColorDict():
     """
@@ -171,6 +172,8 @@ class Loops():
             pass
         elif newLoop == LoopType.help:
             self.display.create_help_screen()
+        elif newLoop == LoopType.death:
+            self.display.create_death_screen()
     def action_loop(self, keyboard, display):
         """
         This is responsible for undergoing any inputs when screen is clicked
@@ -259,10 +262,13 @@ class Loops():
                     keyboard.key_specific_examine(key, self, display)
                 elif self.currentLoop == LoopType.help:
                     keyboard.key_help(key, self)
+                elif self.currentLoop == LoopType.death:
+                    keyboard.key_death(key, self)
 
                 self.update_screen = True
 
             elif event.type == pygame_gui.UI_BUTTON_PRESSED and hasattr(event.ui_element, "action"):
+                print(event.ui_element.action)
                 if (self.currentLoop == LoopType.main):
                     return keyboard.key_main_screen(event.ui_element.action, self)
                 elif (self.currentLoop == LoopType.inventory):
@@ -296,6 +302,9 @@ class Loops():
                 elif self.currentLoop == LoopType.enchant:
                     key = event.ui_element.action
                     keyboard.key_enchant(self, self.player, self.item_dict, key)
+                elif self.currentLoop == LoopType.death:
+                    key = event.ui_element.action
+                    keyboard.key_death(key, self)
 
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if (self.currentLoop == LoopType.action):
@@ -347,8 +356,7 @@ class Loops():
             self.player.character.tick_regen()
 
         if not self.player.character.is_alive() and not self.player.invincible:
-            self.clear_data()
-            self.init_game(display)
+            self.change_loop(LoopType.death)
 
         #After everything, update the display clock
         display.update_ui()
@@ -432,6 +440,8 @@ class Loops():
             display.update_entity(self.screen_focus, tileDict, self.player, item_screen=False, create = True)
         elif self.currentLoop == LoopType.help:
             display.update_help()
+        elif self.currentLoop == LoopType.death:
+            display.update_death_screen()
         pygame.display.update()
         self.update_screen = False
 
