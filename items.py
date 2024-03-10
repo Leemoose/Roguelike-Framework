@@ -156,6 +156,24 @@ class Ax(Weapon):
         self.damage_min += 1
         self.damage_max += 3
 
+
+class SlicingAx(Ax):
+    def __init__(self, render_tag):
+        super().__init__(render_tag)
+        self.melee = True
+        self.name = "Slicing Ax"
+        self.description = "Like cutting paper "
+        self.can_be_levelled = True
+
+        self.on_hit = (lambda inflictor: E.Bleed(3, 4, self.wearer))
+        self.on_hit_description = f"The target starts to bleed."
+
+        self.wearer = None  # items with stat buffs or skills need to keep track of owner for level ups
+        self.rarity = "Rare"
+
+    def attack(self):
+        return (super().attack(), self.on_hit)
+
 class Hammer(Weapon):
     def __init__(self, render_tag):
         super().__init__(-1, -1, 0, render_tag, "Hammer")

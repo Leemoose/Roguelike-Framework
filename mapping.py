@@ -125,6 +125,7 @@ class TileDict():
 
         # weapon assets
         tiles[300] = image.load("assets/basic_ax.png")
+        tiles[303] = image.load("assets/bleeding_ax.png")
         tiles[301] = image.load("assets/hammer.png")
         tiles[302] = image.load("assets/crushing_hammer.png")
         tiles[321] = image.load("assets/dagger.png")
