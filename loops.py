@@ -191,13 +191,17 @@ class Loops():
             self.prev_energy = self.player.character.energy
             print("Energy: ", self.prev_energy)
         if self.currentLoop == LoopType.autoexplore:
-            all_seen, _ = self.generator.all_seen()
-            if all_seen:
-                self.change_loop(LoopType.action)
-                self.add_message("You have explored the entire floor")
-            else:
-                self.player.autoexplore(self)
-                self.monster_loop(0)
+            if self.player.character.needs_rest():
+                self.player.character.rest(self, LoopType.autoexplore)
+            
+            if not self.player.character.needs_rest():
+                all_seen, _ = self.generator.all_seen()
+                if all_seen:
+                    self.change_loop(LoopType.action)
+                    self.add_message("You have explored the entire floor")
+                else:
+                    self.player.autoexplore(self)
+                    self.monster_loop(0)
         
         if self.currentLoop == LoopType.search_stairs:
             self.player.find_stairs(self)
@@ -213,7 +217,7 @@ class Loops():
             #         monster_present = True
             # if not monster_present:
             # print("resting")
-            self.player.character.rest(self)
+            self.player.character.rest(self, LoopType.action)
 
                 # self.change_loop(LoopType.action)
                 
@@ -356,7 +360,8 @@ class Loops():
             display.uiManager.process_events(event)
 
         if ((self.currentLoop == LoopType.action and self.player.character.energy < 0) or
-            (self.currentLoop == LoopType.rest and self.player.character.energy < 0)):
+            (self.currentLoop == LoopType.rest and self.player.character.energy < 0) or
+            (self.currentLoop == LoopType.autoexplore and self.player.character.energy < 0)):
             self.monster_loop(-self.player.character.energy)
             self.player.character.energy = 0
 

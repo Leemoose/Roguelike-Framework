@@ -328,8 +328,11 @@ class Character():
         if abs(self.mana_partial) >= 1:
             self.gain_mana(self.mana_partial // 1)
             self.mana_partial = self.mana_partial % 1
+
+    def needs_rest(self):
+        return self.health < self.max_health or self.mana < self.max_mana
     
-    def rest(self, loop):
+    def rest(self, loop, returnLoopType):
         #print("in_rest")
         if not self.safe_rest:
             loop.add_message("Your ring is draining your health, it is not safe to rest now.")
@@ -352,7 +355,7 @@ class Character():
                 if not effect.positive:
                     self.remove_status_effect(effect)
             loop.add_message("You rest for a while")
-            loop.change_loop(L.LoopType.action)
+            loop.change_loop(returnLoopType)
             return
 
         for monster_key in monster_dict.subjects:
@@ -365,9 +368,9 @@ class Character():
         #print(self.energy)
         #print(self.health)
         #print(self.max_health)
-        if self.health >= self.max_health and self.mana >= self.max_mana:
+        if not self.needs_rest():
             loop.add_message("You rest for a while")
-            loop.change_loop(L.LoopType.action)
+            loop.change_loop(returnLoopType)
 
     def add_skill(self, new_skill):
         for skill in self.skills:
