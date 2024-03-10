@@ -160,16 +160,16 @@ class ItemSpawner():
         # self.forceSpawn.append(("Flaming Sword", 5))
         
     def countEquipment(self, depth):
-        return random.randint(int(1 + 0.25 * (depth)), int(2 + 0.5 * (depth)))
+        return random.randint(int(1 + 0.2 * (depth)), int(2 + 0.3 * (depth)))
     
     def countPotiorbs(self, depth):
-        return random.randint(int(1 + 0.25 * (depth)), int(3 + 0.5 * (depth)))
+        return random.randint(int(1 + 0.1 * (depth)), int(2 + 0.2 * (depth)))
     
     def countExtraCommon(self, depth):
-        return random.randint(int(1 + 0.25 * (depth - 1)), int(1 + 0.5 * (depth - 1)))
+        return random.randint(int(1.5 - 0.1 * (depth - 1)), int(2 + 0.1 * (depth - 1)))
     
     def countScrorbs(self, depth):
-        return random.randint(int(1 + 0.25 * (depth)), int(2 + 0.5 * (depth)))
+        return random.randint(int(1 + 0.1 * (depth)), int(1 + 0.2 * (depth)))
     
     def random_level(self, depth):
         if depth < 4:
