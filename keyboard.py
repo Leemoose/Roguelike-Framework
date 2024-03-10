@@ -405,3 +405,7 @@ class Keyboard():
         if key == "esc":
             loop.change_loop(LoopType.main)
 
+    def key_death(self, key, loop):
+        if key == "esc":
+            loop.clear_data()
+            loop.init_game(loop.display)

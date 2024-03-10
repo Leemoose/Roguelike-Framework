@@ -82,7 +82,8 @@ class Monster_AI():
 
     def rank_find_item(self, loop):
         if isinstance(self.parent, M.Goblin):
-            return 55
+            if len(loop.item_dict.subjects) > 0:
+                return 55
         return -1
 
     def rank_combat(self, loop):

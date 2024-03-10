@@ -110,9 +110,9 @@ class Display:
         map_offset_from_left = action_screen_width
         map_offset_from_top = stats_height
         map_width = self.screen_width - action_screen_width
-        map_message_width = map_width // 4
+        map_message_width = 80
         map_height = self.screen_height // 4
-        map_message_height = map_height // 3
+        map_message_height = 30
         num_map_tiles_wide = map_width // map_tile_size
         num_map_tiles_height = map_height // map_tile_size
         r_map_x = num_map_tiles_wide // 2
@@ -160,7 +160,7 @@ class Display:
                             map_width, map_height)
         
         #Depth
-        depth_label = ui.DepthDisplay(pygame.Rect((map_offset_from_left - map_message_width // 6, map_offset_from_top - map_message_height // 14 * 5),
+        depth_label = ui.DepthDisplay(pygame.Rect((map_offset_from_left, map_offset_from_top),
                                                                 (map_message_width, map_message_height)),
                                     manager=self.uiManager,
                                     loop=loop)
@@ -360,9 +360,9 @@ class Display:
         map_offset_from_left = action_screen_width
         map_offset_from_top = stats_height
         map_width = self.screen_width - action_screen_width
-        map_message_width = map_width // 4
+        map_message_width = 30
         map_height = self.screen_height // 4
-        map_message_height = map_height // 3
+        map_message_height = 15
         num_map_tiles_wide = map_width // map_tile_size
         num_map_tiles_height = map_height // map_tile_size
         r_map_x = num_map_tiles_wide // 2
@@ -1021,9 +1021,9 @@ class Display:
 
         entity_button_width = self.screen_width // 10
         entity_button_height = self.screen_height // 30
-        entity_button_offset_from_left = entity_offset_from_left+ self.screen_width // 20
+        entity_button_offset_from_left = (self.screen_width) // 2 - entity_button_width * 3 //2
         entity_button_offset_from_top = entity_screen_height + entity_offset_from_top - entity_button_height - self.screen_height // 50
-        entity_button_offset_from_each_other = self.screen_width // 20
+        entity_button_offset_from_each_other =  entity_button_width // 2
 
         entity_text_offset_from_left = entity_offset_from_left + entity_screen_width // 20
         entity_text_offset_from_top = entity_image_offset_from_top + entity_message_height
@@ -1101,14 +1101,6 @@ class Display:
                 buttons.add(button, "Drop")
                 buttons_drawn += 1
 
-                button = pygame_gui.elements.UIButton(
-                    relative_rect=pygame.Rect((entity_button_offset_from_left + (entity_button_width + entity_button_offset_from_each_other) * buttons_drawn, entity_button_offset_from_top),
-                                              (entity_button_width, entity_button_height)),
-                    text='Destroy',
-                    manager=self.uiManager)
-                button.action = "b"
-                buttons.add(button, "Destroy")
-                buttons_drawn += 1
 
         entity_text = ""
         entity_text += entity.description  + "<br><br>"
@@ -1482,7 +1474,7 @@ class Display:
         return buttons
 
     def create_help_screen(self):
-        button_width = self.screen_width // 6
+        button_width = self.screen_width // 4
         button_height = self.screen_height // 8
         button_offset_from_bottom = self.screen_height * 95 // 100 - button_height
         button_offset_from_left = (self.screen_width -button_width) // 2
@@ -1502,10 +1494,10 @@ class Display:
         buttons = Buttons()
 
         button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((button_offset_from_left, button_offset_from_bottom), (button_width, button_height)),
-                                                 text='Quit',
+                                                 text='Return to Main Menu',
                                                  manager=self.uiManager)
         button.action = "esc"
-        buttons.add(button, "quit")
+        buttons.add(button, "Return to Main Menu")
 
         pygame_gui.elements.UILabel(relative_rect=pygame.Rect((title_offset_from_left, title_offset_from_top), (title_width, title_height)),
                                     text="Action Shortcuts",
@@ -1532,4 +1524,37 @@ class Display:
     def update_help(self):
     #Main Screen
         self.win.fill((0,0,0))
+        self.uiManager.draw_ui(self.win)
+
+    def create_death_screen(self):
+        message_width = self.screen_width // 8
+        message_height = self.screen_height // 12
+        message_offset_from_left = (self.screen_width - message_width) // 2
+        message_offset_from_top = (self.screen_height - message_height) // 2
+
+        button_width = self.screen_width // 8
+        button_height = self.screen_height // 12
+        button_offset_from_top = message_offset_from_top + message_height + button_height
+        button_offset_from_left = (self.screen_width -button_width) // 2
+
+
+        self.uiManager.clear_and_reset()
+        buttons = Buttons()
+
+        button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((button_offset_from_left, button_offset_from_top), (button_width, button_height)),
+                                                 text='Return to Main Menu',
+                                                 manager=self.uiManager)
+        button.action = "esc"
+        buttons.add(button, "Return to Main Menu")
+
+        text_box = pygame_gui.elements.UITextBox(
+            relative_rect=pygame.Rect((message_offset_from_left,message_offset_from_top), (message_width, message_height)),
+            html_text = "You have died."
+            ,
+            manager=self.uiManager, starting_height=1000
+        )
+
+        return buttons
+
+    def update_death_screen(self):
         self.uiManager.draw_ui(self.win)
