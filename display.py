@@ -962,8 +962,13 @@ class Display:
             return "<br>"
 
     def draw_character_stats(self, player, margin_from_left, margin_from_top, width, height):
+        if player.character.strength >= 0:
+            strength_modifier = "+" + str(player.character.strength)
+        else:
+            strength_modifier = str(player.character.strength)
         text_box = pygame_gui.elements.UITextBox(
             relative_rect=pygame.Rect((margin_from_left, margin_from_top), (width, height)),
+            
             html_text = "Player<br><br>"
                         "Stats<br>"
                         "Strength: " + self.stat_text(player, player.character.strength) + "<br>"
@@ -974,7 +979,7 @@ class Display:
                         "Health: " + str(player.character.health) + " / " + str(player.character.max_health) + "<br>"
                         "Mana: " + str(player.character.mana) + " / " + str(player.character.max_mana) + "<br>"
                         "<br>"
-                        "Damage: " + str(player.character.get_damage_min()) + " - " + str(player.character.get_damage_max()) + " (+" + str(player.character.strength) + ") <br>"
+                        "Damage: " + str(player.character.get_damage_min()) + " - " + str(player.character.get_damage_max()) + " (" + strength_modifier + ") <br>"
                         "Defense: " + str(player.character.armor) + " (+" + str(player.character.endurance // 3) + ") <br>"
                         "Movement Delay: " + str(player.character.move_cost) + "<br>"
                         "Skill Damage Bonus: " + str(player.character.skill_damage_increase()) + "<br>"
@@ -1123,7 +1128,7 @@ class Display:
                 #if isinstance(item, I.Armor):
                     #entity_text += "Armor: " + str(item.armor) + "<br>"
                 if isinstance(item, I.Weapon):
-                    entity_text += "Damage: " + str(item.damage_min) + " - " + str(item.damage_max) + "<br>"
+                    entity_text += "Damage: " + str(item.damage_min + player.character.base_damage) + " - " + str(item.damage_max + player.character.base_damage) + "<br>"
                     if item.on_hit:
                         entity_text += "On hit: " + item.on_hit_description + "<br>"
 

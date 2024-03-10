@@ -104,7 +104,8 @@ class Keyboard():
             if loop.player.stat_points > 0:
                 loop.change_loop(LoopType.level_up)
         elif key == "p":
-            loop.display.uiManager.set_visual_debug_mode(True)
+            if loop.player.invincible:
+                loop.display.uiManager.set_visual_debug_mode(True)
         elif key == "s":
             # find stairs
             if loop.generator.tile_map.track_map[loop.generator.tile_map.stairs[0].x][loop.generator.tile_map.stairs[0].y].seen:
