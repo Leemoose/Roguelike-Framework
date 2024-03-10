@@ -84,6 +84,8 @@ def astar_multi_goal(maze, start, goals, monster_map, player, monster_blocks = F
             continue
 
         checked += 1
+        if checked >= 500:
+            return start
 
         # Generate children
         for new_position in [(0, -1), (0, 1), (-1, 0), (1, 0), (-1, -1), (-1, 1), (1, -1), (1, 1)]: # Adjacent squares
@@ -136,6 +138,3 @@ def main():
     end = (7, 6)
 
     path = astar(maze, start, end)
-
-if __name__=="__main__":
-    main()

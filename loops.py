@@ -417,6 +417,7 @@ class Loops():
                     monster.character.energy += energy
                     while monster.character.energy > 0:
                         monster.brain.rank_actions(monster, self.monster_map, self.generator.tile_map, self.generator.flood_map, self.player, self.generator, self.item_dict, self)
+
         if len(self.generator.summoner) > 0:
             for generation in self.generator.summoner:
                 placement = self.generator.nearest_empty_tile((generation[1], generation[2]))

@@ -179,13 +179,16 @@ class Monster_AI():
                 for position in [(xplayer, yplayer + 1), (xplayer, yplayer - 1), (xplayer + xdiff, yplayer +ydiff)]:
                     xposition, yposition = position
                     if not monster_map.get_passable(xposition,yposition):
-                        monster = loop.generator.monster_dict.get_subject(monster_map.track_map[xposition][yposition])
-                        if monster.brain.grouped:
-                            self.grouped = True
-                            xdiff = xplayer - monster.x
-                            ydiff = yplayer - monster.y
-                            goals = [(xplayer + xdiff, yplayer + ydiff)]
-                            break
+                        try:
+                            monster = loop.generator.monster_dict.get_subject(monster_map.track_map[xposition][yposition])
+                            if monster.brain.grouped:
+                                self.grouped = True
+                                xdiff = xplayer - monster.x
+                                ydiff = yplayer - monster.y
+                                goals = [(xplayer + xdiff, yplayer + ydiff)]
+                                break
+                        except:
+                            return -1
             elif ydiff != 0:
                 if not tile_map.get_passable(x - 1,y) and not tile_map.get_passable(x + 1,y) and not monster_map.get_passable(x,y-ydiff):
                     self.grouped = True
@@ -193,13 +196,15 @@ class Monster_AI():
                 for position in [(xplayer + 1, yplayer), (xplayer -1, yplayer), (xplayer + xdiff, yplayer + ydiff)]:
                     xposition, yposition = position
                     if not monster_map.get_passable(xposition,yposition):
-                        monster = loop.generator.monster_dict.get_subject(monster_map.track_map[xposition][yposition])
-                        if monster.brain.grouped:
-                            self.grouped = True
-                            xdiff = xplayer - monster.x
-                            ydiff = yplayer - monster.y
-                            goals = [(xplayer + xdiff, yplayer + ydiff)]
-                            break
+                        try:
+                            monster = loop.generator.monster_dict.get_subject(monster_map.track_map[xposition][yposition])
+                            if monster.brain.grouped:
+                                self.grouped = True
+                                xdiff = xplayer - monster.x
+                                ydiff = yplayer - monster.y
+                                goals = [(xplayer + xdiff, yplayer + ydiff)]
+                                break
+                        except: return -1
             if (self.grouped == True):
                 self.move_path = (pathfinding.astar_multi_goal(tile_map.track_map, (x, y), goals,
                                              monster_map, player, True, True))

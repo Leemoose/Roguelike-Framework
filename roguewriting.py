@@ -7,7 +7,7 @@ import loops as L
 import warnings
 warnings.filterwarnings("ignore")
 
-#random.seed(420)1
+#..random.seed(420)1
 pygame.init()
 pygame.font.init()
 
