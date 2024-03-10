@@ -648,12 +648,12 @@ class TileMap(TrackingMap):
             temp = []
             for y in range(self.height):
                 if self.track_map_render[x][y] == 1:
-                    if (depth != 4 and depth != 9 and depth >= CirclesBeginOn):
+                    if (depth >= CirclesBeginOn):
                         temp.append(O.Tile(x, y, 12, True))
                     else:
                         temp.append(O.Tile(x, y, 2, True))
                 else:
-                    if (depth != 4 and depth != 9 and depth >= CirclesBeginOn):
+                    if (depth >= CirclesBeginOn):
                         temp.append(O.Tile(x, y, 11, False))
                     else:
                         temp.append(O.Tile(x, y, 1, False))
