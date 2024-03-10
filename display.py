@@ -110,9 +110,9 @@ class Display:
         map_offset_from_left = action_screen_width
         map_offset_from_top = stats_height
         map_width = self.screen_width - action_screen_width
-        map_message_width = map_width // 4
+        map_message_width = 80
         map_height = self.screen_height // 4
-        map_message_height = map_height // 3
+        map_message_height = 30
         num_map_tiles_wide = map_width // map_tile_size
         num_map_tiles_height = map_height // map_tile_size
         r_map_x = num_map_tiles_wide // 2
@@ -160,7 +160,7 @@ class Display:
                             map_width, map_height)
         
         #Depth
-        depth_label = ui.DepthDisplay(pygame.Rect((map_offset_from_left - map_message_width // 6, map_offset_from_top - map_message_height // 14 * 5),
+        depth_label = ui.DepthDisplay(pygame.Rect((map_offset_from_left, map_offset_from_top),
                                                                 (map_message_width, map_message_height)),
                                     manager=self.uiManager,
                                     loop=loop)
@@ -360,9 +360,9 @@ class Display:
         map_offset_from_left = action_screen_width
         map_offset_from_top = stats_height
         map_width = self.screen_width - action_screen_width
-        map_message_width = map_width // 4
+        map_message_width = 30
         map_height = self.screen_height // 4
-        map_message_height = map_height // 3
+        map_message_height = 15
         num_map_tiles_wide = map_width // map_tile_size
         num_map_tiles_height = map_height // map_tile_size
         r_map_x = num_map_tiles_wide // 2
