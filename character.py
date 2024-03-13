@@ -3,6 +3,7 @@ import dice as R
 import objects as O
 import effect as E
 import pathfinding
+import shadowcasting
 import skills as S
 import items as I
 import loops as L
@@ -484,6 +485,9 @@ class Player(O.Objects):
             loop.add_message("The monster dodged the attack")
 
     def autoexplore(self, loop):
+        all_seen = False
+        if self.character.needs_rest():
+            self.character.rest(loop, loop.currentLoop)
         monster_dict = loop.monster_dict
         tile_map = loop.generator.tile_map
         for monster_key in monster_dict.subjects:
@@ -491,14 +495,14 @@ class Player(O.Objects):
             if tile_map.track_map[monster_loc[0]][monster_loc[1]].visible:
                 loop.add_message("You cannot autoexplore while enemies are visible.")
                 loop.change_loop(L.LoopType.action)
-                return
+                return False
         while len(self.path) <= 1:
             start = (self.x, self.y)
             all_seen, unseen = loop.generator.all_seen()
             if all_seen:
                 loop.change_loop(L.LoopType.action)
                 loop.update_screen = True
-                return
+                return False
             endx = unseen[0]
             endy = unseen[1]
             while (not tile_map.get_passable(endx, endy)) and not (tile_map.track_map[endx][endy].seen):
@@ -525,6 +529,10 @@ class Player(O.Objects):
         loop.update_screen = True
 
         self.character.energy = 0
+        if not all_seen:
+            shadowcasting.compute_fov(loop)
+            self.autoexplore(loop)
+        return True
 
     def find_stairs(self, loop):
         monster_dict = loop.monster_dict
@@ -544,8 +552,16 @@ class Player(O.Objects):
         self.path = pathfinding.astar(tile_map.track_map, start, end, loop.generator.monster_map, loop.player)
         
         x, y = self.path.pop(0)
-        x, y = self.path.pop(0)
-        self.move(x-self.x, y-self.y, loop)
+        while len(self.path) > 0:
+            x,y = self.path.pop(0)
+            self.move(x - self.x, y - self.y, loop)
+            shadowcasting.compute_fov(loop)
+            for monster_key in monster_dict.subjects:
+                monster_loc = monster_dict.get_subject(monster_key).get_location()
+                if tile_map.track_map[monster_loc[0]][monster_loc[1]].visible:
+                    loop.add_message("You cannot autoexplore while enemies are tracking you.")
+                    loop.change_loop(L.LoopType.action)
+                    return
         loop.update_screen = True
 
         self.character.energy = 0

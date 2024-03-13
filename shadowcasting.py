@@ -1,7 +1,9 @@
 import math
 from fractions import Fraction
 #https://github.com/370417/symmetric-shadowcasting/blob/master/example.py
-def compute_fov(origin, tile_map):
+def compute_fov(loop):
+    origin = loop.player.get_location()
+    tile_map = loop.generator.tile_map.track_map
     for x in range(len(tile_map)): #Maybe need a better place to put this and more effective way to do
         for y in range(len(tile_map[0])):
             tile_map[x][y].visible = False

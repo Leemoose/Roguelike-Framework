@@ -109,7 +109,7 @@ class Keyboard():
         elif key == "s":
             # find stairs
             if loop.generator.tile_map.track_map[loop.generator.tile_map.stairs[0].x][loop.generator.tile_map.stairs[0].y].seen:
-                loop.change_loop(LoopType.search_stairs)
+                player.find_stairs(loop)
             else:
                 loop.add_message("You haven't found the way down yet")
         elif key == ">":
@@ -126,7 +126,7 @@ class Keyboard():
             loop.screen_focus = loop.targets.target_current
             loop.update_screen = True
         elif key == "o":
-            loop.change_loop(LoopType.autoexplore)
+            loop.player.autoexplore(loop)
         elif key == "m":
             memory.save_objects()
         # elif key == "t":
@@ -138,7 +138,7 @@ class Keyboard():
         elif key == "esc":
             loop.change_loop(LoopType.paused)
         elif key == "z":
-            loop.change_loop(LoopType.rest)
+            player.character.rest(loop, loop.currentLoop)
         elif key.isdigit():
             # cast a skill
             skill_num = int(key) - 1
@@ -392,18 +392,6 @@ class Keyboard():
         if key == "esc":
             loop.change_loop(LoopType.examine)
             loop.screen_focus = loop.targets.target_current
-
-    def key_autoexplore(self, key, loop):
-        if key == "o":
-            loop.player.autoexplore(loop)
-        else:
-            loop.change_loop(LoopType.action)
-
-    def key_search_stairs(self, key, loop):
-        if key == "s":
-            loop.player.find_stairs(loop)
-        else:
-            loop.change_loop(LoopType.action)
 
     def key_help(self, key, loop):
         if key == "esc":

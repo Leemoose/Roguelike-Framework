@@ -611,7 +611,9 @@ class Display:
                 self.win.blit(text, (examine_offset_from_left, examine_offset_from_top + 65))
         return nothing_at_target
 
-    def create_inventory(self, player, equipment_type=None):   
+    def create_inventory(self, loop):
+        player = loop.player
+        equipment_type = loop.limit_inventory
         self.uiManager.clear_and_reset()
         self.win.fill((0,0,0))
         inventory_screen_width = self.screen_width // 2
@@ -696,7 +698,9 @@ class Display:
         button.drawable_shape.active_state.has_fresh_surface = True
         # button.drawable_shape.redraw_all_states()
 
-    def create_equipment(self, player, tileMap):
+    def create_equipment(self, loop):
+        player = loop.player
+        tileMap = loop.tileDict
         self.uiManager.clear_and_reset()
         self.win.fill((0,0,0))
 
@@ -976,7 +980,7 @@ class Display:
     def refresh_screen(self):
         self.uiManager.clear_and_reset()
 
-    def create_pause_screen(self):
+    def create_pause_screen(self, loop):
         self.uiManager.clear_and_reset()
         pause_screen_width = self.screen_width // 3
         pause_screen_height = self.screen_height // 2
@@ -1558,7 +1562,7 @@ class Display:
         self.uiManager.update(deltaTime)
 
 
-    def create_main_screen(self):
+    def create_main_screen(self, loop):
         num_buttons = 5
         button_width = self.screen_width // (num_buttons + 1)
         button_height = self.screen_height // 8
@@ -1617,7 +1621,7 @@ class Display:
 
         return buttons
 
-    def create_help_screen(self):
+    def create_help_screen(self, loop):
         button_width = self.screen_width // 4
         button_height = self.screen_height // 8
         button_offset_from_bottom = self.screen_height * 95 // 100 - button_height
@@ -1670,7 +1674,7 @@ class Display:
         self.win.fill((0,0,0))
         self.uiManager.draw_ui(self.win)
 
-    def create_story_screen(self):
+    def create_story_screen(self, loop):
         button_width = self.screen_width // 4
         button_height = self.screen_height // 8
         button_offset_from_bottom = self.screen_height * 95 // 100 - button_height
@@ -1722,7 +1726,7 @@ class Display:
         self.win.fill((0,0,0))
         self.uiManager.draw_ui(self.win)
 
-    def create_death_screen(self):
+    def create_death_screen(self, loop):
         self.uiManager.clear_and_reset()
 
         message_width = self.screen_width // 4
