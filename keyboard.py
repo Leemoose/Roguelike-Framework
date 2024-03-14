@@ -67,7 +67,11 @@ class Keyboard():
             return self.keys_to_string[key + 100]
 
 #Any actions done in the battle screen
-    def key_action(self, player, floormap, monsterID, monster_map, item_ID, loop, key, generated_maps, display, memory):
+    def key_action(self, loop, key):
+        player = loop.player
+        item_ID = loop.generator.item_dict
+        generated_maps = loop.generator
+        memory = loop.memory
         if key == "up":
             player.attack_move(0, -1, loop)
         elif key == "left":
@@ -154,21 +158,23 @@ class Keyboard():
                     loop.screen_focus = loop.targets.target_current
                     loop.targets.store_skill(skill_num, player.character.skills[skill_num], player.character)
 
-    def key_inventory(self, loop, player, item_dict, key):
-            if key == "esc":
-                if loop.limit_inventory == None or loop.limit_inventory == "Potiorb" or loop.limit_inventory == "Scrorb":
-                    loop.change_loop(LoopType.action)
-                else:
-                    loop.change_loop(LoopType.equipment)
-                loop.limit_inventory = None
+    def key_inventory(self, loop, key):
+        player = loop.player
+        if key == "esc":
+            if loop.limit_inventory == None or loop.limit_inventory == "Potiorb" or loop.limit_inventory == "Scrorb":
+                loop.change_loop(LoopType.action)
+            else:
+                loop.change_loop(LoopType.equipment)
+            loop.limit_inventory = None
 
-            for i in range(len(player.character.inventory)):
-                if chr(ord("a")+i) == key:
-                    if loop.limit_inventory == None or player.character.inventory[i].equipment_type == loop.limit_inventory:
-                        loop.screen_focus = player.character.inventory[i]
-                        loop.change_loop(LoopType.items)
+        for i in range(len(player.character.inventory)):
+            if chr(ord("a")+i) == key:
+                if loop.limit_inventory == None or player.character.inventory[i].equipment_type == loop.limit_inventory:
+                    loop.screen_focus = player.character.inventory[i]
+                    loop.change_loop(LoopType.items)
 
-    def key_enchant(self, loop, player, item_dict, key):
+    def key_enchant(self, loop, key):
+        player = loop.player
         if key == "esc":
             loop.change_loop(LoopType.action)
             loop.limit_inventory = None
@@ -205,7 +211,8 @@ class Keyboard():
             loop.change_loop(LoopType.action)
             
 
-    def key_equipment(self, loop, player, item_dict, key):
+    def key_equipment(self, loop, key):
+        player = loop.player
         if key == "esc":
             loop.limit_inventory = None
             loop.change_loop(LoopType.action)
@@ -235,7 +242,7 @@ class Keyboard():
             loop.limit_inventory = "Gloves"
             loop.change_loop(LoopType.inventory)
 
-    def key_main_screen(self, key, loop):
+    def key_main_screen(self, loop, key):
         if key == "esc":
             return False
         elif key == "l":
@@ -252,21 +259,13 @@ class Keyboard():
             loop.down_floor()
             loop.change_loop(LoopType.action)
         return True
-    
-    def key_race_screen(self, key, loop):
-        if key == "esc":
-            loop.change_loop(LoopType.main)
-        else:
-            loop.change_loop(LoopType.classes)
 
-    def key_class_screen(self, key, loop):
-        if key == "esc":
-            loop.change_loop(LoopType.race)   
-        else:
-            loop.change_loop(LoopType.action)
-            loop.down_floor()
 
-    def key_item_screen(self, key, loop, item_dict, player, item, item_map):
+    def key_item_screen(self, loop, key):
+        item_dict = loop.generator.item_dict
+        player = loop.player
+        item = loop.screen_focus
+        item_map = loop.generator.item_map
         if key == "esc":
             if loop.limit_inventory == None:
                 loop.change_loop(LoopType.inventory)
@@ -288,12 +287,14 @@ class Keyboard():
         elif key == "r":
             player.character.read(item, loop, item_dict, item_map)
                 
-    def key_victory(self, key, loop, display):
+    def key_victory(self, loop, key):
+        display = loop,display
         loop.change_loop(LoopType.main)
         loop.clear_data()
         loop.init_game(display)
 
-    def key_paused(self, key, loop, display):
+    def key_paused(self, loop, key):
+        display = loop.display
         if key == "esc":
             loop.change_loop(LoopType.action)
         elif key == "m":
@@ -306,7 +307,7 @@ class Keyboard():
             return False
         return True
 
-    def key_targeting_screen(self, key, loop):
+    def key_targeting_screen(self, loop, key):
         loop.update_screen = True
         targets = loop.targets
         if key == "up":
@@ -343,7 +344,7 @@ class Keyboard():
             loop.change_loop(LoopType.action)
             loop.void_target()
 
-    def key_examine_screen(self, key, loop):
+    def key_examine_screen(self, loop, key):
         loop.update_screen = True
         targets = loop.targets
         if key == "up":
@@ -388,16 +389,16 @@ class Keyboard():
                     loop.change_loop(LoopType.specific_examine)
 
 
-    def key_specific_examine(self, key, loop, display):
+    def key_specific_examine(self, loop, key):
         if key == "esc":
             loop.change_loop(LoopType.examine)
             loop.screen_focus = loop.targets.target_current
 
-    def key_help(self, key, loop):
+    def key_help(self, loop, key):
         if key == "esc":
             loop.change_loop(LoopType.main)
 
-    def key_death(self, key, loop):
+    def key_death(self, loop, key):
         if key == "esc":
             loop.clear_data()
             loop.init_game(loop.display)

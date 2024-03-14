@@ -43,25 +43,6 @@ class LoopType(Enum):
     death = 18
     story = 19
 
-
-class ColorDict():
-    """
-    Just a dictionary of colors that I decide to use
-    Can get RGB by inputting English into getColor
-    """
-
-    def __init__(self):
-        colors = {}
-        colors["white"] = (255, 255, 255)
-        colors["green"] = (0, 255, 0)
-        colors["blue"] = (0, 0, 128)
-        colors["black"] = (0, 0, 0)
-        self.colors = colors
-
-    def getColor(self, color):
-        return self.colors[color]
-
-
 class ID():
     """
     All unique entities (monsters and items) are tagged with an ID and put into dictionary.
@@ -148,6 +129,7 @@ class Loops():
         self.tileDict = tileDict
         self.screen_focus = None
         self.current_stat = 0  # index of stat for levelling up
+        self.display = None
 
         # Start the game by going to the main screen
 
@@ -185,100 +167,44 @@ class Loops():
 
         action = None
         #Constant actions
+        options = {LoopType.action: keyboard.key_action,
+                   LoopType.inventory: keyboard.key_inventory,
+                   LoopType.level_up: keyboard.key_level_up,
+                   LoopType.victory: keyboard.key_victory,
+                   LoopType.enchant: keyboard.key_enchant,
+                   LoopType.equipment: keyboard.key_equipment,
+                   LoopType.items: keyboard.key_item_screen,#Need to do self.change_loop if change was made (put in keyboard)
+                   LoopType.examine: keyboard.key_examine_screen,
+                   LoopType.targeting: keyboard.key_targeting_screen,
+                   LoopType.specific_examine: keyboard.key_specific_examine,
+                   LoopType.help: keyboard.key_help,
+                   LoopType.story: keyboard.key_help,
+                   LoopType.death: keyboard.key_death,
+                   LoopType.main: keyboard.key_main_screen,
+                   LoopType.paused: keyboard.key_paused,
+                   }
 
             # self.change_loop(LoopType.action)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 return False
-            elif event.type == pygame.KEYDOWN:
-                try:
+            elif event.type == pygame.KEYDOWN or (event.type == pygame_gui.UI_BUTTON_PRESSED and hasattr(event.ui_element, "action")):
+                if event.type == pygame.KEYDOWN:
                     if event.mod & pygame.KMOD_SHIFT:
                         key = keyboard.key_string(event.key, True)
-                    else:
-                        key = keyboard.key_string(event.key, False)
-                except:
-                    break
-                if self.currentLoop == LoopType.action:
-                    keyboard.key_action(self.player, self.generator.tile_map, self.monster_dict, self.monster_map,
-                                        self.item_dict, self, key, self.generator, display, self.memory)
-                elif self.currentLoop == LoopType.inventory:
-                    keyboard.key_inventory(self, self.player, self.item_dict, key)
-                elif self.currentLoop == LoopType.level_up:
-                    keyboard.key_level_up(self, key)
-                elif self.currentLoop == LoopType.victory:
-                    keyboard.key_victory(key, self, display)
-                elif self.currentLoop == LoopType.enchant:
-                    keyboard.key_enchant(self, self.player, self.item_dict, key)
-                elif self.currentLoop == LoopType.equipment:
-                    keyboard.key_equipment(self, self.player, self.item_dict, key)
-                elif self.currentLoop == LoopType.main:
-                    if keyboard.key_main_screen(key, self) == False:
-                        return False
-                elif self.currentLoop == LoopType.race:
-                    keyboard.key_race_screen(key, self)
-                elif self.currentLoop == LoopType.classes:
-                    keyboard.key_class_screen(key, self)
-                elif self.currentLoop == LoopType.items:
-                    keyboard.key_item_screen(key, self, self.item_dict, self.player, self.screen_focus,
-                                             self.generator.item_map)
-                    self.change_loop(self.currentLoop)
-                elif self.currentLoop == LoopType.examine:
-                    keyboard.key_examine_screen(key, self)
-                elif self.currentLoop == LoopType.targeting:
-                    keyboard.key_targeting_screen(key, self)
-                elif self.currentLoop == LoopType.paused:
-                    if (keyboard.key_paused(key, self, display) == False):
-                        return False
-                elif self.currentLoop == LoopType.specific_examine:
-                    keyboard.key_specific_examine(key, self, display)
-                elif self.currentLoop == LoopType.help or self.currentLoop == LoopType.story:
-                    keyboard.key_help(key, self)
-                elif self.currentLoop == LoopType.death:
-                    keyboard.key_death(key, self)
-
-                self.update_screen = True
-
-            elif event.type == pygame_gui.UI_BUTTON_PRESSED and hasattr(event.ui_element, "action"):
-                if (self.currentLoop == LoopType.main):
-                    return keyboard.key_main_screen(event.ui_element.action, self)
-                elif (self.currentLoop == LoopType.inventory):
-                    key = event.ui_element.action
-                    keyboard.key_inventory(self, self.player, self.item_dict, key)
-                elif (self.currentLoop == LoopType.level_up):
-                    key = event.ui_element.action
+                    key = keyboard.key_string(event.key, False)
+                else:
                     if hasattr(event.ui_element, "row"):
                         if event.ui_element.row != None:
                             self.current_stat = event.ui_element.row
-                    keyboard.key_level_up(self, key)
-                elif (self.currentLoop == LoopType.victory):
                     key = event.ui_element.action
-                    keyboard.key_victory(key, self, display)
-                elif (self.currentLoop == LoopType.equipment):
-                    key = event.ui_element.action
-                    keyboard.key_equipment(self, self.player, self.item_dict, key)
-                elif (self.currentLoop == LoopType.items):
-                    key = event.ui_element.action
-                    keyboard.key_item_screen(key, self, self.item_dict, self.player, self.screen_focus,
-                                             self.generator.item_map)
-                    self.change_loop(self.currentLoop)
-                elif (self.currentLoop == LoopType.paused):
-                    key = event.ui_element.action
-                    if (keyboard.key_paused(key, self, display) == False):
+
+                if self.currentLoop in options:
+                    if options[self.currentLoop](self,key) == False:
                         return False
-                elif (self.currentLoop == LoopType.action):
-                    key = event.ui_element.action
-                    keyboard.key_action(self.player, self.tile_map, self.generator.monster_dict, self.monster_map,
-                                        self.generator.item_dict, self, key, self.generator, display, self.memory)
-                elif (self.currentLoop == LoopType.help or self.currentLoop == LoopType.story):
-                    key = event.ui_element.action
-                    keyboard.key_help(key, self)
-                elif self.currentLoop == LoopType.enchant:
-                    key = event.ui_element.action
-                    keyboard.key_enchant(self, self.player, self.item_dict, key)
-                elif self.currentLoop == LoopType.death:
-                    key = event.ui_element.action
-                    keyboard.key_death(key, self)
+
+                self.update_screen = True
 
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if (self.currentLoop == LoopType.action):
@@ -542,6 +468,7 @@ class Loops():
             self.monster_dict = self.generator.monster_dict
 
     def init_game(self, display):
+        self.display = display
         self.main_buttons = display.create_main_screen(self)
         self.player = C.Player(0, 0)
         self.memory.player = self.player
