@@ -64,7 +64,7 @@ Classes:
         TileMap --> Has each tile in an x, y position
 """
 class TileDict():
-    def __init__(self, textSize, colors):
+    def __init__(self, textSize):
         tiles = {}
         tiles[1] = pygame.transform.scale(image.load("assets/tiles/wall_test.png"), (32,32))
         #Negative numbers are shaded versions
@@ -209,6 +209,8 @@ class TileDict():
         tiles[815] = image.load("assets/empty_weapon_open.png")
         tiles[816] = image.load("assets/empty_shield_open.png")
         tiles[817] = image.load("assets/empty_ring_open.png")
+        tiles[818] = image.load("assets/empty_pants_open.png")
+        tiles[819] = image.load("assets/empty_pants.png")
 
         # skill assets
         tiles[901] = image.load("assets/target.png")
@@ -240,6 +242,8 @@ class TileDict():
         tiles[-914] = image.load("assets/teleport_skill_icon_dark.png")
         tiles[915] = image.load("assets/invincible_skill_icon.png")
         tiles[-915] = image.load("assets/invincible_skill_icon_dark.png")
+
+        tiles[1000] = image.load("assets/pants.png")
 
         self.tiles = tiles
 

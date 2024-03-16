@@ -1,6 +1,7 @@
 import pygame
 from loops import LoopType
 import skills as S
+import objects as O
 
 class Keyboard():
     """
@@ -55,8 +56,8 @@ class Keyboard():
         keys_to_string[pygame.K_9] = "9"
         keys_to_string[pygame.K_PERIOD] = "."
         keys_to_string[pygame.K_RETURN] = "return"
-        keys_to_string[146] = ">"
-        keys_to_string[144] = "<"
+        keys_to_string[">"] = ">"
+        keys_to_string["<"] = "<"
 
         self.keys_to_string = keys_to_string
 
@@ -64,7 +65,20 @@ class Keyboard():
         if not shift_pressed:
             return self.keys_to_string[key]
         else:
-            return self.keys_to_string[key + 100]
+            try:
+                src = r"`1234567890-=qwertyuiop[]\asdfghjkl;\'zxcvbnm,./"
+                dest = r'~!@#$%^&*()_+QWERTYUIOP{}|ASDFGHJKL:"ZXCVBNM<>?'
+                if key <= 10000:
+                    print(key)
+                    ch = chr(key)
+                    pressed = pygame.key.get_pressed()
+                    if pressed[pygame.K_RSHIFT] or pressed[pygame.K_LSHIFT] and ch in src:
+                        ch = dest[src.index(ch) -1]
+                        print(ch)
+                        return self.keys_to_string[ch]
+            except:
+                return -1
+        return -1
 
 #Any actions done in the battle screen
     def key_action(self, loop, key):
@@ -72,7 +86,9 @@ class Keyboard():
         item_ID = loop.generator.item_dict
         generated_maps = loop.generator
         memory = loop.memory
-        if key == "up":
+        if key == -1:
+            return
+        elif key == "up":
             player.attack_move(0, -1, loop)
         elif key == "left":
             player.attack_move(-1, 0, loop)
@@ -241,6 +257,9 @@ class Keyboard():
         elif key == "c":
             loop.limit_inventory = "Gloves"
             loop.change_loop(LoopType.inventory)
+        elif key == "p":
+            loop.limit_inventory = "Pants"
+            loop.change_loop(LoopType.inventory)
 
     def key_main_screen(self, loop, key):
         if key == "esc":
@@ -402,3 +421,34 @@ class Keyboard():
         if key == "esc":
             loop.clear_data()
             loop.init_game(loop.display)
+
+    def action_mouse_to_keyboard(self, loop, x_tile, y_tile):
+        player = loop.player
+        if player.get_distance(x_tile, y_tile) == 0:
+            if not loop.generator.item_map.get_passable(player.x, player.y):
+               return self.key_action(loop, "g")
+            elif isinstance(loop.generator.tile_map.track_map[player.x][player.y], O.Stairs):
+                return self.key_action(loop, ">") #Needs to be able to work with upstairs as well
+        elif loop.player.get_distance(x_tile, y_tile) < 1.5:
+            xdiff = x_tile - player.x
+            ydiff = y_tile - player.y
+            options = {(1,1): "n",
+                       (1,0): "right",
+                       (1,-1): "u",
+                       (0,1): "down",
+                       (0,-1): "up",
+                       (-1,1): "b",
+                       (-1,0): "left",
+                       (-1,-1): "y"}
+            self.key_action(loop, options[(xdiff, ydiff)])
+
+    def targetting_mouse_to_keyboard(self, loop, x_tile, y_tile):
+        if loop.generator.tile_map.in_map(x_tile, y_tile):
+            if x_tile != loop.targets.target_current[0] or y_tile != loop.targets.target_current[1]:
+                if loop.generator.tile_map.get_passable(x_tile, y_tile):
+                    loop.targets.target_current = (x_tile, y_tile)
+                    loop.add_target((x_tile, y_tile))
+                    loop.screen_focus = (x_tile, y_tile)
+                    loop.update_screen = True
+            else:
+                self.key_targeting_screen("return", self)

@@ -423,21 +423,18 @@ class Display:
                     self.win.blit(monster_tile, (self.textSize*(monster.x - self.x_start), self.textSize*(monster.y - self.y_start)))
 
         #Draw base character depending on armor state
-        if (player.character.main_armor == None):
+        if (player.character.equipment_slots["body_armor_slot"][0] == None):
             self.win.blit(tileDict.tile_string(200), (self.r_x * self.textSize, self.r_y * self.textSize)) # DONG MODE ENGAGED
         else:
             self.win.blit(tileDict.tile_string(-200), (self.r_x * self.textSize, self.r_y * self.textSize))
 
         #Draw items on top
-        if player.character.boots != None:
+        if player.character.equipment_slots["boots_slot"][0] != None:
             self.win.blit(tileDict.tile_string(201), (self.r_x * self.textSize, self.r_y * self.textSize))
-        if player.character.gloves != None:
+        if player.character.equipment_slots["gloves_slot"][0] != None:
             self.win.blit(tileDict.tile_string(202), (self.r_x * self.textSize, self.r_y * self.textSize))
-        if player.character.helmet != None:
+        if player.character.equipment_slots["helmet_slot"][0] != None:
             self.win.blit(tileDict.tile_string(203), (self.r_x * self.textSize, self.r_y * self.textSize))
-        if player.character.main_armor != None:
-            self.win.blit(tileDict.tile_string(204), (self.r_x * self.textSize, self.r_y * self.textSize))
-
         self.uiManager.draw_ui(self.win)
 
         #Making all map tiles
@@ -719,7 +716,7 @@ class Display:
         medium_button_width = self.screen_width // 8
         medium_button_height = self.screen_height // 5
         first_col_offset_from_left = self.screen_width // 4
-        outer_cols_offset_from_top = self.screen_height // 5 * 2
+        outer_cols_offset_from_top = self.screen_height // 5
         middle_col_offset_from_top = self.screen_height // 5
         small_button_width = self.screen_width // 16 - self.screen_width // 120
         small_button_height = self.screen_height // 8
@@ -740,7 +737,7 @@ class Display:
                                     object_id='#title_label')
 
         # equipment_slots = ["shield", "ring", "ring", "helmet", "armor", "boots", "weapon", "gloves"]:
-        if player.character.main_shield == None:
+        if player.character.equipment_slots["hand_slot"][1] == None:
             available_slot = False
             for item in player.character.inventory:
                 if item.equipment_type == "Shield":
@@ -756,7 +753,7 @@ class Display:
 
         else:
             pre_text = "change "
-            img = pygame.transform.scale(tileMap.tiles[player.character.main_shield.render_tag], (medium_button_width, medium_button_height))
+            img = pygame.transform.scale(tileMap.tiles[player.character.equipment_slots["hand_slot"][1].render_tag], (medium_button_width, medium_button_height))
         button = pygame_gui.elements.UIButton(
                         relative_rect=pygame.Rect((first_col_offset_from_left, 
                                                    outer_cols_offset_from_top),
@@ -767,7 +764,7 @@ class Display:
         self.draw_on_button(button, img, "q", (medium_button_width, medium_button_height))
         button.action = 'q'
 
-        if player.character.ring_1 == None:
+        if player.character.equipment_slots["ring_slot"][0] == None:
             available_slot = False
             for item in player.character.inventory:
                 if item.equipment_type == "Ring" and (not item.equipped):
@@ -783,7 +780,7 @@ class Display:
 
         else:
             pre_text = "change "
-            img = pygame.transform.scale(tileMap.tiles[player.character.ring_1.render_tag], (small_button_width, small_button_height))
+            img = pygame.transform.scale(tileMap.tiles[player.character.equipment_slots["ring_slot"][1].render_tag], (small_button_width, small_button_height))
         button = pygame_gui.elements.UIButton(
                     relative_rect=pygame.Rect((first_col_offset_from_left, 
                                                outer_cols_offset_from_top + (medium_button_height + margin_between_buttons_height)),
@@ -794,7 +791,7 @@ class Display:
         self.draw_on_button(button, img, "a", (small_button_width, small_button_height))
         button.action = 'a'
 
-        if player.character.ring_2 == None:
+        if player.character.equipment_slots["ring_slot"][1] == None:
             available_slot = False
             for item in player.character.inventory:
                 if item.equipment_type == "Ring" and (not item.equipped):
@@ -809,7 +806,7 @@ class Display:
                 img = pygame.transform.scale(tileMap.tiles[807], (small_button_width, small_button_height))
         else:
             pre_text = "change "
-            img = pygame.transform.scale(tileMap.tiles[player.character.ring_2.render_tag], (small_button_width, small_button_height))
+            img = pygame.transform.scale(tileMap.tiles[player.character.equipment_slots["ring_slot"][1].render_tag], (small_button_width, small_button_height))
         button = pygame_gui.elements.UIButton(
                     relative_rect=pygame.Rect((first_col_offset_from_left + small_button_width + small_margin_between_buttons_width, 
                                                outer_cols_offset_from_top + (medium_button_height + margin_between_buttons_height)),
@@ -820,7 +817,7 @@ class Display:
         self.draw_on_button(button, img, "z", (small_button_width, small_button_height))
         button.action = 'z'
 
-        if player.character.helmet == None:
+        if player.character.equipment_slots["helmet_slot"][0] == None:
             available_slot = False
             for item in player.character.inventory:
                 if item.equipment_type == "Helmet":
@@ -836,7 +833,7 @@ class Display:
 
         else:
             pre_text = "change "
-            img = pygame.transform.scale(tileMap.tiles[player.character.helmet.render_tag], (medium_button_width, medium_button_height))
+            img = pygame.transform.scale(tileMap.tiles[player.character.equipment_slots["helmet_slot"][0].render_tag], (medium_button_width, medium_button_height))
         button = pygame_gui.elements.UIButton(
                     relative_rect=pygame.Rect((first_col_offset_from_left + medium_button_width + margin_between_buttons_width, 
                                                middle_col_offset_from_top),
@@ -847,7 +844,7 @@ class Display:
         self.draw_on_button(button, img, "w", (medium_button_width, medium_button_height))
         button.action = 'w'
 
-        if player.character.main_armor == None:
+        if player.character.equipment_slots["body_armor_slot"][0] == None:
             available_slot = False
             for item in player.character.inventory:
                 if item.equipment_type == "Body Armor":
@@ -863,7 +860,7 @@ class Display:
 
         else:
             pre_text = "change "
-            img = pygame.transform.scale(tileMap.tiles[player.character.main_armor.render_tag], (medium_button_width, medium_button_height))
+            img = pygame.transform.scale(tileMap.tiles[player.character.equipment_slots["body_armor_slot"][0].render_tag], (medium_button_width, medium_button_height))
         button = pygame_gui.elements.UIButton(
                     relative_rect=pygame.Rect((first_col_offset_from_left + medium_button_width + margin_between_buttons_width, 
                                                middle_col_offset_from_top + (medium_button_height + margin_between_buttons_height)),
@@ -875,7 +872,7 @@ class Display:
         self.draw_on_button(button, img, "s", (medium_button_width, medium_button_height))
         button.action = 's'
 
-        if player.character.boots == None:
+        if player.character.equipment_slots["boots_slot"][0] == None:
             available_slot = False
             for item in player.character.inventory:
                 if item.equipment_type == "Boots":
@@ -891,7 +888,7 @@ class Display:
 
         else:
             pre_text = "change "
-            img = pygame.transform.scale(tileMap.tiles[player.character.boots.render_tag], (medium_button_width, medium_button_height))
+            img = pygame.transform.scale(tileMap.tiles[player.character.equipment_slots["boots_slot"][0].render_tag], (medium_button_width, medium_button_height))
         
         button = pygame_gui.elements.UIButton(
                     relative_rect=pygame.Rect((first_col_offset_from_left + medium_button_width + margin_between_buttons_width, 
@@ -904,7 +901,7 @@ class Display:
         self.draw_on_button(button, img, "x", (medium_button_width, medium_button_height))
         button.action = 'x'
 
-        if player.character.main_weapon == None:
+        if player.character.equipment_slots["hand_slot"][0] == None:
             available_slot = False
             for item in player.character.inventory:
                 if item.equipment_type== "Weapon":
@@ -920,7 +917,7 @@ class Display:
 
         else:
             pre_text = "change "
-            img = pygame.transform.scale(tileMap.tiles[player.character.main_weapon.render_tag], (medium_button_width, medium_button_height))
+            img = pygame.transform.scale(tileMap.tiles[player.character.equipment_slots["hand_slot"][0].render_tag], (medium_button_width, medium_button_height))
         
         button = pygame_gui.elements.UIButton(
                     relative_rect=pygame.Rect((first_col_offset_from_left + 2 * (medium_button_width + margin_between_buttons_width), 
@@ -933,7 +930,7 @@ class Display:
         self.draw_on_button(button, img, "d", (medium_button_width, medium_button_height), shrink=True)
         button.action = 'd'
 
-        if player.character.gloves == None:
+        if player.character.equipment_slots["gloves_slot"][0] == None:
             available_slot = False
             for item in player.character.inventory:
                 if item.equipment_type == "Gloves":
@@ -949,7 +946,7 @@ class Display:
 
         else:
             pre_text = "change "
-            img = pygame.transform.scale(tileMap.tiles[player.character.gloves.render_tag], (medium_button_width, medium_button_height))
+            img = pygame.transform.scale(tileMap.tiles[player.character.equipment_slots["gloves_slot"][0].render_tag], (medium_button_width, medium_button_height))
         
         button = pygame_gui.elements.UIButton(
                     relative_rect=pygame.Rect((first_col_offset_from_left + 2 * (medium_button_width + margin_between_buttons_width), 
@@ -961,6 +958,37 @@ class Display:
         
         self.draw_on_button(button, img, "c", (medium_button_width, medium_button_height))
         button.action = 'c'
+
+        if player.character.equipment_slots["pants_slot"][0] == None:
+            available_slot = False
+            for item in player.character.inventory:
+                if item.equipment_type == "Pants":
+                    available_slot = True
+                    break
+            if available_slot == True:
+                pre_text = "change "
+                img = pygame.transform.scale(tileMap.tiles[818],
+                                             (medium_button_width, medium_button_height))
+            else:
+                pre_text = "no options "
+                img = pygame.transform.scale(tileMap.tiles[819], (medium_button_width, medium_button_height))
+
+        else:
+            pre_text = "change "
+            img = pygame.transform.scale(tileMap.tiles[player.character.equipment_slots["pants_slot"][0].render_tag],
+                                         (medium_button_width, medium_button_height))
+
+        button = pygame_gui.elements.UIButton(
+            relative_rect=pygame.Rect(
+                (first_col_offset_from_left + 2 * (medium_button_width + margin_between_buttons_width),
+                 outer_cols_offset_from_top + 2* (medium_button_height + margin_between_buttons_height)),
+                (medium_button_width, medium_button_height)),
+            text=pre_text + "pants",
+            manager=self.uiManager,
+            object_id='#equipment_button')
+
+        self.draw_on_button(button, img, "p", (medium_button_width, medium_button_height))
+        button.action = 'p'
 
         self.draw_character_stats(player, 
                                   margin_from_left = first_col_offset_from_left + 3 * (medium_button_width + margin_between_buttons_width),

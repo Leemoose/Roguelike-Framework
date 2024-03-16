@@ -18,21 +18,20 @@ width = infoObject.current_w #1920 * 4/5
 height = infoObject.current_h #1080 * 4/5
 textWidth = int(width / textSize)
 textHeight = int(height / textSize)
-#Haven't used yet1
-colors = L.ColorDict()
+
 #dictionary mapping renderID to the image
-tileDict = M.TileDict(textSize, colors)
+tileDict = M.TileDict(textSize)
 #Responsible for game loops
-loop = L.Loops(width, height, textSize, tileDict)
 
 display = D.Display(width, height, textSize, textWidth, textHeight)
-
 keyboard = K.Keyboard()
+loop = L.Loops(width, height, textSize, tileDict, display, keyboard)
+
 
 player_turn = True
 loop.init_game(display)
 loop.change_loop(L.LoopType.main)
 
 while player_turn:
-    loop.render_screen(keyboard, display, colors, tileDict)
+    loop.render_screen(keyboard, display, tileDict)
     player_turn = loop.action_loop(keyboard, display)

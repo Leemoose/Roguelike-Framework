@@ -9,7 +9,7 @@ import items as I
 import loops as L
 
 class Character():
-    def __init__(self, parent, endurance = 0, intelligence = 0, dexterity = 0, strength = 0, health = 100, mana = 0, health_regen=0.1, mana_regen=0.1):
+    def __init__(self, parent, endurance = 0, intelligence = 0, dexterity = 0, strength = 0, health = 100, mana = 0, health_regen=0.2, mana_regen=0.2):
         self.endurance = endurance
         self.intelligence = intelligence
         self.dexterity = dexterity
@@ -49,15 +49,15 @@ class Character():
 
         self.ready_scroll = None # index of actively used scroll
 
-        self.chestarmor = None
-        self.main_armor = None
-        self.boots = None
-        self.gloves = None
-        self.helmet = None
-        self.ring_1 = None
-        self.ring_2 = None
-        self.force_ring_2 = False # by default we dequip first ring but we can force second with this
-
+        self.equipment_slots = {"body_armor_slot": [None],
+                                "helmet_slot": [None],
+                                "gloves_slot": [None],
+                                "boots_slot": [None],
+                                "ring_slot": [None, None],
+                                "pants_slot": [None],
+                                "amulet_slot": [None],
+                                "hand_slot": [None, None]
+                                }
         self.base_damage = 0
         self.armor = 0
 
@@ -268,12 +268,16 @@ class Character():
             self.energy -= self.read_cost
             return True
     
-    def tick_all_status_effects(self):
+    def tick_all_status_effects(self, loop):
         for effect in self.status_effects:
             effect.tick(self)
+            status_messages = [self.parent.name + " " + mes for mes in self.status_messages()] #Still need to fix
+            for message in status_messages:
+                loop.add_message(message)
         for effect in self.status_effects:
             if not effect.active:
                 self.remove_status_effect(effect)
+              #  loop.add_message(message)
 
     def remove_status_effect(self, effect):
         if not effect.active:
@@ -427,7 +431,7 @@ class Player(O.Objects):
 
         self.path = []
 
-        self.invincible = False
+        self.invincible = True
 
         if self.invincible: # only get the gun if you're invincible at the start
             self.character.skills.extend([
@@ -435,7 +439,7 @@ class Player(O.Objects):
                 # S.BlinkToEmpty(self, cooldown=0, cost=0, range=10, action_cost=1), # 2
                 # S.BlinkStrike(self, cooldown=0, cost=10, damage=25, range=10, action_cost=1), # 3
                 # S.SummonGorblin(self, cooldown=0, cost=10, range=10, action_cost=1), # 2
-                # S.BurningAttack(self, cooldown=0, cost=10, damage=20, burn_damage=10, burn_duration=10, range=10), #2
+                 S.BurningAttack(self, cooldown=0, cost=10, damage=20, burn_damage=10, burn_duration=10, range=10), #2
                 # S.Petrify(self, cooldown=0, cost=10, duration=3, activation_chance=1, range=10), #3
                 # S.ShrugOff(self, cooldown=0, cost=10, activation_chance=1.0, action_cost=1), #4
                 # S.Berserk(self, cooldown=0, cost=10, activation_threshold=50, strength_increase=10, action_cost=1), #5

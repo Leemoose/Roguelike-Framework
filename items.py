@@ -111,6 +111,10 @@ class Equipment(O.Item):
         else:
             return None
 
+"""
+WEAPONS
+"""
+
 class Weapon(Equipment):
     def __init__(self, x, y, id_tag, render_tag, name):
         super().__init__(x,y, id_tag, render_tag, name)
@@ -121,15 +125,15 @@ class Weapon(Equipment):
 
     def equip(self, entity):
         if entity.strength >= self.required_strength:
-            if entity.main_weapon != None:
+            if entity.equipment_slots["hand_slot"][0] != None:
                 entity.unequip(entity.main_weapon)
             if self.attached_skill_exists:
                 entity.add_skill(self.attached_skill(entity.parent))
-            entity.main_weapon = self
+            entity.equipment_slots["hand_slot"][0] = self
             self.activate(entity)
 
     def unequip(self, entity):
-        entity.main_weapon = None
+        entity.equipment_slots["hand_slot"][0] = None
         if self.attached_skill_exists:
             entity.remove_skill(self.attached_skill(entity.parent).name)
         self.deactivate(entity)
@@ -402,6 +406,11 @@ class FlamingSword(Weapon):
             self.wearer.remove_skill(self.attached_skill(self.wearer.parent).name)
             self.wearer.add_skill(self.attached_skill(self.wearer.parent))
 
+"""
+ARMORS
+SHIELDS
+"""
+
 class Armor(Equipment):
     def __init__(self, x,y, id_tag, render_tag, name):
         super().__init__(-1, -1, 0, render_tag, "Armor")
@@ -420,13 +429,12 @@ class Shield(Armor):
 
     def equip(self, entity):
         if entity.strength >= self.required_strength:
-            if entity.main_shield != None:
-                entity.unequip(entity.main_shield)
-            entity.main_shield = self
+            if entity.equipment_slots["hand_slot"][1] != None:
+                entity.unequip(entity.equipment_slots["hand_slot"][1])
             self.activate(entity)
 
     def unequip(self, entity):
-        entity.main_shield = None
+        entity.equipment_slots["hand_slot"][1] = None
         self.deactivate(entity)
 
 class BasicShield(Shield):
@@ -531,174 +539,9 @@ class MagicFocus(Shield):
         if self.level == 6:
             self.description = "An orb that takes your offhand but lets you cast the most powerful spells. It's been enchanted as much as possible."
 
-class Ring(Equipment):
-    def __init__(self, render_tag, name):
-        super().__init__(-1,-1, 0, render_tag, name)
-        self.equipment_type = "Ring"
-        self.name = name
-        self.description = "A ring that does something."
-        self.can_be_levelled = False
-        self.required_strength = -100
-        self.action_description = "Power courses through your hands"
-
-    def equip(self, entity):
-        if self.equipped:
-            return
-        if entity.force_ring_2:
-            entity.ring_2 = self
-            entity.force_ring_2 = False
-        elif entity.ring_1 == None:
-            entity.ring_1 = self
-        elif entity.ring_2 == None: # and ring_1 is not
-            entity.ring_2 = self
-        else: # both rings are equipped
-            entity.ring_1.deactivate(entity)
-            entity.ring_1 = entity.ring_2
-            entity.ring_2 = self
-        self.activate(entity)
-
-    def unequip(self, entity):
-        if entity.ring_1 == self:
-            entity.ring_1 = entity.ring_2
-            entity.ring_2 = None
-        elif entity.ring_2 == self:
-            entity.ring_2 = None
-        self.deactivate(entity)
-
-class RingOfSwiftness(Ring):
-    def __init__(self, render_tag):
-        super().__init__(render_tag, "Ring of Swiftness")
-        self.description = "The most circular thing you own, it makes you feel spry on your feet"
-        self.rarity = "Rare"
-        self.action_description = "You move a fifth faster"
-
-    def activate(self, entity):
-        entity.move_cost -= 20
-
-    def deactivate(self, entity):
-        entity.move_cost += 20
-
-class BloodRing(Ring):
-    def __init__(self, render_tag):
-        super().__init__(render_tag, "Blood Ring")
-        self.description = "Pricking your finger on the spikes of this ring makes you feel alive."
-        self.action_description = "Gain the Blood Pact skill."
-        
-        # skill doesn't have an owner until equipped to an entity, so need a lambda expression here
-        self.rarity = "Rare"
-        self.attached_skill_exists = True
-
-    def attached_skill(self, owner):
-        self.attached_skill_exists = True
-        return S.BloodPact(owner, cooldown=10, cost=25, strength_increase=5, duration=5, action_cost=100)
-        
-
-    def activate(self, entity):
-        entity.add_skill(self.attached_skill(entity.parent))
-
-    def deactivate(self, entity):
-        if entity.ring_1 != None and entity.ring_1.name == "Blood Ring":
-            return # don't remove skill if other ring was a blood ring
-        entity.remove_skill(self.attached_skill(entity.parent).name)
-        
-
-class RingOfMight(Ring):
-    def __init__(self, render_tag):
-        super().__init__(render_tag, "Ring of Might")
-        self.equipment_type = "Ring"
-        self.name = "Ring of Might"
-        self.description = "A ring that makes you feel stronger."
-        self.action_description = "Gain 4 strength"
-        self.rarity = "Rare"
-
-    def activate(self, entity):
-        entity.strength += 4
-
-    def deactivate(self, entity):
-        entity.strength -= 4
-
-class RingOfMana(Ring):
-    def __init__(self, render_tag):
-        super().__init__(render_tag, "Ring of Mana")
-        self.description = "A ring that every spellcaster is given on their 10th birthday"
-        self.action_description = "Gain 20 mana, 3 intelligence and extra mana regen."
-        self.rarity = "Rare"
-
-    def activate(self, entity):
-        entity.mana += 20
-        entity.max_mana += 20
-        entity.mana_regen += 4
-        entity.intelligence += 3
-
-    def deactivate(self, entity):
-        entity.mana -= 20
-        entity.max_mana -= 20
-        entity.mana_regen -= 4
-        entity.intelligence -= 3
-
-class BoneRing(Ring):
-    def __init__(self, render_tag):
-        super().__init__(render_tag, "Bone Ring")
-        self.description = "An eerie ring that makes you much stronger and faster while wearing it but rapidly drains your health and mana"
-        self.action_description = "Gain 4 strength and 4 dexterity but lose health and mana over time."
-        self.rarity = "Legendary"
-
-    def activate(self, entity):
-        self.entity.safe_rest = False
-        entity.strength += 4
-        entity.dexterity += 4
-        entity.mana_regen -= 10
-        entity.health_regen -= 10 # intended to kill you if you don't take it off after a few turns
-        
-    def deactivate(self, entity):
-        self.entity.safe_rest = True
-        entity.strength -= 4
-        entity.dexterity -= 4
-        entity.mana_regen += 10
-        entity.health_regen += 10
-
-class RingOfTeleportation(Ring):
-    def __init__(self, render_tag):
-        super().__init__(render_tag, "Ring of Teleportation")
-        self.description = "The most circular thing you own, it makes you feel spry on your feet"
-        self.rarity = "Rare"
-        self.name = "Ring of Teleportation"
-        self.action_description = "Gain the teleport skill."
-
-        self.wearer = None  # items with stat buffs need to keep track of owner for level ups
-
-        self.skill_cooldown = 40
-        self.skill_cost = 30
-
-        self.attached_skill_exists = True
-
-        self.rarity = "Legendary"
-
-    def attached_skill(self, owner):
-        self.attached_skill_exists = True
-        return S.Teleport(owner, self.skill_cooldown, self.skill_cost)
-
-    def activate(self, entity):
-        entity.add_skill(self.attached_skill(entity.parent))
-        self.wearer = entity
-        return super().activate(entity)
-
-    def deactivate(self, entity):
-        if entity.ring_1 != None and entity.ring_1.name == "Ring of Teleportation":
-            return # don't remove skill if other ring was a teleportation ring
-        entity.remove_skill(self.attached_skill(entity.parent).name)
-        self.wearer = None
-        return super().deactivate(entity)
 """
-    def level_up(self):
-        self.enchant()
-        if self.level == 2:
-            self.description += " It seems to be growing stronger?"
-        if self.level == 6:
-            self.skill_cooldown = 0
-            self.description = "Unlimited power."
-            """
-
+BODY ARMORS
+"""
 
 class BodyArmor(Armor):
     def __init__(self, render_tag, name):
@@ -709,13 +552,13 @@ class BodyArmor(Armor):
         self.stats = statUpgrades(base_str=1, max_str=1, base_end=1, max_end=4, base_arm=1, max_arm=4)
 
     def equip(self, entity):
-        if entity.main_armor != None:
-            entity.unequip(entity.main_armor)
-        entity.main_armor = self
+        if entity.equipment_slots["body_armor_slot"][0] != None:
+            entity.unequip(entity.equipment_slot["body_armor_slot"][0])
+        entity.equipment_slots["body_armor_slot"][0] = self
         self.activate(entity)
     
     def unequip(self, entity):
-        entity.main_armor = None
+        entity.equipment_slots["body_armor_slot"][0] = None
         self.deactivate(entity)
 
 class Chestarmor(BodyArmor):
@@ -972,6 +815,10 @@ class KarateGi(BodyArmor):
         if self.level == 6:
             self.description = "A gi that lets you punch through anything. It's been enchanted as much as possible."
 
+"""
+BOOTS
+"""
+
 class Boots(Armor):
     def __init__(self, render_tag):
         super().__init__(-1,-1, 0, render_tag, "Boots")
@@ -982,13 +829,13 @@ class Boots(Armor):
 
 
     def equip(self, entity):
-        if entity.boots != None:
-            entity.unequip(entity.boots)
+        if entity.equipment_slots["boots_slot"][0] != None:
+            entity.unequip(entity.equipment_slot["boots_slot"][0])
         entity.boots = self
         self.activate(entity)
 
     def unequip(self, entity):
-        entity.boots = None
+        entity.equipment_slots["boots_slot"] = None
         self.deactivate(entity)
 
     def level_up(self):
@@ -1102,6 +949,10 @@ class AssassinBoots(Boots):
         if self.level == 6:
             self.description = "Boots to help you move in the shadows. It's been enchanted as much as possible."
 
+"""
+GLOVES
+"""
+
 class Gloves(Armor):
     def __init__(self, render_tag):
         super().__init__(-1,-1, 0, render_tag, "Gloves")
@@ -1113,13 +964,13 @@ class Gloves(Armor):
                                   base_arm = 0, max_arm = 10)
 
     def equip(self, entity):
-        if entity.gloves != None:
-            entity.unequip(entity.gloves)
-        entity.gloves = self
+        if entity.equipment_slots["gloves_slot"][0] != None:
+            entity.unequip(entity.equipment_slot["gloves_slot"][0])
+        entity.equipment_slot["gloves_slot"][0] = self
         self.activate(entity)
 
     def unequip(self, entity):
-        entity.gloves = None
+        entity.equipment_slots["body_armor_slot"][0] = None
         self.deactivate(entity)
 
     def level_up(self):
@@ -1316,6 +1167,10 @@ class LichHand(Armor):
         if self.level == 6:
             self.description = "A hand that lets you embrace the lich's immortality. It's been enchanted as much as possible."
 
+"""
+HELMETS
+"""
+
 class Helmet(Armor):
     def __init__(self, render_tag):
         super().__init__(-1,-1, 0, render_tag, "Helmet")
@@ -1329,13 +1184,13 @@ class Helmet(Armor):
 
 
     def equip(self, entity):
-        if entity.helmet != None:
-            entity.unequip(entity.helmet)
-        entity.helmet = self
+        if entity.equipment_slots["helmet_slot"][0] != None:
+            entity.unequip(entity.equipment_slots["helmet_slot"][0])
+        entity.equipment_slots["helmet_slot"][0] = self
         self.activate(entity)
 
     def unequip(self, entity):
-        entity.helmet = None
+        entity.equipment_slots["helmet_slot"][0] = None
         self.deactivate(entity)
 
     def level_up(self):
@@ -1536,7 +1391,222 @@ class WizardHat(Armor):
             self.description += " It's been enchanted to be more effective."
         if self.level == 6:
             self.description = "A hat that makes you feel like you can cast spells for all eternity. It's been enchanted as much as possible."
-    
+
+"""
+PANTS
+"""
+
+class Pants(Armor):
+    def __init__(self, render_tag):
+        super().__init__(-1,-1, 0, render_tag, "Pants")
+        self.equipment_type = "Pants"
+        self.name = "Pants"
+        self.description = "A pair of pants. Why would you ever take them off?"
+
+        self.stats = statUpgrades(base_str = 0, max_str = 2,
+                                  base_end = 1, max_end = 1,
+                                  base_arm = 1, max_arm = 3)
+
+
+    def equip(self, entity):
+        if entity.equipment_slots["pants_slot"][0] != None:
+            entity.unequip(entity.equipment_slots["pants_slot"][0])
+        entity.equipment_slots["pants_slot"][0] = self
+        self.activate(entity)
+
+    def unequip(self, entity):
+        entity.equipment_slots["pants_slot"][0] = None
+        self.deactivate(entity)
+
+    def level_up(self):
+        self.enchant()
+        if self.level == 2:
+            self.description += " It's been enchanted to be more protective."
+        if self.level == 6:
+            self.description = "A round pair of pants that protects your head from nearly anything. It's been enchanted as much as possible."
+
+
+"""
+RINGS
+"""
+
+class Ring(Equipment):
+    def __init__(self, render_tag, name):
+        super().__init__(-1, -1, 0, render_tag, name)
+        self.equipment_type = "Ring"
+        self.name = name
+        self.description = "A ring that does something."
+        self.can_be_levelled = False
+        self.required_strength = -100
+        self.action_description = "Power courses through your hands"
+
+    def equip(self, entity):
+        if self.equipped:
+            return
+        equipped = False
+        for ring in entity.equipment_slots["ring_slot"]:
+            if entity.equipment_slots["ring_slot"][ring] == None:
+                entity.equipment_slots["ring_slot"][ring] = self
+                self.activate(entity)
+                equipped = True
+                break
+        if equipped == False:
+            entity.unequip(entity.equipment_slots["ring_slot"][0])
+            for ring in entity.equipment_slots["ring_slot"]:
+                if entity.equipment_slots["ring_slot"][ring] == None:
+                    entity.equipment_slots["ring_slot"][ring] = self
+                    self.activate(entity)
+                    equipped = True
+
+    def unequip(self, entity):
+        for ring in entity.equipment_slots["ring_slot"]:
+            if entity.equipment_slots["ring_slot"][ring] == self:
+                entity.equipment_slots["ring_slot"][ring] = None
+                self.deactivate(entity)
+
+
+class RingOfSwiftness(Ring):
+    def __init__(self, render_tag):
+        super().__init__(render_tag, "Ring of Swiftness")
+        self.description = "The most circular thing you own, it makes you feel spry on your feet"
+        self.rarity = "Rare"
+        self.action_description = "You move a fifth faster"
+
+    def activate(self, entity):
+        entity.move_cost -= 20
+
+    def deactivate(self, entity):
+        entity.move_cost += 20
+
+
+class BloodRing(Ring):
+    def __init__(self, render_tag):
+        super().__init__(render_tag, "Blood Ring")
+        self.description = "Pricking your finger on the spikes of this ring makes you feel alive."
+        self.action_description = "Gain the Blood Pact skill."
+
+        # skill doesn't have an owner until equipped to an entity, so need a lambda expression here
+        self.rarity = "Rare"
+        self.attached_skill_exists = True
+
+    def attached_skill(self, owner):
+        self.attached_skill_exists = True
+        return S.BloodPact(owner, cooldown=10, cost=25, strength_increase=5, duration=5, action_cost=100)
+
+    def activate(self, entity):
+        entity.add_skill(self.attached_skill(entity.parent))
+
+    def deactivate(self, entity):
+        if entity.ring_1 != None and entity.ring_1.name == "Blood Ring":
+            return  # don't remove skill if other ring was a blood ring
+        entity.remove_skill(self.attached_skill(entity.parent).name)
+
+
+class RingOfMight(Ring):
+    def __init__(self, render_tag):
+        super().__init__(render_tag, "Ring of Might")
+        self.equipment_type = "Ring"
+        self.name = "Ring of Might"
+        self.description = "A ring that makes you feel stronger."
+        self.action_description = "Gain 4 strength"
+        self.rarity = "Rare"
+
+    def activate(self, entity):
+        entity.strength += 4
+
+    def deactivate(self, entity):
+        entity.strength -= 4
+
+
+class RingOfMana(Ring):
+    def __init__(self, render_tag):
+        super().__init__(render_tag, "Ring of Mana")
+        self.description = "A ring that every spellcaster is given on their 10th birthday"
+        self.action_description = "Gain 20 mana, 3 intelligence and extra mana regen."
+        self.rarity = "Rare"
+
+    def activate(self, entity):
+        entity.mana += 20
+        entity.max_mana += 20
+        entity.mana_regen += 4
+        entity.intelligence += 3
+
+    def deactivate(self, entity):
+        entity.mana -= 20
+        entity.max_mana -= 20
+        entity.mana_regen -= 4
+        entity.intelligence -= 3
+
+
+class BoneRing(Ring):
+    def __init__(self, render_tag):
+        super().__init__(render_tag, "Bone Ring")
+        self.description = "An eerie ring that makes you much stronger and faster while wearing it but rapidly drains your health and mana"
+        self.action_description = "Gain 4 strength and 4 dexterity but lose health and mana over time."
+        self.rarity = "Legendary"
+
+    def activate(self, entity):
+        self.entity.safe_rest = False
+        entity.strength += 4
+        entity.dexterity += 4
+        entity.mana_regen -= 10
+        entity.health_regen -= 10  # intended to kill you if you don't take it off after a few turns
+
+    def deactivate(self, entity):
+        self.entity.safe_rest = True
+        entity.strength -= 4
+        entity.dexterity -= 4
+        entity.mana_regen += 10
+        entity.health_regen += 10
+
+
+class RingOfTeleportation(Ring):
+    def __init__(self, render_tag):
+        super().__init__(render_tag, "Ring of Teleportation")
+        self.description = "The most circular thing you own, it makes you feel spry on your feet"
+        self.rarity = "Rare"
+        self.name = "Ring of Teleportation"
+        self.action_description = "Gain the teleport skill."
+
+        self.wearer = None  # items with stat buffs need to keep track of owner for level ups
+
+        self.skill_cooldown = 40
+        self.skill_cost = 30
+
+        self.attached_skill_exists = True
+
+        self.rarity = "Legendary"
+
+    def attached_skill(self, owner):
+        self.attached_skill_exists = True
+        return S.Teleport(owner, self.skill_cooldown, self.skill_cost)
+
+    def activate(self, entity):
+        entity.add_skill(self.attached_skill(entity.parent))
+        self.wearer = entity
+        return super().activate(entity)
+
+    def deactivate(self, entity):
+        if entity.ring_1 != None and entity.ring_1.name == "Ring of Teleportation":
+            return  # don't remove skill if other ring was a teleportation ring
+        entity.remove_skill(self.attached_skill(entity.parent).name)
+        self.wearer = None
+        return super().deactivate(entity)
+
+
+"""
+    def level_up(self):
+        self.enchant()
+        if self.level == 2:
+            self.description += " It seems to be growing stronger?"
+        if self.level == 6:
+            self.skill_cooldown = 0
+            self.description = "Unlimited power."
+            """
+
+"""
+POTIONS
+"""
 
 class Potion(O.Item):
     def __init__(self, render_tag, name):
