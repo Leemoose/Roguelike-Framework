@@ -226,16 +226,22 @@ class Character():
 
     def melee(self, defender):
         effect = None
-        if self.main_weapon == None:
-            damage = R.roll_dice(self.unarmed_damage_min, self.unarmed_damage_max)[0]
+        weapon = self.equipment_slots["hand_slot"][1]
+        print(weapon)
+        if weapon == None:
+            damage = R.roll_dice(self.unarmed_damage_min, self.unarmed_damage_max)[0]+ random.randint(1, max(1,int(11 + (self.dexterity + self.round_bonus())* 1.5)))
+            defense = defender.character.defend()
+            finalDamage = damage - defense + self.base_damage + int((self.strength + self.round_bonus()) * 3)
+            defender.character.take_damage(self.parent, finalDamage)
+            return finalDamage
         else:
-            if self.main_weapon.on_hit == None:
-                damage = self.main_weapon.attack()
+            if weapon.on_hit == None:
+                damage = weapon.attack()
             else:
-                damage, effect = self.main_weapon.attack()
+                damage, effect = weapon.attack()
             # this formula is pumping damage numbers way up
             damage += random.randint(1, max(1,int(11 + (self.dexterity + self.round_bonus())* 1.5)))
-        defense = defender.character.defend()
+        defense = defender.character.defend() - weapon.armor_piercing
         if defense < 0:
             defense = 0
         finalDamage = self.base_damage + int((self.strength + self.round_bonus()) * 3) + damage - defense
@@ -244,6 +250,7 @@ class Character():
             effect = effect(self.parent) # some effects need an inflictor
             defender.character.add_status_effect(effect)
         self.energy -= self.attack_cost
+        defender.character.take_damage(self.parent, finalDamage)
         return (finalDamage)
 
     def dodge(self):
@@ -479,8 +486,6 @@ class Player(O.Objects):
         loop.screen_focus = (defender.x, defender.y)
         if not defender.character.dodge():
             damage = self.character.melee(defender)
-            if damage < 0:
-                damage = 0
             loop.add_message(f"The player attacked for {damage} damage")
         else:
             loop.add_message("The monster dodged the attack")
@@ -544,11 +549,16 @@ class Player(O.Objects):
                 loop.add_message("You cannot autoexplore while enemies are tracking you.")
                 loop.change_loop(L.LoopType.action)
                 return
-            
+
         start = (self.x, self.y)
-        end = loop.generator.tile_map.stairs[0].get_location()
+        end = None
+        for stairs in loop.generator.tile_map.get_stairs():
+            if stairs.downward and stairs.seen:
+                end = stairs.get_location()
+        if end == None:
+            loop.add_message("You have not found the stairs yet")
+            return
         if (start == end):
-            loop.change_loop(L.LoopType.action)
             return
         self.path = pathfinding.astar(tile_map.track_map, start, end, loop.generator.monster_map, loop.player)
         

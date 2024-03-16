@@ -120,6 +120,7 @@ class Weapon(Equipment):
         super().__init__(x,y, id_tag, render_tag, name)
         self.damage_min = 0
         self.damage_max = 0
+        self.armor_piercing = 0
         self.equipment_type = "Weapon"
         self.on_hit = None
 
@@ -216,6 +217,9 @@ class Dagger(Weapon):
         if self.damage_min > self.damage_max:
             self.damage_min = self.damage_max
 
+"""
+Swords specialness lies with armor piercing
+"""
 class Sword(Weapon):
     def __init__(self, render_tag):
         super().__init__(-1, -1, 0, render_tag, "Sworbd")
@@ -224,6 +228,7 @@ class Sword(Weapon):
         self.description = "Could be rounder honestly."
         self.damage_min = 4
         self.damage_max = 12
+        self.armor_piercing = 4
 
     def level_up(self):
         self.enchant()
@@ -1172,12 +1177,13 @@ HELMETS
 """
 
 class Helmet(Armor):
-    def __init__(self, render_tag):
-        super().__init__(-1,-1, 0, render_tag, "Helmet")
+    def __init__(self, render_tag, name = "Helmet"):
+        super().__init__(-1,-1, 0, render_tag, name)
         self.equipment_type = "Helmet"
         self.name = "Helmet"
         self.description = "A helmet that protects your head. You like how round it is."
-
+        self.attached_skill_exists = False
+        self.attached_skill = None
         self.stats = statUpgrades(base_str = 0, max_str = 2,
                                   base_end = 1, max_end = 1,
                                   base_arm = 1, max_arm = 3)
@@ -1188,10 +1194,14 @@ class Helmet(Armor):
             entity.unequip(entity.equipment_slots["helmet_slot"][0])
         entity.equipment_slots["helmet_slot"][0] = self
         self.activate(entity)
+        if self.attached_skill_exists:
+            entity.add_skill(self.attached_skill(entity.parent))
 
     def unequip(self, entity):
         entity.equipment_slots["helmet_slot"][0] = None
         self.deactivate(entity)
+        if self.attached_skill_exists:
+            entity.remove_skill(self.attached_skill(entity.parent).name)
 
     def level_up(self):
         self.enchant()
@@ -1201,9 +1211,9 @@ class Helmet(Armor):
             self.description = "A round helmet that protects your head from nearly anything. It's been enchanted as much as possible."
 
 
-class VikingHelmet(Armor):
+class VikingHelmet(Helmet):
     def __init__(self, render_tag):
-        super().__init__(-1,-1, 0, render_tag, "Viking Helmet")
+        super().__init__(render_tag, "Viking Helmet")
         self.equipment_type = "Helmet"
         self.name = "Viking Helmet"
         self.description = "A helmet that lets you go berserk below a quarter health."
@@ -1228,18 +1238,6 @@ class VikingHelmet(Armor):
         self.attached_skill_exists = True
         return S.Berserk(owner, self.skill_cooldown, self.skill_cost, self.skill_duration, self.skill_threshold, self.strength_increase, action_cost=1)
 
-    def equip(self, entity):
-        if entity.helmet != None:
-            entity.unequip(entity.helmet)
-        entity.helmet = self
-        entity.add_skill(self.attached_skill(entity.parent))
-        self.activate(entity)
-
-    def unequip(self, entity):
-        entity.helmet = None
-        entity.remove_skill(self.attached_skill(entity.parent).name)
-        self.deactivate(entity)
-
     def level_up(self):
         self.enchant()
         if self.description == 2:
@@ -1253,9 +1251,9 @@ class VikingHelmet(Armor):
             self.wearer.remove_skill(self.attached_skill(self.wearer.parent).name)
             self.wearer.add_skill(self.attached_skill(self.wearer.parent))
 
-class SpartanHelmet(Armor):
+class SpartanHelmet(Helmet):
     def __init__(self, render_tag):
-        super().__init__(-1,-1, 0, render_tag, "Spartan Helmet")
+        super().__init__(render_tag, "Spartan Helmet")
         self.equipment_type = "Helmet"
         self.name = "Spartan Helmet"
         self.description = "A helmet for a mighty warrior who doesn't need things like magic to help him"
@@ -1271,17 +1269,6 @@ class SpartanHelmet(Armor):
                                   base_int = -5, max_int = 0,
                                   base_end = 3, max_end = 4,
                                   base_arm = 1, max_arm = 3)
-
-    def equip(self, entity):
-        if entity.helmet != None:
-            entity.unequip(entity.helmet)
-        entity.helmet = self
-        self.activate(entity)
-
-    def unequip(self, entity):
-        entity.helmet = None
-        self.deactivate(entity)
-
     def level_up(self):
         self.enchant()
 
@@ -1290,9 +1277,9 @@ class SpartanHelmet(Armor):
         if self.level == 6:
             self.description = "A helmet for the greatest of warriors who shuns magic. It's been enchanted as much as possible."
 
-class GreatHelm(Armor):
+class GreatHelm(Helmet):
     def __init__(self, render_tag):
-        super().__init__(-1,-1, 0, render_tag, "Great Helm")
+        super().__init__(render_tag, "Great Helm")
         self.equipment_type = "Helmet"
         self.name = "Great Helm"
         self.armor = 4
@@ -1305,16 +1292,6 @@ class GreatHelm(Armor):
         self.stats = statUpgrades(base_dex = -4, max_dex = 0,
                                   base_arm = 4, max_arm = 8)
 
-    def equip(self, entity):
-        if entity.helmet != None:
-            entity.unequip(entity.helmet)
-        entity.helmet = self
-        self.activate(entity)
-
-    def unequip(self, entity):
-        entity.helmet = None
-        self.deactivate(entity)
-
     def level_up(self):
         self.enchant()
 
@@ -1323,9 +1300,9 @@ class GreatHelm(Armor):
         if self.level == 6:
             self.description = "A helmet that fully covers your face for maximum protection without restricting you at all. It's been enchanted as much as possible."
 
-class ThiefHood(Armor):
+class ThiefHood(Helmet):
     def __init__(self, render_tag):
-        super().__init__(-1,-1, 0, render_tag, "Thief Hood")
+        super().__init__( render_tag, "Thief Hood")
         self.equipment_type = "Helmet"
         self.name = "Thief Hood"
         self.description = "A hood that helps you move faster and think more cleverly."
@@ -1338,15 +1315,6 @@ class ThiefHood(Armor):
         self.stats = statUpgrades(base_dex = 3, max_dex = 5,
                                   base_int = 1, max_int = 4)
 
-    def equip(self, entity):
-        if entity.helmet != None:
-            entity.unequip(entity.helmet)
-        entity.helmet = self
-        self.activate(entity)
-
-    def unequip(self, entity):
-        entity.helmet = None
-        self.deactivate(entity)
 
     def level_up(self):
         self.enchant()
@@ -1356,9 +1324,9 @@ class ThiefHood(Armor):
         if self.level == 6:
             self.description = "A hood that gives you the physical and mental speed of a master thief. It's been enchanted as much as possible."
 
-class WizardHat(Armor):
+class WizardHat(Helmet):
     def __init__(self, render_tag):
-        super().__init__(-1,-1, 0, render_tag, "Wizard Hat")
+        super().__init__(render_tag, "Wizard Hat")
         self.equipment_type = "Helmet"
         self.name = "Wizard Hat"
         self.description = "A hat that makes you feel more magical."

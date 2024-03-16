@@ -379,21 +379,25 @@ class Loops():
             self.floor_level += 1
             if self.floor_level > self.memory.explored_levels:
                 generator = M.DungeonGenerator(self.floor_level)
-                generated_map = generator.get_map()
                 self.monster_map = generator.monster_map
                 self.item_dict = generator.item_dict
                 self.monster_dict = generator.monster_dict
                 temp_stair = None
-                for stairs in (generator.tile_map.get_stairs()):
-                    if not stairs.downward:
-                        temp_stair = stairs
-                        if self.floor_level != 1:
-                            old_stairs = self.generator.tile_map.track_map[playerx][playery]
-                            old_stairs.pair = stairs
-                            stairs.pair = old_stairs
-                        break
-                self.player.x = temp_stair.x
-                self.player.y = temp_stair.y
+                if self.floor_level != 1:
+                    for stairs in (generator.tile_map.get_stairs()):
+                        if not stairs.downward:
+                            for old_stairs in self.generator.tile_map.get_stairs():
+                                if old_stairs.pair == None and old_stairs.downward:
+                                    old_stairs.pair = stairs
+                                    stairs.pair = old_stairs
+                                    break
+                    x,y = self.generator.tile_map.track_map[playerx][playery].pair.get_location()
+                else:
+                    for stairs in (generator.tile_map.get_stairs()):
+                        if not stairs.downward:
+                            x,y = stairs.get_location()
+                self.player.x = x
+                self.player.y = y
 
                 self.memory.explored_levels += 1
                 self.generator = generator

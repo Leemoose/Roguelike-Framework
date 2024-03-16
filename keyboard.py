@@ -130,10 +130,7 @@ class Keyboard():
                 loop.display.uiManager.set_visual_debug_mode(True)
         elif key == "s":
             # find stairs
-            if loop.generator.tile_map.track_map[loop.generator.tile_map.stairs[0].x][loop.generator.tile_map.stairs[0].y].seen:
-                player.find_stairs(loop)
-            else:
-                loop.add_message("You haven't found the way down yet")
+            player.find_stairs(loop)
         elif key == ">":
             loop.down_floor()
         elif key == "<":
@@ -312,6 +309,7 @@ class Keyboard():
                 loop.change_loop(LoopType.inventory)
         elif key == "r":
             player.character.read(item, loop, item_dict, item_map)
+        loop.change_loop(loop.currentLoop)
                 
     def key_victory(self, loop, key):
         display = loop,display

@@ -677,16 +677,25 @@ class TileMap(TrackingMap):
                 self.track_map[x+1][y+1] = tile
 
     def place_stairs(self, depth):
-        if (depth < 10):
+        if depth != 1:
             startx = random.randint(0, self.width-1)
             starty = random.randint(0,self.height-1)
             while (self.track_map[startx][starty].passable == False):
                 startx = random.randint(0, self.width-1)
                 starty = random.randint(0,self.height-1)
-            tile = O.Stairs(startx, starty, 91, True, downward=True)
+            tile = O.Stairs(startx, starty, 90, True, downward=False)
             self.track_map[startx][starty] = tile
             self.stairs.append(tile)
-
+        if (depth < 10):
+            for i in range(2):
+                startx = random.randint(0, self.width - 1)
+                starty = random.randint(0, self.height - 1)
+                while (self.track_map[startx][starty].passable == False):
+                    startx = random.randint(0, self.width - 1)
+                    starty = random.randint(0, self.height - 1)
+                tile = O.Stairs(startx, starty, 91, True, downward=True)
+                self.track_map[startx][starty] = tile
+                self.stairs.append(tile)
         startx = random.randint(0, self.width - 1)
         starty = random.randint(0, self.height - 1)
         while (self.track_map[startx][starty].passable == False and self.track_map[startx][starty].render_tag != 91):

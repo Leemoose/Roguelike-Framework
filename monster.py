@@ -15,6 +15,16 @@ class Monster_AI():
         self.is_awake = False
         self.parent = parent
         self.grouped = False
+        self.target = None
+
+        self.personality = {"Goblin":0,
+                       "Kobold": 0,
+                       "Player": -100,
+                        "Hobgoblin": -10,
+                        "Gargoyle": 10,
+                        "Orc":-100,
+                        "Golem":50
+                       }
 
     """
     Think it would be better to first rank each action depending on the circumstances with a number between 1-100 and 
@@ -88,15 +98,23 @@ class Monster_AI():
             return random.randint(10,30)
 
     def rank_combat(self, loop):
-        player=loop.player
-        playerx, playery = player.get_location()
-        monster = self.parent
-        monsterx, monstery = monster.get_location()
-        distance = self.parent.get_distance(playerx, playery)
-        if distance < 1.5:
-            return 75
-        else:
-            return -1
+        utility = -1
+        player = loop.player
+        monster_map = loop.generator.monster_map
+        directions = [(0,1),(0,-1),(1,0),(-1,0),(1,1),(-1,-1),(1,-1),(-1,1)]
+        for xdiff,ydiff in directions:
+            x = self.parent.x + xdiff
+            y = self.parent.y + ydiff
+            if (x,y) == player.get_location():
+                if utility < -self.personality["Player"]:
+                    utility = -self.personality["Player"]
+                    self.target = player
+            elif not monster_map.get_passable(x,y):
+                other_monster = loop.generator.monster_dict.get_subject(monster_map.locate(x,y))
+                if other_monster.name in self.personality and utility < -self.personality[other_monster.name]:
+                    utility = -self.personality[other_monster.name]
+                    self.target = other_monster
+        return random.randint(utility-10,utility+10)
 
     def rank_pickup(self, loop):
         item_map = loop.generator.item_map
@@ -238,20 +256,23 @@ class Monster_AI():
 
     def do_combat(self, loop):
         # print("Attacking player")
-        player=loop.player
         monster = self.parent
-        monster.character.energy -= monster.character.attack_cost
         if not monster.character.movable:
             monster.character.energy -= (monster.character.move_cost - monster.character.dexterity)
             loop.add_message(f"{monster} is petrified and cannot attack.")
             return
-        if not player.character.dodge():
-            damage = monster.character.melee(player)
-            if damage < 0:
-                damage = 0
-            loop.add_message(f"{monster} attacked you for {damage} damage")
+        monster.character.energy -= monster.character.attack_cost
+        if self.target != None:
+            if not self.target.character.dodge():
+                damage = monster.character.melee(self.target)
+                if damage < 0:
+                    damage = 0
+                loop.add_message(f"{monster} attacked {self.target.name} for {damage} damage")
+            else:
+                loop.add_message(f"{self.target.name} dodged the {monster.name} attack")
         else:
-            loop.add_message("You dodged the monsters attack")
+            loop.add_message(f"{monster.name} can find no suitable target to attack.")
+
 
     def do_skill(self, loop):
         monster = self.parent
