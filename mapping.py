@@ -154,6 +154,9 @@ class TileDict():
         tiles[504] = image.load("assets/bone_ring.png")
         tiles[505] = image.load("assets/ring_of_teleport.png")
 
+        #amulet
+        tiles[550] = image.load("assets/amulet.png")
+
         # armor assets
         # list of armor: basic, leather, golden, warmonger, wizard robe
         tiles[600] = image.load("assets/armor.png")
@@ -211,6 +214,8 @@ class TileDict():
         tiles[817] = image.load("assets/empty_ring_open.png")
         tiles[818] = image.load("assets/empty_pants_open.png")
         tiles[819] = image.load("assets/empty_pants.png")
+        tiles[820] = image.load("assets/empty_amulet_open.png")
+        tiles[821] = image.load("assets/empty_amulet.png")
 
         # skill assets
         tiles[901] = image.load("assets/target.png")

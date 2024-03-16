@@ -477,13 +477,10 @@ class Player(O.Objects):
     def attack(self, defender, loop):
         self.character.energy -= int(self.character.attack_cost / (1.05**(self.character.dexterity + self.character.round_bonus())))
         loop.screen_focus = (defender.x, defender.y)
-        if not self.character.dodge():
+        if not defender.character.dodge():
             damage = self.character.melee(defender)
             if damage < 0:
                 damage = 0
-            # if not defender.character.is_alive():
-            #     self.experience += defender.experience_given
-            #     self.check_for_levelup()
             loop.add_message(f"The player attacked for {damage} damage")
         else:
             loop.add_message("The monster dodged the attack")
@@ -595,4 +592,38 @@ class Player(O.Objects):
         self.character.level_up_stats(self.stat_decisions[0], self.stat_decisions[1], self.stat_decisions[2], self.stat_decisions[3])
         self.stat_points -= sum(self.stat_decisions)
         self.stat_decisions = [0, 0, 0, 0]
+
+    def smart_attack(self, loop):
+        """
+        1. Get all visible monsters
+        2. Get monster closest to us
+        3. Get monster with lowest health and attack
+        """
+        attack_target = None
+        distance = 1000
+        monster_dict = loop.generator.monster_dict
+        tile_map = loop.generator.tile_map
+        for key in monster_dict.subjects:
+            monster = monster_dict.get_subject(key)
+            monster_x, monster_y = monster.get_location()
+            if tile_map.locate(monster_x, monster_y).visible:
+                new_distance = self.get_distance(monster_x, monster_y)
+                if new_distance < distance:
+                    attack_target = monster
+                    distance = new_distance
+                elif new_distance == distance:
+                    if attack_target.character.health > monster.character.health:
+                        attack_target = monster
+        if attack_target != None:
+            if distance <= 1.5:
+                self.attack(attack_target, loop)
+            else:
+                path = pathfinding.astar(tile_map.track_map, self.get_location(), attack_target.get_location(), loop.generator.monster_map, self)
+                path.pop(0)
+                x,y = path[0]
+                playerx, playery = self.get_location()
+                self.move(x-playerx, y-playery, loop)
+
+
+
 

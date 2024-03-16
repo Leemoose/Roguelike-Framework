@@ -45,6 +45,8 @@ class Keyboard():
         keys_to_string[pygame.K_RIGHT] = "right"
 
         keys_to_string[pygame.K_ESCAPE] = "esc"
+        keys_to_string[pygame.K_TAB] = "tab"
+
         keys_to_string[pygame.K_1] = "1"
         keys_to_string[pygame.K_2] = "2"
         keys_to_string[pygame.K_3] = "3"
@@ -159,6 +161,8 @@ class Keyboard():
             loop.change_loop(LoopType.paused)
         elif key == "z":
             player.character.rest(loop, loop.currentLoop)
+        elif key == "tab":
+            player.smart_attack(loop)
         elif key.isdigit():
             # cast a skill
             skill_num = int(key) - 1
@@ -236,7 +240,7 @@ class Keyboard():
             loop.limit_inventory = "Shield"
             loop.change_loop(LoopType.inventory)
         elif key == "a":
-            loop.limit_inventory = "Ring"
+            loop.limit_inventory = "Amulet"
             loop.change_loop(LoopType.inventory)
         elif key == "z":
             loop.limit_inventory = "Ring"
@@ -259,6 +263,9 @@ class Keyboard():
             loop.change_loop(LoopType.inventory)
         elif key == "p":
             loop.limit_inventory = "Pants"
+            loop.change_loop(LoopType.inventory)
+        elif key == "r":
+            loop.limit_inventory = "Ring"
             loop.change_loop(LoopType.inventory)
 
     def key_main_screen(self, loop, key):

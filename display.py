@@ -788,8 +788,8 @@ class Display:
                     text = "ring 1",
                     manager=self.uiManager,
                     object_id='#equipment_button')
-        self.draw_on_button(button, img, "a", (small_button_width, small_button_height))
-        button.action = 'a'
+        self.draw_on_button(button, img, "r", (small_button_width, small_button_height))
+        button.action = 'r'
 
         if player.character.equipment_slots["ring_slot"][1] == None:
             available_slot = False
@@ -816,6 +816,33 @@ class Display:
                     object_id='#equipment_button')
         self.draw_on_button(button, img, "z", (small_button_width, small_button_height))
         button.action = 'z'
+
+        if player.character.equipment_slots["amulet_slot"][0] == None:
+            available_slot = False
+            for item in player.character.inventory:
+                if item.equipment_type == "Amulet":
+                    available_slot = True
+                    break
+            if available_slot == True:
+                pre_text = "change "
+                img = pygame.transform.scale(tileMap.tiles[820],
+                                             (medium_button_width, medium_button_height))
+            else:
+                pre_text = "no options "
+                img = pygame.transform.scale(tileMap.tiles[821], (medium_button_width, medium_button_height))
+
+        else:
+            pre_text = "change "
+            img = pygame.transform.scale(tileMap.tiles[player.character.equipment_slots["amulet_slot"][0].render_tag], (medium_button_width, medium_button_height))
+        button = pygame_gui.elements.UIButton(
+                        relative_rect=pygame.Rect((first_col_offset_from_left,
+                                                   outer_cols_offset_from_top+ 2 * (medium_button_height + margin_between_buttons_height)),
+                                                  (medium_button_width, medium_button_height)),
+                        text = pre_text + "amulet",
+                        manager=self.uiManager,
+                        object_id='#equipment_button')
+        self.draw_on_button(button, img, "a", (medium_button_width, medium_button_height))
+        button.action = 'a'
 
         if player.character.equipment_slots["helmet_slot"][0] == None:
             available_slot = False

@@ -76,6 +76,8 @@ ItemSpawns.append(ItemSpawnParams( I.RingOfMana(502),          1,               
 ItemSpawns.append(ItemSpawnParams( I.RingOfMight(503),          1,               10,          0,              0))
 ItemSpawns.append(ItemSpawnParams( I.BoneRing(504),          3,               10,          0,              0))
 
+ItemSpawns.append(ItemSpawnParams( I.Amulet(550),          3,               10,          0,              0))
+
 ItemSpawns.append(ItemSpawnParams( I.HealthPotion(401),       1,               10,          0,              0))
 ItemSpawns.append(ItemSpawnParams( I.ManaPotion(402),         1,               10,          0,              0))
 ItemSpawns.append(ItemSpawnParams( I.CurePotion(403),         1,               10,          0,              0))
@@ -147,7 +149,7 @@ class ItemSpawner():
         # useful for debugging specific items, separate from generator
         self.forceSpawn = []
 
-        self.forceSpawn.append(("Pants", 3))
+        self.forceSpawn.append(("Amulet", 3))
         # self.forceSpawn.append(("Invincibility Scrorb", 3))
         # self.forceSpawn.append(("Permanent Dex Potiorb", 3))
         # self.forceSpawn.append(("Health Potiorb", 3))

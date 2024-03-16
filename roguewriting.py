@@ -27,7 +27,6 @@ display = D.Display(width, height, textSize, textWidth, textHeight)
 keyboard = K.Keyboard()
 loop = L.Loops(width, height, textSize, tileDict, display, keyboard)
 
-
 player_turn = True
 loop.init_game(display)
 loop.change_loop(L.LoopType.main)

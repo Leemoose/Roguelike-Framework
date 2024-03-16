@@ -83,8 +83,9 @@ class Monster_AI():
     def rank_find_item(self, loop):
         if isinstance(self.parent, M.Goblin):
             if len(loop.item_dict.subjects) > 0:
-                return 55
-        return -1
+                return random.randint(45,65)
+        else:
+            return random.randint(10,30)
 
     def rank_combat(self, loop):
         player=loop.player
@@ -106,28 +107,33 @@ class Monster_AI():
             return -1
 
     def rank_equip_item(self, loop): #Needs to be fixed
-        return -1
         monster = self.parent
         if len(monster.character.inventory) != 0:
             utility = -1
             stuff = monster.character.inventory
             for i, item in enumerate(stuff):
                 if item.equipable:
-                    if item.equipment_type == "Weapon" and monster.character.main_weapon == None:
-                        utility = 80
-                        return utility
-                    elif item.equipment_type == "Shield" and monster.character.main_shield == None:
-                        return -1
-                    elif item.equipment_type == "Body Armor" and monster.character.main_armor == None:
-                        return -1
-                    elif item.equipment_type == "Helmet" and monster.character.helmet == None:
-                        return -1
-                    elif item.equipment_type == "Boots" and monster.character.boots == None:
-                        return -1
-                    elif item.equipment_type == "Gloves" and monster.character.gloves == None:
-                        return -1
-                    elif item.equipment_type == "Ring" and (monster.character.ring_1 == None or monster.character.ring_2 == None):
-                        return -1
+                    if item.equipment_type == "Weapon" and monster.character.equipment_slots["hand_slot"][0] == None:
+                        utility = 70
+                    elif item.equipment_type == "Shield" and monster.character.equipment_slots["hand_slot"][1] == None:
+                        if utility < 60:
+                            utility = 60
+                    elif item.equipment_type == "Body Armor" and monster.character.equipment_slots["body_armor_slot"][0] == None:
+                        if utility < 60:
+                            utility = 60
+                    elif item.equipment_type == "Helmet" and monster.character.equipment_slots["helmet_slot"][0] == None:
+                        if utility < 40:
+                            utility = 40
+                    elif item.equipment_type == "Boots" and monster.character.equipment_slots["boots_slot"][0] == None:
+                        if utility < 20:
+                            utility = 20
+                    elif item.equipment_type == "Gloves" and monster.character.equipment_slots["gloves_slot"][0] == None:
+                        if utility < 20:
+                            utility = 20
+                   # elif item.equipment_type == "Ring" and (monster.character.ring_1 == None or monster.character.ring_2 == None):
+                    #    return -1
+            if utility != -1:
+                return random.randint(utility-10,utility+10)
         return -1
 
     def rank_use_consumeable(self, loop):
@@ -140,7 +146,7 @@ class Monster_AI():
         return -1
 
     def rank_move(self, loop):
-        return 20
+        return random.randint(10,40)
 
     def do_find_item(self, loop):
         monster = self.parent
@@ -265,9 +271,34 @@ class Monster_AI():
         if len(monster.character.inventory) != 0:
             stuff = monster.character.inventory
             for i, item in enumerate(stuff):
-                if monster.character.main_weapon == None and item.equipable:
-                    monster.character.equip(item)
-                    return
+                if item.equipable:
+                    if item.equipment_type == "Weapon" and monster.character.equipment_slots["hand_slot"][0] == None:
+                        monster.character.equip(item)
+                        loop.add_message(self.parent.name + " is equipping " + item.name)
+                        return
+                    elif item.equipment_type == "Shield" and monster.character.equipment_slots["hand_slot"][1] == None:
+                        monster.character.equip(item)
+                        loop.add_message(self.parent.name + " is equipping " + item.name)
+                        return
+                    elif item.equipment_type == "Body Armor" and monster.character.equipment_slots["body_armor_slot"][
+                        0] == None:
+                        monster.character.equip(item)
+                        loop.add_message(self.parent.name + " is equipping " + item.name)
+                        return
+                    elif item.equipment_type == "Helmet" and monster.character.equipment_slots["helmet_slot"][
+                        0] == None:
+                        monster.character.equip(item)
+                        loop.add_message(self.parent.name + " is equipping " + item.name)
+                        return
+                    elif item.equipment_type == "Boots" and monster.character.equipment_slots["boots_slot"][0] == None:
+                        monster.character.equip(item)
+                        loop.add_message(self.parent.name + " is equipping " + item.name)
+                        return
+                    elif item.equipment_type == "Gloves" and monster.character.equipment_slots["gloves_slot"][
+                        0] == None:
+                        monster.character.equip(item)
+                        loop.add_message(self.parent.name + " is equipping " + item.name)
+                        return
 
     def do_use_consumeable(self, loop):
         # print("Using consumeable")

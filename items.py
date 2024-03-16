@@ -965,8 +965,8 @@ class Gloves(Armor):
 
     def equip(self, entity):
         if entity.equipment_slots["gloves_slot"][0] != None:
-            entity.unequip(entity.equipment_slot["gloves_slot"][0])
-        entity.equipment_slot["gloves_slot"][0] = self
+            entity.unequip(entity.equipment_slots["gloves_slot"][0])
+        entity.equipment_slots["gloves_slot"][0] = self
         self.activate(entity)
 
     def unequip(self, entity):
@@ -1603,6 +1603,31 @@ class RingOfTeleportation(Ring):
             self.skill_cooldown = 0
             self.description = "Unlimited power."
             """
+
+"""
+AMULETS
+"""
+
+class Amulet(Equipment):
+    def __init__(self, render_tag):
+        super().__init__(-1,-1, 0, render_tag, "Amulet")
+        self.equipment_type = "Amulet"
+        self.name = "Amulet"
+        self.can_be_levelled = False
+        self.description = "A heavy amulet in heavy iron?"
+
+    def equip(self, entity):
+        if entity.equipment_slots["amulet_slot"][0] != None:
+            entity.unequip(entity.equipment_slots["amulet_slot"][0])
+        entity.equipment_slots["amulet_slot"][0] = self
+        self.activate(entity)
+
+    def unequip(self, entity):
+        entity.equipment_slots["amulet_slot"][0] = None
+        self.deactivate(entity)
+
+
+
 
 """
 POTIONS
