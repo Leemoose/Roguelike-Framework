@@ -66,8 +66,8 @@ Classes:
 class TileDict():
     def __init__(self, textSize):
         tiles = {}
+        #1-99 are tile
         tiles[1] = pygame.transform.scale(image.load("assets/tiles/wall_test.png"), (32,32))
-        #Negative numbers are shaded versions
         tiles[-1] = pygame.transform.scale(image.load("assets/tiles/wall_test_shaded.png"), (32,32))
         tiles[2] = pygame.transform.scale(image.load("assets/tiles/floor_test.png"), (32,32))
         tiles[-2] = pygame.transform.scale(image.load("assets/tiles/floor_test_shaded.png"), (32,32))
@@ -93,7 +93,7 @@ class TileDict():
         tiles[-50] = image.load("assets/stat_up_dark.png")
         tiles[-51] = image.load("assets/stat_down_dark.png")
 
-        # monster assets
+        # 100-199 monster assets
         tiles[101] = image.load("assets/monsters/orc.png")
         tiles[151] = image.load("assets/monsters/orc_orb.png")
         tiles[102] = image.load('assets/monsters/golem.png')
@@ -115,7 +115,7 @@ class TileDict():
         tiles[160] = image.load('assets/monsters/yendorb.png')
         tiles[161] = image.load('assets/yendorb_deactivated.png')
 
-        # player assets
+        # 200-299 player assets
         tiles[200] = image.load("assets/Player.png")
         tiles[-200] = image.load("assets/player_under_armor.png")
         tiles[201] = image.load("assets/player_boots.png")
@@ -123,99 +123,101 @@ class TileDict():
         tiles[203] = image.load("assets/player_helmet.png")
         tiles[204] = image.load("assets/player_armor.png")
 
-        # weapon assets
-        tiles[300] = image.load("assets/basic_ax.png")
-        tiles[303] = image.load("assets/bleeding_ax.png")
-        tiles[301] = image.load("assets/hammer.png")
-        tiles[302] = image.load("assets/crushing_hammer.png")
-        tiles[321] = image.load("assets/dagger.png")
-        tiles[322] = image.load("assets/screaming_dagger.png")
-        tiles[331] = image.load("assets/burning_sword.png")
-        tiles[332] = image.load("assets/magic_wand.png")
-        tiles[340] = image.load("assets/sword.png")
-        tiles[341] = image.load("assets/sleeping_sword.png")
+        # 300-399 weapon assets
+        tiles[300] = image.load("assets/items/weapons/basic_ax.png")
+        tiles[303] = image.load("assets/items/weapons/bleeding_ax.png")
+        tiles[301] = image.load("assets/items/weapons/hammer.png")
+        tiles[302] = image.load("assets/items/weapons/crushing_hammer.png")
+        tiles[321] = image.load("assets/items/weapons/dagger.png")
+        tiles[322] = image.load("assets/items/weapons/screaming_dagger.png")
+        tiles[331] = image.load("assets/items/weapons/burning_sword.png")
+        tiles[332] = image.load("assets/items/weapons/magic_wand.png")
+        tiles[340] = image.load("assets/items/weapons/sword.png")
+        tiles[341] = image.load("assets/items/weapons/sleeping_sword.png")
 
 
-        # potion assets
-        tiles[401] = image.load("assets/health_orb_bigger.png")
-        tiles[402] = image.load("assets/mana_orb_bigger.png")
-        tiles[403] = image.load("assets/curing_orb_bigger.png")
-        tiles[404] = image.load("assets/might_orb_bigger.png")
-        tiles[405] = image.load("assets/haste_orb_bigger.png")
+        # 400-499 consumeables assets
+        tiles[401] = image.load("assets/items/consumeables/health_orb_bigger.png")
+        tiles[402] = image.load("assets/items/consumeables/mana_orb_bigger.png")
+        tiles[403] = image.load("assets/items/consumeables/curing_orb_bigger.png")
+        tiles[404] = image.load("assets/items/consumeables/might_orb_bigger.png")
+        tiles[405] = image.load("assets/items/consumeables/haste_orb_bigger.png")
 
         # scroll assets
-        tiles[450] = image.load("assets/scroll.png")
+        tiles[450] = image.load("assets/items/consumeables/scroll.png")
+
+        tiles[480] = image.load("assets/items/consumeables/book.png")
 
         # ring assets
-        tiles[500] = image.load("assets/green_ring_gold.png")
-        tiles[501] = image.load("assets/blood_ring.png")
-        tiles[502] = image.load("assets/blue_ring.png")
-        tiles[503] = image.load("assets/red_ring.png")
-        tiles[504] = image.load("assets/bone_ring.png")
-        tiles[505] = image.load("assets/ring_of_teleport.png")
+        tiles[500] = image.load("assets/items/jewelry/green_ring_gold.png")
+        tiles[501] = image.load("assets/items/jewelry/blood_ring.png")
+        tiles[502] = image.load("assets/items/jewelry/blue_ring.png")
+        tiles[503] = image.load("assets/items/jewelry/red_ring.png")
+        tiles[504] = image.load("assets/items/jewelry/bone_ring.png")
+        tiles[505] = image.load("assets/items/jewelry/ring_of_teleport.png")
 
         #amulet
-        tiles[550] = image.load("assets/amulet.png")
+        tiles[550] = image.load("assets/items/jewelry/amulet.png")
 
         # armor assets
         # list of armor: basic, leather, golden, warmonger, wizard robe
-        tiles[600] = image.load("assets/armor.png")
-        tiles[601] = image.load("assets/leather_armor.png")
-        tiles[602] = image.load("assets/golden_armor.png")
-        tiles[603] = image.load("assets/warmonger_armor.png")
-        tiles[604] = image.load("assets/wizard_robe.png")
-        tiles[605] = image.load("assets/karate_gi.png")
-        tiles[606] = image.load("assets/bloodstained_armor.png")
+        tiles[600] = image.load("assets/items/armor/armor.png")
+        tiles[601] = image.load("assets/items/armor/leather_armor.png")
+        tiles[602] = image.load("assets/items/armor/golden_armor.png")
+        tiles[603] = image.load("assets/items/armor/warmonger_armor.png")
+        tiles[604] = image.load("assets/items/armor/wizard_robe.png")
+        tiles[605] = image.load("assets/items/armor/karate_gi.png")
+        tiles[606] = image.load("assets/items/armor/bloodstained_armor.png")
 
         # shield assets
         # list of shields: basic, aegis, tower, magic focus
-        tiles[311] = image.load("assets/shield.png")
-        tiles[312] = image.load("assets/aegis.png")
-        tiles[313] = image.load("assets/tower_shield.png")
-        tiles[314] = image.load("assets/magic_focus.png")
+        tiles[311] = image.load("assets/items/armor/shield.png")
+        tiles[312] = image.load("assets/items/armor/aegis.png")
+        tiles[313] = image.load("assets/items/armor/tower_shield.png")
+        tiles[314] = image.load("assets/items/armor/magic_focus.png")
 
         # boots assets
         # list of boots: basic, escape
-        tiles[700] = image.load("assets/boots.png")
-        tiles[701] = image.load("assets/boots_of_escape.png")
-        tiles[702] = image.load("assets/blackened_boots.png")
-        tiles[703] = image.load("assets/assassin_boots.png")
+        tiles[700] = image.load("assets/items/armor/boots.png")
+        tiles[701] = image.load("assets/items/armor/boots_of_escape.png")
+        tiles[702] = image.load("assets/items/armor/blackened_boots.png")
+        tiles[703] = image.load("assets/items/armor/assassin_boots.png")
 
         # gloves assets
         # list of gloves: basic, gauntlets
-        tiles[750] = image.load("assets/gloves.png")
-        tiles[751] = image.load("assets/gauntlets.png")
-        tiles[752] = image.load("assets/boxing_gloves.png")
-        tiles[753] = image.load("assets/healer_gloves.png")
-        tiles[754] = image.load("assets/lich_hand.png")
+        tiles[750] = image.load("assets/items/armor/gloves.png")
+        tiles[751] = image.load("assets/items/armor/gauntlets.png")
+        tiles[752] = image.load("assets/items/armor/boxing_gloves.png")
+        tiles[753] = image.load("assets/items/armor/healer_gloves.png")
+        tiles[754] = image.load("assets/items/armor/lich_hand.png")
 
         # helmet assets
-        tiles[770] = image.load("assets/helmet.png")
-        tiles[771] = image.load("assets/viking_helmet.png")
-        tiles[772] = image.load("assets/spartan_helmet.png")
-        tiles[773] = image.load("assets/great_helm.png")
-        tiles[774] = image.load("assets/thief_hood.png")
-        tiles[775] = image.load("assets/wizard_hat.png")
+        tiles[770] = image.load("assets/items/armor/helmet.png")
+        tiles[771] = image.load("assets/items/armor/viking_helmet.png")
+        tiles[772] = image.load("assets/items/armor/spartan_helmet.png")
+        tiles[773] = image.load("assets/items/armor/great_helm.png")
+        tiles[774] = image.load("assets/items/armor/thief_hood.png")
+        tiles[775] = image.load("assets/items/armor/wizard_hat.png")
 
         # empty equipment assets
-        tiles[801] = image.load("assets/empty_armor.png")
-        tiles[802] = image.load("assets/empty_boots.png")
-        tiles[803] = image.load("assets/empty_gloves.png")
-        tiles[804] = image.load("assets/empty_helmet.png")
-        tiles[805] = image.load("assets/empty_weapon.png")
-        tiles[806] = image.load("assets/empty_shield.png")
-        tiles[807] = image.load("assets/empty_ring.png")
-        tiles[811] = image.load("assets/empty_armor_open.png")
-        tiles[812] = image.load("assets/empty_boots_open.png")
-        tiles[813] = image.load("assets/empty_gloves_open.png")
-        tiles[814] = image.load("assets/empty_helmet_open.png")
-        tiles[815] = image.load("assets/empty_weapon_open.png")
-        tiles[816] = image.load("assets/empty_shield_open.png")
-        tiles[817] = image.load("assets/empty_ring_open.png")
-        tiles[818] = image.load("assets/empty_pants_open.png")
-        tiles[819] = image.load("assets/empty_pants.png")
-        tiles[820] = image.load("assets/empty_amulet_open.png")
-        tiles[821] = image.load("assets/empty_amulet.png")
+        tiles[801] = image.load("assets/items/icons/empty_armor.png")
+        tiles[802] = image.load("assets/items/icons/empty_boots.png")
+        tiles[803] = image.load("assets/items/icons/empty_gloves.png")
+        tiles[804] = image.load("assets/items/icons/empty_helmet.png")
+        tiles[805] = image.load("assets/items/icons/empty_weapon.png")
+        tiles[806] = image.load("assets/items/icons/empty_shield.png")
+        tiles[807] = image.load("assets/items/icons/empty_ring.png")
+        tiles[811] = image.load("assets/items/icons/empty_armor_open.png")
+        tiles[812] = image.load("assets/items/icons/empty_boots_open.png")
+        tiles[813] = image.load("assets/items/icons/empty_gloves_open.png")
+        tiles[814] = image.load("assets/items/icons/empty_helmet_open.png")
+        tiles[815] = image.load("assets/items/icons/empty_weapon_open.png")
+        tiles[816] = image.load("assets/items/icons/empty_shield_open.png")
+        tiles[817] = image.load("assets/items/icons/empty_ring_open.png")
+        tiles[818] = image.load("assets/items/icons/empty_pants_open.png")
+        tiles[819] = image.load("assets/items/icons/empty_pants.png")
+        tiles[820] = image.load("assets/items/icons/empty_amulet_open.png")
+        tiles[821] = image.load("assets/items/icons/empty_amulet.png")
 
         # skill assets
         tiles[901] = image.load("assets/target.png")
@@ -248,7 +250,7 @@ class TileDict():
         tiles[915] = image.load("assets/invincible_skill_icon.png")
         tiles[-915] = image.load("assets/invincible_skill_icon_dark.png")
 
-        tiles[1000] = image.load("assets/pants.png")
+        tiles[1000] = image.load("assets/items/armor/pants.png")
 
         self.tiles = tiles
 

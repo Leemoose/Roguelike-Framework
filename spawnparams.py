@@ -97,6 +97,8 @@ ItemSpawns.append(ItemSpawnParams( I.ExperienceScroll(450),      1,             
 ItemSpawns.append(ItemSpawnParams( I.BlinkScrorb(450),      1,               10,          1,              5))
 ItemSpawns.append(ItemSpawnParams( I.MassHealScrorb(450),      1,               10,          1,              5))
 
+ItemSpawns.append(ItemSpawnParams( I.Book(480),      1,               10,          1,              5))
+
 
 Item_Equipment_Distributions = [(0.9, 0.1, 0.0), # floor 1
                                 (0.7, 0.3, 0.0), # floor 2
@@ -149,7 +151,7 @@ class ItemSpawner():
         # useful for debugging specific items, separate from generator
         self.forceSpawn = []
 
-        self.forceSpawn.append(("Amulet", 3))
+        self.forceSpawn.append(("Book", 3))
         # self.forceSpawn.append(("Invincibility Scrorb", 3))
         # self.forceSpawn.append(("Permanent Dex Potiorb", 3))
         # self.forceSpawn.append(("Health Potiorb", 3))

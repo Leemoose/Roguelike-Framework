@@ -31,6 +31,7 @@ class Monster_AI():
     then pick the action that ranks the highest
     """
     def rank_actions(self, monster, monster_map, tile_map, flood_map, player, generated_maps, item_dict, loop):
+        print(self.parent.character.energy)
         item_map = generated_maps.item_map
         max_utility = 0
         called_function = self.do_nothing
@@ -82,7 +83,7 @@ class Monster_AI():
 
         # print(max_utility)
         self.parent.character.energy -= 1
-        # print(f"{self.parent} is doing {called_function.__name__} with utility {max_utility}")
+        print(f"{self.parent} is doing {called_function.__name__} with utility {max_utility}")
         called_function(loop)
 
     def rank_flee(self, loop):
@@ -164,7 +165,7 @@ class Monster_AI():
         return -1
 
     def rank_move(self, loop):
-        return random.randint(10,40)
+        return random.randint(20,40)
 
     def do_find_item(self, loop):
         monster = self.parent
@@ -258,10 +259,10 @@ class Monster_AI():
         # print("Attacking player")
         monster = self.parent
         if not monster.character.movable:
-            monster.character.energy -= (monster.character.move_cost - monster.character.dexterity)
+            monster.character.energy -= self.parent.character.action_costs["move"] #(monster.character.move_cost - monster.character.dexterity)
             loop.add_message(f"{monster} is petrified and cannot attack.")
             return
-        monster.character.energy -= monster.character.attack_cost
+        monster.character.energy -= self.parent.character.action_costs["attack"]
         if self.target != None:
             if not self.target.character.dodge():
                 damage = monster.character.melee(self.target)
@@ -338,7 +339,7 @@ class Monster_AI():
         player = loop.player
 
         if not monster.character.movable:
-            monster.character.energy -= (monster.character.move_cost - monster.character.dexterity)
+            monster.character.energy -= self.parent.character.action_costs["move"] #(monster.character.move_cost - monster.character.dexterity)
             loop.add_message(f"{monster} is petrified and cannot move.")
             return
 
@@ -367,7 +368,7 @@ class Monster_AI():
         x,y = self.parent.x, self.parent.y
 
         if not monster.character.movable:
-            monster.character.energy -= (monster.character.move_cost - monster.character.dexterity)
+            monster.character.energy -= self.parent.character.action_costs["move"] #(monster.character.move_cost - monster.character.dexterity)
             loop.add_message(f"{monster} is petrified and cannot move.")
             return
 
@@ -392,7 +393,7 @@ class Monster_AI():
 
 
         if not monster.character.movable:
-            monster.character.energy -= (monster.character.move_cost - monster.character.dexterity)
+            monster.character.energy -= self.parent.character.action_costs["move"] #(monster.character.move_cost - monster.character.dexterity)
             loop.add_message(f"{monster} is petrified and cannot move.")
             return
 
@@ -414,7 +415,7 @@ class Monster_AI():
             elif tile_map.get_passable(monster.x + opposite_move[0], monster.y):
                 monster.move(opposite_move[0], 0, tile_map, monster, monster_map, player)
             else:
-                monster.character.energy -= (monster.character.move_cost - monster.character.dexterity)
+                monster.character.energy -= self.parent.character.action_costs["move"]#(monster.character.move_cost - monster.character.dexterity)
                 loop.add_message(f"{monster} cowers in a corner since it can't run further.")
         if update_target:
             loop.add_target((monster.x, monster.y))
@@ -446,13 +447,12 @@ class Monster(O.Objects):
         # print(move_x)
         # print(move_y)
         if not self.character.movable:
-            self.character.energy -= (self.character.move_cost - self.character.dexterity)
+            self.character.energy -= self.character.action_costs["move"]#(self.character.move_cost - self.character.dexterity)
             return
 
-        self.character.energy -= (self.character.move_cost - self.character.dexterity)
         #Monsters can move ontop of players
         if floormap.get_passable(monster.x + move_x, monster.y + move_y) and monster_map.get_passable(monster.x + move_x, monster.y + move_y):
-            self.character.energy -= self.character.move_cost
+            self.character.energy -= self.character.action_costs["move"]
             monster_map.track_map[monster.x][monster.y] = -1
             monster.y += move_y
             monster.x += move_x

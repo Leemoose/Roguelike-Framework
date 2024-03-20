@@ -1257,7 +1257,7 @@ class Display:
             elif item.consumeable and item.equipment_type == "Potiorb":
                 pretext = "Quaff"
                 action = "q"
-            elif item.consumeable and item.equipment_type == "Scrorb":
+            elif item.consumeable and item.equipment_type == "Scrorb" or item.equipment_type == "Book":
                 pretext = "Read"
                 action = "r"
             if create == True:

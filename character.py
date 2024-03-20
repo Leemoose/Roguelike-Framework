@@ -35,11 +35,6 @@ class Character():
         self.inventory_limit = 18
 
         self.energy = 0
-        self.move_cost = 100
-        self.equip_cost = 20
-        self.quaff_cost = 10
-        self.read_cost = 100
-        self.attack_cost = 100
 
         self.alive = True
 
@@ -58,6 +53,17 @@ class Character():
                                 "amulet_slot": [None],
                                 "hand_slot": [None, None]
                                 }
+
+        self.action_costs = {"attack": 80,
+                             "move": 100,
+                             "grab": 30,
+                             "equip": 100,
+                             "unequip": 50,
+                             "quaff": 10,
+                             "read": 20,
+                             "drop": 10
+                            }
+
         self.base_damage = 0
         self.armor = 0
 
@@ -141,6 +147,7 @@ class Character():
                     return
                 else:
                     self.inventory.append(item)
+
             else:
                 for i in range(len(self.inventory)):
                     if self.inventory[i].name == item.name:
@@ -151,11 +158,14 @@ class Character():
                 return
             else:
                 self.inventory.append(item)
+                if isinstance(item, I.Book):
+                    item.mark_owner(self)
         
         item_ID.remove_subject(key)
         itemx, itemy = item.get_location()
         generated_maps.item_map.clear_location(itemx, itemy)
         loop.add_message("The " + str(self.parent.name) + " picked up a " + str(item.name))
+        self.energy -= self.action_costs["grab"]
 
     def drop(self, item, item_dict,  item_map):
         if len(self.inventory) != 0 and item.dropable:
@@ -171,6 +181,7 @@ class Character():
                 item.x = self.parent.x
                 item.y = self.parent.y
                 item_map.place_thing(item)
+                self.energy -= self.action_costs["drop"]
                 return True
         return False
 
@@ -179,16 +190,17 @@ class Character():
             item.equip(self)
             item.equipped = True
             item.dropable = False
-            self.energy -= self.equip_cost
+            self.energy -= self.action_costs["equip"]
 
     def unequip(self, item):
         if item.can_be_unequipped(self):
             item.unequip(self)
             item.dropable = True
             item.equipped = False
+            self.energy -= self.action_costs["unequip"]
 
     def wait(self):
-        self.energy -=  self.move_cost
+        self.energy -=  self.action_costs["move"]
 
     def level_up(self, strength_up=1, dexterity_up=1, endurance_up=1, intelligence_up=1):
         self.level += 1 # separate from player level which is stored in player object
@@ -266,14 +278,18 @@ class Character():
             if potion.stacks < 1:
                 self.drop(potion, item_dict, item_map)
                 potion.destroy = True
-            self.energy -= self.quaff_cost
+            self.energy -= self.action_costs["quaff"]
             return True
     
     def read(self, scroll, loop, item_dict, item_map):
         if scroll.consumeable and scroll.equipment_type == "Scrorb":
             scroll.activate(self, loop)
-            self.energy -= self.read_cost
+            self.energy -= self.action_costs["read"]
             return True
+        elif scroll.equipment_type == "Book":
+            scroll.activate(self, loop)
+            self.energy -= self.action_costs["read"]
+
     
     def tick_all_status_effects(self, loop):
         for effect in self.status_effects:
@@ -456,7 +472,7 @@ class Player(O.Objects):
 
     def attack_move(self, move_x, move_y, loop):
         if not self.character.movable:           
-            self.character.energy -= (self.character.move_cost - int(self.character.dexterity + self.character.round_bonus()))
+            self.character.energy -= self.character.action_costs["move"] #(self.character.move_cost - int(self.character.dexterity + self.character.round_bonus()))
             loop.add_message("The player is petrified and cannot move.")
             return
         x = self.x + move_x
@@ -470,7 +486,7 @@ class Player(O.Objects):
 
     def move(self, move_x, move_y, loop):
         if loop.generator.tile_map.get_passable(self.x + move_x, self.y + move_y) and loop.generator.monster_map.get_passable(self.x + move_x, self.y + move_y):
-            self.character.energy -= int(self.character.move_cost/ (1.02**(self.character.dexterity + self.character.round_bonus())))
+            self.character.energy -= self.character.action_costs["move"] #/ (1.02**(self.character.dexterity + self.character.round_bonus())))
             self.y += move_y
             self.x += move_x
         loop.add_message("The player moved.")
@@ -482,7 +498,7 @@ class Player(O.Objects):
         self.move(move_x,move_y, loop)
 
     def attack(self, defender, loop):
-        self.character.energy -= int(self.character.attack_cost / (1.05**(self.character.dexterity + self.character.round_bonus())))
+        self.character.energy -= self.character.action_costs["attack"] #/ (1.05**(self.character.dexterity + self.character.round_bonus())))
         loop.screen_focus = (defender.x, defender.y)
         if not defender.character.dodge():
             damage = self.character.melee(defender)

@@ -1862,6 +1862,55 @@ class MassHealScrorb(Scroll):
         self.consume_scroll(entity)
         loop.change_loop(L.LoopType.inventory)
 
+
+class Book(O.Item):
+    def __init__(self, render_tag):
+        super().__init__(-1, -1, 0, render_tag, name = "Book")
+        self.name = "Book"
+        self.equipment_type = "Book"
+        self.consumeable = True
+        self.stackable = False
+        self.equipable = False
+        self.can_be_levelled = False
+        self.stacks = 1
+        self.attached_skill_exists = True
+        self.description = "A book that does something."
+        self.yendorb = False
+        self.rarity = "Rare"
+
+        self.skill = S.Berserk
+        self.attached_skill = None
+        self.skill_cooldown = 0
+        self.skill_cost = 0
+        self.skill_duration = 10
+        self.skill_threshold = 0.25
+        self.strength_increase = 5
+
+    def can_be_equipped(self, entity):
+        return False
+
+    def can_be_unequipped(self, entity):
+        return False
+
+    def mark_owner(self, entity):
+        self.attached_skill = self.skill(entity.parent, self.skill_cooldown, self.skill_cost, self.skill_duration, self.skill_threshold,
+                            self.strength_increase, action_cost=1)
+
+    def activate(self, entity, loop):
+        new_skill = self.skill(entity.parent, self.skill_cooldown, self.skill_cost, self.skill_duration, self.skill_threshold,
+                  self.strength_increase, action_cost=1)
+        entity.add_skill(new_skill)
+        self.destroy = True
+        entity.inventory.remove(self)
+        loop.change_loop(L.LoopType.inventory)
+
+    def get_attached_skill_description(self):
+        if self.attached_skill_exists:
+            return self.attached_skill.description() # temporarily attach skill to nothing to get name
+        else:
+            return None
+
+
 class OrbOfYendorb(O.Item):
     def __init__(self):
         super().__init__(-1, -1, 0, 161, "Orb of Yendorb")
