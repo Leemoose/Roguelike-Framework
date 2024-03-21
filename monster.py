@@ -28,70 +28,54 @@ class Monster_AI():
                         "Golem":50
                        }
 
+        #first number is average, second is spread
+        self.tendencies = {"combat": (90, 10),
+                           "pickup": (30,5),
+                           "find_item": (20,10),
+                           "equip": (40,5),
+                           "consume": (40,5),
+                           "move": (40, 20),
+                           "ungroup": (60,20),
+                           "skill": (100,10),
+                           "flee":(100,20),
+                           "stairs":(100,10)
+                           }
+
+        self.options = {"combat": (self.rank_combat, self.do_combat),
+                   "pickup": (self.rank_pickup, self.do_item_pickup),
+                   "find_item":(self.rank_find_item, self.do_find_item),
+                   "equip": (self.rank_equip_item, self.do_equip), #need to be fixed
+                   "consume": (self.rank_use_consumeable, self.do_use_consumeable),
+                   "move": (self.rank_move, self.do_move),
+                   "ungroup": (self.rank_ungroup, self.do_ungroup),
+                   "skill": (self.rank_skill, self.do_skill),
+                   "flee": (self.rank_flee, self.do_flee),
+                   "stairs": (self.rank_stairs, self.do_stairs),
+                   }
+
     """
     Think it would be better to first rank each action depending on the circumstances with a number between 1-100 and 
     then pick the action that ranks the highest
     """
+    def randomize_action(self, action):
+        average, spread = self.tendencies[action]
+        return max(-1, random.randint(average - spread, average + spread))
+
     def rank_actions(self, loop):
         print(self.parent.character.energy)
         max_utility = 0
-        called_function = self.do_nothing
+        called_function = (0,self.do_nothing)
 
-        utility = self.rank_combat(loop)
-        if utility > max_utility:
-            max_utility = utility
-            called_function = self.do_combat
-
-        utility = self.rank_pickup(loop)
-        if utility > max_utility:
-            max_utility = utility
-            called_function = self.do_item_pickup
-
-        utility = self.rank_find_item(loop)
-        if utility > max_utility:
-            max_utility = utility
-            called_function = self.do_find_item
-
-        utility = self.rank_equip_item(loop) #Needs to be fixed so that works with shields and swords
-        if utility > max_utility:
-            max_utility = utility
-            called_function = self.do_equip
-
-        utility = self.rank_use_consumeable(loop)
-        if utility > max_utility:
-            max_utility = utility
-            called_function = self.do_use_consumeable
-
-        utility = self.rank_move(loop)
-        if utility > max_utility:
-            max_utility = utility
-            called_function = self.do_move
-
-        utility = self.rank_ungroup(loop)
-        if utility > max_utility:
-            max_utility = utility
-            called_function = self.do_ungroup
-
-        utility = self.rank_skill(loop)
-        if utility > max_utility:
-            max_utility = utility
-            called_function = self.do_skill
-
-        utility = self.rank_flee(loop)
-        if utility > max_utility:
-            max_utility = utility
-            called_function = self.do_flee
-
-        utility = self.rank_stairs(loop)
-        print(utility, "stairs")
-        if utility > max_utility:
-            max_utility = utility
-            called_function = self.do_stairs
+        for action in self.options:
+            utility = self.options[action][0](loop)
+            if utility > max_utility:
+                max_utility = utility
+                called_function = action
 
         # print(max_utility)
         self.parent.character.energy -= 1
-        print(f"{self.parent} is doing {called_function.__name__} with utility {max_utility}")
-        called_function(loop)
+        print(f"{self.parent} is doing {called_function} with utility {max_utility}")
+        self.options[called_function][1](loop)
 
     def rank_stairs(self, loop):
         if loop.taking_stairs == True:
@@ -101,7 +85,7 @@ class Monster_AI():
             for x, y in directions:
                 if isinstance(loop.generator.tile_map.locate(monsterx+x,monstery+y), O.Stairs) and monsterx+x == playerx and monstery + y == playery:
                     self.stairs_location = (monsterx + x, monstery + y)
-                    return random.randint(110,130)
+                    return self.randomize_action("stairs")
         return -1
 
     def do_stairs(self, loop):
@@ -128,18 +112,16 @@ class Monster_AI():
 
     def rank_flee(self, loop):
         if self.parent.character.flee:
-            return 1000 # must flee if flag is set
+            return self.randomize_action("flee") # must flee if flag is set
         return -1
 
     def rank_find_item(self, loop):
-        if isinstance(self.parent, M.Goblin):
-            if len(loop.item_dict.subjects) > 0:
-                return random.randint(45,65)
-        else:
-            return random.randint(10,30)
+        if len(loop.item_dict.subjects) > 0:
+            return self.randomize_action("find_item")
         return -1
 
     def rank_combat(self, loop):
+        self.target = None
         utility = -1
         player = loop.player
         monster_map = loop.generator.monster_map
@@ -151,19 +133,22 @@ class Monster_AI():
                 if utility < -self.personality["Player"]:
                     utility = -self.personality["Player"]
                     self.target = player
-            elif not monster_map.get_passable(x,y):
+            elif loop.generator.tile_map.get_passable(x,y) and not monster_map.get_passable(x,y):
                 print(monster_map.locate(x,y), "want to attack this monster")
                 other_monster = loop.generator.monster_dict.get_subject(monster_map.locate(x,y))
                 if other_monster.name in self.personality and utility < -self.personality[other_monster.name]:
                     utility = -self.personality[other_monster.name]
                     self.target = other_monster
-        return random.randint(utility-10,utility+10)
+        if self.target != None:
+            return self.randomize_action("combat")
+        else:
+            return -1
 
     def rank_pickup(self, loop):
         item_map = loop.generator.item_map
         monster = self.parent
         if item_map.locate(monster.x, monster.y) != -1:
-            return 60
+            return self.randomize_action("pickup")
         else:
             return -1
 

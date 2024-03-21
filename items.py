@@ -1385,25 +1385,26 @@ class Ring(Equipment):
         if self.equipped:
             return
         equipped = False
-        for ring in entity.equipment_slots["ring_slot"]:
-            if entity.equipment_slots["ring_slot"][ring] == None:
-                entity.equipment_slots["ring_slot"][ring] = self
+        for ring, i in enumerate(entity.equipment_slots["ring_slot"]):
+            if ring == None:
+                entity.equipment_slots["ring_slot"][i] = self
                 self.activate(entity)
-                equipped = True
+                self.equipped = True
                 break
         if equipped == False:
             entity.unequip(entity.equipment_slots["ring_slot"][0])
-            for ring in entity.equipment_slots["ring_slot"]:
-                if entity.equipment_slots["ring_slot"][ring] == None:
-                    entity.equipment_slots["ring_slot"][ring] = self
+            for ring,i in enumerate(entity.equipment_slots["ring_slot"]):
+                if ring == None:
+                    entity.equipment_slots["ring_slot"][i] = self
                     self.activate(entity)
-                    equipped = True
+                    self.equipped = True
 
     def unequip(self, entity):
         for ring in entity.equipment_slots["ring_slot"]:
             if entity.equipment_slots["ring_slot"][ring] == self:
                 entity.equipment_slots["ring_slot"][ring] = None
                 self.deactivate(entity)
+                self.equipped = False
 
 
 class RingOfSwiftness(Ring):

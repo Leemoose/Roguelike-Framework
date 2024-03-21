@@ -1136,7 +1136,7 @@ class Display:
                         "<br>"
                         "Damage: " + str(player.character.get_damage_min()) + " - " + str(player.character.get_damage_max()) + " (" + strength_modifier + ") <br>"
                         "Defense: " + str(player.character.armor) + " (+" + str(player.character.endurance // 3) + ") <br>"
-                        "Movement Delay: " + str(player.character.move_cost) + "<br>"
+                        "Movement Delay: " + str(player.character.action_costs["move"]) + "<br>"
                         "Skill Damage Bonus: " + str(player.character.skill_damage_increase()) + "<br>"
                         "Effect Duration Bonus: " + str(player.character.skill_duration_increase()) + "<br>"
                         "<br>Known Skills:<br>"

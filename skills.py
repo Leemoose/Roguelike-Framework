@@ -187,13 +187,13 @@ class BlinkStrike(Skill):
         self.damage = damage
         self.targetted = True
     
-    def activate(self, defender, generator):
+    def activate(self, defender, loop):
         self.parent.character.mana -= self.cost
         defender.character.take_damage(self.parent, self.damage + self.parent.character.skill_damage_increase())
         
-        path = pathfinding.astar(generator.tile_map.track_map, self.parent.get_location(), defender.get_location(), generator.monster_map, defender, monster_blocks=True)
+        path = pathfinding.astar(loop.generator.tile_map.track_map, self.parent.get_location(), defender.get_location(), loop.generator.monster_map, defender, monster_blocks=True)
         if len(path) > 1:
-            monster_map = generator.monster_map
+            monster_map = loop.generator.monster_map
             x, y = self.parent.x, self.parent.y
             monster_map.clear_location(x, y)
             self.parent.x, self.parent.y = path[-2] # blink to second last part of path
