@@ -341,13 +341,13 @@ class Character():
     def cast_skill(self, skill_num, target, loop):
         skill = self.skills[skill_num]
         self.energy -= skill.action_cost
-        return skill.try_to_activate(target, loop.generator)
+        return skill.try_to_activate(target, loop)
     
     def cast_skill_by_name(self, skill_name, target, loop):
         for skill in self.skills:
             if skill.name == skill_name:
                 self.energy -= skill.action_cost
-                return skill.try_to_activate(target, loop.generator)
+                return skill.try_to_activate(target, loop)
         return False
 
     def tick_regen(self):
@@ -649,6 +649,29 @@ class Player(O.Objects):
                 x,y = path[0]
                 playerx, playery = self.get_location()
                 self.move(x-playerx, y-playery, loop)
+
+    def down_stairs(self, loop):
+        if (isinstance(loop.generator.tile_map.track_map[self.x][self.y], O.Stairs)
+                and loop.generator.tile_map.track_map[self.x][self.y].downward and self.character.movable):
+            self.character.energy -= self.character.action_costs["move"]
+            loop.down_floor()
+        elif self.character.movable:
+            loop.add_message("There are no stairs here!")
+        else:
+            self.character.energy -= self.character.action_costs["move"]
+            loop.add_message("You can't move!")
+
+    def up_stairs(self, loop):
+        if (isinstance(loop.generator.tile_map.track_map[self.x][self.y], O.Stairs)
+                and not loop.generator.tile_map.track_map[self.x][self.y].downward and self.character.movable):
+            self.character.energy -= self.character.action_costs["move"]
+            loop.up_floor()
+        elif self.character.movable:
+            loop.add_message("There are no stairs here!")
+        else:
+            self.character.energy -= self.character.action_costs["move"]
+            loop.add_message("You can't move!")
+
 
 
 

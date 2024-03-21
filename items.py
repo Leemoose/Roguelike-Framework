@@ -985,25 +985,15 @@ class Gloves(Armor):
         if self.level == 6:
             self.description = "Gloves that are incredibly warm and tough at the same time. It's been enchanted as much as possible."
 
-class Gauntlets(Armor):
+class Gauntlets(Gloves):
     def __init__(self, render_tag):
-        super().__init__(-1,-1, 0, render_tag, "Gauntlets")
+        super().__init__(render_tag)
         self.equipment_type = "Gloves"
         self.description = "Iron gauntlets that protect your hands. It's hard to enchant for some reason"
         self.name = "Gauntlets"
         self.stats = statUpgrades(base_dex = -1, max_dex = 0,
                                   base_end = 4, max_end = 10,
                                   base_arm = 4, max_arm = 6)
-
-    def equip(self, entity):
-        if entity.gloves != None:
-            entity.unequip(entity.gloves)
-        entity.gloves = self
-        self.activate(entity)
-
-    def unequip(self, entity):
-        entity.gloves = None
-        self.deactivate(entity)
 
     def level_up(self):
         self.enchant()
@@ -1012,9 +1002,9 @@ class Gauntlets(Armor):
         if self.level == 6:
             self.description = "Iron gauntlets that feel stronger than adamantium. It's been enchanted as much as possible."
 
-class BoxingGloves(Armor):
+class BoxingGloves(Gloves):
     def __init__(self, render_tag):
-        super().__init__(-1,-1, 0, render_tag, "Boxing Gloves")
+        super().__init__(render_tag)
         self.equipment_type = "Gloves"
         self.description = "Gloves that make your unarmed combat stronger."
         self.name = "Boxing Gloves"
@@ -1024,19 +1014,14 @@ class BoxingGloves(Armor):
                                   base_dex = 1, max_dex = 5,
                                   base_arm = 0, max_arm = 2)
 
-    def equip(self, entity):
-        if entity.gloves != None:
-            entity.unequip(entity.gloves)
-        entity.gloves = self
+    def activate(self, entity):
         entity.unarmed_damage_min += self.damage_boost_min
         entity.unarmed_damage_max += self.damage_boost_max
-        self.activate(entity)
 
-    def unequip(self, entity):
-        entity.gloves = None
+
+    def deactivate(self, entity):
         entity.unarmed_damage_min -= self.damage_boost_min
         entity.unarmed_damage_max -= self.damage_boost_max
-        self.deactivate(entity)
 
     def level_up(self):
         self.enchant()
@@ -1050,9 +1035,9 @@ class BoxingGloves(Armor):
         if self.level == 6:
             self.description = "Gloves that let you punch through anything. It's been enchanted as much as possible."
 
-class HealingGloves(Armor):
+class HealingGloves(Gloves):
     def __init__(self, render_tag):
-        super().__init__(-1,-1, 0, render_tag, "Healing Gloves")
+        super().__init__(render_tag)
         self.equipment_type = "Gloves"
         self.description = "Gloves that let you heal yourself."
         self.name = "Healing Gloves"
@@ -1078,17 +1063,11 @@ class HealingGloves(Armor):
                         self.activation_threshold,
                         self.action_cost)
 
-    def equip(self, entity):
-        if entity.gloves != None:
-            entity.unequip(entity.gloves)
-        entity.gloves = self
+    def activate(self, entity):
         entity.add_skill(self.attached_skill(entity.parent))
-        self.activate(entity)
 
-    def unequip(self, entity):
-        entity.gloves = None
+    def deactivate(self, entity):
         entity.remove_skill(self.attached_skill(entity.parent).name)
-        self.deactivate(entity)
 
     def level_up(self):
         self.enchant()
@@ -1107,9 +1086,9 @@ class HealingGloves(Armor):
         if self.level == 6:
             self.description = "Gloves that lets life surge through you. It's been enchanted as much as possible."
 
-class LichHand(Armor):
+class LichHand(Gloves):
     def __init__(self, render_tag):
-        super().__init__(-1,-1, 0, render_tag, "Lich Hand")
+        super().__init__(render_tag)
         self.equipment_type = "Gloves"
         self.description = "Immense power is sworn to whoever if brave enough to sacrifice their hand and some of their max life to the hand. If you dare, it enhances all your stats and allows you to embrace the lich's immortality briefly."
         self.name = "Lich Hand"
@@ -1138,22 +1117,16 @@ class LichHand(Armor):
         self.attached_skill_exists = True
         return S.Invinciblity(owner, self.skill_cost, self.skill_cooldown, self.skill_duration, activation_threshold=1.1, by_scroll=False)
 
-    def equip(self, entity):
-        if entity.gloves != None:
-            entity.unequip(entity.gloves)
-        entity.gloves = self
+    def activate(self, entity):
         entity.add_skill(self.attached_skill(entity.parent))
         self.health_removed = entity.max_health // self.health_cost
         entity.max_health -= self.health_removed
         if entity.health > entity.max_health:
             entity.health = entity.max_health
-        self.activate(entity)
 
-    def unequip(self, entity):
-        entity.gloves = None
+    def deactivate(self, entity):
         entity.remove_skill(self.attached_skill(entity.parent).name)
         entity.max_health += self.health_removed
-        self.deactivate(entity)
 
     def level_up(self):
         self.enchant()
@@ -1683,7 +1656,7 @@ class MassTormentScroll(Scroll):
         super().__init__(render_tag, "Mass Torment Scrorb")
         self.description = "Must kill everything."
         self.rarity = "Rare"
-        self.skill = S.MassTorment(None, None, None)
+        self.skill = S.MassTorment(None)
 
     def activate_once(self, entity, loop):
         self.skill.parent = entity
@@ -1854,7 +1827,7 @@ class MassHealScrorb(Scroll):
         super().__init__(render_tag, "Mass Heal Scrorb")
         self.description = "A scrorb that lets you cast mass heal once."
         self.rarity = "Rare"
-        self.skill = S.MassHeal(None, None, None)
+        self.skill = S.MassHeal(None)
 
     def activate_once(self, entity, loop):
         self.skill.parent = entity
@@ -1864,8 +1837,8 @@ class MassHealScrorb(Scroll):
 
 
 class Book(O.Item):
-    def __init__(self, render_tag):
-        super().__init__(-1, -1, 0, render_tag, name = "Book")
+    def __init__(self, render_tag, skill, name = "Book"):
+        super().__init__(-1, -1, 0, render_tag, name = name)
         self.name = "Book"
         self.equipment_type = "Book"
         self.consumeable = True
@@ -1878,13 +1851,8 @@ class Book(O.Item):
         self.yendorb = False
         self.rarity = "Rare"
 
-        self.skill = S.Berserk
+        self.skill = skill
         self.attached_skill = None
-        self.skill_cooldown = 0
-        self.skill_cost = 0
-        self.skill_duration = 10
-        self.skill_threshold = 0.25
-        self.strength_increase = 5
 
     def can_be_equipped(self, entity):
         return False
@@ -1893,12 +1861,10 @@ class Book(O.Item):
         return False
 
     def mark_owner(self, entity):
-        self.attached_skill = self.skill(entity.parent, self.skill_cooldown, self.skill_cost, self.skill_duration, self.skill_threshold,
-                            self.strength_increase, action_cost=1)
+        self.attached_skill = self.skill(entity.parent)
 
     def activate(self, entity, loop):
-        new_skill = self.skill(entity.parent, self.skill_cooldown, self.skill_cost, self.skill_duration, self.skill_threshold,
-                  self.strength_increase, action_cost=1)
+        new_skill = self.skill(entity.parent)
         entity.add_skill(new_skill)
         self.destroy = True
         entity.inventory.remove(self)
@@ -1909,6 +1875,23 @@ class Book(O.Item):
             return self.attached_skill.description() # temporarily attach skill to nothing to get name
         else:
             return None
+
+class BookofMassTorment(Book):
+    def __init__(self, render_tag):
+        super().__init__(render_tag, skill = S.MassTorment, name = "Book")
+        self.name = "Book of Mass Torment"
+        self.description = "A book that does something."
+        self.rarity = "Rare"
+        self.skill = S.MassTorment
+
+class BookofMassHeal(Book):
+    def __init__(self, render_tag):
+        super().__init__(render_tag, skill = S.MassTorment, name = "Book")
+        self.name = "Book of Mass Heal"
+        self.description = "A book that does something."
+        self.rarity = "Rare"
+        self.skill = S.MassHeal
+
 
 
 class OrbOfYendorb(O.Item):

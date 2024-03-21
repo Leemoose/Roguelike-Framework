@@ -132,9 +132,9 @@ class Keyboard():
             # find stairs
             player.find_stairs(loop)
         elif key == ">":
-            loop.down_floor()
+            loop.player.down_stairs(loop)
         elif key == "<":
-            loop.up_floor()
+            loop.player.up_stairs(loop)
         elif key == ".":
             player.character.wait()
             loop.add_message("The player waits.")
@@ -165,7 +165,6 @@ class Keyboard():
             skill_num = int(key) - 1
             if skill_num < len(player.character.skills):
                 if not player.character.skills[skill_num].targetted:
-                    print(player.character.skills[skill_num].castable(player))
                     if player.character.skills[skill_num].castable(player):
                         player.character.cast_skill(skill_num, loop.player, loop)
                     else:
@@ -279,7 +278,6 @@ class Keyboard():
         elif key == "s":
             loop.change_loop(LoopType.story)
         else:
-            loop.down_floor()
             loop.change_loop(LoopType.action)
         return True
 
@@ -312,7 +310,7 @@ class Keyboard():
         loop.change_loop(loop.currentLoop)
                 
     def key_victory(self, loop, key):
-        display = loop,display
+        display = loop.display
         loop.change_loop(LoopType.main)
         loop.clear_data()
         loop.init_game(display)

@@ -131,6 +131,7 @@ class Loops():
         self.screen_focus = None
         self.current_stat = 0  # index of stat for levelling up
         self.timer = 0
+        self.taking_stairs = False
 
         self.create_display_options = {LoopType.action: self.display.create_display,
                                        LoopType.targeting: self.display.create_display,
@@ -237,7 +238,7 @@ class Loops():
         display.update_ui()
         return True
 
-    def monster_loop(self, energy):
+    def monster_loop(self, energy, stairs = None):
         for monster_key in self.monster_dict.subjects:
             monster = self.monster_dict.subjects[monster_key]
             if monster.character.alive:
@@ -256,9 +257,7 @@ class Loops():
                 if monster.brain.is_awake == True and not monster.asleep:
                     monster.character.energy += energy
                     while monster.character.energy > 0:
-                        monster.brain.rank_actions(monster, self.monster_map, self.generator.tile_map,
-                                                   self.generator.flood_map, self.player, self.generator,
-                                                   self.item_dict, self)
+                        monster.brain.rank_actions(self)
 
         if len(self.generator.summoner) > 0:
             for generation in self.generator.summoner:
@@ -373,51 +372,50 @@ class Loops():
             self.monster_dict.subjects.pop(key)
 
     def down_floor(self):
+        self.taking_stairs = True
         playerx, playery = self.player.get_location()
-        if self.floor_level == 0 or (isinstance(self.generator.tile_map.track_map[playerx][playery], O.Stairs) and
-                                     self.generator.tile_map.track_map[playerx][playery].downward):
-            self.floor_level += 1
-            if self.floor_level > self.memory.explored_levels:
-                generator = M.DungeonGenerator(self.floor_level)
-                self.monster_map = generator.monster_map
-                self.item_dict = generator.item_dict
-                self.monster_dict = generator.monster_dict
-                temp_stair = None
-                if self.floor_level != 1:
-                    for stairs in (generator.tile_map.get_stairs()):
-                        if not stairs.downward:
-                            for old_stairs in self.generator.tile_map.get_stairs():
-                                if old_stairs.pair == None and old_stairs.downward:
-                                    old_stairs.pair = stairs
-                                    stairs.pair = old_stairs
-                                    break
-                    x,y = self.generator.tile_map.track_map[playerx][playery].pair.get_location()
-                else:
-                    for stairs in (generator.tile_map.get_stairs()):
-                        if not stairs.downward:
-                            x,y = stairs.get_location()
-                self.player.x = x
-                self.player.y = y
+        if self.player.character.energy < 0:
+            self.time_passes(-self.player.character.energy)
+            self.monster_loop(-self.player.character.energy)
+            self.player.character.energy = 0
 
-                self.memory.explored_levels += 1
-                self.generator = generator
-                self.generator.player = self.player
-                self.memory.generators[self.floor_level] = generator
+        self.floor_level += 1
+        for id in self.memory.generators[self.floor_level].monster_dict.subjects:
+            print(id)
+            monster = self.memory.generators[self.floor_level].monster_dict.get_subject(id)
+            if monster.brain.old_key != None:
+                self.generator.monster_dict.remove_subject(monster.brain.old_key)
+                monster.brain.old_key = None
 
-            else:
-                self.player.x, self.player.y = (self.generator.tile_map.track_map[playerx][playery]).pair.get_location()
-                self.generator = self.memory.generators[self.floor_level]
-                self.monster_map = self.generator.monster_map
-                self.item_dict = self.generator.item_dict
-                self.monster_dict = self.generator.monster_dict
+        self.player.x, self.player.y = (self.generator.tile_map.track_map[playerx][playery]).pair.get_location()
+        self.generator = self.memory.generators[self.floor_level]
+        self.monster_map = self.generator.monster_map
+        self.item_dict = self.generator.item_dict
+        self.monster_dict = self.generator.monster_dict
 
-            self.memory.floor_level += 1
+        self.memory.floor_level += 1
+        self.taking_stairs = False
 
     def up_floor(self):
         playerx, playery = self.player.get_location()
         tile = self.generator.tile_map.track_map[playerx][playery]
         if self.floor_level != 1 and isinstance(tile, O.Stairs) and not tile.downward:
+            self.taking_stairs = True
+
+            if self.player.character.energy < 0:
+                self.time_passes(-self.player.character.energy)
+                self.monster_loop(-self.player.character.energy)
+                self.player.character.energy = 0
+
             self.floor_level -= 1
+            for id in self.memory.generators[self.floor_level].monster_dict.subjects:
+                print(id)
+                monster = self.memory.generators[self.floor_level].monster_dict.get_subject(id)
+                if monster.brain.old_key != None:
+                    self.generator.monster_dict.remove_subject(monster.brain.old_key)
+                    monster.brain.old_key = None
+
+            self.taking_stairs = False
             self.memory.floor_level -= 1
             self.player.x, self.player.y = (self.generator.tile_map.track_map[playerx][playery]).pair.get_location()
             self.generator = self.memory.generators[self.floor_level]
@@ -430,10 +428,36 @@ class Loops():
         self.player = C.Player(0, 0)
         self.memory.player = self.player
 
-        """
-        self.race_buttons = D.create_race_screen(display)
-        self.class_buttons = D.create_class_screen(display)
-        """
+        self.floor_level += 1
+        while self.floor_level < 9:
+            if self.floor_level > self.memory.explored_levels:
+                generator = M.DungeonGenerator(self.floor_level)
+                self.monster_map = generator.monster_map
+                self.item_dict = generator.item_dict
+                self.monster_dict = generator.monster_dict
+                if self.floor_level != 1:
+                    for stairs in (generator.tile_map.get_stairs()):
+                        if not stairs.downward:
+                            for old_stairs in self.generator.tile_map.get_stairs():
+                                if old_stairs.pair == None and old_stairs.downward:
+                                    old_stairs.pair = stairs
+                                    stairs.pair = old_stairs
+                                    break
+                self.generator = generator
+                self.memory.explored_levels += 1
+                self.memory.generators[self.floor_level] = generator
+                self.floor_level += 1
+        self.floor_level = 1
+        self.generator = self.memory.generators[self.floor_level]
+        self.monster_map = self.generator.monster_map
+        self.item_dict = self.generator.item_dict
+        self.monster_dict = self.generator.monster_dict
+        for stairs in (self.generator.tile_map.get_stairs()):
+            if not stairs.downward:
+                x, y = stairs.get_location()
+        self.player.x = x
+        self.player.y = y
+
 
     def add_message(self, message):
         if len(self.messages) >= 5:

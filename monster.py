@@ -16,6 +16,8 @@ class Monster_AI():
         self.parent = parent
         self.grouped = False
         self.target = None
+        self.stairs_location = None
+        self.old_key = None
 
         self.personality = {"Goblin":0,
                        "Kobold": 0,
@@ -30,9 +32,8 @@ class Monster_AI():
     Think it would be better to first rank each action depending on the circumstances with a number between 1-100 and 
     then pick the action that ranks the highest
     """
-    def rank_actions(self, monster, monster_map, tile_map, flood_map, player, generated_maps, item_dict, loop):
+    def rank_actions(self, loop):
         print(self.parent.character.energy)
-        item_map = generated_maps.item_map
         max_utility = 0
         called_function = self.do_nothing
 
@@ -81,10 +82,49 @@ class Monster_AI():
             max_utility = utility
             called_function = self.do_flee
 
+        utility = self.rank_stairs(loop)
+        print(utility, "stairs")
+        if utility > max_utility:
+            max_utility = utility
+            called_function = self.do_stairs
+
         # print(max_utility)
         self.parent.character.energy -= 1
         print(f"{self.parent} is doing {called_function.__name__} with utility {max_utility}")
         called_function(loop)
+
+    def rank_stairs(self, loop):
+        if loop.taking_stairs == True:
+            playerx, playery = loop.player.get_location()
+            monsterx, monstery = self.parent.get_location()
+            directions = [(0, 1), (0, -1), (1, 0), (-1, 0), (1, 1), (-1, -1), (1, -1), (-1, 1)]
+            for x, y in directions:
+                if isinstance(loop.generator.tile_map.locate(monsterx+x,monstery+y), O.Stairs) and monsterx+x == playerx and monstery + y == playery:
+                    self.stairs_location = (monsterx + x, monstery + y)
+                    return random.randint(110,130)
+        return -1
+
+    def do_stairs(self, loop):
+        stairs = loop.generator.tile_map.locate(self.stairs_location[0], self.stairs_location[1])
+        if stairs.downward:
+            new_level = loop.floor_level + 1
+        else:
+            new_level = loop.floor_level - 1
+
+        new_generator = loop.memory.generators[new_level]
+        monsterx, monstery = self.parent.get_location()
+        new_stairs = stairs.pair
+        empty_tile = new_generator.nearest_empty_tile(new_stairs.get_location(), move = True)
+        if empty_tile != None:
+            loop.generator.monster_map.clear_location(monsterx, monstery)
+            self.old_key = self.parent.id_tag
+            new_generator.monster_dict.tag_subject(self.parent)
+            self.parent.x = empty_tile[0]
+            self.parent.y = empty_tile[1]
+            new_generator.monster_map.place_thing(self.parent)
+            self.parent.character.energy = 0
+            loop.add_message("The monster follows you on the stairs")
+
 
     def rank_flee(self, loop):
         if self.parent.character.flee:
@@ -97,6 +137,7 @@ class Monster_AI():
                 return random.randint(45,65)
         else:
             return random.randint(10,30)
+        return -1
 
     def rank_combat(self, loop):
         utility = -1
@@ -111,6 +152,7 @@ class Monster_AI():
                     utility = -self.personality["Player"]
                     self.target = player
             elif not monster_map.get_passable(x,y):
+                print(monster_map.locate(x,y), "want to attack this monster")
                 other_monster = loop.generator.monster_dict.get_subject(monster_map.locate(x,y))
                 if other_monster.name in self.personality and utility < -self.personality[other_monster.name]:
                     utility = -self.personality[other_monster.name]
@@ -504,7 +546,8 @@ class Goblin(Monster):
                                               action_cost=1))
         self.character.experience_given = 10
 
-        self.character.move_cost = 75
+        self.character.action_costs["move"] = 75
+        self.character.action_costs["grab"] = 20
 
         self.description = "A cowardly creature that some adventurers nicknamed \"Loot Pinata\"."
         self.character.health = 15

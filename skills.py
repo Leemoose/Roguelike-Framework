@@ -5,7 +5,7 @@ import character as C
 import pathfinding
 
 class Skill():
-    def __init__(self, name, parent, cooldown, cost, range=-1, action_cost=100):
+    def __init__(self, name, parent, cooldown=0, cost=0, range=-1, action_cost=100):
         self.parent = parent
         self.cooldown = cooldown
         self.cost = cost
@@ -21,11 +21,11 @@ class Skill():
     def activate(self, target, generator):
         self.parent.character.mana -= self.cost
 
-    def try_to_activate(self, target, generator):
+    def try_to_activate(self, target, loop):
         # check cooldowns and costs
         if self.castable(target):
             self.ready = self.cooldown
-            return self.activate(target, generator)
+            return self.activate(target, loop)
         return False
     
     def tick_cooldown(self):
@@ -33,7 +33,7 @@ class Skill():
             self.ready -= 1
 
     def castable(self, target):
-        self.basic_requirements()
+        return self.basic_requirements()
     
     def basic_requirements(self):
         if self.ready == 0 and self.parent.character.mana >= self.cost:
@@ -61,10 +61,12 @@ class Skill():
         return self.name + "(" + str(self.cost) + " cost, " + str(self.cooldown) + " turn cooldown"
 
 class MassTorment(Skill):
-    def __init__(self, parent, cooldown, cost):
-        super().__init__("MassTorment", parent, cooldown, cost)
+    def __init__(self, parent):
+        self.cooldown = 10
+        self.cost = 1
+        super().__init__("MassTorment", parent, self.cooldown, self.cost)
 
-    def activate(self, loop, bypass = False):
+    def activate(self, target, loop, bypass = "False"):
         generator = loop.generator
         player = loop.player
         tile_map = generator.tile_map
@@ -76,11 +78,14 @@ class MassTorment(Skill):
                 monster.character.health /= 2
         player.character.health /= 2
 
-class MassHeal(Skill):
-    def __init__(self, parent, cooldown, cost):
-        super().__init__("Mass Heal", parent, cooldown, cost)
 
-    def activate(self, loop, bypass = False):
+class MassHeal(Skill):
+    def __init__(self, parent):
+        self.cooldown = 30
+        self.cost = 25
+        super().__init__("Mass Heal", parent, self.cooldown, self.cost)
+
+    def activate(self, target, loop, bypass = "False"):
         generator = loop.generator
         player = loop.player
         tile_map = generator.tile_map
@@ -510,13 +515,13 @@ class SummonGorblin(Skill):
         self.targetted = True
         self.targets_monster = False
     
-    def activate(self, target, generator):
+    def activate(self, target, loop):
         self.parent.character.mana -= self.cost
         x, y = target.get_location()
-        location = generator.nearest_empty_tile((x,y))
+        location = loop.generator.nearest_empty_tile((x,y))
         if location != None:
             gorblin = M.Gorblin(-1, -1)
-            generator.summoner.append((gorblin, location[0], location[1]))
+            loop.generator.summoner.append((gorblin, location[0], location[1]))
             return True
         return False
 
