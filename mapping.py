@@ -8,6 +8,7 @@ import monster as Mon
 import random
 import math
 import spawnparams as Spawns
+import npc as N
 from fractions import Fraction
 
 class MapData():
@@ -251,6 +252,7 @@ class TileDict():
         tiles[-915] = image.load("assets/invincible_skill_icon_dark.png")
 
         tiles[1000] = image.load("assets/items/armor/pants.png")
+        tiles[1100] = image.load("assets/shopkeeper.png")
 
         self.tiles = tiles
 
@@ -270,14 +272,17 @@ class DungeonGenerator():
         self.flood_map = FloodMap(self.width, self.height)
         self.tile_map = TileMap(self.mapData, depth)
         self.item_map = TrackingMap(self.width, self.height)
+
         self.player = None
         self.summoner = []
 
         self.monster_dict = L.ID() #Unique to this floor
         self.item_dict = L.ID() #Unique to this floor
+        self.npc_dict = L.ID()
 
         self.place_items(depth)
         self.place_monsters(depth)
+        self.place_npcs(depth)
 
 
         """
@@ -376,6 +381,18 @@ class DungeonGenerator():
         else:
             return (x != self.player.x or y != self.player.y)
 
+    def get_passable(self, location):
+        if location == None:
+            return None
+        elif self.monster_map.get_passable(location[0], location[1]) and self.not_on_player(location[0], location[1]) and self.tile_map.get_passable(location[0], location[1]):
+            for key in self.npc_dict.subjects:
+                npc = self.npc_dict.get_subject(key)
+                if location == npc.get_location():
+                    return False
+            return True
+        return False
+
+
     def nearest_empty_tile(self, location, move = False):
       #  import pdb; pdb.set_trace()
         if location == None:
@@ -463,6 +480,23 @@ class DungeonGenerator():
         creature.y = y
         self.monster_dict.tag_subject(creature)
         self.monster_map.place_thing(creature)
+
+    def place_npcs(self, depth):
+        startx = random.randint(0, self.width - 1)
+        starty = random.randint(0, self.height - 1)
+
+        check_on_stairs = self.on_stairs(startx, starty, self.tile_map.stairs)
+
+        while ((self.tile_map.get_passable(startx, starty) == False) or
+               (self.monster_map.get_passable(startx, starty) == False) or
+               (self.tile_map.track_map[startx][starty].visible) or
+               check_on_stairs):
+            startx = random.randint(0, self.width - 1)
+            starty = random.randint(0, self.height - 1)
+            check_on_stairs = self.on_stairs(startx, starty, self.tile_map.stairs)
+
+        npc = N.NPC(1100, startx, starty)
+        self.npc_dict.tag_subject(npc)
 
     def place_items(self, depth):
         itemSpawns = Spawns.item_spawner.spawnItems(depth)

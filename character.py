@@ -454,7 +454,7 @@ class Player(O.Objects):
 
         self.path = []
 
-        self.invincible = True
+        self.invincible = False
 
         if self.invincible: # only get the gun if you're invincible at the start
             self.character.skills.extend([
@@ -478,11 +478,13 @@ class Player(O.Objects):
         x = self.x + move_x
         y = self.y + move_y
         if (x >= 0) & (y >= 0) & (x < loop.generator.tile_map.width) & (y < loop.generator.tile_map.height):
-            if (loop.generator.monster_map.track_map[x][y]) != -1:
+            if loop.generator.get_passable((x,y)):
+                self.move(move_x, move_y, loop)
+            elif not loop.generator.monster_map.get_passable(x,y):
                 defender = loop.monster_dict.get_subject(loop.generator.monster_map.track_map[x][y])
                 self.attack(defender, loop)
             else:
-                self.move(move_x, move_y, loop)
+                loop.add_message("You cannot move there")
 
     def move(self, move_x, move_y, loop):
         if loop.generator.tile_map.get_passable(self.x + move_x, self.y + move_y) and loop.generator.monster_map.get_passable(self.x + move_x, self.y + move_y):
@@ -671,6 +673,25 @@ class Player(O.Objects):
         else:
             self.character.energy -= self.character.action_costs["move"]
             loop.add_message("You can't move!")
+
+    def talk(self, loop):
+        spoke = False
+        directions = [(0, 1), (0, -1), (1, 0), (-1, 0), (1, 1), (-1, -1), (1, -1), (-1, 1)]
+        location = []
+        for x, y in directions:
+            location.append((x + self.x,y+self.y))
+        for key in loop.generator.npc_dict.subjects:
+            npc = loop.generator.npc_dict.get_subject(key)
+            for spot in location:
+                if spot == npc.get_location():
+                    loop.add_message("You say hello to your friendly neighbor.")
+                    npc.talk(loop)
+                    spoke = True
+                    loop.change_loop(L.LoopType.trade)
+        if spoke == False:
+            loop.add_message("You feel lonely.")
+
+
 
 
 

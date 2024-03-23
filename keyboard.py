@@ -148,6 +148,8 @@ class Keyboard():
             loop.player.autoexplore(loop)
         elif key == "m":
             memory.save_objects()
+        elif key == "t":
+            loop.player.talk(loop)
         # elif key == "t":
         #     escape_test = S.Escape(player, 0, 0, False, 1.1, 1)
         #     player.character.add_skill(escape_test)
@@ -204,6 +206,17 @@ class Keyboard():
                 loop.change_loop(LoopType.action)
                 loop.limit_inventory = None
                 loop.update_screen = True
+
+    def key_trade(self, loop, key):
+        player = loop.player
+        if key == "esc":
+            loop.change_loop(LoopType.action)
+            return
+        for i in range(len(loop.npc_focus.items)):
+            if chr(ord("a") + i) == key:
+                loop.npc_focus.give_item(loop, i)
+                break
+
 
     def key_level_up(self, loop, key):
         player = loop.player

@@ -60,6 +60,14 @@ class Display:
         self.textWidth = textWidth
         self.textHeight = textHeight
         self.textSize = textSize
+
+        action_screen_width = self.screen_width * 3 // 4
+        action_screen_height = self.screen_height * 5 // 6
+        num_tiles_wide = action_screen_width // self.textSize
+        num_tiles_height = action_screen_height // self.textSize
+        self.r_x = num_tiles_wide // 2
+        self.r_y = num_tiles_height // 2
+
         self.uiManager = pygame_gui.UIManager((width, height), "assets/theme.json")
         self.windows = []
         self.clock = pygame.time.Clock()
@@ -77,11 +85,10 @@ class Display:
 
     def create_display(self, loop):
         self.uiManager.clear_and_reset()
-        #FPS counter
-        #fps_counter = ui.FPSCounter(
-        #   pygame.Rect((0,0),(400,40)),
-        #    self.uiManager
-        #)
+        fps_counter = ui.FPSCounter(
+           pygame.Rect((0,0),(400,40)),
+            self.uiManager
+        )
 
         tileDict = loop.tileDict
         monsterID = loop.monster_dict
@@ -332,6 +339,7 @@ class Display:
         tileDict = loop.tileDict
         monsterID = loop.monster_dict
         item_ID = loop.item_dict
+        npc_ID = loop.generator.npc_dict
         monster_map = loop.monster_map
         player = loop.player
         messages = loop.messages
@@ -415,6 +423,13 @@ class Display:
                     item_tile = tileDict.tile_string(item.render_tag)
                     self.win.blit(item_tile, (self.textSize * (item.x - self.x_start), self.textSize * (item.y - self.y_start)))
 
+        for key in npc_ID.subjects:
+            npc = npc_ID.get_subject(key)
+            if (npc.x >= self.x_start and npc.x < self.x_end and npc.y >= self.y_start and npc.y < self.y_end):
+                if floormap.track_map[npc.x][npc.y].visible:
+                    npc_tile = tileDict.tile_string(npc.render_tag)
+                    self.win.blit(npc_tile, (self.textSize * (npc.x - self.x_start), self.textSize * (npc.y - self.y_start)))
+
         for key in monsterID.subjects:
             monster = monsterID.get_subject(key)
             if (monster.x >= self.x_start and monster.x < self.x_end and monster.y >= self.y_start and monster.y < self.y_end):
@@ -467,6 +482,13 @@ class Display:
                                              pygame.Rect(map_offset_from_left + map_tile_size * (x - x_map_start),
                                                          map_offset_from_top + map_tile_size * (y - y_map_start),
                                                          map_tile_size, map_tile_size))
+                            for key in npc_ID.subjects:
+                                npc = npc_ID.get_subject(key)
+                                if floormap.track_map[npc.x][npc.y].seen:
+                                    pygame.draw.rect(self.win, (200, 100, 0),
+                                                     pygame.Rect(map_offset_from_left + map_tile_size * (npc.x - x_map_start),
+                                                                 map_offset_from_top + map_tile_size * (npc.y - y_map_start),
+                                                                 map_tile_size, map_tile_size))
                     else:
                         pygame.draw.rect(self.win, (100, 100, 100),
                                          pygame.Rect(map_offset_from_left + map_tile_size * (x - x_map_start),
@@ -755,7 +777,7 @@ class Display:
             pre_text = "change "
             img = pygame.transform.scale(tileMap.tiles[player.character.equipment_slots["hand_slot"][1].render_tag], (medium_button_width, medium_button_height))
         button = pygame_gui.elements.UIButton(
-                        relative_rect=pygame.Rect((first_col_offset_from_left, 
+                        relative_rect=pygame.Rect((first_col_offset_from_left,
                                                    outer_cols_offset_from_top),
                                                   (medium_button_width, medium_button_height)),
                         text = pre_text + "shield",
@@ -1811,3 +1833,78 @@ class Display:
     def update_death_screen(self):
         self.win.fill((0,0,0))
         self.uiManager.draw_ui(self.win)
+
+    def create_trade_screen(self, loop):
+        self.uiManager.clear_and_reset()
+
+        trading_screen_width = self.screen_width * 2 // 3
+        trading_screen_height = self.screen_height * 2 // 3
+        trading_offset_from_left = (self.screen_width - trading_screen_width) // 2
+        trading_offset_from_top = (self.screen_height - trading_screen_height) // 2
+
+        trading_title_width = trading_screen_width
+        trading_title_height = trading_screen_height // 6
+        trading_title_offset_from_left = trading_offset_from_left
+        trading_title_offset_from_top = trading_offset_from_top
+
+        num_buttons_height = 4
+        num_buttons_width = 8
+        button_offset_from_left = trading_offset_from_left + trading_screen_width // 2
+        button_offset_from_top = trading_title_offset_from_top + trading_title_height
+        button_width = (trading_screen_width // 2) // (num_buttons_width + 1)
+        button_height =((trading_screen_height - trading_title_height) * 2 // 3) // (num_buttons_height + 1)
+        margin_between_buttons_height = ((trading_screen_height - trading_title_height) * 2 // 3) // (num_buttons_height + 1) // (num_buttons_height + 1)
+        margin_between_buttons_width = (trading_screen_width // 2) // (num_buttons_width + 1) // (num_buttons_width + 1)
+
+        message_width = trading_screen_width
+        message_offset_from_left = trading_offset_from_left
+        message_offset_from_top = button_offset_from_top + (trading_screen_height - trading_title_height) * 2 // 3
+        message_height = self.screen_height - message_offset_from_top - trading_offset_from_top
+
+        self.uiManager.clear_and_reset()
+        pygame.draw.rect(self.win, (50,50,50), pygame.Rect(trading_offset_from_left - 10, trading_offset_from_top-10, trading_screen_width + 20, trading_screen_height+20))
+        pygame.draw.rect(self.win, (0,0,0), pygame.Rect(trading_offset_from_left, trading_offset_from_top, trading_screen_width, trading_screen_height))
+
+        self.draw_escape_button(trading_offset_from_left, trading_offset_from_top, trading_screen_width, trading_screen_height)
+        pygame_gui.elements.UILabel(relative_rect=pygame.Rect((trading_title_offset_from_left, trading_title_offset_from_top),
+                                                               (trading_title_width, trading_title_height)),
+                                     text=loop.npc_focus.name,
+                                     manager=self.uiManager,
+                                     object_id='#title_label')
+        text_box = ui.MessageBox(
+            pygame.Rect((message_offset_from_left, message_offset_from_top),
+                                      (message_width, message_height)),
+            manager=self.uiManager,
+            loop=loop)
+
+        for i, weapon in enumerate(loop.npc_focus.items):
+            img = pygame.transform.scale(loop.tileDict.tiles[weapon.render_tag], (button_width, button_height))
+            button = pygame_gui.elements.UIButton(
+                relative_rect=pygame.Rect((button_offset_from_left +margin_between_buttons_width + (i//num_buttons_height) *(margin_between_buttons_width + button_width),
+                                           button_offset_from_top + margin_between_buttons_height + (i%num_buttons_height) * (margin_between_buttons_height + button_height)),
+                                          (button_width, button_height)),
+                text= str(weapon.name),
+                manager=self.uiManager,
+                object_id='#equipment_button')
+            self.draw_on_button(button, img, chr(ord("a") + i), (button_width, button_height))
+            button.action = chr(ord("a") + i)
+
+
+    def update_trade_screen(self, loop):
+        self.uiManager.draw_ui(self.win)
+
+        # pygame_gui.elements.UILabel(relative_rect=pygame.Rect((equipment_message_offset_from_left, equipment_message_offset_from_top),
+        #                                                       (equipment_message_width, equipment_message_height)),
+        #                             text="Equipment",
+        #                             manager=self.uiManager,
+        #                             object_id='#title_label')
+        #
+        # button = pygame_gui.elements.UIButton(
+        #                 relative_rect=pygame.Rect((first_col_offset_from_left,
+        #                                            outer_cols_offset_from_top),
+        #                                           (medium_button_width, medium_button_height)),
+        #                 text = pre_text + "shield",
+        #                 manager=self.uiManager,
+        #                 object_id='#equipment_button')
+        # #self.draw_on_button(button, img, "q", (medium_button_width, medium_button_height))
+        # button.action = 'q'

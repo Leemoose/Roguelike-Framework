@@ -31,7 +31,7 @@ class LoopType(Enum):
     classes = 6
     items = 7
     examine = 8
-
+    trade = 9
     paused = 10
     targeting = 11
     specific_examine = 12
@@ -132,6 +132,7 @@ class Loops():
         self.current_stat = 0  # index of stat for levelling up
         self.timer = 0
         self.taking_stairs = False
+        self.npc_focus = None
 
         self.create_display_options = {LoopType.action: self.display.create_display,
                                        LoopType.targeting: self.display.create_display,
@@ -146,6 +147,7 @@ class Loops():
                                        LoopType.help: self.display.create_help_screen,
                                        LoopType.story: self.display.create_story_screen,
                                        LoopType.death: self.display.create_death_screen,
+                                       LoopType.trade: self.display.create_trade_screen
                                        }
         self.action_options =           {LoopType.action: keyboard.key_action,
                                        LoopType.inventory: keyboard.key_inventory,
@@ -162,6 +164,7 @@ class Loops():
                                        LoopType.death: keyboard.key_death,
                                        LoopType.main: keyboard.key_main_screen,
                                        LoopType.paused: keyboard.key_paused,
+                                       LoopType.trade: keyboard.key_trade
                                        }
 
         # Start the game by going to the main screen
@@ -243,18 +246,11 @@ class Loops():
             monster = self.monster_dict.subjects[monster_key]
             if monster.character.alive:
                 # do status effect stuff
-
-                # tick skill cooldowns
-                monster.character.tick_cooldowns()
-
-                # tick regen
-                monster.character.tick_regen()
-
                 if self.generator.tile_map.track_map[monster.x][monster.y].seen:
                     monster.brain.is_awake = True
 
                 # do action stuff
-                if monster.brain.is_awake == True and not monster.asleep:
+                if monster.brain.is_awake and not monster.asleep:
                     monster.character.energy += energy
                     while monster.character.energy > 0:
                         monster.brain.rank_actions(self)
@@ -339,6 +335,8 @@ class Loops():
             display.update_story_screen()
         elif self.currentLoop == LoopType.death:
             display.update_death_screen()
+        elif self.currentLoop == LoopType.trade:
+            display.update_trade_screen(self)
         pygame.display.update()
         self.update_screen = False
 
@@ -532,6 +530,11 @@ class Loops():
             for key in self.monster_dict.subjects:
                 monster = self.monster_dict.get_subject(key)
                 monster.character.tick_all_status_effects(self)
+                # tick skill cooldowns
+                monster.character.tick_cooldowns()
+                # tick regen
+                monster.character.tick_regen()
+
         self.timer = self.timer % 100
 
 
