@@ -17,6 +17,7 @@ infoObject = pygame.display.Info()
 width = infoObject.current_w #1920 * 4/5
 height = infoObject.current_h #1080 * 4/5
 textWidth = int(width / textSize)
+
 textHeight = int(height / textSize)
 #dictionary mapping renderID to the image
 tileDict = M.TileDict(textSize)

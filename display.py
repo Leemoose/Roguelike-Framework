@@ -665,28 +665,30 @@ class Display:
         if equipment_type == "Enchantable":
             enchantable = player.character.get_enchantable()
 
+#This needs to be fixed
         for i, item in enumerate(player.character.inventory):
-            if equipment_type == "Enchantable" and item not in enchantable:
-                continue
-            elif equipment_type != None and equipment_type != "Enchantable" and item.equipment_type != equipment_type:
-                continue
-            if item.stackable:
-                item_name = item.name + " (x" + str(item.stacks) + ")"
-            else:
-                item_name = item.name
-            if item.can_be_levelled:
-                item_level = item.level
-                if item_level > 1:
-                    item_name = item_name + " (+" + str(item_level - 1) + ")"
-            if item.equipped:
-                item_name = item_name + " (equipped)"
-            button = pygame_gui.elements.UIButton(
-                relative_rect=pygame.Rect((inventory_button_offset_from_left, inventory_button_offset_from_top + inventory_button_offset_from_each_other * i + inventory_button_height * i),
-                                                              (inventory_button_width, inventory_button_height)),
-                text= chr(ord("a") + i) + ". " + item_name,
-                manager=self.uiManager)
-            button.action = chr(ord("a") + i)
-            self.buttons.add(button, chr(ord("a") + i))
+            item_name = item.name
+            if equipment_type == None or item.equipment_type == equipment_type:
+                if isinstance(item, I.Equipment):
+                    if equipment_type == "Enchantable" and item not in enchantable:
+                        continue
+                    elif equipment_type != None and equipment_type != "Enchantable" and item.equipment_type != equipment_type:
+                        continue
+                    if item.stackable:
+                        item_name = item.name + " (x" + str(item.stacks) + ")"
+                    if item.can_be_levelled:
+                        item_level = item.level
+                        if item_level > 1:
+                            item_name = item_name + " (+" + str(item_level - 1) + ")"
+                    if item.equipped:
+                        item_name = item_name + " (equipped)"
+                button = pygame_gui.elements.UIButton(
+                    relative_rect=pygame.Rect((inventory_button_offset_from_left, inventory_button_offset_from_top + inventory_button_offset_from_each_other * i + inventory_button_height * i),
+                                                                  (inventory_button_width, inventory_button_height)),
+                    text= chr(ord("a") + i) + ". " + item_name,
+                    manager=self.uiManager)
+                button.action = chr(ord("a") + i)
+                self.buttons.add(button, chr(ord("a") + i))
 
         self.uiManager.draw_ui(self.win)
         return self.buttons     
@@ -1120,17 +1122,8 @@ class Display:
         self.uiManager.draw_ui(self.win)
 
     def stat_text(self, entity, stat):
-        if entity.character.rounded():
-            return str(stat) + " +" + str(int(stat * entity.character.round_bonus()) - stat)
-        else:
-            return str(stat)
-        
-    def round_text(self, entity):
-        if entity.character.rounded():
-            return "You feel the dungeon enhancing your well-rounded stats.<br><br>"
-        else:
-            return "<br>"
-        
+        return str(stat)
+
     def stat_modifier(self, entity, stat):
         if stat >= 0:
             return "+" + str(stat)
@@ -1151,8 +1144,7 @@ class Display:
                         "Strength: " + self.stat_text(player, player.character.strength) + "<br>"
                         "Dexterity: " + self.stat_text(player, player.character.dexterity) + "<br>"
                         "Endurance: " + self.stat_text(player, player.character.endurance) + "<br>"
-                        "Intelligence: " + self.stat_text(player, player.character.intelligence) + "<br>" + \
-                        self.round_text(player) + "<br>"
+                        "Intelligence: " + self.stat_text(player, player.character.intelligence) + "<br>" +
                         "Health: " + str(player.character.health) + " / " + str(player.character.max_health) + "<br>"
                         "Mana: " + str(player.character.mana) + " / " + str(player.character.max_mana) + "<br>"
                         "<br>"
@@ -1252,6 +1244,7 @@ class Display:
 
         if item_screen:
             item = entity
+            show = False
             if item.can_be_levelled:
                 item_level = item.level
                 if item_level > 1:
@@ -1266,7 +1259,6 @@ class Display:
                         object_id='#title_addition')
             pretext = ""
             action = ""
-            show = True
             if item.equipable:
                 if item.equipped:
                     pretext = "Unequip"
@@ -1276,12 +1268,15 @@ class Display:
                 else:
                     pretext = "Equip"
                     action = "e"
+                    show = True
             elif item.consumeable and item.equipment_type == "Potiorb":
                 pretext = "Quaff"
                 action = "q"
+                show = True
             elif item.consumeable and item.equipment_type == "Scrorb" or item.equipment_type == "Book":
                 pretext = "Read"
                 action = "r"
+                show = True
             if create == True:
                 if show:
                     button = pygame_gui.elements.UIButton(
@@ -1315,7 +1310,7 @@ class Display:
                     entity_text += "<shadow size=1 offset=0,0 color=#901010><font color=#E0F0FF>" + "Once equipped, it cannot be taken off" +  "</font></shadow><br>"
                 entity_text += "Equipment type: " + item.equipment_type + "<br>"
                 if item.required_strength >= 0:
-                    if player.character.strength+player.character.rounded() < item.required_strength:
+                    if player.character.strength < item.required_strength:
                         req_str_text = "<shadow size=1 offset=0,0 color=#901010><font color=#E0F0FF>Required Strength: " + str(item.required_strength) + "(Unequippable) </font></shadow><br>"
                     else:
                         req_str_text = "Required Strength: " + str(item.required_strength) + "<br>"
@@ -1613,12 +1608,6 @@ class Display:
             manager=self.uiManager,
             object_id='#stat_label')
         
-        ui.RoundedText(
-            rect=pygame.Rect((stat_change_button_offset_from_left, stat_line_offset_from_top + 4 * (stat_line_height + stat_line_offset_from_each_other)), 
-                                      (stat_outline_width, stat_line_height)),
-            manager=self.uiManager,
-            player=player)
-        
         # confirmation_button
         confirmation_button_width = entity_message_width // 3
         confirmation_button_height = stat_change_button_height * 2
@@ -1856,6 +1845,14 @@ class Display:
         margin_between_buttons_height = ((trading_screen_height - trading_title_height) * 2 // 3) // (num_buttons_height + 1) // (num_buttons_height + 1)
         margin_between_buttons_width = (trading_screen_width // 2) // (num_buttons_width + 1) // (num_buttons_width + 1)
 
+        num_option_buttons = 3
+        option_button_offset_from_left = trading_offset_from_left
+        option_button_offset_from_top = trading_title_offset_from_top + trading_title_height
+        option_button_width = (trading_screen_width // 4)
+        option_button_height =((trading_screen_height - trading_title_height) * 2 // 3) // (num_option_buttons + 1)
+        option_margin_between_buttons_height = ((trading_screen_height - trading_title_height) * 2 // 3) // (
+                    num_option_buttons + 1) // (num_option_buttons + 1)
+
         message_width = trading_screen_width
         message_offset_from_left = trading_offset_from_left
         message_offset_from_top = button_offset_from_top + (trading_screen_height - trading_title_height) * 2 // 3
@@ -1877,17 +1874,28 @@ class Display:
             manager=self.uiManager,
             loop=loop)
 
-        for i, weapon in enumerate(loop.npc_focus.items):
-            img = pygame.transform.scale(loop.tileDict.tiles[weapon.render_tag], (button_width, button_height))
+        options = ["Trade", "Quest", "Gossip"]
+        for i in range(num_option_buttons):
             button = pygame_gui.elements.UIButton(
-                relative_rect=pygame.Rect((button_offset_from_left +margin_between_buttons_width + (i//num_buttons_height) *(margin_between_buttons_width + button_width),
-                                           button_offset_from_top + margin_between_buttons_height + (i%num_buttons_height) * (margin_between_buttons_height + button_height)),
-                                          (button_width, button_height)),
-                text= str(weapon.name),
-                manager=self.uiManager,
-                object_id='#equipment_button')
-            self.draw_on_button(button, img, chr(ord("a") + i), (button_width, button_height))
-            button.action = chr(ord("a") + i)
+                relative_rect=pygame.Rect((option_button_offset_from_left,
+                                           option_button_offset_from_top +option_margin_between_buttons_height + i * (option_margin_between_buttons_height + option_button_height)),
+                                          (option_button_width, option_button_height)),
+                text= chr(ord("1") + i) +". "+ options[i],
+                manager=self.uiManager)
+            button.action = chr(ord("1") + i)
+
+        if loop.npc_focus.purpose == "trade":
+            for i, weapon in enumerate(loop.npc_focus.items):
+                img = pygame.transform.scale(loop.tileDict.tiles[weapon.render_tag], (button_width, button_height))
+                button = pygame_gui.elements.UIButton(
+                    relative_rect=pygame.Rect((button_offset_from_left +margin_between_buttons_width + (i//num_buttons_height) *(margin_between_buttons_width + button_width),
+                                               button_offset_from_top + margin_between_buttons_height + (i%num_buttons_height) * (margin_between_buttons_height + button_height)),
+                                              (button_width, button_height)),
+                    text= str(weapon.name),
+                    manager=self.uiManager,
+                    object_id='#equipment_button')
+                self.draw_on_button(button, img, chr(ord("a") + i), (button_width, button_height))
+                button.action = chr(ord("a") + i)
 
 
     def update_trade_screen(self, loop):

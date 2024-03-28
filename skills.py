@@ -509,9 +509,9 @@ class Torment(Skill):
             return self.name + "(" + str(self.cost) + " cost, " + str(self.cooldown) + " turn cooldown" + ", " + str(int(self.damage_percent * 100)) + "% of target's health as damage, " + str(self.slow_amount) + " strength slow permanently)"
         return self.name + "(" + str(self.cost) + " cost, " + str(self.cooldown) + " turn cooldown" + ", " + str(int(self.damage_percent * 100)) + "% of target's health as damage, " + str(self.slow_amount) + " strength slow for " + str(self.duration) + " turns)"
     
-class SummonGorblin(Skill):
+class SummonGoblin(Skill):
     def __init__(self, parent, cooldown, cost, range, action_cost):
-        super().__init__("Summon Gorblin", parent, cooldown, cost, range, action_cost)
+        super().__init__("Summon Goblin", parent, cooldown, cost, range, action_cost)
         self.targetted = True
         self.targets_monster = False
     
@@ -520,8 +520,8 @@ class SummonGorblin(Skill):
         x, y = target.get_location()
         location = loop.generator.nearest_empty_tile((x,y))
         if location != None:
-            gorblin = M.Gorblin(-1, -1)
-            loop.generator.summoner.append((gorblin, location[0], location[1]))
+            goblin = M.Goblin(-1, -1)
+            loop.generator.summoner.append((goblin, location[0], location[1]))
             return True
         return False
 

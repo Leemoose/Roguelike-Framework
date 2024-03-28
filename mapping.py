@@ -116,6 +116,8 @@ class TileDict():
         tiles[160] = image.load('assets/monsters/yendorb.png')
         tiles[161] = image.load('assets/yendorb_deactivated.png')
 
+        tiles[199] = image.load('assets/monsters/monster_corpse.png')
+
         # 200-299 player assets
         tiles[200] = image.load("assets/Player.png")
         tiles[-200] = image.load("assets/player_under_armor.png")
@@ -496,6 +498,11 @@ class DungeonGenerator():
             check_on_stairs = self.on_stairs(startx, starty, self.tile_map.stairs)
 
         npc = N.NPC(1100, startx, starty)
+        directions = [(0, 1), (0, -1), (1, 0), (-1, 0), (1, 1), (-1, -1), (1, -1), (-1, 1)]
+        for change in directions:
+            if not self.tile_map.get_passable(startx + change[0], starty + change[1]):
+                self.tile_map.track_map[startx + change[0]][starty + change[1]] = O.Tile(startx + change[0], starty + change[1], 2, True)
+
         self.npc_dict.tag_subject(npc)
 
     def place_items(self, depth):
@@ -643,6 +650,17 @@ class TileMap(TrackingMap):
         #self.cellular_caves()
         self.render_to_map(depth)
         self.place_stairs(depth)
+
+    def __str__(self):
+        map = ""
+        for row in self.track_map:
+            for block in row:
+                if block.passable:
+                    map += "."
+                else:
+                    map += "x"
+            map += "\n"
+        return map
 
     def get_tag(self, x, y):
         return self.track_map[x][y].render_tag

@@ -65,7 +65,10 @@ class Keyboard():
 
     def key_string(self, key, shift_pressed):
         if not shift_pressed:
-            return self.keys_to_string[key]
+            try:
+                return self.keys_to_string[key]
+            except:
+                return -1
         else:
             try:
                 src = r"`1234567890-=qwertyuiop[]\asdfghjkl;\'zxcvbnm,./"
@@ -113,6 +116,7 @@ class Keyboard():
                     player.character.grab(item_key, item_ID, generated_maps, loop)
                     break
         elif key == "i":
+          #  loop.limit_inventory = None
             loop.change_loop(LoopType.inventory)
         elif key == "e" or key == "c":
             loop.change_loop(LoopType.equipment)
@@ -145,17 +149,12 @@ class Keyboard():
             loop.screen_focus = loop.targets.target_current
             loop.update_screen = True
         elif key == "o":
+            print(loop.generator.tile_map)
             loop.player.autoexplore(loop)
         elif key == "m":
             memory.save_objects()
         elif key == "t":
             loop.player.talk(loop)
-        # elif key == "t":
-        #     escape_test = S.Escape(player, 0, 0, False, 1.1, 1)
-        #     player.character.add_skill(escape_test)
-        #     player.character.cast_skill_by_name("Escape", player, loop)
-        #     player.character.remove_skill("Escape")
-        #     loop.update_screen = True
         elif key == "esc":
             loop.change_loop(LoopType.paused)
         elif key == "z":
@@ -208,14 +207,22 @@ class Keyboard():
                 loop.update_screen = True
 
     def key_trade(self, loop, key):
+        print(key)
         player = loop.player
         if key == "esc":
             loop.change_loop(LoopType.action)
             return
-        for i in range(len(loop.npc_focus.items)):
-            if chr(ord("a") + i) == key:
-                loop.npc_focus.give_item(loop, i)
-                break
+        elif key == "1":
+            loop.npc_focus.change_purpose("trade", loop)
+        elif key == '2':
+            loop.npc_focus.change_purpose("quest", loop)
+        elif key == '3':
+            loop.npc_focus.change_purpose("gossip", loop)
+        elif loop.npc_focus.purpose == "trade":
+            for i in range(len(loop.npc_focus.items)):
+                if chr(ord("a") + i) == key:
+                    loop.npc_focus.give_item(loop, i)
+                    break
 
 
     def key_level_up(self, loop, key):

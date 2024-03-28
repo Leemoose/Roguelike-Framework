@@ -2,6 +2,7 @@ import random
 
 import pygame, pygame_gui
 import display as D
+import items
 import mapping as M
 import character as C
 import objects as O
@@ -365,7 +366,11 @@ class Loops():
                     if item.equipped:
                         monster.character.unequip(item)
                     monster.character.drop(item, self.item_dict, self.generator.item_map)
-                self.monster_map.clear_location(monster.x, monster.y)
+                monster_corpse = monster.die()
+                if isinstance(monster_corpse, items.Corpse):
+                    self.generator.item_dict.tag_subject(monster_corpse)
+                    self.generator.item_map.place_thing(monster_corpse)
+                    self.monster_map.clear_location(monster.x, monster.y)
         for key in dead_monsters:
             self.monster_dict.subjects.pop(key)
 

@@ -30,8 +30,6 @@ class Character():
         self.can_teleport = True
         self.safe_rest = True
 
-        self.round_bonus_factor = 2 # stat bonus for being rounded
-
         self.inventory_limit = 18
 
         self.energy = 0
@@ -79,20 +77,10 @@ class Character():
         self.health_partial = 0.0
         self.mana_partial = 0.0
 
-        self.unarmed_damage_min = 1
-        self.unarmed_damage_max = 2
-
-    def rounded(self):
-        # check all stats are equal
-        return self.endurance == self.intelligence == self.dexterity == self.strength
-    
-    def round_bonus(self):
-        if self.rounded():
-            return self.round_bonus_factor
-        return 0
+        self.unarmed_damage_min = 2
+        self.unarmed_damage_max = 3
 
     def is_alive(self):
-        # print(self.invincible)
         if self.health <= 0 and not self.invincible:
             self.alive = False
             return False
@@ -125,18 +113,26 @@ class Character():
             self.mana = self.max_mana
 
     def defend(self):
-        defense = self.armor + ((self.endurance + self.round_bonus()) // 3)
+        defense = self.armor + (self.endurance // 3)
         return defense
 
     def skill_damage_increase(self):
-        return int(((self.intelligence + self.round_bonus()) * 1.5 ) // 2)
+        return int(((self.intelligence) * 1.5 ) // 2)
 
     def skill_duration_increase(self):
-        return ((self.intelligence + self.round_bonus()) // 3)
+        return (self.intelligence // 3)
 
 
     def grab(self, key, item_ID, generated_maps, loop):
         item = item_ID.get_subject(key)
+        if self.get_item(loop, item):
+            item_ID.remove_subject(key)
+            itemx, itemy = item.get_location()
+            generated_maps.item_map.clear_location(itemx, itemy)
+            loop.add_message("The " + str(self.parent.name) + " picked up a " + str(item.name))
+            self.energy -= self.action_costs["grab"]
+
+    def get_item(self, loop, item):
         if item.yendorb:
             loop.change_loop(L.LoopType.victory)
             return
@@ -144,7 +140,7 @@ class Character():
             if not item.name in [x.name for x in self.inventory]:
                 if len(self.inventory) > self.inventory_limit:
                     loop.add_message("You need to drop something first")
-                    return
+                    return False
                 else:
                     self.inventory.append(item)
 
@@ -155,18 +151,12 @@ class Character():
         else:
             if len(self.inventory) > self.inventory_limit:
                 loop.add_message("You need to drop something first")
-                return
+                return False
             else:
                 self.inventory.append(item)
                 if isinstance(item, I.Book):
                     item.mark_owner(self)
-        
-        item_ID.remove_subject(key)
-        itemx, itemy = item.get_location()
-        generated_maps.item_map.clear_location(itemx, itemy)
-        loop.add_message("The " + str(self.parent.name) + " picked up a " + str(item.name))
-        self.energy -= self.action_costs["grab"]
-
+        return True
     def drop(self, item, item_dict,  item_map):
         if len(self.inventory) != 0 and item.dropable:
             if item.equipable and item.equipped:
@@ -236,41 +226,52 @@ class Character():
         else:
             return self.base_damage + self.main_weapon.damage_min, self.base_damage + self.main_weapon.damage_max
 
+    """
+    1. Damage: Calculate how much damage opponent you would deal
+    2. Chance to hit: dexterity vs dexterity affected by how heavy the armor is for both sides (% shave off damage?)
+    2. On hit effects
+    3. Armor: Armor flat damage decrease vs armor piercing 
+    4. Take damage
+    
+    """
     def melee(self, defender):
+        self.energy -= self.action_costs["attack"]
         effect = None
-        weapon = self.equipment_slots["hand_slot"][1]
-        print(weapon)
-        if weapon == None:
-            damage = R.roll_dice(self.unarmed_damage_min, self.unarmed_damage_max)[0]+ random.randint(1, max(1,int(11 + (self.dexterity + self.round_bonus())* 1.5)))
-            defense = defender.character.defend()
-            finalDamage = damage - defense + self.base_damage + int((self.strength + self.round_bonus()) * 3)
-            defender.character.take_damage(self.parent, finalDamage)
-            return finalDamage
+        weapon = self.equipment_slots["hand_slot"][0]
+
+        if weapon is None:
+            damage = random.randint(self.base_damage + self.unarmed_damage_min, self.base_damage + self.unarmed_damage_max) #Should make object for unarmed damage
         else:
             if weapon.on_hit == None:
-                damage = weapon.attack()
+                 damage = weapon.attack()
             else:
-                damage, effect = weapon.attack()
-            # this formula is pumping damage numbers way up
-            damage += random.randint(1, max(1,int(11 + (self.dexterity + self.round_bonus())* 1.5)))
-        defense = defender.character.defend() - weapon.armor_piercing
-        if defense < 0:
-            defense = 0
-        finalDamage = self.base_damage + int((self.strength + self.round_bonus()) * 3) + damage - defense
-        defender.character.take_damage(self.parent, finalDamage)
-        if effect != None:
+                 damage, effect = weapon.attack()
+
+        dodge_damage = defender.character.dodge() - self.strike()
+
+        damage_shave = 1 - ((min(dodge_damage, 0) // 10) / 10)
+
+        if effect is not None and damage_shave == 0:
             effect = effect(self.parent) # some effects need an inflictor
             defender.character.add_status_effect(effect)
-        self.energy -= self.attack_cost
+
+        if weapon is not None:
+            defense = defender.character.defend() - weapon.armor_piercing
+        else:
+            defense = defender.character.defend()
+
+        finalDamage = max(0, int((damage + self.base_damage) * damage_shave - defense))
         defender.character.take_damage(self.parent, finalDamage)
-        return (finalDamage)
+        return finalDamage
+
+    def strike(self):
+        strike_chance = random.randint(1,100) + self.dexterity * 2
+        return min(100, strike_chance)
+
 
     def dodge(self):
-        dodge_chance = random.randint(1,100)
-        if dodge_chance <= (int(self.dexterity + self.round_bonus()) * 2):
-            return True
-        else:
-            return False
+        dodge_chance = random.randint(1,100) + self.dexterity * 2
+        return (min(100, dodge_chance))
 
     def quaff(self, potion, item_dict, item_map):
         if potion.consumeable and potion.equipment_type == "Potiorb":
@@ -290,7 +291,6 @@ class Character():
             scroll.activate(self, loop)
             self.energy -= self.action_costs["read"]
 
-    
     def tick_all_status_effects(self, loop):
         for effect in self.status_effects:
             effect.tick(self)
@@ -327,7 +327,6 @@ class Character():
             for x in self.status_effects:
                 if x.id_tag == effect.id_tag:
                     x.duration = effect.duration
-    
     def status_messages(self):
         messages = []
         for effect in self.status_effects:
@@ -454,7 +453,7 @@ class Player(O.Objects):
 
         self.path = []
 
-        self.invincible = False
+        self.invincible = True
 
         if self.invincible: # only get the gun if you're invincible at the start
             self.character.skills.extend([
@@ -487,11 +486,13 @@ class Player(O.Objects):
                 loop.add_message("You cannot move there")
 
     def move(self, move_x, move_y, loop):
-        if loop.generator.tile_map.get_passable(self.x + move_x, self.y + move_y) and loop.generator.monster_map.get_passable(self.x + move_x, self.y + move_y):
+        if loop.generator.get_passable((self.x + move_x, self.y + move_y)):
             self.character.energy -= self.character.action_costs["move"] #/ (1.02**(self.character.dexterity + self.character.round_bonus())))
             self.y += move_y
             self.x += move_x
-        loop.add_message("The player moved.")
+            loop.add_message("The player moved.")
+        else:
+            loop.add_message("You can't move there")
 
     def random_move(self, loop):
         random_move = [(0,1),(1,0),(-1,0),(0,-1)]
@@ -502,11 +503,8 @@ class Player(O.Objects):
     def attack(self, defender, loop):
         self.character.energy -= self.character.action_costs["attack"] #/ (1.05**(self.character.dexterity + self.character.round_bonus())))
         loop.screen_focus = (defender.x, defender.y)
-        if not defender.character.dodge():
-            damage = self.character.melee(defender)
-            loop.add_message(f"The player attacked for {damage} damage")
-        else:
-            loop.add_message("The monster dodged the attack")
+        damage = self.character.melee(defender)
+        loop.add_message(f"The player attacked for {damage} damage")
 
     def autoexplore(self, loop):
         all_seen = False
@@ -599,8 +597,6 @@ class Player(O.Objects):
     def check_for_levelup(self):
         while self.level != self.max_level and self.experience >= self.experience_to_next_level:
             self.level += 1
-            # self.character.level_up()
-            # self.awaiting_level_up = True
             self.character.level_up_max_health_and_mana()
             self.stat_points += 2
             exp_taken = self.experience_to_next_level
@@ -608,7 +604,6 @@ class Player(O.Objects):
             self.experience -= exp_taken
 
     def modify_stat_decisions(self, i, increase=True): # 0 = strength, 1 = dexterity, 2 = endurance, 3 = intelligence
-
         if increase:
             if self.stat_points > sum(self.stat_decisions):
                 self.stat_decisions[i] += 1
@@ -685,7 +680,7 @@ class Player(O.Objects):
             for spot in location:
                 if spot == npc.get_location():
                     loop.add_message("You say hello to your friendly neighbor.")
-                    npc.talk(loop)
+                    npc.welcome(loop)
                     spoke = True
                     loop.change_loop(L.LoopType.trade)
         if spoke == False:

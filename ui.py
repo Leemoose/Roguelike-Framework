@@ -116,7 +116,8 @@ class LevelUpHeader(pygame_gui.elements.UILabel):
     def update(self, time_delta: float):
         self.set_text("Allocate " + str(self.player.stat_points - sum(self.player.stat_decisions)) + " Stat Points")
         return super().update(time_delta)
-    
+
+"""
 class RoundedText(pygame_gui.elements.UILabel):
     def __init__(self, rect, manager, player):
         super().__init__(relative_rect=rect, manager=manager, text="Round do be rounding")
@@ -141,7 +142,7 @@ class RoundedText(pygame_gui.elements.UILabel):
         else:
             self.set_text("You feel the dungeon will continue to not enhance your stats after this change.")
         return super().update(time_delta)
-    
+    """
 class StatChangeText(pygame_gui.elements.UILabel):
     def __init__(self, rect, manager, player, index):
         super().__init__(relative_rect=rect, manager=manager, text="+" + str(player.stat_decisions[index]))
@@ -188,13 +189,11 @@ class StatBox(pygame_gui.elements.UITextBox):
                 self.level == entity.level and
                 self.experience == entity.experience and
                 self.experience_to_next_level == entity.experience_to_next_level and
-                self.rounded == entity.character.rounded() and
                 self.strength == entity.character.strength and
                 self.dexterity ==entity.character.dexterity and
                 self.endurance == entity.character.endurance and
                 self.intelligence == entity.character.intelligence and
-                self.armor == entity.character.armor and
-                self.rounded == entity.character.round_bonus())
+                self.armor == entity.character.armor)
 
     def SetCompareStats(self, entity):
         self.status = self.get_health_status(entity)
@@ -206,13 +205,11 @@ class StatBox(pygame_gui.elements.UITextBox):
         self.level = entity.level
         self.experience = entity.experience
         self.experience_to_next_level = entity.experience_to_next_level
-        self.rounded = entity.character.rounded()
         self.strength = entity.character.strength
         self.dexterity = entity.character.dexterity
         self.endurance = entity.character.endurance
         self.intelligence = entity.character.intelligence
         self.armor = entity.character.armor
-        self.rounded = entity.character.round_bonus()
 
     def get_health_status(self, entity):
         if entity.character.health < entity.character.max_health // 3 * 2:
@@ -238,17 +235,23 @@ class StatBox(pygame_gui.elements.UITextBox):
             to_next_level = str(format(entity.experience / entity.experience_to_next_level, ".1%"))
             return "Level: " + str(entity.level) + " (" + to_next_level + " there to next level)"
 
-    def stat_text(self, entity, stat, useRounded=True):
-        if entity.character.rounded() and useRounded:
-            return str(stat) + " (+" + str(entity.character.round_bonus()) + ")"
-        else:
-            return str(stat)
+    def stat_text(self, entity, stat, useRounded=False):
+        return str(stat)
         
     def round_text(self, entity):
-        if entity.character.rounded():
-            return "You feel stronger due to your well-rounded-ness.<br><br>"
+        total_stats = entity.character.strength + entity.character.intelligence + entity.character.dexterity + entity.character.endurance
+        if total_stats <= 6:
+            return "You are weak.<br><br>"
+        elif total_stats <= 10:
+            return "You have potential<br><br>"
+        elif total_stats <= 20:
+            return "You are a strong challenger<br><br>"
+        elif total_stats <= 40:
+            return "You are one of the strongest foes<br><br>"
+        elif total_stats <= 100:
+            return "Your strength is unparalleled<br><br>"
         else:
-            return "Your stats are not well rounded.<br><br>"
+            "You shouldn't be seeing this message"
 
     def update(self, time_delta: float):
         if (self.NeedsUpdate(self.player)):

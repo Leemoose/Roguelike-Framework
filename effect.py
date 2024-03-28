@@ -26,7 +26,7 @@ class StatusEffect():
 
 class Burn(StatusEffect):
     def __init__(self, duration, damage, inflictor):
-        super().__init__(801, "Burn", "is Burning", duration)
+        super().__init__(801, "Burn", "is burning for " + str(damage) + "damage", duration)
         self.damage = damage
         self.inflictor = inflictor
 

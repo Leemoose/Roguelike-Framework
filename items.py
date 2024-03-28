@@ -38,7 +38,10 @@ class statUpgrades():
         return tuple(map(lambda i, j: i - j, this_level, prev_level))
 
     
-        
+class Corpse(O.Item):
+    def __init__(self, x, y, id_tag, render_tag, name):
+        super().__init__(x,y, id_tag, render_tag, name)
+        self.monster_type = None
 
 """
 All detailed items are initialized here.
@@ -47,17 +50,11 @@ class Equipment(O.Item):
     def __init__(self, x, y, id_tag, render_tag, name):
         super().__init__(x,y, id_tag, render_tag, name)
         self.equipable = True
-        self.description = "Its a " + name + "."
-        self.stackable = False
-        self.level = 1
-        self.can_be_levelled = True
         self.equipped = False
         self.wearer = None
         self.cursed = False
         self.rarity = "Common"
         self.required_strength = 0
-        self.attached_skill_exists = False
-        self.yendorb = False
         self.stats = statUpgrades()
 
     def activate(self, entity):
@@ -97,7 +94,6 @@ class Equipment(O.Item):
         entity.intelligence -= intl
         entity.endurance -= end
         entity.armor -= arm
-        
 
     def can_be_equipped(self, entity):
         return self.equipable
@@ -140,7 +136,7 @@ class Weapon(Equipment):
         self.deactivate(entity)
 
     def attack(self):
-        damage = R.roll_dice(self.damage_min, self.damage_max)[0]
+        damage = random.randint(self.damage_min, self.damage_max)
         return damage
 
 class Ax(Weapon):
@@ -422,7 +418,7 @@ class Armor(Equipment):
         self.name = "Armor"
 
     def can_be_equipped(self, entity):
-        return (entity.strength + entity.round_bonus()) >= self.required_strength and self.equipable
+        return (entity.strength) >= self.required_strength and self.equipable
 
 class Shield(Armor):
     def __init__(self, render_tag, name):
@@ -1748,14 +1744,15 @@ class DexterityPotion(Potion):
         entity.add_status_effect(effect)
 
 class PermanentDexterityPotion(Potion):
-    def __init__(self, render_tag):
+    def __init__(self, render_tag, dexterity = 1):
         super().__init__(render_tag, "Permanent Dex Potiorb")
         self.description = "Speed in a bottle"
         self.action_description = "Gain 1 dexterity."
         self.rarity = "Rare"
+        self.dexterity_addition = dexterity
 
     def activate_once(self, entity):
-        entity.dexterity += 1
+        entity.dexterity += self.dexterity_addition
 
 class PermanentStrengthPotion(Potion):
     def __init__(self, render_tag):
