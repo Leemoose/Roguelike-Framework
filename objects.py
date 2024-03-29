@@ -1,6 +1,6 @@
 
 class Objects():
-    def __init__(self, x, y, id_tag, render_tag, name):
+    def __init__(self, x = -1, y = -1, id_tag = -1, render_tag = -1, name = "Unknown object"):
         self.id_tag = id_tag
         self.render_tag = render_tag
         self.shaded_render_tag = -render_tag
@@ -49,3 +49,10 @@ class Item(Objects):
         self.consumeable = False
         self.equipped = False
         self.destroy = False
+        self.description = "Its a " + name + "."
+        self.stackable = False
+        self.yendorb = False
+        self.can_be_levelled = True
+        self.level = 1
+        self.attached_skill_exists = False
+        self.equipment_type = None

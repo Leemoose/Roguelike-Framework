@@ -152,7 +152,7 @@ class ItemSpawner():
         # useful for debugging specific items, separate from generator
         self.forceSpawn = []
 
-        self.forceSpawn.append(("Book of Mass Heal", 3))
+        #self.forceSpawn.append(("Book of Mass Heal", 3))
         # self.forceSpawn.append(("Invincibility Scrorb", 3))
         # self.forceSpawn.append(("Permanent Dex Potiorb", 3))
         # self.forceSpawn.append(("Health Potiorb", 3))
@@ -334,25 +334,17 @@ MonsterSpawns = []
 
 
 MonsterSpawns.append(MonsterSpawnParams(M.Goblin(-1, -1), 1, 3, 0, 0))
-MonsterSpawns.append(MonsterSpawnParams(M.Gorblin(-1, -1), 2, 5, 0, 0))
 MonsterSpawns.append(MonsterSpawnParams(M.Hobgoblin(-1, -1), 1, 3, 0, 0))
-MonsterSpawns.append(MonsterSpawnParams(M.Hobgorblin(-1, -1), 2, 5, 0, 0))
 MonsterSpawns.append(MonsterSpawnParams(M.Kobold(-1, -1), 1, 3, 0, 0))
-MonsterSpawns.append(MonsterSpawnParams(M.Korbold(-1, -1), 2, 5, 0, 0))
-MonsterSpawns.append(MonsterSpawnParams(M.GorblinShaman(-1, -1), 3, 5, 0, 0))
+MonsterSpawns.append(MonsterSpawnParams(M.GoblinShaman(-1, -1), 3, 5, 0, 0))
 
 MonsterSpawns.append(MonsterSpawnParams(M.Gargoyle(-1, -1), 4, 6, 0, 0))
-MonsterSpawns.append(MonsterSpawnParams(M.Gorbgoyle(-1, -1), 6, 8, 0, 0))
 MonsterSpawns.append(MonsterSpawnParams(M.Minotaur(-1, -1), 4, 6, 0, 0))
-MonsterSpawns.append(MonsterSpawnParams(M.Minotaurb(-1, -1), 6, 8, 0, 0))
 MonsterSpawns.append(MonsterSpawnParams(M.Orc(-1, -1), 4, 6, 0, 0))
-MonsterSpawns.append(MonsterSpawnParams(M.Orbc(-1, -1), 6, 8, 0, 0))
 
 MonsterSpawns.append(MonsterSpawnParams(M.Raptor(-1, -1), 7, 9, 0, 0))
-MonsterSpawns.append(MonsterSpawnParams(M.Raptorb(-1, -1), 8, 9, 0, 0))
 MonsterSpawns.append(MonsterSpawnParams(M.Tormentorb(-1, -1), 8, 9, 0, 0))
 MonsterSpawns.append(MonsterSpawnParams(M.Golem(-1, -1), 7, 9, 0, 0))
-MonsterSpawns.append(MonsterSpawnParams(M.Gorblem(-1, -1), 8, 9, 0, 0))
 MonsterSpawns.append(MonsterSpawnParams(M.BossOrb(-1, -1), 10, 10, 1, 1))
 
 
@@ -375,7 +367,7 @@ class MonsterSpawner():
 
         # useful for debugging specific items, separate from generator
         self.forceSpawn = None
-        #self.forceSpawn = ("Gorblin Shaman", 1)
+        #self.forceSpawn = ("Goblin", 3)
         # self.forceSpawn = ("Hobgorblin", 5) 
 
     def countSpawn(self, depth):
