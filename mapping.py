@@ -68,10 +68,10 @@ class TileDict():
     def __init__(self, textSize):
         tiles = {}
         #1-99 are tile
-        tiles[1] = pygame.transform.scale(image.load("assets/tiles/wall_test.png"), (32,32))
-        tiles[-1] = pygame.transform.scale(image.load("assets/tiles/wall_test_shaded.png"), (32,32))
-        tiles[2] = pygame.transform.scale(image.load("assets/tiles/floor_test.png"), (32,32))
-        tiles[-2] = pygame.transform.scale(image.load("assets/tiles/floor_test_shaded.png"), (32,32))
+        tiles[1] = pygame.transform.scale(image.load("assets/tiles/colorful_wall.png"), (32,32))
+        tiles[-1] = pygame.transform.scale(image.load("assets/tiles/colorful_wall_shaded.png"), (32,32))
+        tiles[2] = pygame.transform.scale(image.load("assets/tiles/colorful_floor.png"), (32,32))
+        tiles[-2] = pygame.transform.scale(image.load("assets/tiles/colorful_floor_shaded.png"), (32,32))
         tiles[3] = pygame.transform.scale(image.load("assets/floor_dirty.png"), (32,32))
         tiles[-3] = pygame.transform.scale(image.load("assets/floor_dirty_shaded.png"), (32,32))
         tiles[4] = pygame.transform.scale(image.load("assets/floor_dirty1.png"), (32,32))

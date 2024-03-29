@@ -367,6 +367,7 @@ class Loops():
                         monster.character.unequip(item)
                     monster.character.drop(item, self.item_dict, self.generator.item_map)
                 monster_corpse = monster.die()
+                self.monster_map.clear_location(monster.x, monster.y)
                 if isinstance(monster_corpse, items.Corpse):
                     self.generator.item_dict.tag_subject(monster_corpse)
                     self.generator.item_map.place_thing(monster_corpse)
