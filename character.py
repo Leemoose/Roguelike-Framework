@@ -234,7 +234,7 @@ class Character():
     4. Take damage
     
     """
-    def melee(self, defender):
+    def melee(self, defender, loop):
         self.energy -= self.action_costs["attack"]
         effect = None
         weapon = self.equipment_slots["hand_slot"][0]
@@ -255,12 +255,18 @@ class Character():
             effect = effect(self.parent) # some effects need an inflictor
             defender.character.add_status_effect(effect)
 
+        effectiveness = 0
         if weapon is not None:
             defense = defender.character.defend() - weapon.armor_piercing
+            for types in weapon.effective:
+                if types in defender.type:
+                    if defender.type[types] == True:
+                        effectiveness += 1
+                        loop.add_message("The attack is effective against {} as it is a {} type.".format(defender.name, types))
         else:
             defense = defender.character.defend()
 
-        finalDamage = max(0, int((damage + self.base_damage) * damage_shave - defense))
+        finalDamage = max(0, int((damage + self.base_damage) * damage_shave * (max(1,1.5 * effectiveness)) - defense))
         defender.character.take_damage(self.parent, finalDamage)
         return finalDamage
 
@@ -455,6 +461,12 @@ class Player(O.Objects):
 
         self.invincible = True
 
+        self.type = {"wood": False,
+                     "stone": False,
+                     "humanoid": True,
+                     "beast": False
+                     }
+
         if self.invincible: # only get the gun if you're invincible at the start
             self.character.skills.extend([
                 S.Gun(self), # 1
@@ -503,7 +515,7 @@ class Player(O.Objects):
     def attack(self, defender, loop):
         self.character.energy -= self.character.action_costs["attack"] #/ (1.05**(self.character.dexterity + self.character.round_bonus())))
         loop.screen_focus = (defender.x, defender.y)
-        damage = self.character.melee(defender)
+        damage = self.character.melee(defender, loop)
         loop.add_message(f"The player attacked for {damage} damage")
 
     def autoexplore(self, loop):

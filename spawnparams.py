@@ -67,7 +67,7 @@ ItemSpawns.append(ItemSpawnParams( I.BoxingGloves(752),        1,               
 ItemSpawns.append(ItemSpawnParams( I.HealingGloves(753),       3,               10,          1,              1))
 ItemSpawns.append(ItemSpawnParams( I.LichHand(754),            5,               10,          1,              1))
 
-ItemSpawns.append(ItemSpawnParams( I.Pants(1000),            5,               10,          1,              1))
+ItemSpawns.append(ItemSpawnParams( I.Pants(100),            5,               10,          1,              1))
 
 ItemSpawns.append(ItemSpawnParams( I.RingOfSwiftness(500),               1,               10,          0,              0))
 ItemSpawns.append(ItemSpawnParams( I.RingOfTeleportation(505),              5,               10,          1,              1))
@@ -337,6 +337,8 @@ MonsterSpawns.append(MonsterSpawnParams(M.Goblin(-1, -1), 1, 3, 0, 0))
 MonsterSpawns.append(MonsterSpawnParams(M.Hobgoblin(-1, -1), 1, 3, 0, 0))
 MonsterSpawns.append(MonsterSpawnParams(M.Kobold(-1, -1), 1, 3, 0, 0))
 MonsterSpawns.append(MonsterSpawnParams(M.GoblinShaman(-1, -1), 3, 5, 0, 0))
+MonsterSpawns.append(MonsterSpawnParams(M.Stumpy(), 1, 5, 1, 1))
+
 
 MonsterSpawns.append(MonsterSpawnParams(M.Gargoyle(-1, -1), 4, 6, 0, 0))
 MonsterSpawns.append(MonsterSpawnParams(M.Minotaur(-1, -1), 4, 6, 0, 0))
@@ -366,8 +368,8 @@ class MonsterSpawner():
         self.orbMonsters = [i for i in self.MonsterSpawns if i.monster.orb == True]
 
         # useful for debugging specific items, separate from generator
-        self.forceSpawn = None
-        #self.forceSpawn = ("Goblin", 3)
+        #self.forceSpawn = None
+        self.forceSpawn = ("Stumpy", 1)
         # self.forceSpawn = ("Hobgorblin", 5) 
 
     def countSpawn(self, depth):

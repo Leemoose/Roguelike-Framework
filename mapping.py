@@ -94,30 +94,6 @@ class TileDict():
         tiles[-50] = image.load("assets/stat_up_dark.png")
         tiles[-51] = image.load("assets/stat_down_dark.png")
 
-        # 100-199 monster assets
-        tiles[101] = image.load("assets/monsters/orc.png")
-        tiles[151] = image.load("assets/monsters/orc_orb.png")
-        tiles[102] = image.load('assets/monsters/golem.png')
-        tiles[152] = image.load('assets/monsters/golem_orb.png')
-        tiles[103] = image.load('assets/monsters/goblin.png')
-        tiles[153] = image.load('assets/monsters/goblin_orb.png')
-        tiles[162] = image.load('assets/monsters/gorblin_shaman.png')
-        tiles[104] = image.load('assets/monsters/hobgoblin.png')
-        tiles[154] = image.load('assets/monsters/hobgoblin_orb.png')
-        tiles[105] = image.load('assets/monsters/kobold.png')
-        tiles[155] = image.load('assets/monsters/kobold_orb.png')
-        tiles[106] = image.load('assets/monsters/gargoyle.png')
-        tiles[156] = image.load('assets/monsters/gargoyle_orb.png')
-        tiles[107] = image.load('assets/monsters/velociraptor.png')
-        tiles[157] = image.load('assets/monsters/velociraptor_orb.png')
-        tiles[108] = image.load('assets/monsters/minotaur.png')
-        tiles[158] = image.load('assets/monsters/minotaur_orb.png')
-        tiles[159] = image.load('assets/monsters/tormentorb.png')
-        tiles[160] = image.load('assets/monsters/yendorb.png')
-        tiles[161] = image.load('assets/yendorb_deactivated.png')
-
-        tiles[199] = image.load('assets/monsters/monster_corpse.png')
-
         # 200-299 player assets
         tiles[200] = image.load("assets/Player.png")
         tiles[-200] = image.load("assets/player_under_armor.png")
@@ -253,8 +229,26 @@ class TileDict():
         tiles[915] = image.load("assets/invincible_skill_icon.png")
         tiles[-915] = image.load("assets/invincible_skill_icon_dark.png")
 
-        tiles[1000] = image.load("assets/items/armor/pants.png")
-        tiles[1100] = image.load("assets/shopkeeper.png")
+        tiles[100] = image.load("assets/items/armor/pants.png")
+        tiles[110] = image.load("assets/shopkeeper.png")
+
+        # 100-199 monster assets
+        tiles[1000] = image.load('assets/monsters/goblin.png')
+        tiles[1001] = image.load('assets/monsters/gorblin_shaman.png')
+        tiles[1002] = image.load('assets/monsters/hobgoblin.png')
+        tiles[1010] = image.load('assets/monsters/kobold.png')
+        tiles[1020] = image.load('assets/monsters/gargoyle.png')
+        tiles[1030] = image.load('assets/monsters/velociraptor.png')
+        tiles[1040] = image.load('assets/monsters/minotaur.png')
+        tiles[1050] = image.load('assets/monsters/tormentorb.png')
+        tiles[1060] = image.load('assets/monsters/yendorb.png')
+        tiles[1070] = image.load("assets/monsters/orc.png")
+        tiles[1080] = image.load('assets/monsters/golem.png')
+        tiles[1090] = image.load('assets/monsters/stumpy.png')
+        tiles[161] = image.load('assets/yendorb_deactivated.png')
+
+        tiles[199] = image.load('assets/monsters/monster_corpse.png')
+
 
         self.tiles = tiles
 
@@ -497,7 +491,7 @@ class DungeonGenerator():
             starty = random.randint(0, self.height - 1)
             check_on_stairs = self.on_stairs(startx, starty, self.tile_map.stairs)
 
-        npc = N.NPC(1100, startx, starty)
+        npc = N.NPC(110, startx, starty)
         directions = [(0, 1), (0, -1), (1, 0), (-1, 0), (1, 1), (-1, -1), (1, -1), (-1, 1)]
         for change in directions:
             if not self.tile_map.get_passable(startx + change[0], starty + change[1]):

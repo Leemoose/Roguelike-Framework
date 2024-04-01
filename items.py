@@ -119,6 +119,7 @@ class Weapon(Equipment):
         self.armor_piercing = 0
         self.equipment_type = "Weapon"
         self.on_hit = None
+        self.effective = []
 
     def equip(self, entity):
         if entity.strength >= self.required_strength:
@@ -147,6 +148,7 @@ class Ax(Weapon):
         self.description = "An axe with a round edge (could be rounder). A solid weapon for a solid warrior."
         self.damage_min = 4
         self.damage_max = 7
+        self.effective.append("wood")
     
     def level_up(self):
         self.enchant()
@@ -183,6 +185,7 @@ class Hammer(Weapon):
         self.description = "A hammer that you wish was more spherical. High damage potential but hard to get a solid hit in."
         self.damage_min = 2
         self.damage_max = 4
+        self.effective.append("stone")
 
     def level_up(self):
         self.enchant()
