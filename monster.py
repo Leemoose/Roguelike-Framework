@@ -68,6 +68,21 @@ class Kobold(Monster):
 
         self.description = "A small, scaly creature with a mysterious satchel on its back."
 
+class Slime(Monster):
+    def __init__(self, x=-1, y=-1, render_tag=1100, name="Slime"):
+        super().__init__(x=x, y=y, render_tag = render_tag, name = name)
+        self.brain = ai.Slime_AI(self)
+        self.skills = []
+        self.character.experience_given = 5
+        self.character.health = 5
+        self.character.max_health = 5
+        self.character.unarmed_damage_min = 1
+        self.character.unarmed_damage_max = 1
+
+        self.description = "A small blob of experienc... I mean ooze."
+        self.character.action_costs["grab"] = 0
+
+
 class Goblin(Monster):
     def __init__(self, x = -1, y=-1, render_tag=1000, name="Goblin", activation_threshold=0.4):
         super().__init__(x=x, y=y, render_tag = render_tag, name = name)

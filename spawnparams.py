@@ -97,8 +97,9 @@ ItemSpawns.append(ItemSpawnParams( I.ExperienceScroll(450),      1,             
 ItemSpawns.append(ItemSpawnParams( I.BlinkScrorb(450),      1,               10,          1,              5))
 ItemSpawns.append(ItemSpawnParams( I.MassHealScrorb(450),      1,               10,          1,              5))
 
-ItemSpawns.append(ItemSpawnParams( I.BookofMassTorment(480),      1,               10,          1,              5))
-ItemSpawns.append(ItemSpawnParams( I.BookofMassHeal(480),      1,               10,          1,              5))
+#ItemSpawns.append(ItemSpawnParams( I.BookofMassTorment,      1,               10,          1,              5))
+#ItemSpawns.append(ItemSpawnParams( I.BookofMassHeal,      1,               10,          1,              5))
+#ItemSpawns.append(ItemSpawnParams( I.BookofSummoning,      1,               10,          1,              1))
 
 
 Item_Equipment_Distributions = [(0.9, 0.1, 0.0), # floor 1
@@ -152,7 +153,7 @@ class ItemSpawner():
         # useful for debugging specific items, separate from generator
         self.forceSpawn = []
 
-        #self.forceSpawn.append(("Book of Mass Heal", 3))
+        #self.forceSpawn.append(("Book of Summoning", 3))
         # self.forceSpawn.append(("Invincibility Scrorb", 3))
         # self.forceSpawn.append(("Permanent Dex Potiorb", 3))
         # self.forceSpawn.append(("Health Potiorb", 3))
@@ -167,16 +168,16 @@ class ItemSpawner():
         # self.forceSpawn.append(("Flaming Sword", 5))
         
     def countEquipment(self, depth):
-        return random.randint(int(1 + 0.2 * (depth)), int(2 + 0.3 * (depth)))
+        return random.randint(int(2 + 0.2 * (depth)), int(3 + 0.3 * (depth)))
     
     def countPotiorbs(self, depth):
-        return random.randint(int(1 + 0.1 * (depth)), int(2 + 0.2 * (depth)))
+        return random.randint(int(2 + 0.1 * (depth)), int(3 + 0.2 * (depth)))
     
     def countExtraCommon(self, depth):
         return random.randint(int(1.5 - 0.1 * (depth - 1)), int(2 + 0.1 * (depth - 1)))
     
     def countScrorbs(self, depth):
-        return random.randint(int(1 + 0.1 * (depth)), int(1 + 0.2 * (depth)))
+        return random.randint(int(2 + 0.1 * (depth)), int(3 + 0.2 * (depth)))
     
     def random_level(self, depth):
         if depth < 4:
@@ -194,8 +195,12 @@ class ItemSpawner():
         for itemToSpawn in self.forceSpawn:
             for _ in range(itemToSpawn[1]):
                 item_spawn = [i for i in self.ItemSpawns if i.item.name == itemToSpawn[0]][0]
-                item = item_spawn.GetFreshCopy()
+                item = item_spawn.item()
                 items.append(item)
+
+        items.append(I.BookofSummoning())
+        items.append(I.BookofSummoning())
+        items.append(I.BookofSummoning())
 
         commonEquipAtDepth = [i for i in self.commonEquip if i.AllowedAtDepth(depth)]
         commonPotiorbsAtDepth = [i for i in self.commonPotiorbs if i.AllowedAtDepth(depth)]
@@ -332,7 +337,7 @@ class MonsterSpawnParams:
     
 MonsterSpawns = []
 
-
+MonsterSpawns.append(MonsterSpawnParams(M.Slime(), 1, 2, 1, 5))
 MonsterSpawns.append(MonsterSpawnParams(M.Goblin(-1, -1), 1, 3, 0, 0))
 MonsterSpawns.append(MonsterSpawnParams(M.Hobgoblin(-1, -1), 1, 3, 0, 0))
 MonsterSpawns.append(MonsterSpawnParams(M.Kobold(-1, -1), 1, 3, 0, 0))
@@ -369,13 +374,13 @@ class MonsterSpawner():
 
         # useful for debugging specific items, separate from generator
         #self.forceSpawn = None
-        self.forceSpawn = ("Stumpy", 1)
+        self.forceSpawn = ("Slime", 1)
         # self.forceSpawn = ("Hobgorblin", 5) 
 
     def countSpawn(self, depth):
         if depth == 10:
             return 1
-        return random.randint(int(2 + 0.5 * (depth)), int(4 + 1.0 * (depth)))
+        return random.randint(int(5 + 0.5 * (depth)), int(8 + 1.0 * (depth)))
     
     def random_level(self, depth):
         if depth < 4:

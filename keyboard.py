@@ -164,16 +164,17 @@ class Keyboard():
         elif key.isdigit():
             # cast a skill
             skill_num = int(key) - 1
-            if skill_num < len(player.character.skills):
-                if not player.character.skills[skill_num].targetted:
-                    if player.character.skills[skill_num].castable(player):
-                        player.character.cast_skill(skill_num, loop.player, loop)
+            if skill_num < len(player.mage.known_spells):
+                if not player.mage.known_spells[skill_num].targetted:
+                    if player.mage.known_spells[skill_num].castable(player):
+                        print("Casted a spell.")
+                        player.cast_spell(skill_num, loop.player, loop)
                     else:
                         loop.add_message("You can't cast " + player.character.skills[skill_num].name + " right now.")
                 else:
-                    loop.start_targetting(start_on_player=(not player.character.skills[skill_num].targets_monster))
+                    loop.start_targetting(start_on_player=(not player.mage.known_spells[skill_num].targets_monster))
                     loop.screen_focus = loop.targets.target_current
-                    loop.targets.store_skill(skill_num, player.character.skills[skill_num], player.character)
+                    loop.targets.store_skill(skill_num, player.mage.known_spells[skill_num], player.character)
 
     def key_inventory(self, loop, key):
         player = loop.player
@@ -221,7 +222,7 @@ class Keyboard():
         elif loop.npc_focus.purpose == "trade":
             for i in range(len(loop.npc_focus.items)):
                 if chr(ord("a") + i) == key:
-                    loop.npc_focus.give_item(loop, i)
+                    loop.npc_focus.take_gold(i,loop)
                     break
 
 

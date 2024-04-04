@@ -7,6 +7,7 @@ class NPC(O.Objects):
         super().__init__(x, y, 0, render_tag, name)
         self.name = "Bob"
         self.items = [I.Ax(300), I.Ax(300), I.Ax(300), I.Ax(300), I.Ax(300), I.Ax(300)]
+        self.cost = 5
         self.purpose = None #Trade, gossip,
         self.quest_complete = False
 
@@ -21,6 +22,17 @@ class NPC(O.Objects):
             self.purpose = purpose
             self.give_quest(loop)
         loop.change_loop(L.LoopType.trade)
+
+    def take_gold(self, i, loop):
+        if loop.player.character.gold >= self.cost:
+            self.give_item(loop, i)
+            loop.player.character.gold -= self.cost
+            loop.add_message(
+                self.name + " says: 'Ahhh yes, precious gold. You can take that item.'")
+        else:
+            loop.add_message(
+                self.name + " says: 'You don't have enough gold my friend.'")
+
 
     def trade(self, loop):
         loop.add_message(loop.player.name + " says: 'You got anything to trade?'")

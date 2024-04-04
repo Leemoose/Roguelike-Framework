@@ -297,7 +297,7 @@ class Display:
     #    if clear_target:
     #        target_to_display = None
 
-        num_skill = len(player.character.skills)
+        num_skill = len(player.mage.known_spells)
         if num_skill == 0:
             self.draw_empty_box(skill_bar_offset_from_left,
                                 skill_bar_offset_from_top,
@@ -306,7 +306,7 @@ class Display:
             self.draw_empty_box(skill_bar_offset_from_left,
                                 skill_bar_offset_from_top,
                                 skill_bar_width, skill_bar_height)
-            for i, skill in enumerate(player.character.skills):
+            for i, skill in enumerate(player.mage.known_spells):
                 img1 = pygame.transform.scale(tileDict.tiles[skill.render_tag],
                                                     (skill_button_width, skill_button_height))
                 img2 = pygame.transform.scale(tileDict.tiles[-skill.render_tag],

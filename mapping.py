@@ -12,25 +12,26 @@ import npc as N
 from fractions import Fraction
 
 class MapData():
-    def __init__(self, width, height, numRooms, roomSize, circularity):
+    def __init__(self, width, height, numRooms, roomSize, circularity, squarelike):
         self.width = width
         self.height = height
         self.numRooms = numRooms
         self.roomSize = roomSize
         self.circularity = circularity
+        self.squarelike = squarelike
 
 # Config data!
 MapOptions = {}
-MapOptions[1]  = MapData(20, 20, 5, 4, 1.0 )
-MapOptions[2]  = MapData(25, 25, 5, 4, 0.05)
-MapOptions[3]  = MapData(25, 25, 6, 5, 0.1 )
-MapOptions[4]  = MapData(30, 30, 6, 5, 0.0 )   #Square floor!
-MapOptions[5]  = MapData(35, 35, 7, 6, 0.2 )
-MapOptions[6]  = MapData(35, 35, 8, 7, 0.3 )
-MapOptions[7]  = MapData(40, 40, 9, 7, 0.5 )
-MapOptions[8]  = MapData(40, 40, 10, 8, .6  )
-MapOptions[9]  = MapData(45, 45, 11, 9, 0.0 ) #Square floor!
-MapOptions[10] = MapData(50, 50, 12, 10, 1.0 )
+MapOptions[1]  = MapData(20, 20, 4, 5, 1.0, 1)
+MapOptions[2]  = MapData(60, 60, 15, 10, .05, 1)
+MapOptions[3]  = MapData(60, 60, 15, 10, .1, 0)
+MapOptions[4]  = MapData(30, 30, 6, 5, 0.0 , 0)   #Square floor!
+MapOptions[5]  = MapData(35, 35, 7, 6, 0.2, 0 )
+MapOptions[6]  = MapData(35, 35, 8, 7, 0.3, 0 )
+MapOptions[7]  = MapData(40, 40, 9, 7, 0.5, 0 )
+MapOptions[8]  = MapData(40, 40, 10, 8, .6 , 0 )
+MapOptions[9]  = MapData(45, 45, 11, 9, 0.0, 0 ) #Square floor!
+MapOptions[10] = MapData(50, 50, 12, 10, 1.0, 0 )
 
 
 MaxTries = 100
@@ -101,6 +102,7 @@ class TileDict():
         tiles[202] = image.load("assets/player_gloves.png")
         tiles[203] = image.load("assets/player_helmet.png")
         tiles[204] = image.load("assets/player_armor.png")
+        tiles[210] = image.load("assets/items/gold.png")
 
         # 300-399 weapon assets
         tiles[300] = image.load("assets/items/weapons/basic_ax.png")
@@ -245,6 +247,7 @@ class TileDict():
         tiles[1070] = image.load("assets/monsters/orc.png")
         tiles[1080] = image.load('assets/monsters/golem.png')
         tiles[1090] = image.load('assets/monsters/stumpy.png')
+        tiles[1100] = image.load('assets/monsters/slime.png')
         tiles[161] = image.load('assets/yendorb_deactivated.png')
 
         tiles[199] = image.load('assets/monsters/monster_corpse.png')
@@ -258,18 +261,18 @@ class TileDict():
 class DungeonGenerator():
     #Generates a width by height 2d array of tiles. Each type of tile has a unique tile
     #tag ranging from 0 to 99
-    def __init__(self, depth):
+    def __init__(self, depth, player):
         self.mapData = MapOptions[depth]
         self.depth = depth
         self.width = self.mapData.width
         self.height = self.mapData.height
         self.summoner = []
         self.monster_map = TrackingMap(self.width, self.height) #Should I include items as well?
-        self.flood_map = FloodMap(self.width, self.height)
+        self.flood_map = FloodMap(self, self.width, self.height)
         self.tile_map = TileMap(self.mapData, depth)
         self.item_map = TrackingMap(self.width, self.height)
 
-        self.player = None
+        self.player = player
         self.summoner = []
 
         self.monster_dict = L.ID() #Unique to this floor
@@ -378,6 +381,10 @@ class DungeonGenerator():
             return (x != self.player.x or y != self.player.y)
 
     def get_passable(self, location):
+        print(location)
+        print(self.player.name)
+        if type(location) is not tuple:
+            print("You are trying to parse a non tuple")
         if location == None:
             return None
         elif self.monster_map.get_passable(location[0], location[1]) and self.not_on_player(location[0], location[1]) and self.tile_map.get_passable(location[0], location[1]):
@@ -389,7 +396,7 @@ class DungeonGenerator():
         return False
 
 
-    def nearest_empty_tile(self, location, move = False):
+    def nearest_empty_tile(self, location, move = False, search = False):
       #  import pdb; pdb.set_trace()
         if location == None:
             return None
@@ -398,6 +405,8 @@ class DungeonGenerator():
         for direction in [(0, -1), (0, 1), (-1, 0), (1, 0), (-1, -1), (-1, 1), (1, -1), (1, 1)]:
             if self.monster_map.get_passable(location[0] + direction[0], location[1] + direction[1]) and self.not_on_player(location[0] + direction[0], location[1] + direction[1]) and self.tile_map.get_passable(location[0] + direction[0], location[1] + direction[1]):
                 return (location[0] + direction[0], location[1] + direction[1])
+        if search:
+            return self.flood_map.update_flood_map(location)
         return None
 
 
@@ -587,21 +596,24 @@ class TrackingMap(Maps):
         return allrows
 
 class FloodMap(Maps):
-    def __init__(self, width, height):
+    def __init__(self, parent, width, height):
         super().__init__(width, height)
         self.flood_queue = []
+        self.parent = parent
 
-    def update_flood_map(self, player):
+    def update_flood_map(self, location, search = False):
         self.track_map = [x[:] for x in [[-1] * self.width] * self.height]
-        playerx, playery = player.get_location()
-        self.flood_queue.append((playerx, playery, 0, 0, 0))
+        x, y = location
+        self.flood_queue.append((x, y, 0, 0, 0))
         while len(self.flood_queue) > 0:
-            self.iterate_flood()
+            return self.iterate_flood(search)
 
-    def iterate_flood(self):
+    def iterate_flood(self, search):
         x, y, xdelta, ydelta, count = self.flood_queue.pop(0)
         if (self.in_map(x + xdelta, y + ydelta) and self.track_map[x+xdelta][y+ydelta] == -1):
             self.track_map[x+xdelta][y+ydelta] = count
+            if search == True and self.parent.track_map[x+xdelta][y+ydelta].visible and self.parent.get_passable((x+xdelta,y+ydelta)):
+                return (x+xdelta,y+ydelta)
             options = [(0, 1), (1, 0), (-1, 0), (0, -1)]
             r = random.randint(0, 3)
             for i in range(3):
@@ -628,20 +640,23 @@ class TileMap(TrackingMap):
         self.stairs = []
         self.rooms = []
         # Add an empty map
-        self.track_map_render = [x[:] for x in [[0] * self.width] * self.height]
 
-        #Add rooms
-        for roomNum in range(mapData.numRooms):
-            size = random.randint(4, mapData.roomSize)
-            self.place_room(size, size, mapData.circularity)
-            
-        #Connect Rooms
-        for i in range(len(self.rooms) - 1):
-            self.connect_rooms(self.rooms[i], self.rooms[i + 1])
+        if mapData.squarelike == 1:
+            self.track_map_render = [x[:] for x in [[0] * self.width] * self.height]
+            #Add rooms
+            for roomNum in range(mapData.numRooms):
+                size = random.randint(4, mapData.roomSize)
+                self.place_room(size, size, mapData.circularity)
+
+            #Connect Rooms
+            for i in range(len(self.rooms) - 1):
+                self.connect_rooms(self.rooms[i], self.rooms[i + 1])
             
         #Apply smoothing
-        
-        #self.cellular_caves()
+        else:
+            self.track_map_render = [x[:] for x in [[0 if random.random() > .6 else 1] * self.width] * self.height]
+            self.cellular_caves()
+
         self.render_to_map(depth)
         self.place_stairs(depth)
 

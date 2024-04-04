@@ -264,6 +264,7 @@ class StatBox(pygame_gui.elements.UITextBox):
                             "Intelligence: " + self.stat_text(self.player, self.player.character.intelligence) + "<br>" + \
                             "Armor: " + self.stat_text(self.player, self.player.character.armor, False) + "<br>" + \
                             self.round_text(self.player) + \
+                            "Gold: " + self.stat_text(self.player, self.player.character.gold, False) + "<br>" + \
                             "Status: " + self.get_status_text(self.player) + "<br>" + \
                             self.get_level_text(self.player) + "<br>")
 
@@ -285,7 +286,7 @@ class SkillButton(pygame_gui.elements.UIButton):
         self.draw_on_button(self, self.img2, chr(ord("1") + index), self.relative_rect.size, True)
 
     def needs_change(self):
-        skill = self.player.character.skills[self.index]
+        skill = self.player.mage.known_spells[self.index]
         closest_monster = self.player.character.get_closest_monster(self.player, self.loop.monster_dict, self.loop.generator.tile_map)
         if closest_monster == self.player and skill.range != -1:
             castable = False  # no monster to caste ranged skill on
@@ -343,7 +344,7 @@ class SkillButton(pygame_gui.elements.UIButton):
 
     def update(self, time_delta: float):
         if (self.needs_change()):
-            skill = self.player.character.skills[self.index]
+            skill = self.player.mage.known_spells[self.index]
             closest_monster = self.player.character.get_closest_monster(self.player, self.loop.monster_dict, self.loop.generator.tile_map)
             if closest_monster == self.player and skill.range != -1:
                 castable = False  # no monster to caste ranged skill on

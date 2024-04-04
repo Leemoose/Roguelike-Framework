@@ -5,6 +5,7 @@ import objects as O
 import effect as E
 import skills as S
 import loops as L
+import spell
 
 class statUpgrades():
     def __init__(self, base_str=0, max_str=0, base_dex=0, max_dex = 0, base_int = 0, max_int = 0, base_end = 0, max_end = 0, base_arm=0, max_arm=0):
@@ -43,6 +44,10 @@ class Corpse(O.Item):
         super().__init__(x,y, id_tag, render_tag, name)
         self.monster_type = None
 
+class Gold(O.Item):
+    def __init__(self, amount, x=-1, y=-1, id_tag = -1, render_tag = 210, name = "Gold"):
+        super().__init__(x,y, id_tag, render_tag, name)
+        self.amount = amount
 """
 All detailed items are initialized here.
 """
@@ -1893,6 +1898,12 @@ class BookofMassHeal(Book):
         self.rarity = "Rare"
         self.skill = S.MassHeal
 
+class BookofSummoning(Book):
+    def __init__(self, render_tag = 480):
+        self.school = spell.SummonSchool()
+        self.skill = self.school.random_spell()
+        super().__init__(render_tag, skill = self.skill, name = "Book of Summoning")
+        self.name = "Book of Summoning"
 
 
 class OrbOfYendorb(O.Item):

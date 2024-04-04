@@ -4,7 +4,7 @@ import pygame, pygame_gui
 import display as D
 import items
 import mapping as M
-import character as C
+import player
 import objects as O
 import targets as T
 import shadowcasting
@@ -371,7 +371,10 @@ class Loops():
                 if isinstance(monster_corpse, items.Corpse):
                     self.generator.item_dict.tag_subject(monster_corpse)
                     self.generator.item_map.place_thing(monster_corpse)
-                    self.monster_map.clear_location(monster.x, monster.y)
+                gold = items.Gold(1, x = monster.x, y = monster.y)
+                self.generator.item_dict.tag_subject(gold)
+                self.generator.item_map.place_thing(gold)
+
         for key in dead_monsters:
             self.monster_dict.subjects.pop(key)
 
@@ -429,13 +432,13 @@ class Loops():
 
     def init_game(self, display):
         self.main_buttons = display.create_main_screen(self)
-        self.player = C.Player(0, 0)
+        self.player = player.Player(0, 0)
         self.memory.player = self.player
 
         self.floor_level += 1
         while self.floor_level < 9:
             if self.floor_level > self.memory.explored_levels:
-                generator = M.DungeonGenerator(self.floor_level)
+                generator = M.DungeonGenerator(self.floor_level, self.player)
                 self.monster_map = generator.monster_map
                 self.item_dict = generator.item_dict
                 self.monster_dict = generator.monster_dict
@@ -531,7 +534,7 @@ class Loops():
         for i in range(self.timer // 100):
             # do status effect stuff
             self.player.character.tick_all_status_effects(self)
-            self.player.character.tick_cooldowns()
+            self.player.mage.tick_cooldowns()
             self.player.character.tick_regen()
             for key in self.monster_dict.subjects:
                 monster = self.monster_dict.get_subject(key)

@@ -42,7 +42,7 @@ class Stairs(Tile):
         self.downward = downward
 
 class Item(Objects):
-    def __init__(self, x, y, id_tag, render_tag, name):
+    def __init__(self, x=-1, y=-1, id_tag=-1, render_tag=-1, name=-1):
         super().__init__(x, y, id_tag, render_tag, name)
         self.equipable = False
         self.dropable = True

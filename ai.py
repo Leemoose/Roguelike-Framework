@@ -1,5 +1,6 @@
 import random
 import pathfinding
+import objects as O
 class Monster_AI():
     def __init__(self, parent):
         self.frontier = None
@@ -16,7 +17,8 @@ class Monster_AI():
                             "Hobgoblin": -10,
                             "Gargoyle": 10,
                             "Orc": -100,
-                            "Golem": 50
+                            "Golem": 50,
+                            "Slime": 50
                             }
 
         # first number is average, second is spread
@@ -27,7 +29,7 @@ class Monster_AI():
                            "consume": (40, 5),
                            "move": (40, 20),
                            "ungroup": (60, 20),
-                           "skill": (100, 10),
+                           "skill": (-1, 0),
                            "flee": (100, 20),
                            "stairs": (100, 10)
                            }
@@ -126,11 +128,12 @@ class Monster_AI():
                     utility = -self.personality["Player"]
                     self.target = player
             elif loop.generator.tile_map.get_passable(x, y) and not monster_map.get_passable(x, y):
-                print(monster_map.locate(x, y), "want to attack this monster")
+                #print(monster_map.locate(x, y), "want to attack this monster")
                 other_monster = loop.generator.monster_dict.get_subject(monster_map.locate(x, y))
                 if other_monster.name in self.personality and utility < -self.personality[other_monster.name]:
                     utility = -self.personality[other_monster.name]
                     self.target = other_monster
+                    print("{} is going to attack {}".format(self.parent.name, self.target.name))
         if self.target != None:
             return self.randomize_action("combat")
         else:
@@ -173,7 +176,7 @@ class Monster_AI():
                             utility = 20
                 # elif item.equipment_type == "Ring" and (monster.character.ring_1 == None or monster.character.ring_2 == None):
                 #    return -1
-            if utility != -1:
+            if self.tendencies["equip"][0] != -1:
                 return random.randint(utility - 10, utility + 10)
         return -1
 
@@ -268,9 +271,11 @@ class Monster_AI():
         return -1
 
     def rank_skill(self, loop):
+        if self.tendencies["skill"] == -1:
+            return -1
         for skill in self.parent.character.skills:
             if skill.castable(loop.player):
-                return 95
+                return self.randomize_action("skill")
         return -1
 
     def do_item_pickup(self, loop):
@@ -369,8 +374,10 @@ class Monster_AI():
         update_target = False
         if loop.screen_focus == (monster.x, monster.y):
             update_target = True
-
-        start = (monster.x, monster.y)
+        if self.target is not None:
+            start = (self.target.x, self.target.y)
+        else:
+            start = (monster.x, monster.y)
         end = (player.x, player.y)
         if player.get_distance(monster.x, monster.y) <= 2.5:
             moves = pathfinding.astar(tile_map.track_map, start, end, monster_map, loop.player, monster_blocks=True)
@@ -378,7 +385,10 @@ class Monster_AI():
             moves = pathfinding.astar(tile_map.track_map, start, end, monster_map, loop.player)
         if len(moves) > 1:
             xmove, ymove = moves.pop(1)
-            monster.move(xmove - monster.x, ymove - monster.y, loop)
+            #print(self.parent.get_location(), "-->", end, "with", xmove - monster.x, ymove - monster.y)
+            if loop.generator.get_passable((xmove, ymove)):
+                monster.move(xmove - monster.x, ymove - monster.y, loop)
+
         if update_target:
             loop.add_target((monster.x, monster.y))
             loop.screen_focus = (monster.x, monster.y)
@@ -482,5 +492,58 @@ class Stumpy_AI(Monster_AI):
                            "flee": (-1, 0),
                            "stairs": (-1, 0)
                            }
+
+class Slime_AI(Monster_AI):
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.tendencies = {"combat": (80, 10),
+                           "pickup": (100, 0),
+                           "find_item": (-1, 0),
+                           "equip": (-1, 0),
+                           "consume": (-1, 0),
+                           "move": (40, 20),
+                           "ungroup": (-1, 0),
+                           "skill": (-1, 0),
+                           "flee": (-1, 0),
+                           "stairs": (-1, 0)
+                           }
+
+    def do_item_pickup(self, loop):
+        # print("Picking up item")
+        item_map = loop.generator.item_map
+        item_dict = loop.generator.item_dict
+        generated_maps = loop.generator
+        monster = self.parent
+        item_key = item_map.locate(monster.x, monster.y)
+        item = item_dict.get_subject(item_key)
+        monster.character.grab(item_key, item_dict, generated_maps, loop)
+        item.destroy = True
+        loop.add_message("The slime gobbled up the {}.".format(item.name))
+
+class Friendly_AI(Monster_AI):
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.tendencies = {"combat": (80, 10),
+                           "pickup": (-1, 0),
+                           "find_item": (-1, 0),
+                           "equip": (-1, 0),
+                           "consume": (-1, 0),
+                           "move": (40, 20),
+                           "ungroup": (-1, 0),
+                           "skill": (-1, 0),
+                           "flee": (-1, 0),
+                           "stairs": (100, 10)
+                           }
+
+        self.personality = {"Goblin": -100,
+                            "Kobold": -100,
+                            "Player": 100,
+                            "Hobgoblin": -100,
+                            "Gargoyle": -100,
+                            "Orc": -100,
+                            "Golem": -100,
+                            "Slime": -50,
+                            "Stumpy": -100
+                            }
 
 
