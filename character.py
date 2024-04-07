@@ -124,12 +124,11 @@ class Character():
         return (self.intelligence // 3)
 
 
-    def grab(self, key, item_ID, generated_maps, loop):
-        item = item_ID.get_subject(key)
+    def grab(self, item, loop):
+        print("This is the player trying to grab an item. Here is dictionary:")
+        print(loop.generator.item_map.dict)
         if self.get_item(loop, item):
-            item_ID.remove_subject(key)
-            itemx, itemy = item.get_location()
-            generated_maps.item_map.clear_location(itemx, itemy)
+            loop.generator.item_map.remove_thing(item)
             loop.add_message("The " + str(self.parent.name) + " picked up a " + str(item.name))
             self.energy -= self.action_costs["grab"]
 
@@ -171,7 +170,6 @@ class Character():
             if i < len(self.inventory):
                 # import pdb; pdb.set_trace()
                 self.inventory.pop(i)
-                item_dict.add_subject(item)
                 item.x = self.parent.x
                 item.y = self.parent.y
                 item_map.place_thing(item)
@@ -376,11 +374,11 @@ class Character():
             loop.add_message("Your ring is draining your health, it is not safe to rest now.")
             loop.change_loop(L.LoopType.action)
             return
-        monster_dict = loop.monster_dict
+
         tile_map = loop.generator.tile_map
         no_monster_active = True
-        for monster_key in monster_dict.subjects:
-            if monster_dict.get_subject(monster_key).brain.is_awake:
+        for monster in loop.generator.monster_map.all_entities():
+            if monster.brain.is_awake:
                 no_monster_active = False
                 break
         if no_monster_active:
@@ -396,12 +394,13 @@ class Character():
             loop.change_loop(returnLoopType)
             return
 
-        for monster_key in monster_dict.subjects:
-            monster_loc = monster_dict.get_subject(monster_key).get_location()
+        for monster in loop.generator.monster_map.all_entities():
+            monster_loc = monster.get_location()
             if tile_map.track_map[monster_loc[0]][monster_loc[1]].visible:
                 loop.add_message("You cannot rest while enemies are nearby.")
                 loop.change_loop(L.LoopType.action)
                 return
+
         self.wait()
         #print(self.energy)
         #print(self.health)
@@ -430,11 +429,14 @@ class Character():
                     enchantable.append(item)
         return enchantable
 
-    def get_closest_monster(self, player, monsterID, tile_map):
+    def get_closest_monster(self, loop):
+        player = loop.player
+        monsterID = loop.generator.monster_map.dict
+        tile_map = loop.generator.tile_map
         closest_dist = 100000
         closest_monster = player
         for monster_key in monsterID.subjects:
-            monster = monsterID.subjects[monster_key]
+            monster = monsterID.get_subject(monster_key)
             dist = player.get_distance(monster.x, monster.y)
                         
             if dist < closest_dist and tile_map.track_map[monster.x][monster.y].visible:

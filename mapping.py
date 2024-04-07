@@ -83,17 +83,20 @@ class TileDict():
         tiles[12] = pygame.transform.scale(image.load("assets/tiles/floor_rounded.png"), (32,32))
         tiles[-12] = pygame.transform.scale(image.load("assets/tiles/floor_rounded_shaded.png"), (32,32))
 
-        # basic assets
-        tiles[90] = image.load("assets/tiles/stairs_up.png")
-        tiles[-90] = image.load("assets/tiles/stairs_up_shaded.png")
-        tiles[91] = image.load("assets/tiles/stairs_down.png")
-        tiles[-91] = image.load("assets/tiles/stairs_down_shaded.png")
+        tiles[20] = pygame.transform.scale(image.load("assets/fire.png"), (32,32))
 
         # ui assets
         tiles[50] = image.load("assets/stat_up.png")
         tiles[51] = image.load("assets/stat_down.png")
         tiles[-50] = image.load("assets/stat_up_dark.png")
         tiles[-51] = image.load("assets/stat_down_dark.png")
+
+        # basic assets
+        tiles[90] = image.load("assets/tiles/stairs_up.png")
+        tiles[-90] = image.load("assets/tiles/stairs_up_shaded.png")
+        tiles[91] = image.load("assets/tiles/stairs_down.png")
+        tiles[-91] = image.load("assets/tiles/stairs_down_shaded.png")
+
 
         # 200-299 player assets
         tiles[200] = image.load("assets/Player.png")
@@ -258,6 +261,56 @@ class TileDict():
     def tile_string(self, key):
         return self.tiles[key]
 
+class ID():
+    """
+    All unique entities (monsters and items) are tagged with an ID and put into dictionary.
+    IDs are generally used in arrays and other places and then the ID can be used to get actual object
+    """
+
+    def __init__(self):
+        self.subjects = {}
+        self.ID_count = 0
+
+    def __str__(self):
+        allrows = ""
+        for entity in self.all_entities():
+            allrows += ' '.join("Entity: {}, ID: {} \n".format(entity, entity.id_tag))
+        return allrows
+
+    def tag_subject(self, subject):
+        self.ID_count += 1
+        subject.gain_ID(self.ID_count)
+        self.add_subject(subject)
+
+    def get_subject(self, key):
+        if key in self.subjects:
+            return self.subjects[key]
+        elif key == -1:
+            raise Exception("You should not be getting a negative subject (id = {})".format(key))
+        else:
+            raise Exception("You should not be passing a id not in the subjects (id = {}).".format(key))
+
+    def remove_subject(self, key):
+        print("Item Dictionary:")
+        print(self.subjects)
+        print("You are trying to remove key {} from item dictionary".format(key))
+        if key in self.subjects:
+            return self.subjects.pop(key)
+        elif key == -1:
+            raise Exception("You should not be removing a negative subject")
+        else:
+            raise Exception("You should not be removing an id not in the subjects.")
+
+    def add_subject(self, subject):
+        self.subjects[subject.id_tag] = subject
+
+    def all_entities(self):
+        return list(self.subjects.values())
+
+    def num_entities(self):
+        return len(self.subjects)
+
+
 class DungeonGenerator():
     #Generates a width by height 2d array of tiles. Each type of tile has a unique tile
     #tag ranging from 0 to 99
@@ -275,9 +328,7 @@ class DungeonGenerator():
         self.player = player
         self.summoner = []
 
-        self.monster_dict = L.ID() #Unique to this floor
-        self.item_dict = L.ID() #Unique to this floor
-        self.npc_dict = L.ID()
+        self.npc_dict = ID()
 
         self.place_items(depth)
         self.place_monsters(depth)
@@ -483,7 +534,6 @@ class DungeonGenerator():
     def place_monster_at_location(self, creature, x, y):
         creature.x = x
         creature.y = y
-        self.monster_dict.tag_subject(creature)
         self.monster_map.place_thing(creature)
 
     def place_npcs(self, depth):
@@ -550,8 +600,8 @@ class DungeonGenerator():
         item.x = startx
         item.y = starty
 
-        self.item_dict.tag_subject(item)
         self.item_map.place_thing(item)
+        print(self.item_map.dict)
 
     def get_map(self):
         return self.tile_map
@@ -581,12 +631,33 @@ This map will either track items or monsters.
 class TrackingMap(Maps):
     def __init__(self, width, height):
         super().__init__(width, height)
+        self.dict = ID()  # Unique to this floor
 
     def place_thing(self, thing):
+        self.dict.tag_subject(thing)
         self.track_map[thing.x][thing.y] = thing.id_tag
 
     def clear_location(self, x, y):
         self.track_map[x][y] = -1
+
+    def num_entities(self):
+        return self.dict.num_entities()
+
+    def remove_thing(self, thing):
+        print(thing, thing.id_tag)
+        print(self.dict)
+        print("Dictionary is above")
+        self.clear_location(thing.x, thing.y)
+        return self.dict.remove_subject(thing.id_tag)
+
+    def locate(self, x, y):
+        if self.get_passable(x, y):
+            return -1
+        else:
+            return self.dict.get_subject(self.track_map[x][y])
+
+    def all_entities(self):
+        return self.dict.all_entities()
 
     def __str__(self):
         allrows = ""

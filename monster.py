@@ -98,6 +98,10 @@ class Goblin(Monster):
         self.character.action_costs["move"] = 75
         self.character.action_costs["grab"] = 20
 
+        dagger = I.Dagger()
+        self.character.inventory.append(dagger)
+        self.character.equip(dagger)
+
         self.description = "A cowardly creature that some adventurers nicknamed \"Loot Pinata\"."
         self.character.health = 10
         self.character.max_health = 10
@@ -148,10 +152,10 @@ class Hobgoblin(Monster):
         self.description = "The older cousin of its smaller green relatives."
         self.character.health = 25
         self.character.max_health = 25
-        self.strength = 5
-        self.dexterity = 1
-        self.endurance = 3
-        self.intelligence = 0
+        self.strength = 15
+        self.dexterity = 5
+        self.endurance = 10
+        self.intelligence = 4
         self.character.armor = 0
 
 class Gargoyle(Monster):
@@ -165,6 +169,10 @@ class Gargoyle(Monster):
         # 30% chance to petrify for 3 turns
         self.character.skills.append(S.Petrify(self, cooldown=10, cost=0, duration=3, activation_chance=0.3, range=3))
         self.character.experience_given = 20
+
+        sword = I.Sword()
+        self.character.inventory.append(sword)
+        self.character.equip(sword)
 
         self.description = "A stone creature that you feel could petrify you if it was rounder."
         self.character.health = 20

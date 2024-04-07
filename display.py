@@ -91,7 +91,6 @@ class Display:
         )
 
         tileDict = loop.tileDict
-        monsterID = loop.monster_dict
         player = loop.player
         messages = loop.messages
 
@@ -337,8 +336,8 @@ class Display:
 
         floormap = loop.generator.tile_map
         tileDict = loop.tileDict
-        monsterID = loop.monster_dict
-        item_ID = loop.item_dict
+        monsterID = loop.generator.monster_map.dict
+        item_ID = loop.generator.item_map.dict
         npc_ID = loop.generator.npc_dict
         monster_map = loop.monster_map
         player = loop.player
@@ -519,7 +518,13 @@ class Display:
             text = font.render(message, True, (255, 255, 255))
             self.win.blit(text, (self.screen_width // 100 * 12, self.screen_height // 100 * (85 + i * 3)))
 
-    def draw_examine_window(self, target, tileDict, floormap, monster_map, monster_dict, item_dict, player):
+    def draw_examine_window(self, target, loop):
+        tileDict = loop.tileDict
+        floormap = loop.generator.tile_map
+        monster_map = loop.generator.monster_map
+        monster_dict = monster_map.dict
+        item_dict = loop.generator.item_map.dict
+        player = loop.player
         examine_offset_from_left = self.screen_width // 30
         examine_offset_from_top = self.screen_height // 20
         try:
@@ -537,7 +542,7 @@ class Display:
 
         # find monster at target
         if not monster_map.get_passable(x,y):
-            monster = monster_dict.get_subject(monster_map.locate(x,y))
+            monster = monster_map.locate(x,y)
             if monster == None:
                 return
 
@@ -1379,6 +1384,8 @@ class Display:
         elif floormap.track_map[x][y].visible == True:
             tag = tileDict.tile_string(floormap.get_tag(x, y))
             self.win.blit(tag, (self.textSize * (x - self.x_start), self.textSize * (y - self.y_start)))
+            if floormap.track_map[x][y].on_fire:
+                self.win.blit(tileDict.tile_string(20), (self.textSize * (x - self.x_start), self.textSize * (y - self.y_start)))
         else:
             tag = tileDict.tile_string(floormap.track_map[x][y].shaded_render_tag)
             self.win.blit(tag, (self.textSize * (x - self.x_start), self.textSize * (y - self.y_start)))

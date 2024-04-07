@@ -41,7 +41,6 @@ class Burn(StatusEffect):
             self.active = False
         else:
             target.take_damage(self.inflictor, self.damage)
-            self.duration -= 1
 
     def remove(self, target):
         pass

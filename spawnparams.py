@@ -25,9 +25,9 @@ ItemSpawns = []                                                         # minFlo
 
 ItemSpawns.append(ItemSpawnParams( I.Ax(300),                 1,               5,          1,              1))
 ItemSpawns.append(ItemSpawnParams( I.Hammer(301),             1,               5,          0,              0))
-ItemSpawns.append(ItemSpawnParams( I.Dagger(321),             1,               5,          0,              0))
+ItemSpawns.append(ItemSpawnParams( I.Dagger(),             1,               5,          0,              0))
 ItemSpawns.append(ItemSpawnParams( I.MagicWand(332),          2,               10,          1,              1))
-ItemSpawns.append(ItemSpawnParams( I.Sword(340),           1,               5,          1,              5))
+ItemSpawns.append(ItemSpawnParams( I.Sword(),           1,               5,          1,              5))
 
 ItemSpawns.append(ItemSpawnParams( I.ScreamingDagger(322),           1,               10,          1,              1))
 ItemSpawns.append(ItemSpawnParams( I.SleepingSword(341),           3,               10,          1,              1))
@@ -198,9 +198,8 @@ class ItemSpawner():
                 item = item_spawn.item()
                 items.append(item)
 
-        items.append(I.BookofSummoning())
-        items.append(I.BookofSummoning())
-        items.append(I.BookofSummoning())
+        items.append(I.BookofFire())
+
 
         commonEquipAtDepth = [i for i in self.commonEquip if i.AllowedAtDepth(depth)]
         commonPotiorbsAtDepth = [i for i in self.commonPotiorbs if i.AllowedAtDepth(depth)]

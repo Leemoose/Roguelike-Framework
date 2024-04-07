@@ -287,7 +287,7 @@ class SkillButton(pygame_gui.elements.UIButton):
 
     def needs_change(self):
         skill = self.player.mage.known_spells[self.index]
-        closest_monster = self.player.character.get_closest_monster(self.player, self.loop.monster_dict, self.loop.generator.tile_map)
+        closest_monster = self.player.character.get_closest_monster(self.loop)
         if closest_monster == self.player and skill.range != -1:
             castable = False  # no monster to caste ranged skill on
         else:
@@ -345,7 +345,7 @@ class SkillButton(pygame_gui.elements.UIButton):
     def update(self, time_delta: float):
         if (self.needs_change()):
             skill = self.player.mage.known_spells[self.index]
-            closest_monster = self.player.character.get_closest_monster(self.player, self.loop.monster_dict, self.loop.generator.tile_map)
+            closest_monster = self.player.character.get_closest_monster(self.loop)
             if closest_monster == self.player and skill.range != -1:
                 castable = False  # no monster to caste ranged skill on
             else:

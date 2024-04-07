@@ -202,7 +202,7 @@ class Hammer(Weapon):
         self.damage_max += 3
 
 class Dagger(Weapon):
-    def __init__(self, render_tag):
+    def __init__(self, render_tag = 321):
         super().__init__(-1, -1, 0, render_tag, "Dagger")
         self.melee = True
         self.name = "Dagger"
@@ -225,7 +225,7 @@ class Dagger(Weapon):
 Swords specialness lies with armor piercing
 """
 class Sword(Weapon):
-    def __init__(self, render_tag):
+    def __init__(self, render_tag = 340):
         super().__init__(-1, -1, 0, render_tag, "Sworbd")
         self.melee = True
         self.name = "Sworbd"
@@ -1905,6 +1905,19 @@ class BookofSummoning(Book):
         super().__init__(render_tag, skill = self.skill, name = "Book of Summoning")
         self.name = "Book of Summoning"
 
+class BookofSpace(Book):
+    def __init__(self, render_tag = 480):
+        self.school = spell.SpaceSchool()
+        self.skill = self.school.random_spell()
+        super().__init__(render_tag, skill = self.skill, name = "Book of Space")
+        self.name = "Book of Space"
+
+class BookofFire(Book):
+    def __init__(self, render_tag = 480):
+        self.school = spell.FireSchool()
+        self.skill = self.school.random_spell()
+        super().__init__(render_tag, skill = self.skill, name = "Book of Fire")
+        self.name = "Book of Fire"
 
 class OrbOfYendorb(O.Item):
     def __init__(self):

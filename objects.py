@@ -27,6 +27,7 @@ class Tile(Objects):
         self.passable = passable
         self.seen = False
         self.visible = False
+        self.on_fire = False
 
     def __str__(self):
         if self.passable:

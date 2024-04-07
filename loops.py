@@ -44,31 +44,6 @@ class LoopType(Enum):
     death = 18
     story = 19
 
-class ID():
-    """
-    All unique entities (monsters and items) are tagged with an ID and put into dictionary.
-    IDs are generally used in arrays and other places and then the ID can be used to get actual object
-    """
-
-    def __init__(self):
-        self.subjects = {}
-        self.ID_count = 0
-
-    def tag_subject(self, subject):
-        self.ID_count += 1
-        subject.gain_ID(self.ID_count)
-        self.add_subject(subject)
-
-    def get_subject(self, key):
-        return self.subjects[key]
-
-    def remove_subject(self, key):
-        return self.subjects.pop(key)
-
-    def add_subject(self, subject):
-        self.subjects[subject.id_tag] = subject
-
-
 class Memory():
     """
     Used to save the game
@@ -120,15 +95,14 @@ class Loops():
         self.floor_level = 0
         self.memory = Memory()
         self.tile_map = None
-        self.monster_map = None
-        self.item_dict = None
-        self.monster_dict = None
+        self.tileDict = tileDict
+
         self.generator = None  # Dungeon Generator
         self.messages = []
         self.dirty_messages = True  # ;)
         self.targets = T.Target()
         self.target_to_display = None
-        self.tileDict = tileDict
+
         self.screen_focus = None
         self.current_stat = 0  # index of stat for levelling up
         self.timer = 0
@@ -243,8 +217,7 @@ class Loops():
         return True
 
     def monster_loop(self, energy, stairs = None):
-        for monster_key in self.monster_dict.subjects:
-            monster = self.monster_dict.subjects[monster_key]
+        for monster in self.monster_map.all_entities():
             if monster.character.alive:
                 # do status effect stuff
                 if self.generator.tile_map.track_map[monster.x][monster.y].seen:
@@ -280,14 +253,11 @@ class Loops():
                             (not self.generator.monster_map.get_passable(x, y)) or (
                     not self.generator.item_map.get_passable(x, y))):
                         # print(self.generator.monster_map.get_passable(x,y), self.generator.item_map.get_passable(x,y))
-                        display.draw_examine_window((x, y), self.tileDict, self.generator.tile_map, self.monster_map,
-                                                    self.monster_dict, self.item_dict, self.player)
+                        display.draw_examine_window((x, y), self)
                         draw_screen_focus = False
                 if draw_screen_focus:
                     if self.screen_focus != None:
-                        clear_target = display.draw_examine_window(self.screen_focus, self.tileDict,
-                                                                   self.generator.tile_map, self.monster_map,
-                                                                   self.monster_dict, self.item_dict, self.player)
+                        clear_target = display.draw_examine_window(self.screen_focus, self)
                         if clear_target:
                             self.screen_focus = None
         elif self.currentLoop == LoopType.inventory or self.currentLoop == LoopType.enchant:
@@ -315,14 +285,11 @@ class Loops():
                 if self.generator.tile_map.track_map[x][y].visible and self.generator.tile_map.get_passable(x, y) and (
                         (not self.generator.monster_map.get_passable(x, y)) or (
                 not self.generator.item_map.get_passable(x, y))):
-                    display.draw_examine_window((x, y), self.tileDict, self.generator.tile_map, self.monster_map,
-                                                self.monster_dict, self.item_dict, self.player)
+                    display.draw_examine_window((x, y), self)
                     self.draw_screen_focus = False
             if self.draw_screen_focus:
                 if self.screen_focus != None:
-                    clear_target = display.draw_examine_window(self.screen_focus, self.tileDict,
-                                                               self.generator.tile_map, self.monster_map,
-                                                               self.monster_dict, self.item_dict, self.player)
+                    clear_target = display.draw_examine_window(self.screen_focus, self)
                     if clear_target:
                         self.screen_focus = None
             display.update_examine(self.targets.target_current, self)
@@ -343,40 +310,33 @@ class Loops():
 
     def clean_up(self):
         destroyed_items = []
-        for key in (self.item_dict.subjects):
-            item = self.item_dict.get_subject(key)
+        item_dict = self.generator.item_map.dict
+        for item in self.generator.item_map.all_entities():
             if item.destroy:
-                destroyed_items.append(key)
-        for key in destroyed_items:
-            item = self.item_dict.remove_subject(key)
-            self.generator.item_map.clear_location(item.x, item.y)
+                destroyed_items.append(item)
+        for item in destroyed_items:
+            self.generator.item_map.remove_thing(item)
 
         dead_monsters = []
-        for key in self.monster_dict.subjects:
-            monster = self.monster_dict.get_subject(key)
+        for monster in self.generator.monster_map.all_entities():
             if not monster.character.is_alive():
                 if monster.get_location() == self.screen_focus:  # on kill stop observing a space
                     self.screen_focus = None
-                dead_monsters.append(key)
                 items_copy = [item for item in monster.character.inventory]
                 for item in items_copy:
                     if item.yendorb:
-                        monster.character.drop(item, self.item_dict, self.generator.item_map)
+                        monster.character.drop(item, item_dict, self.generator.item_map)
                         break  # only drop yendorb if monster had it
                     if item.equipped:
                         monster.character.unequip(item)
-                    monster.character.drop(item, self.item_dict, self.generator.item_map)
+                    monster.character.drop(item, item_dict, self.generator.item_map)
                 monster_corpse = monster.die()
-                self.monster_map.clear_location(monster.x, monster.y)
+                self.generator.monster_map.remove_thing(monster)
                 if isinstance(monster_corpse, items.Corpse):
-                    self.generator.item_dict.tag_subject(monster_corpse)
                     self.generator.item_map.place_thing(monster_corpse)
                 gold = items.Gold(1, x = monster.x, y = monster.y)
-                self.generator.item_dict.tag_subject(gold)
                 self.generator.item_map.place_thing(gold)
 
-        for key in dead_monsters:
-            self.monster_dict.subjects.pop(key)
 
     def down_floor(self):
         self.taking_stairs = True
@@ -440,8 +400,7 @@ class Loops():
             if self.floor_level > self.memory.explored_levels:
                 generator = M.DungeonGenerator(self.floor_level, self.player)
                 self.monster_map = generator.monster_map
-                self.item_dict = generator.item_dict
-                self.monster_dict = generator.monster_dict
+
                 if self.floor_level != 1:
                     for stairs in (generator.tile_map.get_stairs()):
                         if not stairs.downward:
@@ -457,8 +416,7 @@ class Loops():
         self.floor_level = 1
         self.generator = self.memory.generators[self.floor_level]
         self.monster_map = self.generator.monster_map
-        self.item_dict = self.generator.item_dict
-        self.monster_dict = self.generator.monster_dict
+
         for stairs in (self.generator.tile_map.get_stairs()):
             if not stairs.downward:
                 x, y = stairs.get_location()
@@ -490,8 +448,7 @@ class Loops():
             self.add_target(self.player.get_location())
             self.screen_focus = self.player.get_location()
         else:
-            closest_monster = self.player.character.get_closest_monster(self.player, self.generator.monster_dict,
-                                                                        self.generator.tile_map)
+            closest_monster = self.player.character.get_closest_monster(self)
             self.targets.start_target(closest_monster.get_location())
             self.add_target(closest_monster.get_location())
             self.screen_focus = closest_monster.get_location()
@@ -536,13 +493,18 @@ class Loops():
             self.player.character.tick_all_status_effects(self)
             self.player.mage.tick_cooldowns()
             self.player.character.tick_regen()
-            for key in self.monster_dict.subjects:
-                monster = self.monster_dict.get_subject(key)
+
+            if self.generator.tile_map.track_map[self.player.x][self.player.y].on_fire:
+                self.player.character.take_damage(self.player, 5)
+
+            for monster in self.monster_map.all_entities():
                 monster.character.tick_all_status_effects(self)
                 # tick skill cooldowns
                 monster.character.tick_cooldowns()
                 # tick regen
                 monster.character.tick_regen()
+                if self.generator.tile_map.track_map[monster.x][monster.y].on_fire:
+                    monster.character.take_damage(self.player, 5)
 
         self.timer = self.timer % 100
 

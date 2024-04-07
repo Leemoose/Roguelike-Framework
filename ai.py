@@ -97,7 +97,6 @@ class Monster_AI():
         if empty_tile != None:
             loop.generator.monster_map.clear_location(monsterx, monstery)
             self.old_key = self.parent.id_tag
-            new_generator.monster_dict.tag_subject(self.parent)
             self.parent.x = empty_tile[0]
             self.parent.y = empty_tile[1]
             new_generator.monster_map.place_thing(self.parent)
@@ -110,7 +109,7 @@ class Monster_AI():
         return -1
 
     def rank_find_item(self, loop):
-        if len(loop.item_dict.subjects) > 0:
+        if loop.generator.item_map.num_entities() > 0:
             return self.randomize_action("find_item")
         return -1
 
@@ -129,7 +128,7 @@ class Monster_AI():
                     self.target = player
             elif loop.generator.tile_map.get_passable(x, y) and not monster_map.get_passable(x, y):
                 #print(monster_map.locate(x, y), "want to attack this monster")
-                other_monster = loop.generator.monster_dict.get_subject(monster_map.locate(x, y))
+                other_monster = loop.generator.monster_map.locate(x, y)
                 if other_monster.name in self.personality and utility < -self.personality[other_monster.name]:
                     utility = -self.personality[other_monster.name]
                     self.target = other_monster
@@ -194,11 +193,9 @@ class Monster_AI():
 
     def do_find_item(self, loop):
         monster = self.parent
-        item_dict = loop.generator.item_dict
         distance = 1000
         item = None
-        for key in item_dict.subjects:
-            temp_item = item_dict.get_subject(key)
+        for temp_item in loop.generator.item_map.all_entities():
             temp_distance = monster.get_distance(temp_item.x, temp_item.y)
             if temp_distance < distance:
                 distance = temp_distance
@@ -271,6 +268,7 @@ class Monster_AI():
         return -1
 
     def rank_skill(self, loop):
+        return - 1
         if self.tendencies["skill"] == -1:
             return -1
         for skill in self.parent.character.skills:
@@ -281,11 +279,9 @@ class Monster_AI():
     def do_item_pickup(self, loop):
         # print("Picking up item")
         item_map = loop.generator.item_map
-        item_dict = loop.generator.item_dict
-        generated_maps = loop.generator
         monster = self.parent
-        item_key = item_map.locate(monster.x, monster.y)
-        monster.character.grab(item_key, item_dict, generated_maps, loop)
+        item = item_map.locate(monster.x, monster.y)
+        monster.character.grab(item, loop)
 
     def do_combat(self, loop):
         # print("Attacking player")
@@ -509,14 +505,10 @@ class Slime_AI(Monster_AI):
                            }
 
     def do_item_pickup(self, loop):
-        # print("Picking up item")
         item_map = loop.generator.item_map
-        item_dict = loop.generator.item_dict
-        generated_maps = loop.generator
         monster = self.parent
-        item_key = item_map.locate(monster.x, monster.y)
-        item = item_dict.get_subject(item_key)
-        monster.character.grab(item_key, item_dict, generated_maps, loop)
+        item = item_map.locate(monster.x, monster.y)
+        monster.character.grab(item, loop)
         item.destroy = True
         loop.add_message("The slime gobbled up the {}.".format(item.name))
 

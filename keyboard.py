@@ -88,7 +88,7 @@ class Keyboard():
 #Any actions done in the battle screen
     def key_action(self, loop, key):
         player = loop.player
-        item_ID = loop.generator.item_dict
+        item_ID = loop.generator.item_map.dict
         generated_maps = loop.generator
         memory = loop.memory
         if key == -1:
@@ -110,10 +110,10 @@ class Keyboard():
         elif key == "n":
             player.attack_move(1, 1, loop)
         elif key == "g":
-            for item_key in item_ID.subjects:
-                item = item_ID.subjects[item_key]
+            for item in loop.generator.item_map.all_entities():
+                print(item)
                 if item.x == player.x and item.y == player.y:
-                    player.character.grab(item_key, item_ID, generated_maps, loop)
+                    player.character.grab(item, loop)
                     break
         elif key == "i":
           #  loop.limit_inventory = None
@@ -304,7 +304,7 @@ class Keyboard():
 
 
     def key_item_screen(self, loop, key):
-        item_dict = loop.generator.item_dict
+        item_dict = loop.generator.item_map.dict
         player = loop.player
         item = loop.screen_focus
         item_map = loop.generator.item_map
@@ -422,10 +422,10 @@ class Keyboard():
             if targets.explain_target(loop):
                 x, y = targets.target_current
                 if loop.generator.monster_map.track_map[x][y] != -1:
-                    loop.screen_focus = loop.generator.monster_dict.get_subject(loop.generator.monster_map.track_map[x][y])
+                    loop.screen_focus = loop.generator.monster_map.locate(x,y)
                     loop.change_loop(LoopType.specific_examine)
                 elif loop.generator.item_map.track_map[x][y] != -1:
-                    loop.screen_focus = loop.generator.item_dict.get_subject(loop.generator.item_map.track_map[x][y])
+                    loop.screen_focus = loop.generator.item_map.locate(x,y)
                     loop.change_loop(LoopType.specific_examine)
                 else:
                     loop.screen_focus = loop.generator.tile_map.track_map[x][y]

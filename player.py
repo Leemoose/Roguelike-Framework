@@ -59,7 +59,7 @@ class Player(O.Objects):
             if loop.generator.get_passable((x, y)):
                 self.move(move_x, move_y, loop)
             elif not loop.generator.monster_map.get_passable(x, y):
-                defender = loop.monster_dict.get_subject(loop.generator.monster_map.track_map[x][y])
+                defender = loop.monster_map.locate(x,y)
                 self.attack(defender, loop)
             else:
                 loop.add_message("You cannot move there")
@@ -91,7 +91,7 @@ class Player(O.Objects):
         all_seen = False
         if self.character.needs_rest():
             self.character.rest(loop, loop.currentLoop)
-        monster_dict = loop.monster_dict
+        monster_dict = loop.monster_map.dict
         tile_map = loop.generator.tile_map
         for monster_key in monster_dict.subjects:
             monster_loc = monster_dict.get_subject(monster_key).get_location()
@@ -206,10 +206,9 @@ class Player(O.Objects):
         """
         attack_target = None
         distance = 1000
-        monster_dict = loop.generator.monster_dict
+
         tile_map = loop.generator.tile_map
-        for key in monster_dict.subjects:
-            monster = monster_dict.get_subject(key)
+        for monster in loop.generator.monster_map.all_entities():
             monster_x, monster_y = monster.get_location()
             if tile_map.locate(monster_x, monster_y).visible:
                 new_distance = self.get_distance(monster_x, monster_y)
