@@ -12,7 +12,10 @@ class Monster(O.Objects):
     def __init__(self, x=-1, y = -1, render_tag = -1, name="Unknown monster"):
         super().__init__(x=x, y=y, render_tag=render_tag, name=name)
         self.character = C.Character(self)
+
         self.asleep = False
+        self.flee = False
+
         self.character.experience_given = 0
         self.brain = ai.Monster_AI(self)
         self.skills = []

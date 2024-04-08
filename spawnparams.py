@@ -198,7 +198,7 @@ class ItemSpawner():
                 item = item_spawn.item()
                 items.append(item)
 
-        items.append(I.BookofFire())
+        items.append(I.BookofHypnosis())
 
 
         commonEquipAtDepth = [i for i in self.commonEquip if i.AllowedAtDepth(depth)]

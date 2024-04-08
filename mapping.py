@@ -359,6 +359,14 @@ class DungeonGenerator():
                 carve_length -= 1
             maxtunnels -= 1
 """
+    def monsters_in_sight(self):
+        in_sight = []
+        for monster in self.monster_map.all_entities():
+            monster_x, monster_y = monster.get_location()
+            tile = self.tile_map.locate(monster_x, monster_y)
+            if tile.is_visible():
+                in_sight.append(monster)
+        return in_sight
 
     def all_seen(self):
         for x in range(self.width):
@@ -744,6 +752,9 @@ class TileMap(TrackingMap):
 
     def get_tag(self, x, y):
         return self.track_map[x][y].render_tag
+
+    def locate(self, x, y):
+        return self.track_map[x][y]
 
     def cellular_caves(self):
         iterations = 3

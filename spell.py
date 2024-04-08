@@ -24,7 +24,7 @@ class Mage():
 
 
 class Spell():
-    def __init__(self, parent, name = "Unknown spell", cooldown=0, cost=0, range=-1, action_cost=100):
+    def __init__(self, parent, name = "Unknown spell", cooldown=0, cost=0, range=-1, action_cost=100, required_intelligence = 0):
         self.parent = parent
         self.cooldown = cooldown
         self.cost = cost
@@ -36,6 +36,7 @@ class Spell():
         self.action_cost = action_cost
         self.threshold = 0.0
         self.render_tag = 902  # placeholder icon, skill assets are fixed so not given in user input
+        self.required_intelligence = required_intelligence
 
     def activate(self, target, generator):
         self.parent.character.mana -= self.cost
@@ -74,8 +75,19 @@ class Spell():
     def description(self):
         return self.name + "(" + str(self.cost) + " cost, " + str(self.cooldown) + " turn cooldown"
 
-class SummonSchool():
+    def can_learn(self):
+        return self.parent.character.intelligence >= self.required_intelligence
+
+class School():
     def __init__(self):
+        self.level = {}
+
+    def random_spell(self):
+        return self.level[random.randint(1,len(self.level))]
+
+class SummonSchool(School):
+    def __init__(self):
+        super().__init__()
         self.level = {1: self.SummonGoblin,
                       2: self.SummonHobGoblin,
                       3: self.SummonGargoyle,
@@ -83,12 +95,9 @@ class SummonSchool():
                       5: self.SummonRaptor,
                       6: self.SummonGolem}
 
-    def random_spell(self):
-        return self.level[random.randint(1,len(self.level))]
-
     class Summon(Spell):
-        def __init__(self, parent, name = "Summon", cooldown=3, cost=3, range=-1, action_cost=100):
-            super().__init__(parent, name, cooldown, cost, range, action_cost)
+        def __init__(self, parent, name = "Summon", cooldown=3, cost=3, range=-1, action_cost=100, required_intelligence = 0):
+            super().__init__(parent, name, cooldown, cost, range, action_cost, required_intelligence)
             self.targetted = False
             self.targets_monster = False
             self.monster = M.Kobold
@@ -142,7 +151,7 @@ class SummonSchool():
             super().__init__(parent, "Summon Golem", cooldown, cost, range, action_cost)
             self.monster = M.Golem
 
-class SpaceSchool():
+class SpaceSchool(School):
     """
     Maybe add in spells:
     1. Can attack from anywhere on screen
@@ -150,12 +159,10 @@ class SpaceSchool():
     3. Non targetted blink
     """
     def __init__(self):
+        super().__init__()
         self.level = {1: self.Teleport,
                       2: self.TeleportOther,
                       3: self.Blink}
-
-    def random_spell(self):
-        return self.level[random.randint(1,len(self.level))]
 
     class TeleportOther(Spell):
         def __init__(self, parent, name = "Teleport Other", cooldown=20, cost=5, range=5, action_cost=300):
@@ -243,15 +250,13 @@ class SpaceSchool():
                     self.parent.y = starty
                     monster_map.place_thing(self.parent)
 
-class FireSchool():
+class FireSchool(School):
     def __init__(self):
+        super().__init__()
+
         self.level = {1: self.BurningAttack,
                       2: self.BurningCircle,
                       3: self.Fireball}
-
-    def random_spell(self):
-        return self.level[3]
-        # return self.level[random.randint(1,len(self.level))]
 
     class BurningAttack(Spell):
         def __init__(self, parent, name = "Burning Attack", cooldown = 10, cost= 5, range = 5, action_cost = 50, damage = 3, burn_damage = 3, burn_duration=5):
@@ -300,8 +305,8 @@ class FireSchool():
             return True  # return true if successfully cast, burningAttack cannot fail
 
     class Fireball(Spell):
-        def __init__(self, parent, name = "Fireball", cooldown = 20, cost= 10, range = 10, action_cost = 150, damage = 10, burn_damage = 3, burn_duration=2):
-            super().__init__(parent, name, cooldown, cost, range, action_cost)
+        def __init__(self, parent, name = "Fireball", cooldown = 20, cost= 10, range = 10, action_cost = 150, damage = 10, burn_damage = 3, burn_duration=2, required_intelligence = 5):
+            super().__init__(parent, name, cooldown, cost, range, action_cost, required_intelligence)
             self.damage = damage
             self.burn_damage = burn_damage
             self.burn_duration = burn_duration
@@ -315,16 +320,71 @@ class FireSchool():
             directions = [(0, 1), (0, -1), (1, 0), (-1, 0), (1, 1), (-1, -1), (1, -1), (-1, 1), (0,0)]
             for x, y in directions:
                 if not loop.generator.monster_map.get_passable(target[0] + x,target[1] + y):
-                    monster = loop.generator.monster_dict.get_subject(loop.generator.monster_map.locate(target[0] + x, target[1] + y))
+                    monster = loop.generator.monster_map.locate(target[0] + x, target[1] + y)
                     monster.character.take_damage(self.parent,
                                                    self.damage + self.parent.character.skill_damage_increase())
                     effect = E.Burn(self.burn_duration + self.parent.character.skill_duration_increase(),
                                     self.burn_damage + self.parent.character.skill_damage_increase(), self.parent)
                     monster.character.add_status_effect(effect)
-                if loop.generator.tile_map.get_passable(self.parent.x + x, self.parent.y + y):
-                    loop.generator.tile_map.track_map[self.parent.x + x][self.parent.y + y].on_fire = True
+                if loop.generator.tile_map.get_passable(target[0] + x, target[1] + y):
+                    loop.generator.tile_map.track_map[target[0] + x][target[1] + y].on_fire = True
 
             return True  # return true if successfully cast, burningAttack cannot fail
 
         def castable(self, target):
             return super().castable(target) and self.in_range(target)
+
+class HypnosisSchool(School):
+    def __init__(self):
+        super().__init__()
+        self.level = {1: self.Lullaby,
+                      2: self.MassFear,
+                      3: self.Charm}
+
+    def random_spell(self):
+        return self.level[3]
+
+    class Lullaby(Spell):
+        def __init__(self, parent, name="Lullaby", cooldown=10, cost=5, range=5, action_cost=100, duration = 5):
+            super().__init__(parent, name, cooldown, cost, range, action_cost)
+            self.targets_monster = True
+            self.targetted = True
+            self.duration = duration
+
+        def castable(self, target):
+            return super().castable(target) and self.in_range(target)
+
+        def activate(self, target, loop):
+            effect = E.Asleep(self.duration)
+            target.character.add_status_effect(effect)
+
+    class MassFear(Spell):
+        def __init__(self, parent, name="Mass Fear", cooldown=30, cost=5, range=-1, action_cost=200, duration = 10):
+            super().__init__(parent, name, cooldown, cost, range, action_cost)
+            self.targets_monster = False
+            self.targetted = False
+            self.duration = duration
+
+        def activate(self, target, loop):
+            for monster in loop.generator.monsters_in_sight():
+                print("When trying to do the mass fear effect, {} is in sight".format(monster))
+                effect = E.Fear(self.duration, self.parent)
+                monster.character.add_status_effect(effect)
+
+    class Charm(Spell):
+        def __init__(self, parent, name="Charm", cooldown=10, cost=5, range=2, action_cost=100, duration = 5):
+            super().__init__(parent, name, cooldown, cost, range, action_cost)
+            self.targets_monster = True
+            self.targetted = True
+            self.duration = duration
+
+        def castable(self, target):
+            return super().castable(target) and self.in_range(target)
+
+        def activate(self, target, loop):
+            effect = E.Charm(self.duration, self.parent)
+            target.character.add_status_effect(effect)
+
+
+
+

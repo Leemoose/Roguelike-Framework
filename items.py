@@ -1870,33 +1870,20 @@ class Book(O.Item):
         self.attached_skill = self.skill(entity.parent)
 
     def activate(self, entity, loop):
-        new_skill = self.skill(entity.parent)
-        entity.add_skill(new_skill)
-        self.destroy = True
-        entity.inventory.remove(self)
-        loop.change_loop(L.LoopType.inventory)
+        if self.attached_skill.can_learn():
+            new_skill = self.skill(entity.parent)
+            entity.add_skill(new_skill)
+            self.destroy = True
+            entity.inventory.remove(self)
+            loop.change_loop(L.LoopType.inventory)
+        else:
+            loop.add_message("You do not have enough intelligence to learn this spell.")
 
     def get_attached_skill_description(self):
         if self.attached_skill_exists:
             return self.attached_skill.description() # temporarily attach skill to nothing to get name
         else:
             return None
-
-class BookofMassTorment(Book):
-    def __init__(self, render_tag):
-        super().__init__(render_tag, skill = S.MassTorment, name = "Book")
-        self.name = "Book of Mass Torment"
-        self.description = "A book that does something."
-        self.rarity = "Rare"
-        self.skill = S.MassTorment
-
-class BookofMassHeal(Book):
-    def __init__(self, render_tag):
-        super().__init__(render_tag, skill = S.MassTorment, name = "Book")
-        self.name = "Book of Mass Heal"
-        self.description = "A book that does something."
-        self.rarity = "Rare"
-        self.skill = S.MassHeal
 
 class BookofSummoning(Book):
     def __init__(self, render_tag = 480):
@@ -1918,6 +1905,13 @@ class BookofFire(Book):
         self.skill = self.school.random_spell()
         super().__init__(render_tag, skill = self.skill, name = "Book of Fire")
         self.name = "Book of Fire"
+
+class BookofHypnosis(Book):
+    def __init__(self, render_tag = 480):
+        self.school = spell.HypnosisSchool()
+        self.skill = self.school.random_spell()
+        super().__init__(render_tag, skill = self.skill, name = "Book of Hypnosis")
+        self.name = "Book of Hypnosis"
 
 class OrbOfYendorb(O.Item):
     def __init__(self):

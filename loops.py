@@ -274,9 +274,6 @@ class Loops():
         elif self.currentLoop == LoopType.items:
             display.update_entity(self.screen_focus, tileDict, self.player)
         elif self.currentLoop == LoopType.examine or self.currentLoop == LoopType.targeting:
-            # display.update_display(colors, self.generator.tile_map, tileDict, self.monster_dict, self.item_dict,
-            #                       self.monster_map, self.player, self.messages, self.target_to_display)
-            # display.refresh_screen()
             display.update_display(self)
             mos_x, mos_y = pygame.mouse.get_pos()
             (x, y) = display.screen_to_tile(self.player, mos_x, mos_y)
@@ -347,18 +344,10 @@ class Loops():
             self.player.character.energy = 0
 
         self.floor_level += 1
-        for id in self.memory.generators[self.floor_level].monster_dict.subjects:
-            print(id)
-            monster = self.memory.generators[self.floor_level].monster_dict.get_subject(id)
-            if monster.brain.old_key != None:
-                self.generator.monster_dict.remove_subject(monster.brain.old_key)
-                monster.brain.old_key = None
 
         self.player.x, self.player.y = (self.generator.tile_map.track_map[playerx][playery]).pair.get_location()
         self.generator = self.memory.generators[self.floor_level]
         self.monster_map = self.generator.monster_map
-        self.item_dict = self.generator.item_dict
-        self.monster_dict = self.generator.monster_dict
 
         self.memory.floor_level += 1
         self.taking_stairs = False
@@ -375,20 +364,12 @@ class Loops():
                 self.player.character.energy = 0
 
             self.floor_level -= 1
-            for id in self.memory.generators[self.floor_level].monster_dict.subjects:
-                print(id)
-                monster = self.memory.generators[self.floor_level].monster_dict.get_subject(id)
-                if monster.brain.old_key != None:
-                    self.generator.monster_dict.remove_subject(monster.brain.old_key)
-                    monster.brain.old_key = None
 
             self.taking_stairs = False
             self.memory.floor_level -= 1
             self.player.x, self.player.y = (self.generator.tile_map.track_map[playerx][playery]).pair.get_location()
             self.generator = self.memory.generators[self.floor_level]
             self.monster_map = self.generator.monster_map
-            self.item_dict = self.generator.item_dict
-            self.monster_dict = self.generator.monster_dict
 
     def init_game(self, display):
         self.main_buttons = display.create_main_screen(self)
@@ -466,8 +447,7 @@ class Loops():
         self.generator = self.memory.generators[self.floor_level]
         self.tile_map = self.generator.tile_map
         self.monster_map = self.generator.monster_map
-        self.item_dict = self.generator.item_dict
-        self.monster_dict = self.generator.monster_dict
+
         self.player = self.memory.player
         self.player.character.energy = 0
         self.change_loop(LoopType.action)
@@ -481,8 +461,7 @@ class Loops():
         self.memory = Memory()
         self.tile_map = None
         self.monster_map = None
-        self.item_dict = None
-        self.monster_dict = None
+
         self.generator = None
         self.messages = []
 

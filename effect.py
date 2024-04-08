@@ -1,4 +1,30 @@
 import dice as R
+import monster as M
+import ai
+
+"""
+class TileEffect()
+    def __init__(self, name, duration):
+        self.name = name
+        self.duration = duration
+        self.active = True
+        self.positive = False
+
+    def apply_effect(self, target):
+        pass
+
+    def description(self):
+        if self.duration == -100:
+            return self.name + " (permanent)"
+        return self.name + " (" + str(self.duration) + ")"
+
+    def tick(self, target):
+        if self.duration == -100: # -100 is a special value that means the effect lasts forever, -1 probably works too but made it larger just in case
+            return
+        self.duration -= 1
+        if self.duration <= 0:
+            self.active = False
+"""
 
 class StatusEffect():
     def __init__(self, id_tag, name, message, duration):
@@ -135,12 +161,36 @@ class Fear(StatusEffect):
     def __init__(self, duration, inflictor):
         super().__init__(806, "Fear", "is scared", duration)
         self.inflictor = inflictor
+        self.old_values = ()
     
     def apply_effect(self, target):
-        target.flee = True
+        print("When trying to apply fear effect, {} is the target".format(target))
+        if isinstance(target.parent, M.Monster):
+            self.old_values = target.parent.brain.get_tendency("flee")
+            target.parent.brain.change_tendency("flee", (1000,0))
+            target.parent.flee = True
+            print("The {} is inflicted with fear".format(target))
     
     def remove(self, target):
-        target.flee = False
+        if isinstance(target.parent, M.Monster):
+            target.parent.brain.change_tendency("flee", self.old_values)
+            target.parent.flee = False
+
+
+class Charm(StatusEffect):
+    def __init__(self, duration, inflictor):
+        super().__init__(806, "Charmed", "is charmed", duration)
+        self.inflictor = inflictor
+        self.old_brain = None
+
+    def apply_effect(self, target):
+        if isinstance(target.parent, M.Monster):
+            self.old_brain = target.parent.brain
+            target.parent.brain = ai.Friendly_AI(target.parent)
+
+    def remove(self, target):
+        if isinstance(target.parent, M.Monster):
+            target.parent.brain = self.old_brain
 
 class Invincible(StatusEffect):
     def __init__(self, duration, inflictor = None):

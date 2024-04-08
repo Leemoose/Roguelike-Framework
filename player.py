@@ -7,6 +7,7 @@ import spell
 import skills as S
 import shadowcasting
 
+
 class Player(O.Objects):
     def __init__(self, x, y):
         super().__init__(x, y, 1, 200, "Player")
@@ -36,7 +37,7 @@ class Player(O.Objects):
         if self.invincible:  # only get the gun if you're invincible at the start
             self.mage.known_spells.extend([
                 S.Gun(self),  # 1
-                # S.BlinkToEmpty(self, cooldown=0, cost=0, range=10, action_cost=1), # 2
+                spell.HypnosisSchool().Charm(self), # 2
                 # S.BlinkStrike(self, cooldown=0, cost=10, damage=25, range=10, action_cost=1), # 3
                 #spell.SummonGargoyle(self), # 2
                 S.BurningAttack(self, cooldown=0, cost=10, damage=20, burn_damage=10, burn_duration=10, range=10),  # 2
@@ -91,10 +92,9 @@ class Player(O.Objects):
         all_seen = False
         if self.character.needs_rest():
             self.character.rest(loop, loop.currentLoop)
-        monster_dict = loop.monster_map.dict
         tile_map = loop.generator.tile_map
-        for monster_key in monster_dict.subjects:
-            monster_loc = monster_dict.get_subject(monster_key).get_location()
+        for monster in loop.generator.monster_map.all_entities():
+            monster_loc = monster.get_location()
             if tile_map.track_map[monster_loc[0]][monster_loc[1]].visible:
                 loop.add_message("You cannot autoexplore while enemies are visible.")
                 loop.change_loop(L.LoopType.action)
@@ -139,10 +139,9 @@ class Player(O.Objects):
         return True
 
     def find_stairs(self, loop):
-        monster_dict = loop.monster_dict
         tile_map = loop.generator.tile_map
-        for monster_key in monster_dict.subjects:
-            monster_loc = monster_dict.get_subject(monster_key).get_location()
+        for monster in loop.generator.monster_map.all_entities():
+            monster_loc = monster.get_location()
             if tile_map.track_map[monster_loc[0]][monster_loc[1]].visible:
                 loop.add_message("You cannot autoexplore while enemies are tracking you.")
                 loop.change_loop(L.LoopType.action)
@@ -165,8 +164,8 @@ class Player(O.Objects):
             x, y = self.path.pop(0)
             self.move(x - self.x, y - self.y, loop)
             shadowcasting.compute_fov(loop)
-            for monster_key in monster_dict.subjects:
-                monster_loc = monster_dict.get_subject(monster_key).get_location()
+            for monster in loop.generator.monster_map.all_entities():
+                monster_loc = monster.get_location()
                 if tile_map.track_map[monster_loc[0]][monster_loc[1]].visible:
                     loop.add_message("You cannot autoexplore while enemies are tracking you.")
                     loop.change_loop(L.LoopType.action)

@@ -50,6 +50,18 @@ class Monster_AI():
     Think it would be better to first rank each action depending on the circumstances with a number between 1-100 and 
     then pick the action that ranks the highest
     """
+    def change_tendency(self, type, new_value):
+        if type in self.tendencies:
+            self.tendencies[type] = new_value
+        else:
+            print("That {} cannot change their tendency ({})".format(self.parent, type))
+
+    def get_tendency(self, type):
+        if type in self.tendencies:
+            return self.tendencies[type]
+        else:
+            print("That {} does not have that tendency ({})".format(self.parent, type))
+            return -1
 
     def randomize_action(self, action):
         average, spread = self.tendencies[action]
@@ -91,12 +103,10 @@ class Monster_AI():
             new_level = loop.floor_level - 1
 
         new_generator = loop.memory.generators[new_level]
-        monsterx, monstery = self.parent.get_location()
         new_stairs = stairs.pair
         empty_tile = new_generator.nearest_empty_tile(new_stairs.get_location(), move=True)
         if empty_tile != None:
-            loop.generator.monster_map.clear_location(monsterx, monstery)
-            self.old_key = self.parent.id_tag
+            loop.generator.monster_map.remove_thing(self.parent)
             self.parent.x = empty_tile[0]
             self.parent.y = empty_tile[1]
             new_generator.monster_map.place_thing(self.parent)
@@ -104,7 +114,8 @@ class Monster_AI():
             loop.add_message("The monster follows you on the stairs")
 
     def rank_flee(self, loop):
-        if self.parent.character.health / self.parent.character.max_health < .25:
+        print("Does this monster have the flee condition? {}".format(self.parent.flee))
+        if self.parent.flee or self.parent.character.health / self.parent.character.max_health < .25:
             return self.randomize_action("flee")  # must flee if flag is set
         return -1
 
