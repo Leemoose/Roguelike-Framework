@@ -81,6 +81,25 @@ class Character():
         self.unarmed_damage_min = 2
         self.unarmed_damage_max = 3
 
+    def change_action_cost(self, action, newcost):
+        self.action_costs[action] = newcost
+
+    def remove_equipment_slot(self, slot):
+        if slot not in self.equipment_slots:
+            raise Exception("You are trying to find a {} in {}'s equipment slot".format(slot, self.parent.name))
+        for item in self.equipment_slots[slot]:
+            if item is None:
+                self.equipment_slots[slot].pop(item)
+                return True
+        raise Exception("You tried to remove a {} in {}'s equipment slot but there was nothing that could be removed".format(slot, self.parent.name))
+        return False
+
+    def add_equipment_slot(self, slot):
+        if slot not in self.equipment_slots:
+            raise Exception("You are trying to find a {} in {}'s equipment slot".format(slot, self.parent.name))
+        self.equipment_slots[slot].append(None)
+        return True
+
     def is_alive(self):
         if self.health <= 0 and not self.invincible:
             self.alive = False

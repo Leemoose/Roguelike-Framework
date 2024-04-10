@@ -117,7 +117,7 @@ WEAPONS
 """
 
 class Weapon(Equipment):
-    def __init__(self, x, y, id_tag, render_tag, name):
+    def __init__(self, x, y, id_tag, render_tag, name, attack_cost = 80):
         super().__init__(x,y, id_tag, render_tag, name)
         self.damage_min = 0
         self.damage_max = 0
@@ -125,6 +125,8 @@ class Weapon(Equipment):
         self.equipment_type = "Weapon"
         self.on_hit = None
         self.effective = []
+        self.attack_cost = attack_cost
+        self.diff_action_cost = 0
 
     def equip(self, entity):
         if entity.strength >= self.required_strength:
@@ -201,14 +203,31 @@ class Hammer(Weapon):
         self.damage_min += 3
         self.damage_max += 3
 
+""""
+DAGGERS
++ Specialize in fast attack speed (works well with on hit effects and attack move combinations).
+- Low damage (does poorly against armor)
+- No armor piercing
+"""
 class Dagger(Weapon):
-    def __init__(self, render_tag = 321):
-        super().__init__(-1, -1, 0, render_tag, "Dagger")
+    def __init__(self, render_tag = 321, attack_cost = 20):
+        super().__init__(-1, -1, 0, render_tag, "Dagger", attack_cost)
         self.melee = True
         self.name = "Dagger"
         self.description = "I swear that tip is getting rounder... Larry!. Enchanting it might make it more pointy and precise."
         self.damage_min = 1
         self.damage_max = 3
+
+
+    def activate(self, entity):
+        self.wearer = entity
+        self.diff_action_cost = max(entity.action_costs["attack"] - self.attack_cost, (entity.action_costs["attack"]) / 2)
+        entity.change_action_cost("attack", entity.action_costs["attack"] - self.diff_action_cost)
+
+    def deactivate(self, entity):
+        self.wearer = None
+        entity.change_action_cost("attack", entity.action_costs["attack"] + self.diff_action_cost)
+        self.diff_action_cost = 0
 
     def level_up(self):
         self.enchant()
@@ -220,28 +239,6 @@ class Dagger(Weapon):
         self.damage_max += 5
         if self.damage_min > self.damage_max:
             self.damage_min = self.damage_max
-
-"""
-Swords specialness lies with armor piercing
-"""
-class Sword(Weapon):
-    def __init__(self, render_tag = 340):
-        super().__init__(-1, -1, 0, render_tag, "Sworbd")
-        self.melee = True
-        self.name = "Sworbd"
-        self.description = "Could be rounder honestly."
-        self.damage_min = 4
-        self.damage_max = 12
-        self.armor_piercing = 4
-
-    def level_up(self):
-        self.enchant()
-        if self.level == 2:
-            self.description += " It's been enchanted to be more damaging."
-        if self.level == 6:
-            self.description = "A sword that has been enchanted as much as possible."
-        self.damage_min += 1
-        self.damage_max += 2
 
 class ScreamingDagger(Dagger):
     def __init__(self, render_tag):
@@ -262,23 +259,84 @@ class ScreamingDagger(Dagger):
     def attack(self):
         return (super().attack(), self.on_hit)
 
-class CrushingHammer(Hammer):
-    def __init__(self, render_tag):
-        super().__init__(render_tag)
+"""
+SWORDS
+ + Specialness lies with armor piercing
+ * Average damage
+ * Average attack speed
+"""
+class Sword(Weapon):
+    def __init__(self, render_tag = 340):
+        super().__init__(-1, -1, 0, render_tag, "Sword")
         self.melee = True
-        self.name = "Crushing Hammer"
-        self.description = "Player smash. "
-        self.can_be_levelled = True
+        self.name = "Sword"
+        self.description = "Could be rounder honestly."
+        self.damage_min = 4
+        self.damage_max = 12
+        self.armor_piercing = 4
 
-        self.on_hit = (lambda inflictor: E.ArmorShredding(5))
-        self.on_hit_description = f"Shreds the targets armor."
+    def level_up(self):
+        self.enchant()
+        if self.level == 2:
+            self.description += " It's been enchanted to be more damaging."
+        if self.level == 6:
+            self.description = "A sword that has been enchanted as much as possible."
+        self.damage_min += 1
+        self.damage_max += 2
 
-        self.wearer = None  # items with stat buffs or skills need to keep track of owner for level ups
-        self.rarity = "Rare"
+class BroadSword(Sword):
+    def __init__(self, render_tag = 340):
+        super().__init__()
+        self.damage_min = 4
+        self.damage_max = 12
+        self.armor_piercing = 6
 
-    def attack(self):
-        return (super().attack(), self.on_hit)
+class LongSword(Sword):
+    def __init__(self, render_tag = 340):
+        super().__init__()
+        self.damage_min = 4
+        self.damage_max = 12
+        self.armor_piercing = 10
 
+class Claymore(Sword):
+    def __init__(self, render_tag = 340):
+        super().__init__()
+        self.damage_min = 8
+        self.damage_max = 20
+        self.armor_piercing = 10
+    
+
+class TwoHandedSword(Sword):
+    def __init__(self, render_tag = 340):
+        super().__init__()
+        self.damage_min = 4
+        self.damage_max = 12
+        self.armor_piercing = 10
+    
+    def can_be_equipped(self, entity):
+        open_slots = 0
+        for item in entity.equipment_slots["hand_slot"]:
+            if item is None:
+                open_slots += 1
+        return super().can_be_equipped(entity) and open_slots >= 2
+    
+    def activate(self, entity):
+        entity.remove_equipment_slot("hand_slot")
+        super().activate(entity)
+    
+    def deactivate(self, entity):
+        entity.add_equipment_slot("hand_slot")
+        super().deactivate(entity)
+
+class GreatSword(TwoHandedSword):
+    def __init__(self, render_tag = 340):
+        super().__init__()
+        self.damage_min = 4
+        self.damage_max = 12
+        self.armor_piercing = 6
+
+
+################################################
 class SleepingSword(Sword):
     def __init__(self, render_tag):
         super().__init__(render_tag)
@@ -313,6 +371,87 @@ class SleepingSword(Sword):
         self.damage_max += 3
         if self.damage_min > self.damage_max:
             self.damage_min = self.damage_max
+
+
+class FlamingSword(Weapon):
+    def __init__(self, render_tag):
+        super().__init__(-1, -1, 0, render_tag, "Flaming Sword")
+        self.melee = True
+        self.name = "Flaming Sword"
+        self.description = "A sword that is on fire. You can channel its fire to cast a Burning Attack at a distant foe. "
+        self.damage_min = 5
+        self.damage_max = 8
+
+        self.on_hit_burn = 4
+        self.on_hit_burn_duration = 3
+        self.on_hit = (lambda inflictor: E.Burn(self.on_hit_burn, self.on_hit_burn_duration, inflictor))
+        self.on_hit_description = f"Burns the target for {self.on_hit_burn} damage over {self.on_hit_burn_duration} turns."
+
+        self.skill_cooldown = 8
+        self.skill_cost = 20
+        self.skill_damage = 3
+        self.skill_burn_damage = 4
+        self.skill_burn_duration = 3
+        self.skill_range = 4
+        self.attached_skill_exists = True
+
+        self.wearer = None  # items with stat buffs or skills need to keep track of owner for level ups
+        self.rarity = "Legendary"
+
+    def attached_skill(self, owner):
+        self.attached_skill_exists = True
+        return S.BurningAttack(owner, self.skill_cooldown,
+                               self.skill_cost,
+                               self.skill_damage,
+                               self.skill_burn_damage,
+                               self.skill_burn_duration,
+                               self.skill_range)
+
+    def attack(self):
+        return (super().attack(), self.on_hit)
+
+    def level_up(self):
+        self.enchant()
+        if self.level == 2:
+            self.description += " It's been enchanted to hit harder and burn stronger."
+        if self.level == 6:
+            self.description = "A sword that burns intensely. It's burning strike has reached its maximum potency. It's been enchanted as much as possible."
+        self.damage_min += 2
+        self.damage_max += 3
+
+        self.skill_damage += 2
+        self.skill_cooldown -= 1
+        if self.skill_cooldown < 5:
+            self.skill_cooldown = 5
+
+        if self.wearer != None:
+            self.wearer.remove_skill(self.attached_skill(self.wearer.parent).name)
+            self.wearer.add_skill(self.attached_skill(self.wearer.parent))
+
+
+"""
+HAMMERS
++ Specializes in high damage
++ Solid armor piercing
+- High required strength
+- Low attack speed
+"""
+class CrushingHammer(Hammer):
+    def __init__(self, render_tag):
+        super().__init__(render_tag)
+        self.melee = True
+        self.name = "Crushing Hammer"
+        self.description = "Player smash. "
+        self.can_be_levelled = True
+
+        self.on_hit = (lambda inflictor: E.ArmorShredding(5))
+        self.on_hit_description = f"Shreds the targets armor."
+
+        self.wearer = None  # items with stat buffs or skills need to keep track of owner for level ups
+        self.rarity = "Rare"
+
+    def attack(self):
+        return (super().attack(), self.on_hit)
 
 class MagicWand(Weapon):
     def __init__(self, render_tag):
@@ -360,60 +499,6 @@ class MagicWand(Weapon):
             self.wearer.add_skill(self.attached_skill(self.wearer.parent))
 
         
-class FlamingSword(Weapon):
-    def __init__(self, render_tag):
-        super().__init__(-1, -1, 0, render_tag, "Flaming Sword")
-        self.melee = True
-        self.name = "Flaming Sword"
-        self.description = "A sword that is on fire. You can channel its fire to cast a Burning Attack at a distant foe. "
-        self.damage_min = 5
-        self.damage_max = 8
-
-        self.on_hit_burn = 4
-        self.on_hit_burn_duration = 3
-        self.on_hit = (lambda inflictor : E.Burn(self.on_hit_burn, self.on_hit_burn_duration, inflictor))
-        self.on_hit_description = f"Burns the target for {self.on_hit_burn} damage over {self.on_hit_burn_duration} turns."
-
-        self.skill_cooldown = 8
-        self.skill_cost = 20
-        self.skill_damage = 3
-        self.skill_burn_damage = 4
-        self.skill_burn_duration = 3
-        self.skill_range = 4
-        self.attached_skill_exists = True
-
-        self.wearer = None # items with stat buffs or skills need to keep track of owner for level ups
-        self.rarity = "Legendary"
-
-    def attached_skill(self, owner):
-        self.attached_skill_exists = True
-        return S.BurningAttack(owner, self.skill_cooldown, 
-                                self.skill_cost, 
-                                self.skill_damage, 
-                                self.skill_burn_damage, 
-                                self.skill_burn_duration, 
-                                self.skill_range)
-
-    def attack(self):
-        return (super().attack(), self.on_hit)
-    
-    def level_up(self):
-        self.enchant()
-        if self.level == 2:
-            self.description += " It's been enchanted to hit harder and burn stronger."
-        if self.level == 6:
-            self.description = "A sword that burns intensely. It's burning strike has reached its maximum potency. It's been enchanted as much as possible."
-        self.damage_min += 2
-        self.damage_max += 3
-        
-        self.skill_damage += 2
-        self.skill_cooldown -= 1
-        if self.skill_cooldown < 5:
-            self.skill_cooldown = 5
-        
-        if self.wearer != None:
-            self.wearer.remove_skill(self.attached_skill(self.wearer.parent).name)
-            self.wearer.add_skill(self.attached_skill(self.wearer.parent))
 
 """
 ARMORS
