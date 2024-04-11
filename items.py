@@ -101,7 +101,7 @@ class Equipment(O.Item):
         entity.armor -= arm
 
     def can_be_equipped(self, entity):
-        return self.equipable
+        return self.equipable and entity.strength >= self.required_strength
 
     def can_be_unequipped(self, entity):
         return (self.equipped and not self.cursed)
@@ -117,28 +117,30 @@ WEAPONS
 """
 
 class Weapon(Equipment):
-    def __init__(self, x, y, id_tag, render_tag, name, attack_cost = 80):
-        super().__init__(x,y, id_tag, render_tag, name)
-        self.damage_min = 0
-        self.damage_max = 0
-        self.armor_piercing = 0
+    def __init__(self, x=-1, y=-1, id_tag = -1, render_tag = -1, name = "Unknown weapon", damage_min = 0, damage_max=0, armor_piercing = 0, attack_cost = 80):
+        super().__init__(x=x,y=y, id_tag = id_tag, render_tag=render_tag, name = name)
+        self.damage_min = damage_min
+        self.damage_max = damage_max
+        self.armor_piercing = armor_piercing
         self.equipment_type = "Weapon"
+        self.slots_taken = 1
         self.on_hit = None
         self.effective = []
         self.attack_cost = attack_cost
         self.diff_action_cost = 0
 
+    def can_be_equipped(self, entity):
+        return super().can_be_equipped(entity) and entity.free_equipment_slots("hand_slot") >= self.slots_taken
+
     def equip(self, entity):
-        if entity.strength >= self.required_strength:
-            if entity.equipment_slots["hand_slot"][0] != None:
-                entity.unequip(entity.main_weapon)
+        if entity.strength >= self.required_strength and entity.free_equipment_slots("hand_slot") >= self.slots_taken:
+            entity.add_item_to_equipment_slot(self, "hand_slot", self.slots_taken)
             if self.attached_skill_exists:
                 entity.add_skill(self.attached_skill(entity.parent))
-            entity.equipment_slots["hand_slot"][0] = self
             self.activate(entity)
 
     def unequip(self, entity):
-        entity.equipment_slots["hand_slot"][0] = None
+        entity.remove_item_from_equipment_slot(self, "hand_slot", self.slots_taken)
         if self.attached_skill_exists:
             entity.remove_skill(self.attached_skill(entity.parent).name)
         self.deactivate(entity)
@@ -266,14 +268,10 @@ SWORDS
  * Average attack speed
 """
 class Sword(Weapon):
-    def __init__(self, render_tag = 340):
-        super().__init__(-1, -1, 0, render_tag, "Sword")
+    def __init__(self, x=-1, y=-1, id_tag = -1, render_tag = 340, name = "Sword", damage_min = 4, damage_max=12, armor_piercing = 4, attack_cost = 80):
+        super().__init__(x=x, y=y, id_tag = id_tag, render_tag =render_tag, name = name, damage_min = damage_min, damage_max=damage_max, armor_piercing = armor_piercing, attack_cost = attack_cost)
         self.melee = True
-        self.name = "Sword"
         self.description = "Could be rounder honestly."
-        self.damage_min = 4
-        self.damage_max = 12
-        self.armor_piercing = 4
 
     def level_up(self):
         self.enchant()
@@ -285,56 +283,29 @@ class Sword(Weapon):
         self.damage_max += 2
 
 class BroadSword(Sword):
-    def __init__(self, render_tag = 340):
-        super().__init__()
-        self.damage_min = 4
-        self.damage_max = 12
-        self.armor_piercing = 6
-
+    def __init__(self, x=-1, y=-1, id_tag = -1, render_tag = 340, name = "Broadsword", damage_min = 4, damage_max=12, armor_piercing = 6, attack_cost = 80):
+        super().__init__(x=x, y=y, id_tag = id_tag, render_tag =render_tag, name = name, damage_min = damage_min, damage_max=damage_max, armor_piercing = armor_piercing, attack_cost = attack_cost)
+        self.required = 1
 class LongSword(Sword):
-    def __init__(self, render_tag = 340):
-        super().__init__()
-        self.damage_min = 4
-        self.damage_max = 12
-        self.armor_piercing = 10
+    def __init__(self, x=-1, y=-1, id_tag = -1, render_tag = 340, name = "Longsword", damage_min = 4, damage_max=12, armor_piercing = 8, attack_cost = 80):
+        super().__init__(x=x, y=y, id_tag = id_tag, render_tag =render_tag, name = name, damage_min = damage_min, damage_max=damage_max, armor_piercing = armor_piercing, attack_cost = attack_cost)
+        self.required_strength = 3
 
 class Claymore(Sword):
-    def __init__(self, render_tag = 340):
-        super().__init__()
-        self.damage_min = 8
-        self.damage_max = 20
-        self.armor_piercing = 10
-    
+    def __init__(self, x=-1, y=-1, id_tag = -1, render_tag = 340, name = "Claymore", damage_min = 8, damage_max=20, armor_piercing = 8, attack_cost = 80):
+        super().__init__(x=x, y=y, id_tag = id_tag, render_tag =render_tag, name = name, damage_min = damage_min, damage_max=damage_max, armor_piercing = armor_piercing, attack_cost = attack_cost)
+        self.required_strength = 5
 
 class TwoHandedSword(Sword):
-    def __init__(self, render_tag = 340):
-        super().__init__()
-        self.damage_min = 4
-        self.damage_max = 12
-        self.armor_piercing = 10
-    
-    def can_be_equipped(self, entity):
-        open_slots = 0
-        for item in entity.equipment_slots["hand_slot"]:
-            if item is None:
-                open_slots += 1
-        return super().can_be_equipped(entity) and open_slots >= 2
-    
-    def activate(self, entity):
-        entity.remove_equipment_slot("hand_slot")
-        super().activate(entity)
-    
-    def deactivate(self, entity):
-        entity.add_equipment_slot("hand_slot")
-        super().deactivate(entity)
+    def __init__(self, x=-1, y=-1, id_tag = -1, render_tag = 340, name = "Two Handed Sword", damage_min = 4, damage_max=12, armor_piercing = 10, attack_cost = 80):
+        super().__init__(x=x, y=y, id_tag = id_tag, render_tag =render_tag, name = name, damage_min = damage_min, damage_max=damage_max, armor_piercing = armor_piercing, attack_cost = attack_cost)
+        self.slots_taken = 2
+        self.required_strength = 5
 
 class GreatSword(TwoHandedSword):
-    def __init__(self, render_tag = 340):
-        super().__init__()
-        self.damage_min = 4
-        self.damage_max = 12
-        self.armor_piercing = 6
-
+    def __init__(self, x=-1, y=-1, id_tag = -1, render_tag = 340, name = "Greatsword", damage_min = 8, damage_max=20, armor_piercing = 15, attack_cost = 80):
+        super().__init__(x=x, y=y, id_tag = id_tag, render_tag =render_tag, name = name, damage_min = damage_min, damage_max=damage_max, armor_piercing = armor_piercing, attack_cost = attack_cost)
+        self.required_strength = 8
 
 ################################################
 class SleepingSword(Sword):

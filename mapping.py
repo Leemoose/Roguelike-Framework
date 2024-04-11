@@ -241,6 +241,8 @@ class TileDict():
         tiles[1000] = image.load('assets/monsters/goblin.png')
         tiles[1001] = image.load('assets/monsters/gorblin_shaman.png')
         tiles[1002] = image.load('assets/monsters/hobgoblin.png')
+        tiles[1009] = image.load('assets/monsters/Looter.png')
+
         tiles[1010] = image.load('assets/monsters/kobold.png')
         tiles[1020] = image.load('assets/monsters/gargoyle.png')
         tiles[1030] = image.load('assets/monsters/velociraptor.png')
@@ -248,6 +250,7 @@ class TileDict():
         tiles[1050] = image.load('assets/monsters/tormentorb.png')
         tiles[1060] = image.load('assets/monsters/yendorb.png')
         tiles[1070] = image.load("assets/monsters/orc.png")
+        tiles[1079] = image.load("assets/monsters/Bobby.png")
         tiles[1080] = image.load('assets/monsters/golem.png')
         tiles[1090] = image.load('assets/monsters/stumpy.png')
         tiles[1100] = image.load('assets/monsters/slime.png')
@@ -292,7 +295,6 @@ class ID():
 
     def remove_subject(self, key):
         print("Item Dictionary:")
-        print(self.subjects)
         print("You are trying to remove key {} from item dictionary".format(key))
         if key in self.subjects:
             return self.subjects.pop(key)

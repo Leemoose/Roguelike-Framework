@@ -9,7 +9,7 @@ import items as I
 import loops as L
 
 class Character():
-    def __init__(self, parent, endurance = 0, intelligence = 0, dexterity = 0, strength = 0, health = 100, mana = 0, health_regen=0.2, mana_regen=0.2):
+    def __init__(self, parent, endurance = 0, intelligence = 0, dexterity = 0, strength = 0, health = 100, mana = 0, health_regen=0.2, mana_regen=0.2, min_damage = 2, max_damage = 3):
         self.endurance = endurance
         self.intelligence = intelligence
         self.dexterity = dexterity
@@ -78,20 +78,50 @@ class Character():
         self.health_partial = 0.0
         self.mana_partial = 0.0
 
-        self.unarmed_damage_min = 2
-        self.unarmed_damage_max = 3
+        self.unarmed_damage_min = min_damage
+        self.unarmed_damage_max = max_damage
 
     def change_action_cost(self, action, newcost):
         self.action_costs[action] = newcost
 
+    def free_equipment_slots(self, slot):
+        if slot not in self.equipment_slots:
+            raise Exception("You are trying to find a {} in {}'s equipment slot".format(slot, self.parent.name))
+        free_slots = 0
+        for item in self.equipment_slots[slot]:
+            if item is None:
+                free_slots += 1
+        return free_slots
+
+    def add_item_to_equipment_slot(self, item, slot, num_slots):
+        i = 0
+        while i < num_slots:
+            if self.equipment_slots[slot][i] is None:
+                self.equipment_slots[slot][i] = item
+                i += 1
+        if i >= num_slots:
+            return True
+        else:
+            return False
+
+    def remove_item_from_equipment_slot(self, item, slot, num_slots):
+        i = 0
+        while i < num_slots:
+            if self.equipment_slots[slot][i] is item:
+                self.equipment_slots[slot][i] = None
+                i += 1
+        if i >= num_slots:
+            return True
+        else:
+            return False
+
     def remove_equipment_slot(self, slot):
         if slot not in self.equipment_slots:
             raise Exception("You are trying to find a {} in {}'s equipment slot".format(slot, self.parent.name))
-        for item in self.equipment_slots[slot]:
-            if item is None:
-                self.equipment_slots[slot].pop(item)
-                return True
-        raise Exception("You tried to remove a {} in {}'s equipment slot but there was nothing that could be removed".format(slot, self.parent.name))
+        try:
+            self.equipment_slots[slot].remove(None)
+        except:
+            Exception("You tried to remove a {} in {}'s equipment slot but there was nothing that could be removed".format(slot, self.parent.name))
         return False
 
     def add_equipment_slot(self, slot):

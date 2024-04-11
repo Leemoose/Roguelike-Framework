@@ -395,6 +395,7 @@ class Loops():
                 self.memory.generators[self.floor_level] = generator
                 self.floor_level += 1
         self.floor_level = 1
+        self.memory.floor_level = 1
         self.generator = self.memory.generators[self.floor_level]
         self.monster_map = self.generator.monster_map
 
@@ -439,9 +440,7 @@ class Loops():
 
     def load_game(self):
         self.update_screen = False
-
-        #        self.items = False
-        #        self.screen_focus = None
+        print(self.memory.floor_level)
         self.floor_level = self.memory.floor_level
 
         self.generator = self.memory.generators[self.floor_level]

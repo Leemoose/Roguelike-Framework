@@ -9,19 +9,19 @@ import skills as S
 
 
 class Monster(O.Objects):
-    def __init__(self, x=-1, y = -1, render_tag = -1, name="Unknown monster"):
+    def __init__(self, x=-1, y = -1, render_tag = -1, name="Unknown monster", experience_given = 0, brain = ai.Monster_AI, rarity = "Common", health = 10, min_damage = 2, max_damage=3):
         super().__init__(x=x, y=y, render_tag=render_tag, name=name)
-        self.character = C.Character(self)
+        self.character = C.Character(self, health = health, min_damage=min_damage, max_damage = max_damage)
 
         self.asleep = False
         self.flee = False
 
-        self.character.experience_given = 0
-        self.brain = ai.Monster_AI(self)
+        self.character.experience_given = experience_given
+        self.brain = brain(self)
         self.skills = []
         self.orb = False
         self.kill_count = 0
-        self.rarity = "Common"
+        self.rarity = rarity
 
         self.type = {"wood": False,
                      "stone": False,
@@ -58,10 +58,9 @@ class Monster(O.Objects):
 
 class Kobold(Monster):
     def __init__(self, x=-1, y=-1, render_tag=1010, name="Kobold"):
-        super().__init__(x=x, y=y, render_tag = render_tag, name = name)
+        super().__init__(x=x, y=y, render_tag = render_tag, name = name, experience_given=10,health=20)
         self.skills = []
         self.character.skills.append(S.BurningAttack(self, cooldown=10, cost=0, damage=10, burn_damage=4, burn_duration=5, range=1.5))
-        self.character.experience_given = 10
         self.character.health = 10
         self.character.max_health = 10
         self.endurance = 0
@@ -73,52 +72,46 @@ class Kobold(Monster):
 
 class Slime(Monster):
     def __init__(self, x=-1, y=-1, render_tag=1100, name="Slime"):
-        super().__init__(x=x, y=y, render_tag = render_tag, name = name)
-        self.brain = ai.Slime_AI(self)
-        self.skills = []
-        self.character.experience_given = 5
-        self.character.health = 5
-        self.character.max_health = 5
-        self.character.unarmed_damage_min = 1
-        self.character.unarmed_damage_max = 1
+        super().__init__(x=x, y=y, render_tag = render_tag, name = name, experience_given=5,brain = ai.Slime_AI,health=5, min_damage=1,max_damage=1)
 
         self.description = "A small blob of experienc... I mean ooze."
         self.character.action_costs["grab"] = 0
 
-
+"""
+GOBLIN
++ Finds and pickups items
+- Melee combat
+"""
 class Goblin(Monster):
-    def __init__(self, x = -1, y=-1, render_tag=1000, name="Goblin", activation_threshold=0.4):
-        super().__init__(x=x, y=y, render_tag = render_tag, name = name)
-        self.brain = ai.Goblin_AI(self)
-        self.character.skills = []
+    def __init__(self, x=-1, y=-1, render_tag=1000, name="Goblin", experience_given=10, health=10, min_damage=3, max_damage=5, rarity = "Common", brain = ai.Goblin_AI):
+        super().__init__(x=x, y=y, render_tag = render_tag, name = name, experience_given=experience_given, health=health, min_damage=min_damage, max_damage=max_damage, rarity = rarity, brain = brain)
         self.character.skills.append(S.Escape(self, cooldown=100, 
                                               cost=0, self_fear=True, 
                                               dex_buff=20, str_debuff=20, int_debuff=20, haste_duration=-100,
-                                              activation_threshold=activation_threshold, 
+                                              activation_threshold=.2,
                                               action_cost=1))
-        self.character.experience_given = 10
-
-        self.character.action_costs["move"] = 75
+        self.character.action_costs["move"] = 50
         self.character.action_costs["grab"] = 20
 
-        dagger = I.Dagger()
-        self.character.inventory.append(dagger)
-        self.character.equip(dagger)
-
         self.description = "A cowardly creature that some adventurers nicknamed \"Loot Pinata\"."
-        self.character.health = 10
-        self.character.max_health = 10
 
         self.strength = 1
         self.dexterity = 1
         self.endurance = 0
         self.intelligence = 0
-        self.character.armor = 0
 
     def die(self):
         corpse = I.Corpse(self.x, self.y, -1, 199, self.name + " Monster Corpse")
         corpse.monster_type = self.name #Should be fixed to monster type at some point
         return corpse
+
+class Looter(Goblin):
+    def __init__(self, x=-1, y=-1, render_tag=1009, name="Looter", experience_given=25, health=100, min_damage=3,
+                 max_damage=8, rarity="Rare"):
+        super().__init__(x=x, y=y, render_tag=render_tag, name=name, experience_given=experience_given, health=health,
+                         min_damage=min_damage, max_damage=max_damage, rarity=rarity)
+        self.character.action_costs["move"] = 25
+        self.character.action_costs["grab"] = 1
 
 class GoblinShaman(Monster):
     def __init__(self, x=-1, y=-1, render_tag=1001, name="Goblin Shaman", activation_threshold=0.4):
@@ -161,6 +154,8 @@ class Hobgoblin(Monster):
         self.intelligence = 4
         self.character.armor = 0
 
+
+
 class Gargoyle(Monster):
     def __init__(self, x=-1, y=-1, render_tag=1020, name="Gargoyle"):
         super().__init__(x=x, y=y, render_tag = render_tag, name = name)
@@ -201,22 +196,31 @@ class Minotaur(Monster):
         self.endurance = 3
         self.intelligence = 0
         self.character.armor = 0
-
+"""
+ORC
++ Combat
+- Not very smart
+"""
 class Orc(Monster):
-    def __init__(self, x=-1, y=-1, render_tag=1070, name="Orc"):
-        super().__init__(x=x, y=y, render_tag = render_tag, name = name)
+    def __init__(self, x=-1, y=-1, render_tag=1070, name="Orc", experience_given=20, health=30, min_damage=5, max_damage=10, rarity = "Common"):
+        super().__init__(x=x, y=y, render_tag = render_tag, name = name, experience_given=experience_given, health=health, min_damage=min_damage, max_damage=max_damage, rarity = rarity)
         self.character.skills = []
         # below 25% health, gains 25 strength
         self.character.skills.append(S.Berserk(self, cooldown=0, cost=0, duration=-100, activation_threshold=0.25, strength_increase=10, action_cost=1))
-        self.character.experience_given = 20
         self.description = "A strong humanoid with anger issues."
-        self.character.health = 30
-        self.character.max_health = 30
         self.strength = 3
         self.dexterity = 0
         self.endurance = 3
         self.intelligence = 0
         self.character.armor = 1
+
+class Bobby(Orc):
+    def __init__(self, x=-1, y=-1):
+        super().__init__(x=x, y=y, render_tag=1079, name="Bobby", experience_given=45, health=50,
+                     min_damage=10, max_damage=20, rarity="Rare")
+
+#########
+
 class Golem(Monster):
     def __init__(self, x=-1, y=-1, render_tag=1080, name="Golem"):
         super().__init__(x=x, y=y, render_tag = render_tag, name = name)

@@ -27,7 +27,13 @@ ItemSpawns.append(ItemSpawnParams( I.Ax(300),                 1,               5
 ItemSpawns.append(ItemSpawnParams( I.Hammer(301),             1,               5,          0,              0))
 ItemSpawns.append(ItemSpawnParams( I.Dagger(),             1,               5,          0,              0))
 ItemSpawns.append(ItemSpawnParams( I.MagicWand(332),          2,               10,          1,              1))
+
 ItemSpawns.append(ItemSpawnParams( I.Sword(),           1,               5,          1,              5))
+ItemSpawns.append(ItemSpawnParams( I.BroadSword(),           1,               5,          1,              5))
+ItemSpawns.append(ItemSpawnParams( I.LongSword(),           1,               5,          1,              5))
+ItemSpawns.append(ItemSpawnParams( I.Claymore(),           1,               5,          1,              5))
+ItemSpawns.append(ItemSpawnParams( I.TwoHandedSword(),           1,               5,          1,              5))
+ItemSpawns.append(ItemSpawnParams( I.GreatSword(),           1,               5,          1,              5))
 
 ItemSpawns.append(ItemSpawnParams( I.ScreamingDagger(322),           1,               10,          1,              1))
 ItemSpawns.append(ItemSpawnParams( I.SleepingSword(341),           3,               10,          1,              1))
@@ -339,6 +345,9 @@ MonsterSpawns = []
 MonsterSpawns.append(MonsterSpawnParams(M.Slime(), 1, 2, 1, 5))
 MonsterSpawns.append(MonsterSpawnParams(M.Goblin(-1, -1), 1, 3, 0, 0))
 MonsterSpawns.append(MonsterSpawnParams(M.Hobgoblin(-1, -1), 1, 3, 0, 0))
+MonsterSpawns.append(MonsterSpawnParams(M.Looter(), 1, 3, 1, 1))
+
+
 MonsterSpawns.append(MonsterSpawnParams(M.Kobold(-1, -1), 1, 3, 0, 0))
 MonsterSpawns.append(MonsterSpawnParams(M.GoblinShaman(-1, -1), 3, 5, 0, 0))
 MonsterSpawns.append(MonsterSpawnParams(M.Stumpy(), 1, 5, 1, 1))
@@ -347,6 +356,8 @@ MonsterSpawns.append(MonsterSpawnParams(M.Stumpy(), 1, 5, 1, 1))
 MonsterSpawns.append(MonsterSpawnParams(M.Gargoyle(-1, -1), 4, 6, 0, 0))
 MonsterSpawns.append(MonsterSpawnParams(M.Minotaur(-1, -1), 4, 6, 0, 0))
 MonsterSpawns.append(MonsterSpawnParams(M.Orc(-1, -1), 4, 6, 0, 0))
+MonsterSpawns.append(MonsterSpawnParams(M.Bobby(), 1, 6, 0, 1))
+
 
 MonsterSpawns.append(MonsterSpawnParams(M.Raptor(-1, -1), 7, 9, 0, 0))
 MonsterSpawns.append(MonsterSpawnParams(M.Tormentorb(-1, -1), 8, 9, 0, 0))
