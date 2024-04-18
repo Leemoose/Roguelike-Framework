@@ -696,11 +696,7 @@ class Display:
                 self.buttons.add(button, chr(ord("a") + i))
 
         self.uiManager.draw_ui(self.win)
-        return self.buttons     
-
-    def update_inventory(self, player, equipment_type=None):
-        self.win.fill((0,0,0))
-        self.uiManager.draw_ui(self.win)
+        return self.buttons
     
     def draw_on_button(self, button, img, letter="", button_size=None, shrink=False, offset_factor = 10, text_offset = (15, 0.8)):
         offset = (0, 0)
@@ -1053,14 +1049,6 @@ class Display:
                                   height = medium_button_height * 3 + margin_between_buttons_height * 2)       
         self.uiManager.draw_ui(self.win)
 
-    def update_equipment(self, player, tileMap):       
-        self.win.fill((0,0,0))
-        self.uiManager.draw_ui(self.win)
-
-    def update_victory_screen(self):       
-        self.win.fill((0,0,0))
-        self.uiManager.draw_ui(self.win)
-
     def refresh_screen(self):
         self.uiManager.clear_and_reset()
 
@@ -1121,11 +1109,6 @@ class Display:
             manager=self.uiManager,
             starting_height=1000)
         quit.action = 'q'
-
-
-    def update_pause_screen(self):
-        self.uiManager.draw_ui(self.win)
-
     def stat_text(self, entity, stat):
         return str(stat)
 
@@ -1185,7 +1168,7 @@ class Display:
         esc_button.action = "esc"
 
 
-    def update_main(self):
+    def update_main(self,loop):
     #Main Screen
         self.win.fill((0,0,0))
         self.uiManager.draw_ui(self.win)
@@ -1195,7 +1178,10 @@ class Display:
         self.win.blit(pygame.transform.scale(pygame.image.load('assets/yendorb_deactivated.png'),(image_size,image_size)), (image_offset_from_left, image_offset_from_top))
         font = pygame.font.Font('freesansbold.ttf', 12)
 
-    def update_entity(self, entity, tileDict, player, item_screen = True, create = False):
+    def update_entity(self, loop, item_screen = True, create = False):
+        entity = loop.screen_focus
+        tileDict = loop.tileDict
+        player = loop.player
         if create == True:
             self.uiManager.clear_and_reset()
         self.win.fill((0,0,0))
@@ -1742,11 +1728,6 @@ class Display:
 
         return buttons
 
-    def update_help(self):
-    #Main Screen
-        self.win.fill((0,0,0))
-        self.uiManager.draw_ui(self.win)
-
     def create_story_screen(self, loop):
         button_width = self.screen_width // 4
         button_height = self.screen_height // 8
@@ -1795,8 +1776,11 @@ class Display:
 
         return buttons
     
-    def update_story_screen(self):
+    def update_screen(self, loop):
         self.win.fill((0,0,0))
+        self.uiManager.draw_ui(self.win)
+
+    def update_screen_without_fill(self, loop):
         self.uiManager.draw_ui(self.win)
 
     def create_death_screen(self, loop):
@@ -1825,10 +1809,6 @@ class Display:
             text = "You have died.",
             manager=self.uiManager
         )
-
-    def update_death_screen(self):
-        self.win.fill((0,0,0))
-        self.uiManager.draw_ui(self.win)
 
     def create_trade_screen(self, loop):
         self.uiManager.clear_and_reset()
@@ -1865,7 +1845,6 @@ class Display:
         message_offset_from_top = button_offset_from_top + (trading_screen_height - trading_title_height) * 2 // 3
         message_height = self.screen_height - message_offset_from_top - trading_offset_from_top
 
-        self.uiManager.clear_and_reset()
         pygame.draw.rect(self.win, (50,50,50), pygame.Rect(trading_offset_from_left - 10, trading_offset_from_top-10, trading_screen_width + 20, trading_screen_height+20))
         pygame.draw.rect(self.win, (0,0,0), pygame.Rect(trading_offset_from_left, trading_offset_from_top, trading_screen_width, trading_screen_height))
 
@@ -1905,21 +1884,64 @@ class Display:
                 button.action = chr(ord("a") + i)
 
 
-    def update_trade_screen(self, loop):
-        self.uiManager.draw_ui(self.win)
+    def update_questpopup_screen(self, loop, message):
+        pygame.draw.rect(self.win, (0, 0, 0),
+                         pygame.Rect(0, 0, 300,
+                                     100))
+        font = pygame.font.SysFont("Ariel",25)
+        text = font.render(message, True, (255, 255, 255))
+        self.win.blit(text, (25, 25))
 
-        # pygame_gui.elements.UILabel(relative_rect=pygame.Rect((equipment_message_offset_from_left, equipment_message_offset_from_top),
-        #                                                       (equipment_message_width, equipment_message_height)),
-        #                             text="Equipment",
-        #                             manager=self.uiManager,
-        #                             object_id='#title_label')
-        #
-        # button = pygame_gui.elements.UIButton(
-        #                 relative_rect=pygame.Rect((first_col_offset_from_left,
-        #                                            outer_cols_offset_from_top),
-        #                                           (medium_button_width, medium_button_height)),
-        #                 text = pre_text + "shield",
-        #                 manager=self.uiManager,
-        #                 object_id='#equipment_button')
-        # #self.draw_on_button(button, img, "q", (medium_button_width, medium_button_height))
-        # button.action = 'q'
+
+    def create_quest_screen(self, loop):
+        self.uiManager.clear_and_reset()
+
+        trading_screen_width = self.screen_width * 2 // 3
+        trading_screen_height = self.screen_height * 2 // 3
+        trading_offset_from_left = (self.screen_width - trading_screen_width) // 2
+        trading_offset_from_top = (self.screen_height - trading_screen_height) // 2
+
+        trading_title_width = trading_screen_width
+        trading_title_height = trading_screen_height // 6
+        trading_title_offset_from_left = trading_offset_from_left
+        trading_title_offset_from_top = trading_offset_from_top
+
+        num_option_buttons = 6
+        option_button_offset_from_left = trading_offset_from_left
+        option_button_offset_from_top = trading_title_offset_from_top + trading_title_height
+        option_button_width = (trading_screen_width) // (num_option_buttons + 1)
+        option_button_height =((trading_screen_height - trading_title_height) // 8)
+        option_margin_between_buttons_width = (option_button_width) // (num_option_buttons + 1)
+
+        message_width = trading_screen_width
+        message_offset_from_left = trading_offset_from_left
+        message_offset_from_top = option_button_offset_from_top + option_button_height + 10
+        message_height = self.screen_height - message_offset_from_top - trading_offset_from_top
+
+        pygame.draw.rect(self.win, (50,50,50), pygame.Rect(trading_offset_from_left - 10, trading_offset_from_top-10, trading_screen_width + 20, trading_screen_height+20))
+        pygame.draw.rect(self.win, (0,0,0), pygame.Rect(trading_offset_from_left, trading_offset_from_top, trading_screen_width, trading_screen_height))
+
+        self.draw_escape_button(trading_offset_from_left, trading_offset_from_top, trading_screen_width, trading_screen_height)
+        pygame_gui.elements.UILabel(relative_rect=pygame.Rect((trading_title_offset_from_left, trading_title_offset_from_top),
+                                                               (trading_title_width, trading_title_height)),
+                                     text="Active Quests",
+                                     manager=self.uiManager,
+                                     object_id='#title_label')
+
+        text_box = pygame_gui.elements.UITextBox(
+            relative_rect=pygame.Rect((message_offset_from_left, message_offset_from_top), (message_width, message_height)),
+
+            html_text="You've heard rumors of young men going missing in the depths of this place. Their souls were sucked clean from their body. Investigate"
+            ,
+            manager=self.uiManager
+        )
+
+        options = loop.player.quests
+        for i in range(len(options)):
+            button = pygame_gui.elements.UIButton(
+                relative_rect=pygame.Rect((option_button_offset_from_left +option_margin_between_buttons_width + i * (option_margin_between_buttons_width + option_button_width),
+                                           option_button_offset_from_top),
+                                          (option_button_width, option_button_height)),
+                text= chr(ord("1") + i) +". "+ "{} Quest".format(options[i]),
+                manager=self.uiManager)
+            button.action = chr(ord("1") + i)

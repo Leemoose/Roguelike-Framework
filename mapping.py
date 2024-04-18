@@ -336,31 +336,14 @@ class DungeonGenerator():
         self.place_monsters(depth)
         self.place_npcs(depth)
 
+    def get_random_location(self, stairs_block = True):
+        startx = random.randint(0, self.width - 1)
+        starty = random.randint(0, self.height - 1)
+        while (not self.get_passable((startx,starty)) or (not stairs_block or self.on_stairs(startx, starty))):
+            startx = random.randint(0, self.width - 1)
+            starty = random.randint(0, self.height - 1)
+        return startx, starty
 
-        """
-        for x in range(self.width):
-            self.tile_map.append([O.Tile(x, y, 1, False) for y in range(self.height)])
-        maxtunnels = 40
-        maxlength = 6
-        currentx = random.randint(0, self.width - 1)
-        currenty = random.randint(0,self.height - 1)
-        tile = O.Tile(currentx, currenty, 0, True)
-        self.tile_map[currentx][currenty] = tile
-        carve_direction = (0,0)
-        while maxtunnels > 0:
-            xdelta, ydelta = self.random_direction(old = carve_direction)
-            while (not self.in_map(currentx+xdelta, currenty + ydelta)):
-                xdelta, ydelta = self.random_direction(old = carve_direction)
-            carve_direction = (xdelta, ydelta)
-            carve_length = random.randint(1,maxlength)
-            while carve_length > 0 and self.in_map(currentx+xdelta, currenty + ydelta):
-                currentx = currentx + xdelta
-                currenty = currenty + ydelta
-                tile = O.Tile(currentx, currenty, 0, True)
-                self.tile_map[currentx][currenty] = tile
-                carve_length -= 1
-            maxtunnels -= 1
-"""
     def monsters_in_sight(self):
         in_sight = []
         for monster in self.monster_map.all_entities():
@@ -456,7 +439,6 @@ class DungeonGenerator():
             return True
         return False
 
-
     def nearest_empty_tile(self, location, move = False, search = False):
       #  import pdb; pdb.set_trace()
         if location == None:
@@ -470,10 +452,8 @@ class DungeonGenerator():
             return self.flood_map.update_flood_map(location)
         return None
 
-
     def in_map(self, x, y):
        return x> 0 and x < self.width and y >0 and y < self.height
-
 
     def random_direction(self, old):
         directions = [(0,1),(0,-1),(1,0),(-1,0)]
@@ -483,35 +463,6 @@ class DungeonGenerator():
             new = directions[ran]
         return new
 
-
-    """   
-        rooms = R.roll_square_rooms(0, self.width, 3, 20, 0, self.height, 3, 20, 5)
-        for room in rooms:
-            startx = room[0]
-            starty = room[1]
-            length = room[2]
-            depth = room[3]
-            self.square_room(startx, starty, length, depth)
-
-        rooms = R.roll_square_rooms(0, self.width, 1, 4, 0, self.height, 3, 20, 30)
-        for room in rooms:
-            startx1 = room[0]
-            starty2 = room[1]
-            length = room[2]
-            depth = room[3]
-            self.square_room(startx, starty, length, depth)
-        
- #       self.square_room(startx, starty, startx1 - startx, 1)
-
-        rooms = R.roll_square_rooms(0, self.width, 3, 20, 0, self.height, 1, 4, 30)
-        for room in rooms:
-            startx = room[0]
-            starty = room[1]
-            length = room[2]
-            depth = room[3]
-            self.square_room(startx, starty, length, depth)
-
-"""
     def square_room(self, startx, starty, length, depth):
         for x in range(length):
             for y in range(depth):
@@ -524,22 +475,9 @@ class DungeonGenerator():
         for monster in monsterSpawns:
             self.place_monster(monster)
 
-
     def place_monster(self, creature):
-        startx = random.randint(0, self.width-1)
-        starty = random.randint(0,self.height-1)
-
-        check_on_stairs = self.on_stairs(startx, starty, self.tile_map.stairs)
-        
-        while ((self.tile_map.get_passable(startx, starty) == False) or 
-               (self.monster_map.get_passable(startx, starty) == False) or
-               (self.tile_map.track_map[startx][starty].visible) or
-               check_on_stairs):
-            startx = random.randint(0, self.width-1)
-            starty = random.randint(0,self.height-1)
-            check_on_stairs = self.on_stairs(startx, starty, self.tile_map.stairs)
-        
-        self.place_monster_at_location(creature, startx, starty)
+        x, y = self.get_random_location()
+        self.place_monster_at_location(creature, x, y)
 
     def place_monster_at_location(self, creature, x, y):
         creature.x = x
@@ -547,26 +485,15 @@ class DungeonGenerator():
         self.monster_map.place_thing(creature)
 
     def place_npcs(self, depth):
-        startx = random.randint(0, self.width - 1)
-        starty = random.randint(0, self.height - 1)
+        if depth == 1:
+            startx, starty = self.get_random_location()
+            npc = N.Bob(110, startx, starty)
+            directions = [(0, 1), (0, -1), (1, 0), (-1, 0), (1, 1), (-1, -1), (1, -1), (-1, 1)]
+            for change in directions:
+                if not self.tile_map.get_passable(startx + change[0], starty + change[1]):
+                    self.tile_map.track_map[startx + change[0]][starty + change[1]] = O.Tile(startx + change[0], starty + change[1], 2, True)
 
-        check_on_stairs = self.on_stairs(startx, starty, self.tile_map.stairs)
-
-        while ((self.tile_map.get_passable(startx, starty) == False) or
-               (self.monster_map.get_passable(startx, starty) == False) or
-               (self.tile_map.track_map[startx][starty].visible) or
-               check_on_stairs):
-            startx = random.randint(0, self.width - 1)
-            starty = random.randint(0, self.height - 1)
-            check_on_stairs = self.on_stairs(startx, starty, self.tile_map.stairs)
-
-        npc = N.NPC(110, startx, starty)
-        directions = [(0, 1), (0, -1), (1, 0), (-1, 0), (1, 1), (-1, -1), (1, -1), (-1, 1)]
-        for change in directions:
-            if not self.tile_map.get_passable(startx + change[0], starty + change[1]):
-                self.tile_map.track_map[startx + change[0]][starty + change[1]] = O.Tile(startx + change[0], starty + change[1], 2, True)
-
-        self.npc_dict.tag_subject(npc)
+            self.npc_dict.tag_subject(npc)
 
     def place_items(self, depth):
         itemSpawns = Spawns.item_spawner.spawnItems(depth)
@@ -580,8 +507,8 @@ class DungeonGenerator():
             self.place_item(item, force_near_stairs)
             force_near_stairs = False
 
-    def on_stairs(self, x, y, stairs):
-        for stair in stairs:
+    def on_stairs(self, x, y):
+        for stair in self.tile_map.stairs:
             if stair.x == x and stair.y == y:
                 return True
         return False
@@ -591,7 +518,7 @@ class DungeonGenerator():
         starty = random.randint(0,self.height-1)
 
         # make sure the item is placed on a passable tile that does not already have an item and is not stairs
-        check_on_stairs = self.on_stairs(startx, starty, self.tile_map.stairs)
+        check_on_stairs = self.on_stairs(startx, starty)
         if force_near_stairs:
             directions = [(0, 1), (1, 0), (-1, 0), (0, -1), (1, 1), (-1, 1), (1, -1), (-1, -1)]
             while ((self.tile_map.get_passable(startx, starty) == False) or
@@ -605,7 +532,7 @@ class DungeonGenerator():
                 check_on_stairs):
                 startx = random.randint(0, self.width-1)
                 starty = random.randint(0,self.height-1)
-                check_on_stairs = self.on_stairs(startx, starty, self.tile_map.stairs)
+                check_on_stairs = self.on_stairs(startx, starty)
             
         item.x = startx
         item.y = starty

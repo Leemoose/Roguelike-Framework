@@ -37,7 +37,7 @@ class LoopType(Enum):
     targeting = 11
     specific_examine = 12
     enchant = 13
-
+    quest = 14
     level_up = 15
     victory = 16
     help = 17
@@ -108,6 +108,7 @@ class Loops():
         self.timer = 0
         self.taking_stairs = False
         self.npc_focus = None
+        self.quest_recieved = False
 
         self.create_display_options = {LoopType.action: self.display.create_display,
                                        LoopType.targeting: self.display.create_display,
@@ -122,9 +123,24 @@ class Loops():
                                        LoopType.help: self.display.create_help_screen,
                                        LoopType.story: self.display.create_story_screen,
                                        LoopType.death: self.display.create_death_screen,
-                                       LoopType.trade: self.display.create_trade_screen
+                                       LoopType.trade: self.display.create_trade_screen,
+                                       LoopType.quest: self.display.create_quest_screen
                                        }
-        self.action_options =           {LoopType.action: keyboard.key_action,
+        self.update_display_options = {
+                                       LoopType.victory: self.display.update_screen,
+                                       LoopType.death: self.display.update_screen,
+                                       LoopType.help: self.display.update_screen,
+                                       LoopType.story: self.display.update_screen,
+                                       LoopType.trade: self.display.update_screen_without_fill,
+                                       LoopType.level_up: self.display.update_level_up,
+                                       LoopType.equipment: self.display.update_screen,
+                                       LoopType.main: self.display.update_main,
+                                       LoopType.quest: self.display.update_screen_without_fill,
+                                        LoopType.paused: self.display.update_screen_without_fill,
+                                        LoopType.inventory: self.display.update_screen,
+                                        LoopType.enchant: self.display.update_screen
+                                       }
+        self.action_options =          {LoopType.action: keyboard.key_action,
                                        LoopType.inventory: keyboard.key_inventory,
                                        LoopType.level_up: keyboard.key_level_up,
                                        LoopType.victory: keyboard.key_victory,
@@ -139,7 +155,8 @@ class Loops():
                                        LoopType.death: keyboard.key_death,
                                        LoopType.main: keyboard.key_main_screen,
                                        LoopType.paused: keyboard.key_paused,
-                                       LoopType.trade: keyboard.key_trade
+                                       LoopType.trade: keyboard.key_trade,
+                                        LoopType.quest: keyboard.key_quest
                                        }
 
         # Start the game by going to the main screen
@@ -147,12 +164,13 @@ class Loops():
     # Sets the internal loop type, and does the initialization that it needs.
     # Mostly here to cache UI pieces, which shouldn't be remade every frame.
     def change_loop(self, newLoop):
+        print(self.currentLoop, newLoop)
         self.currentLoop = newLoop
         self.update_screen = True
         if newLoop in self.create_display_options:
             self.create_display_options[newLoop](self)
         elif newLoop == LoopType.items:
-            self.display.update_entity(self.screen_focus, self.tileDict, self.player, item_screen=True, create=True)
+            self.display.update_entity(self, item_screen=True, create=True)
 
     def action_loop(self, keyboard, display):
         """
@@ -238,70 +256,58 @@ class Loops():
                     self.add_message("The summoning fizzled.")
             self.generator.summoner = []
 
-    def render_screen(self, keyboard, display,tileDict):
-        if self.currentLoop == LoopType.action:
-            self.clean_up()
-            shadowcasting.compute_fov(self)
-            display.update_display(self)
+    def render_screen(self, display):
+        if self.currentLoop in self.update_display_options:
+            self.update_display_options[self.currentLoop](self)
+        else:
             if self.currentLoop == LoopType.action:
+                self.clean_up()
+                shadowcasting.compute_fov(self)
+                display.update_display(self)
+                if self.currentLoop == LoopType.action:
+                    mos_x, mos_y = pygame.mouse.get_pos()
+                    (x, y) = display.screen_to_tile(self.player, mos_x, mos_y)
+                    draw_screen_focus = True
+                    if self.generator.tile_map.in_map(x, y):
+                        if self.generator.tile_map.track_map[x][y].visible and self.generator.tile_map.get_passable(x,
+                                                                                                                    y) and (
+                                (not self.generator.monster_map.get_passable(x, y)) or (
+                        not self.generator.item_map.get_passable(x, y))):
+                            # print(self.generator.monster_map.get_passable(x,y), self.generator.item_map.get_passable(x,y))
+                            display.draw_examine_window((x, y), self)
+                            draw_screen_focus = False
+                    if draw_screen_focus:
+                        if self.screen_focus != None:
+                            clear_target = display.draw_examine_window(self.screen_focus, self)
+                            if clear_target:
+                                self.screen_focus = None
+            elif self.currentLoop == LoopType.items:
+                display.update_entity(self)
+            elif self.currentLoop == LoopType.examine or self.currentLoop == LoopType.targeting:
+                display.update_display(self)
                 mos_x, mos_y = pygame.mouse.get_pos()
                 (x, y) = display.screen_to_tile(self.player, mos_x, mos_y)
-                draw_screen_focus = True
+                self.draw_screen_focus = True
                 if self.generator.tile_map.in_map(x, y):
-                    if self.generator.tile_map.track_map[x][y].visible and self.generator.tile_map.get_passable(x,
-                                                                                                                y) and (
+                    if self.generator.tile_map.track_map[x][y].visible and self.generator.tile_map.get_passable(x, y) and (
                             (not self.generator.monster_map.get_passable(x, y)) or (
                     not self.generator.item_map.get_passable(x, y))):
-                        # print(self.generator.monster_map.get_passable(x,y), self.generator.item_map.get_passable(x,y))
                         display.draw_examine_window((x, y), self)
-                        draw_screen_focus = False
-                if draw_screen_focus:
+                        self.draw_screen_focus = False
+                if self.draw_screen_focus:
                     if self.screen_focus != None:
                         clear_target = display.draw_examine_window(self.screen_focus, self)
                         if clear_target:
                             self.screen_focus = None
-        elif self.currentLoop == LoopType.inventory or self.currentLoop == LoopType.enchant:
-            display.update_inventory(self.player, self.limit_inventory)
-        elif self.currentLoop == LoopType.level_up:
-            # display.update_display(self)
-            display.update_level_up(self)
-        elif self.currentLoop == LoopType.victory:
-            display.update_victory_screen()
-        elif self.currentLoop == LoopType.equipment:
-            display.update_equipment(self.player, tileDict)
-        elif self.currentLoop == LoopType.main:
-            display.update_main()
-        elif self.currentLoop == LoopType.items:
-            display.update_entity(self.screen_focus, tileDict, self.player)
-        elif self.currentLoop == LoopType.examine or self.currentLoop == LoopType.targeting:
-            display.update_display(self)
-            mos_x, mos_y = pygame.mouse.get_pos()
-            (x, y) = display.screen_to_tile(self.player, mos_x, mos_y)
-            self.draw_screen_focus = True
-            if self.generator.tile_map.in_map(x, y):
-                if self.generator.tile_map.track_map[x][y].visible and self.generator.tile_map.get_passable(x, y) and (
-                        (not self.generator.monster_map.get_passable(x, y)) or (
-                not self.generator.item_map.get_passable(x, y))):
-                    display.draw_examine_window((x, y), self)
-                    self.draw_screen_focus = False
-            if self.draw_screen_focus:
-                if self.screen_focus != None:
-                    clear_target = display.draw_examine_window(self.screen_focus, self)
-                    if clear_target:
-                        self.screen_focus = None
-            display.update_examine(self.targets.target_current, self)
-        elif self.currentLoop == LoopType.paused:
-            display.update_pause_screen()
-        elif self.currentLoop == LoopType.specific_examine:
-            display.update_entity(self.screen_focus, tileDict, self.player, item_screen=False, create=True)
-        elif self.currentLoop == LoopType.help:
-            display.update_help()
-        elif self.currentLoop == LoopType.story:
-            display.update_story_screen()
-        elif self.currentLoop == LoopType.death:
-            display.update_death_screen()
-        elif self.currentLoop == LoopType.trade:
-            display.update_trade_screen(self)
+                display.update_examine(self.targets.target_current, self)
+
+            elif self.currentLoop == LoopType.specific_examine:
+                display.update_entity(self, item_screen=False, create=True)
+
+        if self.quest_recieved == True:
+            display.update_questpopup_screen(self, "{} Quest Recieved".format(self.player.quests[-1]))
+            self.quest_recieved = False
+
         pygame.display.update()
         self.update_screen = False
 

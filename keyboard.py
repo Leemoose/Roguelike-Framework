@@ -118,7 +118,7 @@ class Keyboard():
         elif key == "i":
           #  loop.limit_inventory = None
             loop.change_loop(LoopType.inventory)
-        elif key == "e" or key == "c":
+        elif key == "e":
             loop.change_loop(LoopType.equipment)
         elif key == "q":
             loop.limit_inventory = "Potiorb"
@@ -159,6 +159,8 @@ class Keyboard():
             loop.change_loop(LoopType.paused)
         elif key == "z":
             player.character.rest(loop, loop.currentLoop)
+        elif key == 'c':
+            loop.change_loop(LoopType.quest)
         elif key == "tab":
             player.smart_attack(loop)
         elif key.isdigit():
@@ -437,6 +439,10 @@ class Keyboard():
     def key_help(self, loop, key):
         if key == "esc":
             loop.change_loop(LoopType.main)
+
+    def key_quest(self, loop, key):
+        if key == "esc":
+            loop.change_loop(LoopType.action)
 
     def key_death(self, loop, key):
         if key == "esc":

@@ -34,6 +34,8 @@ class Player(O.Objects):
                      "beast": False
                      }
 
+        self.quests = []
+
         if self.invincible:  # only get the gun if you're invincible at the start
             self.mage.known_spells.extend([
                 S.Gun(self),  # 1

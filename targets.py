@@ -78,8 +78,6 @@ class Target:
     def explain_target(self, loop):
         x, y = self.target_current
         monster_map = loop.generator.monster_map
-        monster_dict = loop.generator.monster_dict
-        item_dict = loop.generator.item_dict
         item_map = loop.generator.item_map
         tile_map = loop.generator.tile_map.track_map
         if not tile_map[x][y].visible:

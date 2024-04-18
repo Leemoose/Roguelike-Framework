@@ -131,54 +131,6 @@ class Awaken_Monsters(Skill):
             monster = monster_dict.get_subject(monster_key)
             monster.brain.is_awake = True
 
-class Monster_Lullaby(Skill):
-    def __init__(self, parent, cooldown, cost):
-        super().__init__("Monster Lullaby", parent, cooldown, cost)
-        self.effect = E.Asleep(10)
-
-    def activate(self, loop, bypass = False):
-        generator = loop.generator
-        player = loop.player
-        tile_map = generator.tile_map
-        monster_map = generator.monster_map
-        monster_dict = generator.monster_dict
-        for monster_key in monster_dict.subjects:
-            monster = monster_dict.get_subject(monster_key)
-            if tile_map.track_map[monster.x][monster.y].visible:
-                monster.character.add_status_effect(self.effect)
-                self.effect.apply_effect(monster.character)
-
-
-class Teleport(Skill):
-    def __init__(self, parent, cooldown, cost):
-        super().__init__("Teleport", parent, cooldown, cost)
-        self.can_teleport = True
-        self.render_tag = 914
-
-    def activate(self, target, generator, bypass = False):
-        # teleport is assumed to be self-targetting for now, so target does nothing
-        if self.can_teleport or bypass:
-            tile_map = generator.tile_map
-            width = generator.width
-            height = generator.height
-            startx = random.randint(0, width - 1)
-            starty = random.randint(0, height - 1)
-
-            while (tile_map.get_passable(startx, starty) == False):
-                startx = random.randint(0, width - 1)
-                starty = random.randint(0, height - 1)
-            if isinstance(self.parent, C.Player):
-                self.parent.x = startx
-                self.parent.y = starty
-                return
-            elif isinstance(self.parent, M.Monster):
-                monster_map = generator.monster_map
-                x, y = self.parent.x, self.parent.y
-                monster_map.clear_location(x, y)
-                self.parent.x = startx
-                self.parent.y = starty
-                monster_map.place_thing(self.parent)
-
 
 # !!! keep monster exclusive for now, pathing breaks if a player tries to use it !!!
 class BlinkStrike(Skill):
@@ -209,28 +161,6 @@ class BlinkStrike(Skill):
 
 
 # player exclusive skill
-class BlinkToEmpty(Skill):
-    def __init__(self, parent, cooldown, cost, range, action_cost):
-        super().__init__("Blink", parent, cooldown, cost, range, action_cost)
-        self.targets_monster = False
-        self.targetted = True
-    
-    def activate(self, target, generator):
-        self.parent.character.mana -= self.cost
-        self.parent.x, self.parent.y = target[0], target[1] # if targets_monster is false, target is a tuple
-        return True
-    
-    def in_range(self, target):
-        return self.parent.get_distance(target[0], target[1]) <= self.range
-
-    def castable(self, target):
-        if type(target) != tuple:
-            return False # if targets_monster is false, target is a tuple, so if we are not targetting a tuple, we can't cast
-        return self.basic_requirements() and self.in_range(target)
-
-    def description(self):
-        return self.name + "(" + str(self.cost) + " cost, " + str(self.cooldown) + " turn cooldown" + ", blink to empty space in range " + str(self.range) + ")"
-
 class MagicMissile(Skill):
     def __init__(self, parent, cooldown, cost, damage, range, action_cost):
         super().__init__("Magic missile", parent, cooldown, cost, range, action_cost)
@@ -509,23 +439,6 @@ class Torment(Skill):
             return self.name + "(" + str(self.cost) + " cost, " + str(self.cooldown) + " turn cooldown" + ", " + str(int(self.damage_percent * 100)) + "% of target's health as damage, " + str(self.slow_amount) + " strength slow permanently)"
         return self.name + "(" + str(self.cost) + " cost, " + str(self.cooldown) + " turn cooldown" + ", " + str(int(self.damage_percent * 100)) + "% of target's health as damage, " + str(self.slow_amount) + " strength slow for " + str(self.duration) + " turns)"
     
-class SummonGoblin(Skill):
-    def __init__(self, parent, cooldown, cost, range, action_cost):
-        super().__init__("Summon Goblin", parent, cooldown, cost, range, action_cost)
-        self.targetted = True
-        self.targets_monster = False
-    
-    def activate(self, target, loop):
-        self.parent.character.mana -= self.cost
-        x, y = target.get_location()
-        location = loop.generator.nearest_empty_tile((x,y))
-        if location != None:
-            goblin = M.Goblin(-1, -1)
-            loop.generator.summoner.append((goblin, location[0], location[1]))
-            return True
-        return False
 
-    def castable(self, target):
-        return self.basic_requirements()
 
 

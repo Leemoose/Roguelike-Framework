@@ -4,8 +4,8 @@ import loops as L
 
 class NPC(O.Objects):
     def __init__(self, render_tag, x, y, name="Unknown npc"):
-        super().__init__(x, y, 0, render_tag, name)
-        self.name = "Bob"
+        super().__init__(x, y, 0, render_tag= render_tag, name = name)
+        self.name = name
         self.items = [I.Ax(300), I.Ax(300), I.Ax(300), I.Ax(300), I.Ax(300), I.Ax(300)]
         self.cost = 5
         self.purpose = None #Trade, gossip,
@@ -35,16 +35,12 @@ class NPC(O.Objects):
 
 
     def trade(self, loop):
-        loop.add_message(loop.player.name + " says: 'You got anything to trade?'")
-        loop.add_message(
-            self.name + " says: 'I may have an ax or two...'")
+        pass
 
     def talk(self, loop):
-        loop.add_message(self.name + " says: 'They say last night Molly's son turned into a gemstone. Can you believe that? Personally, I think he ran off into the night. Good riddance to him.'")
-
+        pass
     def welcome(self, loop):
         loop.messages = []
-        loop.add_message(self.name + " says: 'Welcome weary traveller.'")
         loop.npc_focus = self
 
     def give_quest(self, loop):
@@ -66,7 +62,6 @@ class NPC(O.Objects):
         player = loop.player
         num_goblin_corpses = 0
         for item in loop.player.character.inventory:
-            print(item.name)
             if isinstance(item, I.Corpse) and item.monster_type == "Goblin":
                 num_goblin_corpses += 1
         if num_goblin_corpses == 3:
@@ -80,3 +75,27 @@ class NPC(O.Objects):
         if player.character.get_item(loop, item):
             self.items.pop(number)
             loop.change_loop(L.LoopType.trade)
+
+class Bob(NPC):
+    def __init__(self, render_tag, x, y, name="Bob"):
+        super().__init__(x=x, y=y, render_tag = render_tag, name = name)
+
+    def welcome(self, loop):
+        super().welcome(loop)
+        loop.add_message(self.name + " says: 'I see you have survived til now. Not a very impressive feat to be honest."
+                                     " Charles the blacksmith's son, he came down this way once to show off to his friends."
+                                     " Never made it back. A shame really. There's something in the air, some miasma as you trek deeper and deeper...'")
+
+    def trade(self, loop):
+        super().trade(loop)
+        loop.add_message(loop.player.name + " says: 'Enough with the chit chat. What do you have that can help me out?'")
+        loop.add_message(
+            self.name + " says: 'See for yourself. Nothing special but it'll get the job done.'")
+
+    def talk(self, loop):
+        super().talk(loop)
+        loop.add_message(self.name + " says: 'I didn't scare you off already? There is something foul afoot here. Young boys go missing every month."
+                                     "The seamstress says there's a demon involved, sucking the souls out and leaving nothing but bones."
+                                     " It's an old wives tale. My bet is they're sneaking off to the war.'")
+        loop.quest_recieved = True
+        loop.player.quests.append("Succubus")

@@ -33,5 +33,5 @@ loop.init_game(display)
 loop.change_loop(L.LoopType.main)
 
 while player_turn:
-    loop.render_screen(keyboard, display, tileDict)
+    loop.render_screen(display)
     player_turn = loop.action_loop(keyboard, display)
