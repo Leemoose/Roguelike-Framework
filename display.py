@@ -21,7 +21,7 @@ class Buttons:
         scr.win.blit(text, (scr.screen_width / 2 - text_width / 2, scr.screen_height * 85 / 100 + button.height / 2 - text_height / 2))
         """
 
-
+"""
 class Button:
     # A button is anything in game that you could click
     def __init__(self, screen_width, screen_height, asset, modx, mody, action, positionx, positiony):
@@ -45,7 +45,7 @@ class Button:
 
     def get_position(self):
         return self.positionx - self.width // 2, self.positiony + self.height // 2
-
+"""
 
 class Display:
     """
@@ -73,6 +73,8 @@ class Display:
         self.clock = pygame.time.Clock()
         self.buttons = Buttons()
         self.colorDict = None
+
+        self.quest_number = -1
         
 
     def screen_to_tile(self, player, x, y):
@@ -1927,11 +1929,16 @@ class Display:
                                      text="Active Quests",
                                      manager=self.uiManager,
                                      object_id='#title_label')
+        text = ""
+        if self.quest_number < 1 or self.quest_number > len(loop.player.quests):
+            print("The current quest number does not line up with something that can be displayed")
+        else:
+            text = loop.player.quests[self.quest_number-1].get_description()
 
         text_box = pygame_gui.elements.UITextBox(
             relative_rect=pygame.Rect((message_offset_from_left, message_offset_from_top), (message_width, message_height)),
 
-            html_text="You've heard rumors of young men going missing in the depths of this place. Their souls were sucked clean from their body. Investigate"
+            html_text=text
             ,
             manager=self.uiManager
         )
@@ -1942,6 +1949,6 @@ class Display:
                 relative_rect=pygame.Rect((option_button_offset_from_left +option_margin_between_buttons_width + i * (option_margin_between_buttons_width + option_button_width),
                                            option_button_offset_from_top),
                                           (option_button_width, option_button_height)),
-                text= chr(ord("1") + i) +". "+ "{} Quest".format(options[i]),
+                text= chr(ord("1") + i) +". "+ "{}".format(options[i].name),
                 manager=self.uiManager)
             button.action = chr(ord("1") + i)

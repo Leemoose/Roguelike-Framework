@@ -147,8 +147,7 @@ class Character():
         if not self.is_alive():
             dealer.kill_count += 1
             if hasattr(dealer, "experience"): # acts as a check for it its a player
-                dealer.experience += self.experience_given
-                dealer.check_for_levelup()
+                dealer.gain_experience(self.experience_given)
         return self.is_alive()
 
     def gain_health(self, heal):

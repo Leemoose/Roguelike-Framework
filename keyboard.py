@@ -441,8 +441,13 @@ class Keyboard():
             loop.change_loop(LoopType.main)
 
     def key_quest(self, loop, key):
+        print("Key that you are inputting for quest is: {}".format(key))
         if key == "esc":
             loop.change_loop(LoopType.action)
+        if key in ("1","2","3","4","5","6","7","8","9"):
+            loop.display.quest_number = int(key)
+            print("The new quest number is {}".format(int(key)))
+            loop.change_loop(loop.currentLoop)
 
     def key_death(self, loop, key):
         if key == "esc":

@@ -35,6 +35,7 @@ class Player(O.Objects):
                      }
 
         self.quests = []
+        self.quest_recieved = False
 
         if self.invincible:  # only get the gun if you're invincible at the start
             self.mage.known_spells.extend([
@@ -49,6 +50,9 @@ class Player(O.Objects):
                 # S.Terrify(self, cooldown=0, cost=0, duration=5, activation_chance=1, range=15), #6
                 # S.Escape(self, cooldown=0, cost=0, self_fear=False, activation_threshold=1.1, action_cost=1) #7
             ])
+    def gain_experience(self, experience):
+        self.experience += experience
+        self.check_for_levelup()
 
     def attack_move(self, move_x, move_y, loop):
         if not self.character.movable:
@@ -271,6 +275,10 @@ class Player(O.Objects):
 
     def cast_spell(self, *args):
         self.mage.cast_spell(*args)
+
+    def add_quest(self, quest):
+        self.quests.append(quest)
+        self.quest_recieved = True
 
 
 

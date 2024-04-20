@@ -304,9 +304,9 @@ class Loops():
             elif self.currentLoop == LoopType.specific_examine:
                 display.update_entity(self, item_screen=False, create=True)
 
-        if self.quest_recieved == True:
-            display.update_questpopup_screen(self, "{} Quest Recieved".format(self.player.quests[-1]))
-            self.quest_recieved = False
+        if self.player.quest_recieved == True:
+            display.update_questpopup_screen(self, "{} Recieved".format(self.player.quests[-1].name))
+            self.player.quest_recieved = False
 
         pygame.display.update()
         self.update_screen = False
