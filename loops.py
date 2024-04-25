@@ -183,6 +183,7 @@ class Loops():
             if event.type == pygame.QUIT:
                 return False
             elif event.type == pygame.KEYDOWN or (event.type == pygame_gui.UI_BUTTON_PRESSED and hasattr(event.ui_element, "action")):
+                self.player.quest_recieved = False
                 if event.type == pygame.KEYDOWN:
                     if event.mod == pygame.KMOD_NONE:
                         key = keyboard.key_string(event.key, False)
@@ -306,7 +307,6 @@ class Loops():
 
         if self.player.quest_recieved == True:
             display.update_questpopup_screen(self, "{} Recieved".format(self.player.quests[-1].name))
-            self.player.quest_recieved = False
 
         pygame.display.update()
         self.update_screen = False
@@ -383,7 +383,8 @@ class Loops():
         self.memory.player = self.player
 
         self.floor_level += 1
-        while self.floor_level < 9:
+        #while self.floor_level < 9:
+        if self.floor_level == 1:
             if self.floor_level > self.memory.explored_levels:
                 generator = M.DungeonGenerator(self.floor_level, self.player)
                 self.monster_map = generator.monster_map

@@ -36,7 +36,7 @@ class Character():
 
         self.alive = True
 
-        self.inventory = []
+        self.inventory = [I.BloodRitualFragment(451),I.BloodRitualFragment(451)]
         self.gold = 0
 
         self.ready_scroll = None # index of actively used scroll

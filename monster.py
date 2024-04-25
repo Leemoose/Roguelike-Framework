@@ -106,7 +106,7 @@ class Goblin(Monster):
         return corpse
 
 class Looter(Goblin):
-    def __init__(self, x=-1, y=-1, render_tag=1009, name="Looter", experience_given=25, health=100, min_damage=3,
+    def __init__(self, x=-1, y=-1, render_tag=1009, name="Looter", experience_given=25, health=30, min_damage=3,
                  max_damage=8, rarity="Rare"):
         super().__init__(x=x, y=y, render_tag=render_tag, name=name, experience_given=experience_given, health=health,
                          min_damage=min_damage, max_damage=max_damage, rarity=rarity)

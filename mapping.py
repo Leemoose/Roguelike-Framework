@@ -6,10 +6,9 @@ import loops as L
 import items as I
 import monster as Mon
 import random
-import math
 import spawnparams as Spawns
 import npc as N
-from fractions import Fraction
+import prefab
 
 class MapData():
     def __init__(self, width, height, numRooms, roomSize, circularity, squarelike):
@@ -22,7 +21,7 @@ class MapData():
 
 # Config data!
 MapOptions = {}
-MapOptions[1]  = MapData(20, 20, 4, 5, 1.0, 1)
+MapOptions[1]  = MapData(30, 30, 4, 5, 1.0, 1)
 MapOptions[2]  = MapData(60, 60, 15, 10, .05, 1)
 MapOptions[3]  = MapData(60, 60, 15, 10, .1, 0)
 MapOptions[4]  = MapData(30, 30, 6, 5, 0.0 , 0)   #Square floor!
@@ -129,6 +128,8 @@ class TileDict():
 
         # scroll assets
         tiles[450] = image.load("assets/items/consumeables/scroll.png")
+        tiles[451] = image.load("assets/items/consumeables/scroll_fragment.png")
+
 
         tiles[480] = image.load("assets/items/consumeables/book.png")
 
@@ -322,19 +323,20 @@ class DungeonGenerator():
         self.width = self.mapData.width
         self.height = self.mapData.height
         self.summoner = []
-        self.monster_map = TrackingMap(self.width, self.height) #Should I include items as well?
+        self.monster_map = TrackingMap(self, self.width, self.height) #Should I include items as well?
+        self.item_map = TrackingMap(self, self.width, self.height)
+        self.npc_map = TrackingMap(self, self.width, self.height)
+        self.tile_map = TileMap(self, self.mapData, depth)
         self.flood_map = FloodMap(self, self.width, self.height)
-        self.tile_map = TileMap(self.mapData, depth)
-        self.item_map = TrackingMap(self.width, self.height)
 
         self.player = player
         self.summoner = []
 
         self.npc_dict = ID()
 
-        self.place_items(depth)
-        self.place_monsters(depth)
-        self.place_npcs(depth)
+      #  self.place_items(depth)
+      #  self.place_monsters(depth)
+      #  self.place_npcs(depth)
 
     def get_random_location(self, stairs_block = True):
         startx = random.randint(0, self.width - 1)
@@ -425,8 +427,6 @@ class DungeonGenerator():
             return (x != self.player.x or y != self.player.y)
 
     def get_passable(self, location):
-        print(location)
-        print(self.player.name)
         if type(location) is not tuple:
             print("You are trying to parse a non tuple")
         if location == None:
@@ -488,10 +488,10 @@ class DungeonGenerator():
         if depth == 1:
             startx, starty = self.get_random_location()
             npc = N.Bob(110, startx, starty)
-            directions = [(0, 1), (0, -1), (1, 0), (-1, 0), (1, 1), (-1, -1), (1, -1), (-1, 1)]
-            for change in directions:
-                if not self.tile_map.get_passable(startx + change[0], starty + change[1]):
-                    self.tile_map.track_map[startx + change[0]][starty + change[1]] = O.Tile(startx + change[0], starty + change[1], 2, True)
+            #directions = [(0, 1), (0, -1), (1, 0), (-1, 0), (1, 1), (-1, -1), (1, -1), (-1, 1)]
+            #for change in directions:
+            #    if not self.tile_map.get_passable(startx + change[0], starty + change[1]):
+            #        self.tile_map.track_map[startx + change[0]][starty + change[1]] = O.Tile(startx + change[0], starty + change[1], 2, True)
 
             self.npc_dict.tag_subject(npc)
 
@@ -538,14 +538,14 @@ class DungeonGenerator():
         item.y = starty
 
         self.item_map.place_thing(item)
-        print(self.item_map.dict)
 
     def get_map(self):
         return self.tile_map
 
 
 class Maps():
-    def __init__(self, width, height):
+    def __init__(self, parent, width, height):
+        self.parent = parent
         self.width = width
         self.height = height
         self.track_map = [x[:] for x in [[-1] * self.width] * self.height]
@@ -566,8 +566,8 @@ class Maps():
 This map will either track items or monsters.
 """
 class TrackingMap(Maps):
-    def __init__(self, width, height):
-        super().__init__(width, height)
+    def __init__(self, parent, width, height):
+        super().__init__(parent, width, height)
         self.dict = ID()  # Unique to this floor
 
     def place_thing(self, thing):
@@ -581,9 +581,6 @@ class TrackingMap(Maps):
         return self.dict.num_entities()
 
     def remove_thing(self, thing):
-        print(thing, thing.id_tag)
-        print(self.dict)
-        print("Dictionary is above")
         self.clear_location(thing.x, thing.y)
         return self.dict.remove_subject(thing.id_tag)
 
@@ -605,9 +602,8 @@ class TrackingMap(Maps):
 
 class FloodMap(Maps):
     def __init__(self, parent, width, height):
-        super().__init__(width, height)
+        super().__init__(parent, width, height)
         self.flood_queue = []
-        self.parent = parent
 
     def update_flood_map(self, location, search = False):
         self.track_map = [x[:] for x in [[-1] * self.width] * self.height]
@@ -641,15 +637,25 @@ class FloodMap(Maps):
 This map is responsible for carving all tiles out.
 """
 class TileMap(TrackingMap):
-    def __init__(self, mapData, depth):
-        super().__init__(mapData.width, mapData.height)
+    def __init__(self, parent, mapData, depth):
+        super().__init__(parent, mapData.width, mapData.height)
         self.mapData = mapData
         self.track_map = []
         self.stairs = []
         self.rooms = []
         # Add an empty map
+        self.render_mapping = {"x": (O.Tile, 1, False),
+                               ".": (O.Tile, 2, True),
+                               "sd": (O.DownStairs, 91, True),
+                               "su": (O.UpStairs, 91, False)}
 
-        if mapData.squarelike == 1:
+        if depth == 1:
+            self.track_map_render = [x[:] for x in [["." if random.random() > .6 else "x"] * self.width] * self.height]
+            self.cellular_caves()
+            #self.track_map_render =[x[:] for x in [["x"] * self.width] * self.height]
+            #self.track_map_render = prefab.throneify(0,0, self.track_map_render, self.parent.monster_map, self.parent.npc_map, self.parent.item_map)
+
+        elif mapData.squarelike == 1:
             self.track_map_render = [x[:] for x in [[0] * self.width] * self.height]
             #Add rooms
             for roomNum in range(mapData.numRooms):
@@ -667,6 +673,7 @@ class TileMap(TrackingMap):
 
         self.render_to_map(depth)
         self.place_stairs(depth)
+        print(self)
 
     def __str__(self):
         map = ""
@@ -674,6 +681,8 @@ class TileMap(TrackingMap):
             for block in row:
                 if block.passable:
                     map += "."
+                elif isinstance(block, O.UpStairs):
+                    map += "s"
                 else:
                     map += "x"
             map += "\n"
@@ -687,26 +696,26 @@ class TileMap(TrackingMap):
 
     def cellular_caves(self):
         iterations = 3
-        self.track_map_render = [x[:] for x in [[0] * self.width] * self.height]
+        self.track_map_render = [x[:] for x in [["."] * self.width] * self.height]
         survival_rate = 0.45
         for x in range(1, self.width-1):
             for y in range(1, self.height-1):
                 if (random.uniform(0,1) <= survival_rate):
-                    self.track_map_render[x][y] = 1
+                    self.track_map_render[x][y] = "x"
         for i in range(iterations):
             self.iterate_cellular_map()
 
     def iterate_cellular_map(self):
-        temp_track_map_render = [x[:] for x in [[0] * self.width] * self.height]
+        temp_track_map_render = [x[:] for x in [["."] * self.width] * self.height]
         birth_limit = 4
         death_limit = 3
         for x in range(1,self.width-1):
             for y in range(1,self.height-1):
                 count = self.count_neighbors(x,y)
-                if count >= birth_limit and self.track_map_render[x][y] == 0:
-                    temp_track_map_render[x][y] = 1
-                elif count <= death_limit and self.track_map_render[x][y] == 1:
-                    temp_track_map_render[x][y] = 0
+                if count >= birth_limit and self.track_map_render[x][y] == ".":
+                    temp_track_map_render[x][y] = "x"
+                elif count <= death_limit and self.track_map_render[x][y] == "x":
+                    temp_track_map_render[x][y] = "."
                 else:
                     temp_track_map_render[x][y] = self.track_map_render[x][y]
         self.track_map_render = temp_track_map_render
@@ -720,26 +729,31 @@ class TileMap(TrackingMap):
                     pass
                 elif neighbor_y <= 0 or neighbor_x <= 0 or neighbor_x >= self.width-1 or neighbor_y >= self.height-1:
                     count += 1
-                elif self.track_map_render[neighbor_x][neighbor_y] == 1:
+                elif self.track_map_render[neighbor_x][neighbor_y] == "x":
                     count += 1
         return count
 
 
     def render_to_map(self, depth):
         self.track_map = []
-        for x in range(self.width):
+        if len(self.track_map_render[0]) != self.width or len(self.track_map_render) != self.height:
+         raise Exception("Your render map has incorrect dimensions. Actual width, height {}, {}. Render map width, height {},{}".format(self.width, self.height, len(self.track_map_render), len(self.track_map_render[0])))
+        for x in range(self.width-1):
             temp = []
-            for y in range(self.height):
-                if self.track_map_render[x][y] == 1:
-                    if (depth >= CirclesBeginOn):
-                        temp.append(O.Tile(x, y, 12, True))
-                    else:
-                        temp.append(O.Tile(x, y, 2, True))
+            for y in range(self.height-1):
+                if self.track_map_render[x][y] not in self.render_mapping:
+                    raise Exception("You are not feeding in the correct render number. The render used was {}".format(self.track_map_render[x][y]))
+                elif x == 0 or y == 0 or x == self.width -1 or y == self.height - 2:
+                    tile = O.Tile(x, y, 1, False)
+                    temp.append(tile)
+                    if self.track_map_render[x][y] != "x":
+                        print("You should be protecting the edge of the map with impassable tiles.")
                 else:
-                    if (depth >= CirclesBeginOn):
-                        temp.append(O.Tile(x, y, 11, False))
-                    else:
-                        temp.append(O.Tile(x, y, 1, False))
+                    tileinfo = self.render_mapping[self.track_map_render[x][y]]
+                    tile = tileinfo[0](x, y, tileinfo[1], tileinfo[2])
+                    temp.append(tile)
+                    if isinstance(tile, O.Stairs):
+                        self.stairs.append(tile)
                     
             self.track_map.append(temp)
 

@@ -6,6 +6,8 @@ import effect as E
 import skills as S
 import loops as L
 import spell
+import player
+import quest
 
 class statUpgrades():
     def __init__(self, base_str=0, max_str=0, base_dex=0, max_dex = 0, base_int = 0, max_int = 0, base_end = 0, max_end = 0, base_arm=0, max_arm=0):
@@ -1819,14 +1821,37 @@ class PermanentDexterityPotion(Potion):
         entity.dexterity += self.dexterity_addition
 
 class PermanentStrengthPotion(Potion):
-    def __init__(self, render_tag):
+    def __init__(self, render_tag, strength = 1):
         super().__init__(render_tag, "Permanent Str Potiorb")
         self.description = "Strength in a bottle"
         self.action_description = "Gain 1 strength."
         self.rarity = "Rare"
+        self.strength = strength
 
     def activate_once(self, entity):
-        entity.strength += 1
+        entity.strength += self.strength
+
+class PermanentEndurancePotion(Potion):
+    def __init__(self, render_tag, endurance = 1):
+        super().__init__(render_tag, "Permanent End Potion")
+        self.description = "Endurance in a bottle"
+        self.action_description = "Gain 1 endurance."
+        self.rarity = "Rare"
+        self.endurance = endurance
+
+    def activate_once(self, entity):
+        entity.endurance += self.endurance
+
+class PermanentIntelligencePotion(Potion):
+    def __init__(self, render_tag, intelligence = 1):
+        super().__init__(render_tag, "Permanent Int Potion")
+        self.description = "Intelligence in a bottle"
+        self.action_description = "Gain 1 intelligence."
+        self.rarity = "Rare"
+        self.intelligence = intelligence
+
+    def activate_once(self, entity):
+        entity.intelligence += self.intelligence
 
 class CurePotion(Potion):
     def __init__(self, render_tag):
@@ -1896,6 +1921,25 @@ class MassHealScrorb(Scroll):
         self.skill.activate(loop, bypass = True)
         self.consume_scroll(entity)
         loop.change_loop(L.LoopType.inventory)
+
+class BloodRitualFragment(Scroll):
+    def __init__(self, render_tag):
+        super().__init__(render_tag, "Scroll Fragment")
+        self.description = "A fragment of a scroll"
+        self.rarity = "Rare"
+
+    def activate_once(self, entity, loop):
+        has_quest = False
+        if isinstance(entity.parent, player.Player):
+            for known_quest in loop.player.quests:
+                if isinstance(known_quest, quest.TempleQuest):
+                    known_quest.increase_level(loop)
+                    has_quest = True
+            if has_quest == False:
+                loop.player.add_quest(quest.TempleQuest())
+            self.consume_scroll(entity)
+            loop.change_loop(L.LoopType.inventory)
+
 
 
 class Book(O.Item):

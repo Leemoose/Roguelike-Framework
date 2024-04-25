@@ -103,9 +103,7 @@ ItemSpawns.append(ItemSpawnParams( I.CallingScroll(450),      1,               1
 ItemSpawns.append(ItemSpawnParams( I.BlinkScrorb(450),      1,               10,          1,              5))
 ItemSpawns.append(ItemSpawnParams( I.MassHealScrorb(450),      1,               10,          1,              5))
 
-#ItemSpawns.append(ItemSpawnParams( I.BookofMassTorment,      1,               10,          1,              5))
-#ItemSpawns.append(ItemSpawnParams( I.BookofMassHeal,      1,               10,          1,              5))
-#ItemSpawns.append(ItemSpawnParams( I.BookofSummoning,      1,               10,          1,              1))
+ItemSpawns.append(ItemSpawnParams( I.BloodRitualFragment(451),      1,               10,          1,              1))
 
 
 Item_Equipment_Distributions = [(0.9, 0.1, 0.0), # floor 1
@@ -131,7 +129,7 @@ Item_Potiorb_Distributions = [(0.7, 0.3), # floor 1
                               (0.7, 0.3), # floor 9
                               (0.7, 0.3)] # floor 10
 
-Item_Scrorb_Distributions = [(0.7, 0.3, 0.0), # floor 1
+Item_Scrorb_Distributions = [(0.5, 0.3, 0.2), # floor 1
                              (0.7, 0.3, 0.0), # floor 2
                              (0.5, 0.4, 0.1), # floor 3
                              (0.5, 0.4, 0.2), # floor 4
@@ -159,7 +157,7 @@ class ItemSpawner():
         # useful for debugging specific items, separate from generator
         self.forceSpawn = []
 
-        #self.forceSpawn.append(("Book of Summoning", 3))
+       # self.forceSpawn.append(("Scroll Fragment", 2))
         # self.forceSpawn.append(("Invincibility Scrorb", 3))
         # self.forceSpawn.append(("Permanent Dex Potiorb", 3))
         # self.forceSpawn.append(("Health Potiorb", 3))

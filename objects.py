@@ -39,11 +39,20 @@ class Tile(Objects):
             return("#")
 
 class Stairs(Tile):
-    def __init__(self, x, y, render_tag = 0, passable = True, id_tag = 0, downward = False):
-        super().__init__(x, y, render_tag, passable, id_tag)
+    def __init__(self, x, y, render_tag = 0, id_tag = 0, downward = True):
+        super().__init__(x, y, render_tag = render_tag, passable = True, id_tag = id_tag)
         self.stairs = True
         self.pair = None
         self.downward = downward
+
+class DownStairs(Stairs):
+    def __init__(self, x, y, render_tag = 0, downward = True, id_tag = 0):
+        super().__init__(x, y, render_tag = render_tag, id_tag = id_tag, downward = True)
+
+class UpStairs(Stairs):
+    def __init__(self, x, y, render_tag = 0, downward = False, id_tag = 0):
+        super().__init__(x, y, render_tag = render_tag, id_tag = id_tag, downward = False)
+
 
 class Item(Objects):
     def __init__(self, x=-1, y=-1, id_tag=-1, render_tag=-1, name=-1):
