@@ -4,6 +4,7 @@ import random
 import loops as L
 import pathfinding
 import spell
+import tiles as T
 import skills as S
 import shadowcasting
 
@@ -235,7 +236,7 @@ class Player(O.Objects):
                 self.move(x - playerx, y - playery, loop)
 
     def down_stairs(self, loop):
-        if (isinstance(loop.generator.tile_map.track_map[self.x][self.y], O.Stairs)
+        if (isinstance(loop.generator.tile_map.track_map[self.x][self.y], T.Stairs)
                 and loop.generator.tile_map.track_map[self.x][self.y].downward and self.character.movable):
             self.character.energy -= self.character.action_costs["move"]
             loop.down_floor()
@@ -246,7 +247,7 @@ class Player(O.Objects):
             loop.add_message("You can't move!")
 
     def up_stairs(self, loop):
-        if (isinstance(loop.generator.tile_map.track_map[self.x][self.y], O.Stairs)
+        if (isinstance(loop.generator.tile_map.track_map[self.x][self.y], T.Stairs)
                 and not loop.generator.tile_map.track_map[self.x][self.y].downward and self.character.movable):
             self.character.energy -= self.character.action_costs["move"]
             loop.up_floor()

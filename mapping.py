@@ -683,7 +683,7 @@ class TileMap(TrackingMap):
             self.track_map_render = prefab.throneify(0,0, self.track_map_render, self.width, self.height)
         else:
             self.cellular_caves()
-        #self.place_stairs(depth)
+            self.place_stairs(depth)
         self.render_to_map(depth)
 
     def __str__(self):
@@ -743,10 +743,10 @@ class TileMap(TrackingMap):
         for x in range(1,self.width-1):
             for y in range(1,self.height-1):
                 count = self.count_neighbors(x,y)
-                if count >= birth_limit and self.track_map_render[x][y] == ".":
-                    temp_track_map_render[x][y] = "x"
-                elif count <= death_limit and self.track_map_render[x][y] == "x":
+                if count >= birth_limit and self.track_map_render[x][y] == "x":
                     temp_track_map_render[x][y] = "."
+                elif count <= death_limit and self.track_map_render[x][y] == ".":
+                    temp_track_map_render[x][y] = "x"
                 else:
                     temp_track_map_render[x][y] = self.track_map_render[x][y]
         self.track_map_render = temp_track_map_render
@@ -775,13 +775,13 @@ class TileMap(TrackingMap):
     def place_stairs(self, depth):
         if depth != 1:
             startx, starty = self.get_random_location_ascaii()
-            tile = O.Stairs(startx, starty, 90, True, downward=False)
+            tile = T.Stairs(startx, starty, 90, True, downward=False)
             self.track_map_render[startx][starty] = "<"
             self.stairs.append(tile)
         if (depth < 10):
             for i in range(2):
                 startx, starty = self.get_random_location_ascaii()
-                tile = O.Stairs(startx, starty, 91, True, downward=True)
+                tile = T.Stairs(startx, starty, 91, True, downward=True)
                 self.track_map_render[startx][starty] = ">"
                 self.stairs.append(tile)
         startx, starty = self.get_random_location_ascaii()
