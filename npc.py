@@ -83,3 +83,16 @@ class Bob(NPC):
         loop.add_message(self.name + " says: 'I didn't scare you off already? There is something foul afoot here. Young boys go missing every month."
                                      "The seamstress says there's a demon involved, sucking the souls out and leaving nothing but bones."
                                      " It's an old wives tale. My bet is they're sneaking off to the war.'")
+
+class King(NPC):
+    def __init__(self, x, y, render_tag= 120, name="King"):
+        super().__init__(x=x, y=y, render_tag = render_tag, name = name)
+
+    def give_quest(self, loop):
+        if self.gave_quest == True:
+            if self.quest.check_for_completion(loop):
+                loop.add_message(self.name + " says: 'The Kingdom is now safe.'")
+        else:
+            loop.add_message(self.name + " says: 'I have summoned you at great expense and with time quickly running out. The monsters grow stronger. Please defeat them.")
+            loop.player.add_quest(quest.KingdomQuest())
+            self.gave_quest = True

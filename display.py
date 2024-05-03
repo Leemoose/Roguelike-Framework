@@ -4,6 +4,7 @@ import items as I
 import ui
 import objects as O
 import monster as M
+import tiles as T
 
 class Buttons:
     def __init__(self):
@@ -473,7 +474,7 @@ class Display:
                                              pygame.Rect(map_offset_from_left + map_tile_size * (x - x_map_start),
                                                          map_offset_from_top + map_tile_size * (y - y_map_start),
                                                          map_tile_size, map_tile_size))
-                        elif isinstance(floormap.track_map[x][y], O.Stairs):
+                        elif isinstance(floormap.track_map[x][y], T.Stairs):
                             pygame.draw.rect(self.win, (0, 0, 200),
                                                  pygame.Rect(map_offset_from_left + map_tile_size * (x - x_map_start),
                                                              map_offset_from_top + map_tile_size * (y - y_map_start),

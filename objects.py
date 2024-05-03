@@ -38,13 +38,6 @@ class Tile(Objects):
         else:
             return("#")
 
-class Stairs(Tile):
-    def __init__(self, x, y, render_tag = 0, passable = True, id_tag = 0, downward = False):
-        super().__init__(x, y, render_tag, passable, id_tag)
-        self.stairs = True
-        self.pair = None
-        self.downward = downward
-
 class Item(Objects):
     def __init__(self, x=-1, y=-1, id_tag=-1, render_tag=-1, name=-1):
         super().__init__(x, y, id_tag, render_tag, name)

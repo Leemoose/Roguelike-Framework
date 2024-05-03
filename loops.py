@@ -350,8 +350,9 @@ class Loops():
             self.player.character.energy = 0
 
         self.floor_level += 1
-
-        self.player.x, self.player.y = (self.generator.tile_map.track_map[playerx][playery]).pair.get_location()
+        print(self.generator.tile_map.track_map)
+        print("The stairs you are taking is {}".format(self.generator.tile_map.track_map[playerx][playery]))
+        self.player.x, self.player.y = (self.generator.tile_map.track_map.locate(self.player.get_location()).pair.get_location())
         self.generator = self.memory.generators[self.floor_level]
         self.monster_map = self.generator.monster_map
 

@@ -2,11 +2,14 @@ from pygame import image
 import pygame
 import dice as R
 import objects as O
+import tiles as T
 import loops as L
 import items as I
 import monster as Mon
 import random
 import math
+
+import prefab
 import spawnparams as Spawns
 import npc as N
 from fractions import Fraction
@@ -22,7 +25,7 @@ class MapData():
 
 # Config data!
 MapOptions = {}
-MapOptions[1]  = MapData(20, 20, 4, 5, 1.0, 1)
+MapOptions[1]  = MapData(20, 30, 4, 5, 1.0, 1)
 MapOptions[2]  = MapData(60, 60, 15, 10, .05, 1)
 MapOptions[3]  = MapData(60, 60, 15, 10, .1, 0)
 MapOptions[4]  = MapData(30, 30, 6, 5, 0.0 , 0)   #Square floor!
@@ -97,7 +100,9 @@ class TileDict():
         tiles[91] = image.load("assets/tiles/stairs_down.png")
         tiles[-91] = image.load("assets/tiles/stairs_down_shaded.png")
 
-
+        tiles[100] = image.load("assets/items/armor/pants.png")
+        tiles[110] = image.load("assets/shopkeeper.png")
+        tiles[120] = image.load("assets/king.png")
         # 200-299 player assets
         tiles[200] = image.load("assets/Player.png")
         tiles[-200] = image.load("assets/player_under_armor.png")
@@ -234,8 +239,6 @@ class TileDict():
         tiles[915] = image.load("assets/invincible_skill_icon.png")
         tiles[-915] = image.load("assets/invincible_skill_icon_dark.png")
 
-        tiles[100] = image.load("assets/items/armor/pants.png")
-        tiles[110] = image.load("assets/shopkeeper.png")
 
         # 100-199 monster assets
         tiles[1000] = image.load('assets/monsters/goblin.png')
@@ -322,9 +325,9 @@ class DungeonGenerator():
         self.width = self.mapData.width
         self.height = self.mapData.height
         self.summoner = []
+        self.tile_map = TileMap(self.mapData, depth)
         self.monster_map = TrackingMap(self.width, self.height) #Should I include items as well?
         self.flood_map = FloodMap(self, self.width, self.height)
-        self.tile_map = TileMap(self.mapData, depth)
         self.item_map = TrackingMap(self.width, self.height)
 
         self.player = player
@@ -332,8 +335,8 @@ class DungeonGenerator():
 
         self.npc_dict = ID()
 
-        self.place_items(depth)
-        self.place_monsters(depth)
+        #self.place_items(depth)
+        #self.place_monsters(depth)
         self.place_npcs(depth)
 
     def get_random_location(self, stairs_block = True):
@@ -485,7 +488,7 @@ class DungeonGenerator():
         self.monster_map.place_thing(creature)
 
     def place_npcs(self, depth):
-        if depth == 1:
+        if depth == 2:
             startx, starty = self.get_random_location()
             npc = N.Bob(110, startx, starty)
             directions = [(0, 1), (0, -1), (1, 0), (-1, 0), (1, 1), (-1, -1), (1, -1), (-1, 1)]
@@ -494,6 +497,11 @@ class DungeonGenerator():
                     self.tile_map.track_map[startx + change[0]][starty + change[1]] = O.Tile(startx + change[0], starty + change[1], 2, True)
 
             self.npc_dict.tag_subject(npc)
+        else:
+            for x in range(self.width):
+                for y in range(self.height):
+                    if isinstance(self.tile_map.locate(x,y), T.NPCSpawn):
+                        self.npc_dict.tag_subject(self.tile_map.locate(x,y).spawn_entity())
 
     def place_items(self, depth):
         itemSpawns = Spawns.item_spawner.spawnItems(depth)
@@ -548,7 +556,7 @@ class Maps():
     def __init__(self, width, height):
         self.width = width
         self.height = height
-        self.track_map = [x[:] for x in [[-1] * self.width] * self.height]
+        self.track_map = [x[:] for x in [[-1] * self.height] * self.width]
 
     def locate(self, x, y):
         return self.track_map[x][y]
@@ -582,7 +590,6 @@ class TrackingMap(Maps):
 
     def remove_thing(self, thing):
         print(thing, thing.id_tag)
-        print(self.dict)
         print("Dictionary is above")
         self.clear_location(thing.x, thing.y)
         return self.dict.remove_subject(thing.id_tag)
@@ -641,15 +648,8 @@ class FloodMap(Maps):
 This map is responsible for carving all tiles out.
 """
 class TileMap(TrackingMap):
-    def __init__(self, mapData, depth):
-        super().__init__(mapData.width, mapData.height)
-        self.mapData = mapData
-        self.track_map = []
-        self.stairs = []
-        self.rooms = []
-        # Add an empty map
-
-        if mapData.squarelike == 1:
+    """
+            if mapData.squarelike == 1:
             self.track_map_render = [x[:] for x in [[0] * self.width] * self.height]
             #Add rooms
             for roomNum in range(mapData.numRooms):
@@ -659,14 +659,32 @@ class TileMap(TrackingMap):
             #Connect Rooms
             for i in range(len(self.rooms) - 1):
                 self.connect_rooms(self.rooms[i], self.rooms[i + 1])
-            
+
         #Apply smoothing
         else:
             self.track_map_render = [x[:] for x in [[0 if random.random() > .6 else 1] * self.width] * self.height]
             self.cellular_caves()
+    """
+    def __init__(self, mapData, depth):
+        super().__init__(mapData.width, mapData.height)
+        self.mapData = mapData
+        self.track_map = []
+        self.stairs = []
+        self.rooms = []
 
+        self.render_mapping = {"x": T.Wall,
+                               ".": T.Floor,
+                               ">": T.DownStairs,
+                               "<": T.UpStairs,
+                               "K": T.KingTile}
+
+        if depth == 1:
+            self.track_map_render = [x[:] for x in [["."] * self.height] * self.width]
+            self.track_map_render = prefab.throneify(0,0, self.track_map_render, self.width, self.height)
+        else:
+            self.cellular_caves()
+        #self.place_stairs(depth)
         self.render_to_map(depth)
-        self.place_stairs(depth)
 
     def __str__(self):
         map = ""
@@ -679,6 +697,28 @@ class TileMap(TrackingMap):
             map += "\n"
         return map
 
+    def render_to_map(self, depth):
+        if self.width != len(self.track_map_render) or self.height != len(self.track_map_render[0]):
+            raise Exception("The sizing of your map and the render map our different {}, {}, {}, {}".format(self.width,self.height, len(self.track_map_render), len(self.track_map_render[0])))
+        self.track_map = []
+        for x in range(self.width):
+            temp = []
+            for y in range(self.height):
+                #print(x,y, self.width, self.height, len(self.track_map_render))
+                if x == 0 or y == 0 or x == self.width - 1 or y == self.height - 1:
+                    if self.track_map_render[x][y] != "x":
+                        print("Warning: You did not properly buffer the edges of your map and it was overridden to walls")
+                    temp.append(self.render_mapping["x"](x, y))
+                elif self.track_map_render[x][y] in self.render_mapping:
+                    tile = self.render_mapping[self.track_map_render[x][y]](x, y)
+                    temp.append(tile)
+                    if isinstance(tile, T.Stairs):
+                        self.stairs.append(tile)
+                else:
+                    raise Exception("You have the incorrect format in the mapping {}",format(self.track_map_render[x][y]))
+
+            self.track_map.append(temp)
+
     def get_tag(self, x, y):
         return self.track_map[x][y].render_tag
 
@@ -687,26 +727,26 @@ class TileMap(TrackingMap):
 
     def cellular_caves(self):
         iterations = 3
-        self.track_map_render = [x[:] for x in [[0] * self.width] * self.height]
+        self.track_map_render = [x[:] for x in [["x"] * self.width] * self.height]
         survival_rate = 0.45
         for x in range(1, self.width-1):
             for y in range(1, self.height-1):
-                if (random.uniform(0,1) <= survival_rate):
-                    self.track_map_render[x][y] = 1
+                if (random.uniform(0,1) >= survival_rate):
+                    self.track_map_render[x][y] = "."
         for i in range(iterations):
             self.iterate_cellular_map()
 
     def iterate_cellular_map(self):
-        temp_track_map_render = [x[:] for x in [[0] * self.width] * self.height]
+        temp_track_map_render = [x[:] for x in [["x"] * self.width] * self.height]
         birth_limit = 4
         death_limit = 3
         for x in range(1,self.width-1):
             for y in range(1,self.height-1):
                 count = self.count_neighbors(x,y)
-                if count >= birth_limit and self.track_map_render[x][y] == 0:
-                    temp_track_map_render[x][y] = 1
-                elif count <= death_limit and self.track_map_render[x][y] == 1:
-                    temp_track_map_render[x][y] = 0
+                if count >= birth_limit and self.track_map_render[x][y] == ".":
+                    temp_track_map_render[x][y] = "x"
+                elif count <= death_limit and self.track_map_render[x][y] == "x":
+                    temp_track_map_render[x][y] = "."
                 else:
                     temp_track_map_render[x][y] = self.track_map_render[x][y]
         self.track_map_render = temp_track_map_render
@@ -720,28 +760,10 @@ class TileMap(TrackingMap):
                     pass
                 elif neighbor_y <= 0 or neighbor_x <= 0 or neighbor_x >= self.width-1 or neighbor_y >= self.height-1:
                     count += 1
-                elif self.track_map_render[neighbor_x][neighbor_y] == 1:
+                elif self.track_map_render[neighbor_x][neighbor_y] == "x":
                     count += 1
         return count
 
-
-    def render_to_map(self, depth):
-        self.track_map = []
-        for x in range(self.width):
-            temp = []
-            for y in range(self.height):
-                if self.track_map_render[x][y] == 1:
-                    if (depth >= CirclesBeginOn):
-                        temp.append(O.Tile(x, y, 12, True))
-                    else:
-                        temp.append(O.Tile(x, y, 2, True))
-                else:
-                    if (depth >= CirclesBeginOn):
-                        temp.append(O.Tile(x, y, 11, False))
-                    else:
-                        temp.append(O.Tile(x, y, 1, False))
-                    
-            self.track_map.append(temp)
 
 
     def carve_rooms(self):
@@ -752,32 +774,19 @@ class TileMap(TrackingMap):
 
     def place_stairs(self, depth):
         if depth != 1:
-            startx = random.randint(0, self.width-1)
-            starty = random.randint(0,self.height-1)
-            while (self.track_map[startx][starty].passable == False):
-                startx = random.randint(0, self.width-1)
-                starty = random.randint(0,self.height-1)
+            startx, starty = self.get_random_location_ascaii()
             tile = O.Stairs(startx, starty, 90, True, downward=False)
-            self.track_map[startx][starty] = tile
+            self.track_map_render[startx][starty] = "<"
             self.stairs.append(tile)
         if (depth < 10):
             for i in range(2):
-                startx = random.randint(0, self.width - 1)
-                starty = random.randint(0, self.height - 1)
-                while (self.track_map[startx][starty].passable == False):
-                    startx = random.randint(0, self.width - 1)
-                    starty = random.randint(0, self.height - 1)
+                startx, starty = self.get_random_location_ascaii()
                 tile = O.Stairs(startx, starty, 91, True, downward=True)
-                self.track_map[startx][starty] = tile
+                self.track_map_render[startx][starty] = ">"
                 self.stairs.append(tile)
-        startx = random.randint(0, self.width - 1)
-        starty = random.randint(0, self.height - 1)
-        while (self.track_map[startx][starty].passable == False and self.track_map[startx][starty].render_tag != 91):
-            startx = random.randint(0, self.width - 1)
-            starty = random.randint(0, self.height - 1)
-        tile = O.Stairs(startx, starty, 90, True, downward=False)
-        self.track_map[startx][starty] = tile
-        self.stairs.append(tile)
+        startx, starty = self.get_random_location_ascaii()
+        self.track_map_render[startx][starty] = "<"
+
 
     def get_stairs(self):
         return self.stairs
@@ -876,4 +885,12 @@ class TileMap(TrackingMap):
         for x in range(lower2X, upper2X):
             for y in range(lower2Y, upper2Y):
                 self.track_map_render[x][y] = 1
+
+    def get_random_location_ascaii(self, stairs_block = True):
+        startx = random.randint(0, self.width - 1)
+        starty = random.randint(0, self.height - 1)
+        while (not self.track_map_render[startx][starty] == "."):
+            startx = random.randint(0, self.width - 1)
+            starty = random.randint(0, self.height - 1)
+        return startx, starty
 

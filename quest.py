@@ -45,3 +45,14 @@ class GoblinQuest(Quest):
         if loop.player.character.get_item(loop, item):
             self.active = False
 
+class KingdomQuest(Quest):
+    def __init__(self, experience_given = 100, name = "Kingdom Quest"):
+        super().__init__(experience_given = experience_given, name = name)
+        self.descriptions[1] = "The king has asked you to push back the darkness, and push back the darkness you will."
+
+    def check_for_completion(self, loop):
+        if self.active:
+            return False
+
+    def give_reward(self, loop):
+        pass
