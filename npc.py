@@ -12,8 +12,14 @@ class NPC(O.Objects):
         self.purpose = None #Trade, gossip,
         self.gave_quest = False
         self.quest = None
+        self.options = ["gossip", "trade", "quest"]
 
     def change_purpose(self, purpose, loop):
+        if isinstance(purpose, int):
+            if purpose - 1 >= 0 and purpose -1 < len(self.options):
+                purpose = self.options[purpose-1]
+            else:
+                print("You have a weird purpose")
         if purpose == "gossip":
             self.talk(loop)
             self.purpose = purpose
@@ -104,6 +110,7 @@ class King(NPC):
 class Guard(NPC):
     def __init__(self, x, y, render_tag= 121, name="Guard"):
         super().__init__(x=x, y=y, render_tag = render_tag, name = name)
+        self.options = ["gossip"]
 
     def talk(self, loop):
         super().talk(loop)

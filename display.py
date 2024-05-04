@@ -1835,7 +1835,7 @@ class Display:
         margin_between_buttons_height = ((trading_screen_height - trading_title_height) * 2 // 3) // (num_buttons_height + 1) // (num_buttons_height + 1)
         margin_between_buttons_width = (trading_screen_width // 2) // (num_buttons_width + 1) // (num_buttons_width + 1)
 
-        num_option_buttons = 3
+        num_option_buttons = len(loop.npc_focus.options)
         option_button_offset_from_left = trading_offset_from_left
         option_button_offset_from_top = trading_title_offset_from_top + trading_title_height
         option_button_width = (trading_screen_width // 4)
@@ -1863,7 +1863,7 @@ class Display:
             manager=self.uiManager,
             loop=loop)
 
-        options = ["Trade", "Quest", "Gossip"]
+        options = loop.npc_focus.options
         for i in range(num_option_buttons):
             button = pygame_gui.elements.UIButton(
                 relative_rect=pygame.Rect((option_button_offset_from_left,

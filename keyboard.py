@@ -216,11 +216,11 @@ class Keyboard():
             loop.change_loop(LoopType.action)
             return
         elif key == "1":
-            loop.npc_focus.change_purpose("trade", loop)
+            loop.npc_focus.change_purpose(1, loop)
         elif key == '2':
-            loop.npc_focus.change_purpose("quest", loop)
+            loop.npc_focus.change_purpose(2, loop)
         elif key == '3':
-            loop.npc_focus.change_purpose("gossip", loop)
+            loop.npc_focus.change_purpose(3, loop)
         elif loop.npc_focus.purpose == "trade":
             for i in range(len(loop.npc_focus.items)):
                 if chr(ord("a") + i) == key:
