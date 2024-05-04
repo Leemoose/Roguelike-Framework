@@ -1,6 +1,6 @@
 import random
 import pathfinding
-import objects as O
+import tiles as T
 class Monster_AI():
     def __init__(self, parent):
         self.frontier = None
@@ -90,7 +90,7 @@ class Monster_AI():
             directions = [(0, 1), (0, -1), (1, 0), (-1, 0), (1, 1), (-1, -1), (1, -1), (-1, 1)]
             for x, y in directions:
                 if isinstance(loop.generator.tile_map.locate(monsterx + x, monstery + y),
-                              O.Stairs) and monsterx + x == playerx and monstery + y == playery:
+                              T.Stairs) and monsterx + x == playerx and monstery + y == playery:
                     self.stairs_location = (monsterx + x, monstery + y)
                     return self.randomize_action("stairs")
         return -1

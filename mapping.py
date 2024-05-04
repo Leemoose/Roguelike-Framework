@@ -330,16 +330,16 @@ class DungeonGenerator():
         self.summoner = []
         self.tile_map = TileMap(self.mapData, depth)
         self.monster_map = TrackingMap(self.width, self.height) #Should I include items as well?
-        self.flood_map = FloodMap(self, self.width, self.height)
+        #self.flood_map = FloodMap(self, self.width, self.height)
         self.item_map = TrackingMap(self.width, self.height)
 
         self.player = player
         self.summoner = []
 
         self.npc_dict = ID()
-
-        #self.place_items(depth)
-        #self.place_monsters(depth)
+        if self.depth != 1:
+            self.place_monsters(depth)
+            self.place_items(depth)
         self.place_npcs(depth)
 
     def get_random_location(self, stairs_block = True):
@@ -682,12 +682,20 @@ class TileMap(TrackingMap):
                                "K": T.KingTile,
                                "G": T.GuardTile}
 
-        self.track_map_render = [x[:] for x in [["."] * self.height] * self.width]
+        self.track_map_render = [x[:] for x in [["x"] * self.height] * self.width]
         self.image = [x[:] for x in [[-1] * self.height] * self.width]
         if depth == 1:
             self.track_map_render = prefab.throneify(0,0, self.track_map_render, self.image, self.width, self.height)
         else:
-            self.cellular_caves()
+            # Add rooms
+            for roomNum in range(mapData.numRooms):
+                size = random.randint(4, mapData.roomSize)
+                self.place_room(size, size, mapData.circularity)
+
+            # Connect Rooms
+            for i in range(len(self.rooms) - 1):
+                self.connect_rooms(self.rooms[i], self.rooms[i + 1])
+          #      self.cellular_caves()
             self.place_stairs(depth)
         self.render_to_map(depth)
 
@@ -869,7 +877,7 @@ class TileMap(TrackingMap):
                 squircleVal = xSqrd + ySqrd - squircConst * xSqrd * ySqrd
                 
                 if (squircleVal < radiusSqrd):
-                    self.track_map_render[x + room.x][y + room.y] = 1
+                    self.track_map_render[x + room.x][y + room.y] = "."
 
 
     def connect_rooms(self, room1, room2):
@@ -883,7 +891,7 @@ class TileMap(TrackingMap):
 
         for x in range(lower1X, upper1X):
             for y in range(lower1Y, upper1Y):
-                self.track_map_render[x][y] = 1
+                self.track_map_render[x][y] = "."
 
         lower2X = min(room2.GetCenterX(), cornerX)
         upper2X = max(room2.GetCenterX(), cornerX) + 1
@@ -892,7 +900,7 @@ class TileMap(TrackingMap):
 
         for x in range(lower2X, upper2X):
             for y in range(lower2Y, upper2Y):
-                self.track_map_render[x][y] = 1
+                self.track_map_render[x][y] = "."
 
     def get_random_location_ascaii(self, stairs_block = True):
         startx = random.randint(0, self.width - 1)
