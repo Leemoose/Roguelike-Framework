@@ -7,11 +7,11 @@ class NPC(O.Objects):
     def __init__(self, render_tag, x, y, name="Unknown npc"):
         super().__init__(x, y, 0, render_tag= render_tag, name = name)
         self.name = name
-        self.items = [I.Ax(300), I.Ax(300), I.Ax(300), I.Ax(300), I.Ax(300), I.Ax(300)]
+        self.items = []
         self.cost = 5
         self.purpose = None #Trade, gossip,
         self.gave_quest = False
-        self.quest = quest.GoblinQuest()
+        self.quest = None
 
     def change_purpose(self, purpose, loop):
         if purpose == "gossip":
@@ -46,14 +46,7 @@ class NPC(O.Objects):
         loop.npc_focus = self
 
     def give_quest(self, loop):
-        if self.gave_quest == True:
-            if self.quest.check_for_completion(loop):
-                loop.add_message(self.name + " says: 'Thanks to you those goblins have not been bothering me lately.'")
-        else:
-            loop.add_message(loop.player.name + " says: 'Anything I can help out with?'")
-            loop.add_message(self.name + " says: 'Goblins. I hate those nasty buggers. They keep stealing all my stuff! If you kill 3 of them and bring me back proof, I can reward you handsomely' ;)")
-            loop.player.add_quest(quest.GoblinQuest())
-            self.gave_quest = True
+        pass
 
     def give_item(self, loop, number):
         player = loop.player
@@ -65,6 +58,7 @@ class NPC(O.Objects):
 class Bob(NPC):
     def __init__(self, render_tag, x, y, name="Bob"):
         super().__init__(x=x, y=y, render_tag = render_tag, name = name)
+        self.quest = quest.GoblinQuest()
 
     def welcome(self, loop):
         super().welcome(loop)
@@ -84,6 +78,16 @@ class Bob(NPC):
                                      "The seamstress says there's a demon involved, sucking the souls out and leaving nothing but bones."
                                      " It's an old wives tale. My bet is they're sneaking off to the war.'")
 
+    def give_quest(self, loop):
+        if self.gave_quest == True:
+            if self.quest.check_for_completion(loop):
+                loop.add_message(self.name + " says: 'Thanks to you those goblins have not been bothering me lately.'")
+        else:
+            loop.add_message(loop.player.name + " says: 'Anything I can help out with?'")
+            loop.add_message(self.name + " says: 'Goblins. I hate those nasty buggers. They keep stealing all my stuff! If you kill 3 of them and bring me back proof, I can reward you handsomely' ;)")
+            loop.player.add_quest(quest.GoblinQuest())
+            self.gave_quest = True
+
 class King(NPC):
     def __init__(self, x, y, render_tag= 120, name="King"):
         super().__init__(x=x, y=y, render_tag = render_tag, name = name)
@@ -96,3 +100,12 @@ class King(NPC):
             loop.add_message(self.name + " says: 'I have summoned you at great expense and with time quickly running out. The monsters grow stronger. Please defeat them.")
             loop.player.add_quest(quest.KingdomQuest())
             self.gave_quest = True
+
+class Guard(NPC):
+    def __init__(self, x, y, render_tag= 121, name="Guard"):
+        super().__init__(x=x, y=y, render_tag = render_tag, name = name)
+
+    def talk(self, loop):
+        super().talk(loop)
+        loop.add_message(self.name + " says: 'Now move along.")
+

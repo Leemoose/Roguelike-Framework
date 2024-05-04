@@ -80,6 +80,8 @@ class TileDict():
         tiles[-3] = pygame.transform.scale(image.load("assets/floor_dirty_shaded.png"), (32,32))
         tiles[4] = pygame.transform.scale(image.load("assets/floor_dirty1.png"), (32,32))
         tiles[-4] = pygame.transform.scale(image.load("assets/floor_dirty1_shaded.png"), (32,32))
+        tiles[5] = image.load("assets/red_carpet.png")
+        tiles[-5] = image.load("assets/red_carpet_shaded.png")
 
         tiles[11] = pygame.transform.scale(image.load("assets/tiles/wall_extra_rounded.png"), (32,32))
         tiles[-11] = pygame.transform.scale(image.load("assets/tiles/wall_extra_rounded_shaded.png"), (32,32))
@@ -103,6 +105,7 @@ class TileDict():
         tiles[100] = image.load("assets/items/armor/pants.png")
         tiles[110] = image.load("assets/shopkeeper.png")
         tiles[120] = image.load("assets/king.png")
+        tiles[121] = image.load("assets/guard.png")
         # 200-299 player assets
         tiles[200] = image.load("assets/Player.png")
         tiles[-200] = image.load("assets/player_under_armor.png")
@@ -676,11 +679,13 @@ class TileMap(TrackingMap):
                                ".": T.Floor,
                                ">": T.DownStairs,
                                "<": T.UpStairs,
-                               "K": T.KingTile}
+                               "K": T.KingTile,
+                               "G": T.GuardTile}
 
+        self.track_map_render = [x[:] for x in [["."] * self.height] * self.width]
+        self.image = [x[:] for x in [[-1] * self.height] * self.width]
         if depth == 1:
-            self.track_map_render = [x[:] for x in [["."] * self.height] * self.width]
-            self.track_map_render = prefab.throneify(0,0, self.track_map_render, self.width, self.height)
+            self.track_map_render = prefab.throneify(0,0, self.track_map_render, self.image, self.width, self.height)
         else:
             self.cellular_caves()
             self.place_stairs(depth)
@@ -710,7 +715,10 @@ class TileMap(TrackingMap):
                         print("Warning: You did not properly buffer the edges of your map and it was overridden to walls")
                     temp.append(self.render_mapping["x"](x, y))
                 elif self.track_map_render[x][y] in self.render_mapping:
-                    tile = self.render_mapping[self.track_map_render[x][y]](x, y)
+                    if self.image[x][y] != -1:
+                        tile = self.render_mapping[self.track_map_render[x][y]](x, y, render_tag = self.image[x][y])
+                    else:
+                        tile = self.render_mapping[self.track_map_render[x][y]](x, y)
                     temp.append(tile)
                     if isinstance(tile, T.Stairs):
                         self.stairs.append(tile)

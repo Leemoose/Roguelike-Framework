@@ -17,6 +17,11 @@ class KingTile(NPCSpawn):
     def __init__(self, x, y, render_tag = 2, passable = True, id_tag = 0, entity = npc.King):
         super().__init__(x, y,  render_tag = render_tag, passable = passable, id_tag = id_tag, entity=entity)
 
+class GuardTile(NPCSpawn):
+    def __init__(self, x, y, render_tag = 2, passable = True, id_tag = 0, entity = npc.Guard):
+        super().__init__(x, y,  render_tag = render_tag, passable = passable, id_tag = id_tag, entity=entity)
+
+
 class Wall(O.Tile):
     def __init__(self, x, y, render_tag = 1, passable = False, id_tag = 0):
         super().__init__(x, y,  render_tag = 1, passable = False, id_tag = id_tag)
