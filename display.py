@@ -1463,7 +1463,7 @@ class Display:
         
         html_text = "You have defeated the dungeon and achieved maximum orb-iness!<br><br>"
         html_text += "You reached level " + str(player.level) + ".<br>"
-        html_text += "You killed " + str(player.kill_count) + " monsters along the way.<br>"
+        html_text += "You killed " + str(player.statistics.total_monsters_killed) + " monsters along the way.<br>"
 
 
         pygame_gui.elements.UITextBox(
@@ -1839,7 +1839,7 @@ class Display:
         option_button_offset_from_left = trading_offset_from_left
         option_button_offset_from_top = trading_title_offset_from_top + trading_title_height
         option_button_width = (trading_screen_width // 4)
-        option_button_height =((trading_screen_height - trading_title_height) * 2 // 3) // (num_option_buttons + 1)
+        option_button_height = min(((trading_screen_height - trading_title_height) * 2 // 3) // (num_option_buttons + 1), 100)
         option_margin_between_buttons_height = ((trading_screen_height - trading_title_height) * 2 // 3) // (
                     num_option_buttons + 1) // (num_option_buttons + 1)
 

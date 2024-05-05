@@ -12,7 +12,7 @@ class NPC(O.Objects):
         self.purpose = None #Trade, gossip,
         self.gave_quest = False
         self.quest = None
-        self.options = ["gossip", "trade", "quest"]
+        self.options = ["Gossip", "Trade", "Quest"]
 
     def change_purpose(self, purpose, loop):
         if isinstance(purpose, int):
@@ -20,13 +20,13 @@ class NPC(O.Objects):
                 purpose = self.options[purpose-1]
             else:
                 print("You have a weird purpose")
-        if purpose == "gossip":
+        if purpose == "Gossip":
             self.talk(loop)
             self.purpose = purpose
-        elif purpose == "trade":
+        elif purpose == "Trade":
             self.trade(loop)
             self.purpose = purpose
-        elif purpose == "quest":
+        elif purpose == "Quest":
             self.purpose = purpose
             self.give_quest(loop)
         loop.change_loop(L.LoopType.trade)
@@ -97,6 +97,7 @@ class Bob(NPC):
 class King(NPC):
     def __init__(self, x, y, render_tag= 120, name="King"):
         super().__init__(x=x, y=y, render_tag = render_tag, name = name)
+        self.options = ["Quest"]
 
     def give_quest(self, loop):
         if self.gave_quest == True:
@@ -110,7 +111,7 @@ class King(NPC):
 class Guard(NPC):
     def __init__(self, x, y, render_tag= 121, name="Guard"):
         super().__init__(x=x, y=y, render_tag = render_tag, name = name)
-        self.options = ["gossip"]
+        self.options = ["Gossip"]
 
     def talk(self, loop):
         super().talk(loop)

@@ -6,6 +6,7 @@ import pathfinding
 import spell
 import tiles as T
 import skills as S
+import statistics
 import shadowcasting
 
 
@@ -14,13 +15,12 @@ class Player(O.Objects):
         super().__init__(x, y, 1, 200, "Player")
         self.character = C.Character(self, mana=50)
         self.mage = spell.Mage(self)
+        self.statistics = statistics.StatTracker()
 
         self.level = 1
         self.max_level = 20
         self.experience = 0
         self.experience_to_next_level = 20
-
-        self.kill_count = 0
 
         self.stat_points = 0
         self.stat_decisions = [0, 0, 0, 0]  # used at loop levelling to allocate points
@@ -29,10 +29,8 @@ class Player(O.Objects):
 
         self.invincible = True
 
-        self.type = {"wood": False,
-                     "stone": False,
-                     "humanoid": True,
-                     "beast": False
+        self.type = {
+                     "humanoid": True
                      }
 
         self.quests = []

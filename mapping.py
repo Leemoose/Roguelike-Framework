@@ -90,6 +90,11 @@ class TileDict():
 
         tiles[20] = pygame.transform.scale(image.load("assets/fire.png"), (32,32))
 
+        tiles[30] = image.load("assets/tiles/door.png")
+        tiles[-30] = image.load("assets/tiles/door_shaded.png")
+        tiles[31] = image.load("assets/tiles/open_door.png")
+        tiles[-31] = image.load("assets/tiles/open_door_shaded.png")
+
         # ui assets
         tiles[50] = image.load("assets/stat_up.png")
         tiles[51] = image.load("assets/stat_down.png")
@@ -680,7 +685,8 @@ class TileMap(TrackingMap):
                                ">": T.DownStairs,
                                "<": T.UpStairs,
                                "K": T.KingTile,
-                               "G": T.GuardTile}
+                               "G": T.GuardTile,
+                               "d": T.Door}
 
         self.track_map_render = [x[:] for x in [["x"] * self.height] * self.width]
         self.image = [x[:] for x in [[-1] * self.height] * self.width]

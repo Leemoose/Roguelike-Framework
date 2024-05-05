@@ -145,7 +145,7 @@ class Character():
             damage = 0
         self.health -= damage
         if not self.is_alive():
-            dealer.kill_count += 1
+            dealer.statistics.add_killed_monster(self.parent)
             if hasattr(dealer, "experience"): # acts as a check for it its a player
                 dealer.gain_experience(self.experience_given)
         return self.is_alive()

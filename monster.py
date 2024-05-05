@@ -20,7 +20,6 @@ class Monster(O.Objects):
         self.brain = brain(self)
         self.skills = []
         self.orb = False
-        self.kill_count = 0
         self.rarity = rarity
 
         self.type = {"wood": False,

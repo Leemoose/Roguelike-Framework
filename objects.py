@@ -22,15 +22,19 @@ class Objects():
         return ((self.x - x)**2 + (self.y - y)**2)**(1/2)
 
 class Tile(Objects):
-    def __init__(self, x, y, render_tag = 0, passable = False, id_tag = 0):
+    def __init__(self, x, y, render_tag = 0, passable = False, blocks_vision = True, id_tag = 0):
         super().__init__(x, y, id_tag, render_tag, "Tile")
         self.passable = passable
+        self.blocks_vision = blocks_vision
         self.seen = False
         self.visible = False
         self.on_fire = False
 
     def is_visible(self):
         return self.visible
+
+    def is_blocking_vision(self):
+        return self.blocks_vision
 
     def __str__(self):
         if self.passable:

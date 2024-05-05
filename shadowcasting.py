@@ -28,13 +28,13 @@ def compute_fov(loop):
             if tile is None:
                 return False
             x, y = quadrant.transform(tile)
-            return not tile_map[x][y].passable
+            return tile_map[x][y].is_blocking_vision()
 
         def is_floor(tile):
             if tile is None:
                 return False
             x, y = quadrant.transform(tile)
-            return tile_map[x][y].passable
+            return not tile_map[x][y].is_blocking_vision()
 
         def scan(row):
             prev_tile = None

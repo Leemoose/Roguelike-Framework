@@ -7,6 +7,7 @@ import mapping as M
 import player
 import objects as O
 import targets as T
+import tiles as TI
 import shadowcasting
 from enum import Enum
 import dill
@@ -264,23 +265,22 @@ class Loops():
                 self.clean_up()
                 shadowcasting.compute_fov(self)
                 display.update_display(self)
-                if self.currentLoop == LoopType.action:
-                    mos_x, mos_y = pygame.mouse.get_pos()
-                    (x, y) = display.screen_to_tile(self.player, mos_x, mos_y)
-                    draw_screen_focus = True
-                    if self.generator.tile_map.in_map(x, y):
-                        if self.generator.tile_map.track_map[x][y].visible and self.generator.tile_map.get_passable(x,
-                                                                                                                    y) and (
-                                (not self.generator.monster_map.get_passable(x, y)) or (
-                        not self.generator.item_map.get_passable(x, y))):
-                            # print(self.generator.monster_map.get_passable(x,y), self.generator.item_map.get_passable(x,y))
-                            display.draw_examine_window((x, y), self)
-                            draw_screen_focus = False
-                    if draw_screen_focus:
-                        if self.screen_focus != None:
-                            clear_target = display.draw_examine_window(self.screen_focus, self)
-                            if clear_target:
-                                self.screen_focus = None
+                mos_x, mos_y = pygame.mouse.get_pos()
+                (x, y) = display.screen_to_tile(self.player, mos_x, mos_y)
+                draw_screen_focus = True
+                if self.generator.tile_map.in_map(x, y):
+                    if self.generator.tile_map.track_map[x][y].visible and self.generator.tile_map.get_passable(x,
+                                                                                                                y) and (
+                            (not self.generator.monster_map.get_passable(x, y)) or (
+                    not self.generator.item_map.get_passable(x, y))):
+                        # print(self.generator.monster_map.get_passable(x,y), self.generator.item_map.get_passable(x,y))
+                        display.draw_examine_window((x, y), self)
+                        draw_screen_focus = False
+                if draw_screen_focus:
+                    if self.screen_focus != None:
+                        clear_target = display.draw_examine_window(self.screen_focus, self)
+                        if clear_target:
+                            self.screen_focus = None
             elif self.currentLoop == LoopType.items:
                 display.update_entity(self)
             elif self.currentLoop == LoopType.examine or self.currentLoop == LoopType.targeting:
@@ -308,6 +308,9 @@ class Loops():
             display.update_questpopup_screen(self, "{} Recieved".format(self.player.quests[-1].name))
             self.player.quest_recieved = False
 
+        tile = self.generator.tile_map.locate(self.player.x, self.player.y)
+        if isinstance(tile, TI.Door):
+            tile.open()
         pygame.display.update()
         self.update_screen = False
 
@@ -478,6 +481,9 @@ class Loops():
             self.player.character.tick_all_status_effects(self)
             self.player.mage.tick_cooldowns()
             self.player.character.tick_regen()
+
+            for quest in self.player.quests:
+                quest.check_for_progress(self)
 
             if self.generator.tile_map.track_map[self.player.x][self.player.y].on_fire:
                 self.player.character.take_damage(self.player, 5)

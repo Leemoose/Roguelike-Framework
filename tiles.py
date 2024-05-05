@@ -1,8 +1,19 @@
 import objects as O
 import npc
 class Floor(O.Tile):
-    def __init__(self, x, y, render_tag = 2, passable = True, id_tag = 0):
-        super().__init__(x, y,  render_tag = render_tag, passable = passable, id_tag = id_tag)
+    def __init__(self, x, y, render_tag = 2, passable = True, blocks_vision = False, id_tag = 0):
+        super().__init__(x, y,  render_tag = render_tag, passable = passable, id_tag = id_tag, blocks_vision=blocks_vision)
+
+class Door(Floor):
+    def __init__(self, x, y, render_tag = 30, passable = True, blocks_vision = True, id_tag = 0):
+        super().__init__(x, y,  render_tag = render_tag, passable = passable, id_tag = id_tag, blocks_vision=blocks_vision)
+
+    def open(self):
+        self.render_tag = 31
+        self.shaded_render_tag = -31
+        self.blocks_vision = False
+
+
 
 class NPCSpawn(Floor):
     def __init__(self, x, y, render_tag = 2, passable = True, id_tag = 0, entity = None):
@@ -23,8 +34,8 @@ class GuardTile(NPCSpawn):
 
 
 class Wall(O.Tile):
-    def __init__(self, x, y, render_tag = 1, passable = False, id_tag = 0):
-        super().__init__(x, y,  render_tag = 1, passable = False, id_tag = id_tag)
+    def __init__(self, x, y, render_tag = 1, passable = False, blocks_vision = True, id_tag = 0):
+        super().__init__(x, y,  render_tag = render_tag, passable = passable, blocks_vision = blocks_vision, id_tag = id_tag)
 
 
 class Stairs(O.Tile):
