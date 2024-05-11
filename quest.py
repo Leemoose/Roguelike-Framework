@@ -54,23 +54,56 @@ class KingdomQuest(Quest):
         self.descriptions[2] = "You find killing in the kings name an easy thing to do..."
         self.descriptions[3] = "Monsters fall like wheat being reaped by the farmer. Like leaves falling from the tree. You revel in the blood..."
 
-
     def check_for_completion(self, loop):
         if self.active:
             return False
 
     def check_for_progress(self, loop):
-        level_up = False
-        if loop.player.statistics.total_monsters_killed() > 10 and self.level < 2:
-            self.level += 1
-            level_up = True
-        elif loop.player.statistics.total_monsters_killed() > 30 and self.level < 3:
-            self.level += 1
-            level_up = True
+        if self.active:
+            level_up = False
+            if loop.player.statistics.total_monsters_killed() > 10 and self.level < 2:
+                self.level += 1
+                level_up = True
+            elif loop.player.statistics.total_monsters_killed() > 30 and self.level < 3:
+                self.level += 1
+                level_up = True
 
-        if level_up:
-            for i in range(self.level):
-                self.give_reward(loop.player)
+            if level_up:
+                for i in range(self.level):
+                    self.give_reward(loop.player)
+
+
+class BrothersQuest(Quest):
+    def __init__(self, experience_given=20, name="Missing Brother"):
+        super().__init__(experience_given=experience_given, name=name)
+        self.descriptions[1] = "Someone's brother is missing in the deep depths of the pit. Find them"
+        self.descriptions[2] = "You sense that the brother is close by."
+        self.descriptions[3] = "The brother is dead. Bring back a relic to provide closure to their relative"
+
+    def check_for_completion(self, loop):
+        if self.active:
+            player = loop.player
+            for item in player.character.inventory:
+                if isinstance(item, I.BobCorpse):
+                    self.level += 1
+                    self.give_reward(loop)
+                    return True
+        return False
+
+    def check_for_progress(self, loop):
+        if self.active:
+            if self.level < 2 and loop.generator.depth >= 5:
+                self.level += 1
+            elif self.level < 3:
+                for item in loop.generator.item_map.all_entities():
+                    if isinstance(item, I.BobCorpse) and loop.generator.tile_map.locate(item.x, item.y).is_seen():
+                        self.level += 1
+                        break
 
     def give_reward(self, loop):
-        pass
+        item = I.RingOfMight()
+        if loop.player.character.get_item(loop, item):
+            self.active = False
+
+
+

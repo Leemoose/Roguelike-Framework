@@ -33,6 +33,9 @@ class Tile(Objects):
     def is_visible(self):
         return self.visible
 
+    def is_seen(self):
+        return self.seen
+
     def is_passable(self):
         return self.passable
 

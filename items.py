@@ -40,9 +40,14 @@ class statUpgrades():
 
     
 class Corpse(O.Item):
-    def __init__(self, x, y, id_tag, render_tag, name):
-        super().__init__(x,y, id_tag, render_tag, name)
+    def __init__(self, x, y, id_tag = -1, render_tag = 199, name = "Unknown Corpse"):
+        super().__init__(x,y, id_tag = id_tag, render_tag = render_tag, name = name)
         self.monster_type = None
+
+class BobCorpse(Corpse):
+    def __init__(self, x, y, id_tag = -1, render_tag = 199, name = "Bob's Corpse"):
+        super().__init__(x = x,y = y, id_tag = id_tag, render_tag =render_tag, name = name)
+        self.monster_type = "Human"
 
 class Gold(O.Item):
     def __init__(self, amount, x=-1, y=-1, id_tag = -1, render_tag = 210, name = "Gold"):
@@ -1505,7 +1510,7 @@ class BloodRing(Ring):
 
 
 class RingOfMight(Ring):
-    def __init__(self, render_tag):
+    def __init__(self, render_tag = 503):
         super().__init__(render_tag, "Ring of Might")
         self.equipment_type = "Ring"
         self.name = "Ring of Might"

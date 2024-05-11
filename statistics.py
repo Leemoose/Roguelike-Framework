@@ -2,6 +2,7 @@
 class StatTracker():
     def __init__(self):
         self.monsters_killed = {}
+        self.possible_quests = {}
 
     def add_killed_monster(self, monster):
         monster_name = monster.name

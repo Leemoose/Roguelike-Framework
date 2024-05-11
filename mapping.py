@@ -436,8 +436,6 @@ class DungeonGenerator():
             return (x != self.player.x or y != self.player.y)
 
     def get_passable(self, location):
-        print(location)
-        print(self.player.name)
         if type(location) is not tuple:
             print("You are trying to parse a non tuple")
         if location == None:
@@ -689,7 +687,8 @@ class TileMap(TrackingMap):
                                "<": T.UpStairs,
                                "K": T.KingTile,
                                "G": T.GuardTile,
-                               "d": T.Door}
+                               "d": T.Door,
+                               "BB": T.BobBrotherTile}
 
         self.track_map_render = [x[:] for x in [["x"] * self.height] * self.width]
         self.image = [x[:] for x in [[-1] * self.height] * self.width]
@@ -727,7 +726,6 @@ class TileMap(TrackingMap):
                     if not isinstance(self.track_map[x][y], T.Wall):
                         raise Exception(("The edge of the map for depth {} at location {} is not a wall").format(self.depth, (x, y)))
         if self.isolated_cells():
-            print(self)
             raise Exception("You have isolated cells for depth {}. This will cause issues with teleport, etc.".format(self.depth))
 
     def isolated_cells(self):
@@ -738,6 +736,7 @@ class TileMap(TrackingMap):
             for y in range(self.height):
                 if flood_map.locate(x, y) < 0 and self.get_passable(x,y):
                     print(flood_map)
+                    print(self)
                     return True
         return False
 

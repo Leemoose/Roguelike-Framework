@@ -12,7 +12,7 @@ class NPC(O.Objects):
         self.purpose = None #Trade, gossip,
         self.gave_quest = False
         self.quest = None
-        self.options = ["Gossip", "Trade", "Quest"]
+        self.options = ["Talk", "Trade", "Quest"]
 
     def change_purpose(self, purpose, loop):
         if isinstance(purpose, int):
@@ -20,7 +20,7 @@ class NPC(O.Objects):
                 purpose = self.options[purpose-1]
             else:
                 print("You have a weird purpose")
-        if purpose == "Gossip":
+        if purpose == "Talk":
             self.talk(loop)
             self.purpose = purpose
         elif purpose == "Trade":
@@ -111,9 +111,24 @@ class King(NPC):
 class Guard(NPC):
     def __init__(self, x, y, render_tag= 121, name="Guard"):
         super().__init__(x=x, y=y, render_tag = render_tag, name = name)
-        self.options = ["Gossip"]
+        self.options = ["Talk"]
 
     def talk(self, loop):
         super().talk(loop)
         loop.add_message(self.name + " says: 'Now move along.")
+
+class BobBrother(Guard):
+    def __init__(self, x, y, render_tag= 121, name="Bob's Brother"):
+        super().__init__(x=x, y=y, render_tag = render_tag, name = name)
+        self.options.append("Quest")
+
+    def give_quest(self, loop):
+        if self.gave_quest == True:
+            if self.quest.check_for_completion(loop):
+                loop.add_message(self.name + " says: 'Thank you for bringing my brother back.'")
+        else:
+            loop.add_message(
+                self.name + " says: 'Please, I can't find my brother and the king won't let me leave my post. Can you find him for me?")
+            loop.player.add_quest(quest.BrothersQuest())
+            self.gave_quest = True
 

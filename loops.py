@@ -111,6 +111,7 @@ class Loops():
         self.npc_focus = None
         self.quest_recieved = False
 
+
         self.create_display_options = {LoopType.action: self.display.create_display,
                                        LoopType.targeting: self.display.create_display,
                                        LoopType.examine: self.display.create_display,
@@ -157,7 +158,7 @@ class Loops():
                                        LoopType.main: keyboard.key_main_screen,
                                        LoopType.paused: keyboard.key_paused,
                                        LoopType.trade: keyboard.key_trade,
-                                        LoopType.quest: keyboard.key_quest
+                                       LoopType.quest: keyboard.key_quest
                                        }
 
         # Start the game by going to the main screen

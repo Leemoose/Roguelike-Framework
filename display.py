@@ -1845,10 +1845,10 @@ class Display:
         trading_title_offset_from_left = trading_offset_from_left
         trading_title_offset_from_top = trading_offset_from_top
 
-        num_option_buttons = 6
+        num_option_buttons = len(loop.player.quests)
         option_button_offset_from_left = trading_offset_from_left
         option_button_offset_from_top = trading_title_offset_from_top + trading_title_height
-        option_button_width = (trading_screen_width) // (num_option_buttons + 1)
+        option_button_width = min((trading_screen_width) // (num_option_buttons + 1), 300)
         option_button_height =((trading_screen_height - trading_title_height) // 8)
         option_margin_between_buttons_width = (option_button_width) // (num_option_buttons + 1)
 
