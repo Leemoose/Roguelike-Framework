@@ -5,49 +5,6 @@ import ui
 import objects as O
 import monster as M
 import tiles as T
-
-class Buttons:
-    def __init__(self):
-        self.buttons = {}
-
-    def add(self, button, name):
-        self.buttons[name] = button
-"""
-    def render_button(self, key):
-        font = pygame.font.Font('freesansbold.ttf', 32)
-
-        button = self.buttons[key]
-        text = font.render(key, True, (255, 255, 255))
-        text_width, text_height = font.size("Enter: Play!")
-        scr.win.blit(text, (scr.screen_width / 2 - text_width / 2, scr.screen_height * 85 / 100 + button.height / 2 - text_height / 2))
-        """
-
-"""
-class Button:
-    # A button is anything in game that you could click
-    def __init__(self, screen_width, screen_height, asset, modx, mody, action, positionx, positiony):
-        self.width = screen_width * modx
-        self.height = screen_height * mody
-        self.modx = modx  #How large in fraction relative to the screen
-        self.mody = mody  #How tall in fraction relative to the screen
-        self.img = pygame.transform.scale(pygame.image.load("assets/button.png"), (self.width, self.height))
-        self.action = action  #See keyboard for list of actions
-        self.positionx = positionx  #center of button
-        self.positiony = positiony  #center of button
-
-    def scale(self, screen_width, screen_height):
-        #rescaling the button size
-        self.img = pygame.transform.scale(self.img, (screen_width * self.modx, screen_height * self.mody))
-
-    def clicked(self, x, y):
-        #x,y is position clicked
-        cornerx, cornery = self.get_position()
-        return (cornerx < x and x < cornerx + self.width) and (cornery < y and y < cornery + self.height)
-
-    def get_position(self):
-        return self.positionx - self.width // 2, self.positiony + self.height // 2
-"""
-
 class Display:
     """
     Display is responsible for put images in the screen. Currently have it set that each function will update a
@@ -72,7 +29,6 @@ class Display:
         self.uiManager = pygame_gui.UIManager((width, height), "assets/theme.json")
         self.windows = []
         self.clock = pygame.time.Clock()
-        self.buttons = Buttons()
         self.colorDict = None
 
         self.quest_number = -1
@@ -194,7 +150,7 @@ class Display:
             manager=self.uiManager,
                     starting_height=800)
         button.action = "i"
-        self.buttons.add(button, "i")
+
 
         button_num_height += 1
         button = pygame_gui.elements.UIButton(
@@ -206,7 +162,7 @@ class Display:
             manager=self.uiManager,
                     starting_height=800)
         button.action = "e"
-        self.buttons.add(button, "e")
+
 
         button_num_height += 1
         button = pygame_gui.elements.UIButton(
@@ -218,7 +174,6 @@ class Display:
             manager=self.uiManager,
                     starting_height=800)
         button.action = "z"
-        self.buttons.add(button, "z")
 
         button_num_height = 0
         button_num_width += 1
@@ -231,7 +186,6 @@ class Display:
             manager=self.uiManager,
                     starting_height=800)
         button.action = "q"
-        self.buttons.add(button, "q")
 
         button_num_height += 1
         button = pygame_gui.elements.UIButton(
@@ -243,7 +197,6 @@ class Display:
             manager=self.uiManager,
                     starting_height=800)
         button.action = "r"
-        self.buttons.add(button, "r")
 
         button_num_height += 1
         button = pygame_gui.elements.UIButton(
@@ -255,7 +208,6 @@ class Display:
             manager=self.uiManager,
                     starting_height=800)
         button.action = "o"
-        self.buttons.add(button, "o")
 
         button_num_height = 0
         button_num_width += 1
@@ -268,7 +220,6 @@ class Display:
             manager=self.uiManager,
                     starting_height=800)
         button.action = "esc"
-        self.buttons.add(button, "esc")
 
         button_num_height += 1
         button = pygame_gui.elements.UIButton(
@@ -280,7 +231,6 @@ class Display:
             manager=self.uiManager,
                     starting_height=800)
         button.action = "s"
-        self.buttons.add(button, "s")
 
         button_num_height += 1
         button = pygame_gui.elements.UIButton(
@@ -292,7 +242,6 @@ class Display:
             manager=self.uiManager,
                     starting_height=800)
         button.action = "g"
-        self.buttons.add(button, "g")
 
     #if target_to_display != None:
     #    clear_target = self.draw_examine_window(target_to_display, tileDict, floormap, monster_map, monsterID, item_ID, player)
@@ -328,8 +277,7 @@ class Display:
                 button.action = chr(ord("1") + i)
                 # self.draw_on_button(button, img, chr(ord("1") + i), (skill_button_width, skill_button_height), shrink=True,
                 #                     offset_factor=10, text_offset=(12, (0.6)))
-                self.buttons.add(button, chr(ord("1") + i))
-        
+
 
         healthBar = ui.HealthBar(pygame.Rect((stats_offset_from_left + 70, stats_offset_from_top + 12), (stats_width//3, stats_height//12)), self.uiManager, player)
         manaBar = ui.ManaBar(pygame.Rect((stats_offset_from_left + 70, stats_offset_from_top + 38), (stats_width//3, stats_height//12)), self.uiManager, player)
@@ -696,11 +644,9 @@ class Display:
                     text= chr(ord("a") + i) + ". " + item_name,
                     manager=self.uiManager)
                 button.action = chr(ord("a") + i)
-                self.buttons.add(button, chr(ord("a") + i))
 
         self.uiManager.draw_ui(self.win)
-        return self.buttons
-    
+
     def draw_on_button(self, button, img, letter="", button_size=None, shrink=False, offset_factor = 10, text_offset = (15, 0.8)):
         offset = (0, 0)
         if shrink:# shrink weapon image a bit
@@ -1214,7 +1160,6 @@ class Display:
         entity_text_width = entity_screen_width * 11 // 12
         entity_text_height = entity_screen_height * 3 // 5
 
-        buttons = Buttons()
         buttons_drawn = 0
 
         entity_image = pygame.transform.scale(tileDict.tiles[entity.render_tag],
@@ -1279,7 +1224,7 @@ class Display:
                         text=pretext,
                         manager=self.uiManager)
                     button.action = action
-                    buttons.add(button, pretext)
+
                 buttons_drawn += 1
 
                 button = pygame_gui.elements.UIButton(
@@ -1288,7 +1233,7 @@ class Display:
                     text='Drop',
                     manager=self.uiManager)
                 button.action = "d"
-                buttons.add(button, "Drop")
+
                 buttons_drawn += 1
 
 
@@ -1363,8 +1308,7 @@ class Display:
                 manager=self.uiManager)
 
         self.uiManager.draw_ui(self.win)
-        return self.buttons
-    
+
     def draw_single_tile(self, x, y, floormap, tileDict):
         if (x < 0 or x >= floormap.width or y < 0 or y >= floormap.height):
             pass
@@ -1639,12 +1583,12 @@ class Display:
 
 
         self.uiManager.clear_and_reset()
-        buttons = Buttons()
+
         button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((button_offset_from_left, button_offset_from_bottom), (button_width, button_height)),
                                                  text='Play',
                                                  manager=self.uiManager)
         button.action = "return"
-        buttons.add(button, "play")
+
 
 
 
@@ -1652,7 +1596,7 @@ class Display:
                                                  text='Load',
                                                  manager=self.uiManager)
         button.action = "l"
-        buttons.add(button, "load")
+
 
         button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect(
             (button_offset_from_left + button_width * 2 + button_offset_from_each_other * 2, button_offset_from_bottom),
@@ -1660,7 +1604,6 @@ class Display:
                                               text='The Story So Far',
                                               manager=self.uiManager)
         button.action = "s"
-        buttons.add(button, "story")
 
         button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect(
             (button_offset_from_left + button_width * 3 + button_offset_from_each_other * 3, button_offset_from_bottom),
@@ -1668,20 +1611,17 @@ class Display:
                                               text='Help',
                                               manager=self.uiManager)
         button.action = "h"
-        buttons.add(button, "help")
 
         button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((button_offset_from_left+ button_width * 4 + button_offset_from_each_other * 4, button_offset_from_bottom), (button_width, button_height)),
                                                  text='Quit',
                                                  manager=self.uiManager)
         button.action = "esc"
-        buttons.add(button, "quit")
 
         pygame_gui.elements.UILabel(relative_rect=pygame.Rect((message_offset_from_left, message_offset_from_top), (message_width, message_height)),
                                     text="Orbworld: The Orb of Destiny",
                                     manager=self.uiManager,
                                     object_id='#title_label')
 
-        return buttons
 
     def create_help_screen(self, loop):
         button_width = self.screen_width // 4
@@ -1701,13 +1641,12 @@ class Display:
 
 
         self.uiManager.clear_and_reset()
-        buttons = Buttons()
+
 
         button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((button_offset_from_left, button_offset_from_bottom), (button_width, button_height)),
                                                  text='Return to Main Menu',
                                                  manager=self.uiManager)
         button.action = "esc"
-        buttons.add(button, "Return to Main Menu")
 
         pygame_gui.elements.UILabel(relative_rect=pygame.Rect((title_offset_from_left, title_offset_from_top), (title_width, title_height)),
                                     text="Action Shortcuts",
@@ -1749,13 +1688,11 @@ class Display:
 
 
         self.uiManager.clear_and_reset()
-        buttons = Buttons()
 
         button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((button_offset_from_left, button_offset_from_bottom), (button_width, button_height)),
                                                  text='Return to Main Menu',
                                                  manager=self.uiManager)
         button.action = "esc"
-        buttons.add(button, "Return to Main Menu")
 
         pygame_gui.elements.UILabel(relative_rect=pygame.Rect((title_offset_from_left, title_offset_from_top), (title_width, title_height)),
                                     text="The Story So Far",
@@ -1777,8 +1714,7 @@ class Display:
             manager=self.uiManager
         )
 
-        return buttons
-    
+
     def update_screen(self, loop):
         self.win.fill((0,0,0))
         self.uiManager.draw_ui(self.win)
