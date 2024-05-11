@@ -14,7 +14,6 @@ class Mage():
 
     def cast_spell(self, skill_num, target, loop):
         spell = self.known_spells[skill_num]
-        print(spell.name)
         self.parent.character.energy -= spell.action_cost
         return spell.try_to_activate(target, loop)
 

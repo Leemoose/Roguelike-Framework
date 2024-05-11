@@ -173,8 +173,6 @@ class Character():
 
 
     def grab(self, item, loop):
-        print("This is the player trying to grab an item. Here is dictionary:")
-        print(loop.generator.item_map.dict)
         if self.get_item(loop, item):
             loop.generator.item_map.remove_thing(item)
             loop.add_message("The " + str(self.parent.name) + " picked up a " + str(item.name))

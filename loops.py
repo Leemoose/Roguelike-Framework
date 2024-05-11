@@ -450,7 +450,6 @@ class Loops():
 
     def load_game(self):
         self.update_screen = False
-        print(self.memory.floor_level)
         self.floor_level = self.memory.floor_level
 
         self.generator = self.memory.generators[self.floor_level]

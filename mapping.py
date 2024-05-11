@@ -464,7 +464,7 @@ class DungeonGenerator():
         return None
 
     def in_map(self, x, y):
-       return x> 0 and x < self.width and y >0 and y < self.height
+       return x>= 0 and x < self.width and y >= 0 and y < self.height
 
     def random_direction(self, old):
         directions = [(0,1),(0,-1),(1,0),(-1,0)]
@@ -554,7 +554,6 @@ class DungeonGenerator():
         item.y = starty
 
         self.item_map.place_thing(item)
-        print(self.item_map.dict)
 
     def get_map(self):
         return self.tile_map
@@ -576,7 +575,7 @@ class Maps():
             return False
 
     def in_map(self, x, y):
-       return x> 0 and x < self.width and y >0 and y < self.height
+       return x>= 0 and x < self.width and y >= 0 and y < self.height
 
 """
 This map will either track items or monsters.
@@ -619,30 +618,33 @@ class TrackingMap(Maps):
         return allrows
 
 class FloodMap(Maps):
-    def __init__(self, parent, width, height):
+    def __init__(self, map, width, height):
         super().__init__(width, height)
         self.flood_queue = []
-        self.parent = parent
+        self.tile_map = map
+        self.track_map = [x[:] for x in [[-2] * self.height] * self.width]
 
-    def update_flood_map(self, location, search = False):
-        self.track_map = [x[:] for x in [[-1] * self.width] * self.height]
+    def update_flood_map(self, location, search = False, reset = False):
+        if reset:
+            self.track_map = [x[:] for x in [[-2] * self.height] * self.width]
         x, y = location
+        self.track_map[x][y] = -1
         self.flood_queue.append((x, y, 0, 0, 0))
-        while len(self.flood_queue) > 0:
-            return self.iterate_flood(search)
+        while (len(self.flood_queue) > 0):
+            self.iterate_flood(search)
 
-    def iterate_flood(self, search):
+    def iterate_flood(self, search = False):
         x, y, xdelta, ydelta, count = self.flood_queue.pop(0)
-        if (self.in_map(x + xdelta, y + ydelta) and self.track_map[x+xdelta][y+ydelta] == -1):
-            self.track_map[x+xdelta][y+ydelta] = count
-            if search == True and self.parent.track_map[x+xdelta][y+ydelta].visible and self.parent.get_passable((x+xdelta,y+ydelta)):
-                return (x+xdelta,y+ydelta)
+        if (self.in_map(x + xdelta, y + ydelta) and self.track_map[x + xdelta][y + ydelta] == -1 and self.tile_map[x+xdelta][y+ydelta].is_passable()):
+            self.track_map[x + xdelta][y + ydelta] = count
             options = [(0, 1), (1, 0), (-1, 0), (0, -1)]
             r = random.randint(0, 3)
-            for i in range(3):
+            for i in range(4):
                 xdeltanew, ydeltanew = options[(r + i) % 4]
-                if self.in_map(x + xdelta + xdeltanew, y + ydelta+ydeltanew) and (self.track_map[x+xdelta+xdeltanew][y+ydelta+ydeltanew] == -1):
-                    self.flood_queue.append((x + xdelta, y+ydelta, xdeltanew, ydeltanew, count+1))
+                if self.in_map(x + xdelta + xdeltanew, y + ydelta + ydeltanew) and (
+                        self.track_map[x + xdelta + xdeltanew][y + ydelta + ydeltanew] == -2):
+                    self.flood_queue.append((x + xdelta, y + ydelta, xdeltanew, ydeltanew, count + 1))
+                    self.track_map[x + xdelta + xdeltanew][y + ydelta + ydeltanew] = -1
 
     def __str__(self):
         allrows = ""
@@ -650,7 +652,7 @@ class FloodMap(Maps):
             row = ' '.join(str(self.track_map[x][y]) for y in range(self.height))
             allrows = allrows + row + "\n"
         return allrows
-    
+
 
 """
 This map is responsible for carving all tiles out.
@@ -679,6 +681,7 @@ class TileMap(TrackingMap):
         self.track_map = []
         self.stairs = []
         self.rooms = []
+        self.depth = depth
 
         self.render_mapping = {"x": T.Wall,
                                ".": T.Floor,
@@ -704,6 +707,7 @@ class TileMap(TrackingMap):
           #      self.cellular_caves()
             self.place_stairs(depth)
         self.render_to_map(depth)
+        self.quality_check_map()
 
     def __str__(self):
         map = ""
@@ -715,6 +719,27 @@ class TileMap(TrackingMap):
                     map += "x"
             map += "\n"
         return map
+
+    def quality_check_map(self):
+        for x in range(self.width):
+            for y in range(self.height):
+                if x == 0 or x == self.width-1 or y == 0 or y == self.height -1:
+                    if not isinstance(self.track_map[x][y], T.Wall):
+                        raise Exception(("The edge of the map for depth {} at location {} is not a wall").format(self.depth, (x, y)))
+        if self.isolated_cells():
+            print(self)
+            raise Exception("You have isolated cells for depth {}. This will cause issues with teleport, etc.".format(self.depth))
+
+    def isolated_cells(self):
+        flood_map = FloodMap(self.track_map, self.width, self.height)
+        for stairs in self.stairs:
+            flood_map.update_flood_map(stairs.get_location())
+        for x in range(self.width):
+            for y in range(self.height):
+                if flood_map.locate(x, y) < 0 and self.get_passable(x,y):
+                    print(flood_map)
+                    return True
+        return False
 
     def render_to_map(self, depth):
         if self.width != len(self.track_map_render) or self.height != len(self.track_map_render[0]):
@@ -818,7 +843,7 @@ class TileMap(TrackingMap):
 
     def get_passable(self, x, y):
         if (x>=0) & (y>=0) & (x < self.width) & (y < self.height):
-            return (self.track_map[x][y].passable)
+            return (self.track_map[x][y].is_passable())
         else:
             return False
 
