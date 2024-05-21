@@ -480,10 +480,11 @@ class Display:
         examine_offset_from_top = self.screen_height // 20
         try:
             x, y = target
+
         except:
+            return False 
+        if (not loop.generator.in_map(x, y)) or not floormap.track_map[x][y].visible:
             return False
-        if not floormap.track_map[x][y].visible:
-            return
         black_screen = pygame.transform.scale(pygame.image.load("assets/black_screen.png"), (self.screen_width // 5, self.screen_height // 5))
         self.win.blit(black_screen, (0, 0))
         

@@ -1,7 +1,8 @@
 Autoexplore sometimes fails with: RecursionError: maximum recursion depth exceeded in comparison
+Autoexplore sometimes fails with: AttributeError: 'tuple' object has no attribute 'pop'
 
 RingOfTeleportation not functional with Teleport moved from skills to spell
 
 unequip button missing on item screen
 
-AttributeError: 'NoneType' object has no attribute 'can_be_unequipped'
+two one-handed items can be equipped, maybe cool option but need to add combat and display for that if so

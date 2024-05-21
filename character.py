@@ -98,7 +98,7 @@ class Character():
         while i < num_slots:
             if self.equipment_slots[slot][i] is None:
                 self.equipment_slots[slot][i] = item
-                i += 1
+            i += 1
         if i >= num_slots:
             return True
         else:
@@ -109,7 +109,7 @@ class Character():
         while i < num_slots:
             if self.equipment_slots[slot][i] is item:
                 self.equipment_slots[slot][i] = None
-                i += 1
+            i += 1
         if i >= num_slots:
             return True
         else:
@@ -231,6 +231,8 @@ class Character():
             self.energy -= self.action_costs["equip"]
 
     def unequip(self, item):
+        if item == None:
+            return
         if item.can_be_unequipped(self):
             item.unequip(self)
             item.dropable = True

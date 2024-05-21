@@ -159,7 +159,7 @@ class ItemSpawner():
         # useful for debugging specific items, separate from generator
         self.forceSpawn = []
 
-        self.forceSpawn.append(("Wizard Hat", 3))
+        # self.forceSpawn.append(("Wizard Hat", 3))
         # self.forceSpawn.append(("Invincibility Scrorb", 3))
         # self.forceSpawn.append(("Permanent Dex Potiorb", 3))
         # self.forceSpawn.append(("Health Potiorb", 3))

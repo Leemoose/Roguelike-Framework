@@ -514,8 +514,8 @@ class DungeonGenerator():
         first = True
         force_near_stairs = False
         for item in itemSpawns:
-            if first and depth == 1:
-                # manually force a weapon to spawn near the stairs on the first floor
+            if first and depth == 2:
+                # manually force a weapon to spawn near the stairs on the second floor
                 force_near_stairs = True
                 first = False # only do so for first item
             self.place_item(item, force_near_stairs)

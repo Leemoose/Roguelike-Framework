@@ -584,8 +584,8 @@ class TowerShield(Shield):
 
     def level_up(self):
         self.enchant()
-        if self.wearer != None:
-            self.wearer.dexterity += 1
+        # if self.wearer != None:
+        #     self.wearer.dexterity += 1
         if self.level == 2:
             self.description += " It's been enchanted to be less unwieldy."
         if self.level == 6:
@@ -623,7 +623,7 @@ class BodyArmor(Armor):
 
     def equip(self, entity):
         if entity.equipment_slots["body_armor_slot"][0] != None:
-            entity.unequip(entity.equipment_slot["body_armor_slot"][0])
+            entity.unequip(entity.equipment_slots["body_armor_slot"][0])
         entity.equipment_slots["body_armor_slot"][0] = self
         self.activate(entity)
     
@@ -900,13 +900,17 @@ class Boots(Armor):
 
     def equip(self, entity):
         if entity.equipment_slots["boots_slot"][0] != None:
-            entity.unequip(entity.equipment_slot["boots_slot"][0])
-        entity.boots = self
+            entity.unequip(entity.equipment_slots["boots_slot"][0])
+        entity.equipment_slots["boots_slot"][0] = self
         self.activate(entity)
+        if self.attached_skill_exists:
+            entity.add_skill(self.attached_skill(entity.parent))
 
     def unequip(self, entity):
         entity.equipment_slots["boots_slot"] = None
         self.deactivate(entity)
+        if self.attached_skill_exists:
+            entity.remove_skill(self.attached_skill(entity.parent).name)
 
     def level_up(self):
         self.enchant()
@@ -968,18 +972,6 @@ class BootsOfEscape(Armor):
                         activation_threshold=1.1, 
                         action_cost=1)
 
-    def equip(self, entity):
-        if entity.boots != None:
-            entity.unequip(entity.boots)
-        entity.boots = self
-        entity.add_skill(self.attached_skill(entity.parent))
-        self.activate(entity)
-
-    def unequip(self, entity):
-        entity.boots = None
-        entity.remove_skill(self.attached_skill(entity.parent).name)
-        self.deactivate(entity)
-
     def level_up(self):
         self.enchant()
         if self.level == 2:
@@ -1038,10 +1030,14 @@ class Gloves(Armor):
             entity.unequip(entity.equipment_slots["gloves_slot"][0])
         entity.equipment_slots["gloves_slot"][0] = self
         self.activate(entity)
+        if self.attached_skill_exists:
+            entity.add_skill(self.attached_skill(entity.parent))
 
     def unequip(self, entity):
         entity.equipment_slots["body_armor_slot"][0] = None
         self.deactivate(entity)
+        if self.attached_skill_exists:
+            entity.remove_skill(self.attached_skill(entity.parent).name)
 
     def level_up(self):
         self.enchant()
@@ -1116,6 +1112,8 @@ class HealingGloves(Gloves):
         self.action_cost = 100
         self.rarity = "Rare"
 
+        self.attached_skill_exists = True
+
         self.stats = statUpgrades(base_int = 1, max_int = 3,
                                   base_end = 1, max_end = 1,
                                   base_arm = 2, max_arm = 5)
@@ -1127,12 +1125,6 @@ class HealingGloves(Gloves):
                         self.heal_amount,
                         self.activation_threshold,
                         self.action_cost)
-
-    def activate(self, entity):
-        entity.add_skill(self.attached_skill(entity.parent))
-
-    def deactivate(self, entity):
-        entity.remove_skill(self.attached_skill(entity.parent).name)
 
     def level_up(self):
         self.enchant()
@@ -1183,14 +1175,12 @@ class LichHand(Gloves):
         return S.Invinciblity(owner, self.skill_cost, self.skill_cooldown, self.skill_duration, activation_threshold=1.1, by_scroll=False)
 
     def activate(self, entity):
-        entity.add_skill(self.attached_skill(entity.parent))
         self.health_removed = entity.max_health // self.health_cost
         entity.max_health -= self.health_removed
         if entity.health > entity.max_health:
             entity.health = entity.max_health
 
     def deactivate(self, entity):
-        entity.remove_skill(self.attached_skill(entity.parent).name)
         entity.max_health += self.health_removed
 
     def level_up(self):
