@@ -1,0 +1,7 @@
+Autoexplore sometimes fails with: RecursionError: maximum recursion depth exceeded in comparison
+
+RingOfTeleportation not functional with Teleport moved from skills to spell
+
+unequip button missing on item screen
+
+AttributeError: 'NoneType' object has no attribute 'can_be_unequipped'

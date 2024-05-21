@@ -706,6 +706,7 @@ class TileMap(TrackingMap):
           #      self.cellular_caves()
             self.place_stairs(depth)
         self.render_to_map(depth)
+        print(f"{depth}: {self.stairs}")
         self.quality_check_map()
 
     def __str__(self):
@@ -819,17 +820,17 @@ class TileMap(TrackingMap):
                 self.track_map[x+1][y+1] = tile
 
     def place_stairs(self, depth):
-        if depth != 1:
+        if depth > 2:
             startx, starty = self.get_random_location_ascaii()
-            tile = T.Stairs(startx, starty, 90, True, downward=False)
+            #tile = T.Stairs(startx, starty, 90, True, downward=False)
             self.track_map_render[startx][starty] = "<"
-            self.stairs.append(tile)
+            #self.stairs.append(tile)
         if (depth < 10):
             for i in range(2):
                 startx, starty = self.get_random_location_ascaii()
-                tile = T.Stairs(startx, starty, 91, True, downward=True)
+                #tile = T.Stairs(startx, starty, 91, True, downward=True)
                 self.track_map_render[startx][starty] = ">"
-                self.stairs.append(tile)
+                #self.stairs.append(tile)
         startx, starty = self.get_random_location_ascaii()
         self.track_map_render[startx][starty] = "<"
 

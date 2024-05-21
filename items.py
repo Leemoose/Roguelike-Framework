@@ -1374,17 +1374,13 @@ class WizardHat(Helmet):
 
         self.stats = statUpgrades(base_int = 3, max_int = 6)
 
-    def equip(self, entity):
-        if entity.helmet != None:
-            entity.unequip(entity.helmet)
-        entity.helmet = self
+    def activate(self, entity):
         entity.max_mana += self.mana_buff
-        self.activate(entity)
 
-    def unequip(self, entity):
-        entity.helmet = None
+    def deactivate(self, entity):
         entity.max_mana -= self.mana_buff
-        self.deactivate(entity)
+        if entity.mana >= entity.max_mana:
+            entity.mana = entity.max_mana
 
     def level_up(self):
         self.enchant()

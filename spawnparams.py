@@ -76,7 +76,7 @@ ItemSpawns.append(ItemSpawnParams( I.LichHand(754),            5,               
 ItemSpawns.append(ItemSpawnParams( I.Pants(100),            5,               10,          1,              1))
 
 ItemSpawns.append(ItemSpawnParams( I.RingOfSwiftness(500),               1,               10,          0,              0))
-ItemSpawns.append(ItemSpawnParams( I.RingOfTeleportation(505),              5,               10,          1,              1))
+# ItemSpawns.append(ItemSpawnParams( I.RingOfTeleportation(505),              5,               10,          1,              1))
 ItemSpawns.append(ItemSpawnParams( I.BloodRing(501),          3,               10,          0,              0))
 ItemSpawns.append(ItemSpawnParams( I.RingOfMana(502),          1,               10,          0,              0))
 ItemSpawns.append(ItemSpawnParams( I.RingOfMight(503),          1,               10,          0,              0))
@@ -159,7 +159,7 @@ class ItemSpawner():
         # useful for debugging specific items, separate from generator
         self.forceSpawn = []
 
-        #self.forceSpawn.append(("Book of Summoning", 3))
+        self.forceSpawn.append(("Wizard Hat", 3))
         # self.forceSpawn.append(("Invincibility Scrorb", 3))
         # self.forceSpawn.append(("Permanent Dex Potiorb", 3))
         # self.forceSpawn.append(("Health Potiorb", 3))
@@ -201,7 +201,7 @@ class ItemSpawner():
         for itemToSpawn in self.forceSpawn:
             for _ in range(itemToSpawn[1]):
                 item_spawn = [i for i in self.ItemSpawns if i.item.name == itemToSpawn[0]][0]
-                item = item_spawn.item()
+                item = item_spawn.GetFreshCopy()
                 items.append(item)
 
         items.append(I.BookofHypnosis())

@@ -386,9 +386,9 @@ class Escape(Skill):
     
     def description(self):
         if self.duration == -100:
-            addition = "permanently"
+            addition = " permanently"
         else:
-            addition = "for " + str(self.duration) + " turns"
+            addition = " for " + str(self.duration) + " turns"
         if self.threshold >= 1:
             return self.name + "(" + str(self.cost) + " cost, " + str(self.cooldown) + " turn cooldown, gain " + str(self.dex_buff) + " dexterity, lose " + str(self.str_debuff) + " strength, lose " + str(self.int_debuff) + " intelligence)" + addition
         return self.name + "(" + str(self.cost) + " cost, " + str(self.cooldown) + " turn cooldown" + ", castable below " + str(self.threshold * 100) + "% health), gain " + str(self.dex_buff) + " dexterity, lose " + str(self.str_debuff) + " strength, lose " + str(self.int_debuff) + " intelligence)" + addition

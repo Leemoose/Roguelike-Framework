@@ -185,6 +185,7 @@ class Loops():
             if event.type == pygame.QUIT:
                 return False
             elif event.type == pygame.KEYDOWN or (event.type == pygame_gui.UI_BUTTON_PRESSED and hasattr(event.ui_element, "action")):
+                key = None
                 if event.type == pygame.KEYDOWN:
                     if event.mod == pygame.KMOD_NONE:
                         key = keyboard.key_string(event.key, False)
@@ -199,7 +200,7 @@ class Loops():
 
                 if self.currentLoop in self.action_options:
                   #  print(key)
-                    if self.action_options[self.currentLoop](self,key) == False:
+                    if key != None and self.action_options[self.currentLoop](self,key) == False:
                         return False
 
             elif event.type == pygame.MOUSEBUTTONDOWN:
@@ -355,6 +356,9 @@ class Loops():
 
         self.floor_level += 1
         print(self.generator.tile_map.track_map)
+        print(self.floor_level)
+        print(self.generator.tile_map.stairs)
+        # import pdb; pdb.set_trace()
         print("The stairs you are taking is {}".format(self.generator.tile_map.track_map[playerx][playery]))
         self.player.x, self.player.y = (self.generator.tile_map.locate(playerx, playery).pair.get_location())
         self.generator = self.memory.generators[self.floor_level]
@@ -366,7 +370,7 @@ class Loops():
     def up_floor(self):
         playerx, playery = self.player.get_location()
         tile = self.generator.tile_map.track_map[playerx][playery]
-        if self.floor_level != 1 and isinstance(tile, O.Stairs) and not tile.downward:
+        if self.floor_level != 1 and isinstance(tile, TI.Stairs) and not tile.downward:
             self.taking_stairs = True
 
             if self.player.character.energy < 0:
@@ -388,7 +392,7 @@ class Loops():
         self.memory.player = self.player
 
         self.floor_level += 1
-        while self.floor_level < 9:
+        while self.floor_level < 10:
             if self.floor_level > self.memory.explored_levels:
                 generator = M.DungeonGenerator(self.floor_level, self.player)
                 self.monster_map = generator.monster_map
@@ -397,7 +401,8 @@ class Loops():
                     for stairs in (generator.tile_map.get_stairs()):
                         if not stairs.downward:
                             for old_stairs in self.generator.tile_map.get_stairs():
-                                if old_stairs.pair == None and old_stairs.downward:
+                                if (old_stairs.pair == None and old_stairs.downward) or \
+                                    (old_stairs.downward and self.floor_level == 2):
                                     old_stairs.pair = stairs
                                     stairs.pair = old_stairs
                                     break
