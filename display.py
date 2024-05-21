@@ -379,6 +379,9 @@ class Display:
                 if floormap.track_map[npc.x][npc.y].visible:
                     npc_tile = tileDict.tile_string(npc.render_tag)
                     self.win.blit(npc_tile, (self.textSize * (npc.x - self.x_start), self.textSize * (npc.y - self.y_start)))
+                    if npc.has_stuff_to_say:
+                        speech_tile = tileDict.tile_string(122) # render tag of speech bubble, check mapping.py if you need to change
+                        self.win.blit(speech_tile, (self.textSize * (npc.x - self.x_start), self.textSize * (npc.y - self.y_start)))
 
         for key in monsterID.subjects:
             monster = monsterID.get_subject(key)

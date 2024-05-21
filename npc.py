@@ -13,6 +13,7 @@ class NPC(O.Objects):
         self.gave_quest = False
         self.quest = None
         self.options = ["Talk", "Trade", "Quest"]
+        self.has_stuff_to_say = False
 
     def change_purpose(self, purpose, loop):
         if isinstance(purpose, int):
@@ -65,6 +66,7 @@ class Bob(NPC):
     def __init__(self, render_tag, x, y, name="Bob"):
         super().__init__(x=x, y=y, render_tag = render_tag, name = name)
         self.quest = quest.GoblinQuest()
+        self.has_stuff_to_say = True
 
     def welcome(self, loop):
         super().welcome(loop)
@@ -98,6 +100,7 @@ class King(NPC):
     def __init__(self, x, y, render_tag= 120, name="King"):
         super().__init__(x=x, y=y, render_tag = render_tag, name = name)
         self.options = ["Quest"]
+        self.has_stuff_to_say = True
 
     def give_quest(self, loop):
         if self.gave_quest == True:
@@ -107,6 +110,7 @@ class King(NPC):
             loop.add_message(self.name + " says: 'I have summoned you at great expense and with time quickly running out. The monsters grow stronger. Please defeat them.")
             loop.player.add_quest(quest.KingdomQuest())
             self.gave_quest = True
+            self.has_stuff_to_say = False
 
 class Guard(NPC):
     def __init__(self, x, y, render_tag= 121, name="Guard"):
@@ -121,6 +125,7 @@ class BobBrother(Guard):
     def __init__(self, x, y, render_tag= 121, name="Bob's Brother"):
         super().__init__(x=x, y=y, render_tag = render_tag, name = name)
         self.options.append("Quest")
+        self.has_stuff_to_say = True
 
     def give_quest(self, loop):
         if self.gave_quest == True:
@@ -130,5 +135,6 @@ class BobBrother(Guard):
             loop.add_message(
                 self.name + " says: 'Please, I can't find my brother and the king won't let me leave my post. Can you find him for me?")
             loop.player.add_quest(quest.BrothersQuest())
+            self.has_stuff_to_say = False
             self.gave_quest = True
 

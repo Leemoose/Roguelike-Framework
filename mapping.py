@@ -107,10 +107,15 @@ class TileDict():
         tiles[91] = image.load("assets/tiles/stairs_down.png")
         tiles[-91] = image.load("assets/tiles/stairs_down_shaded.png")
 
+        # pants
         tiles[100] = image.load("assets/items/armor/pants.png")
+        
+        # npc assets
         tiles[110] = image.load("assets/shopkeeper.png")
         tiles[120] = image.load("assets/king.png")
         tiles[121] = image.load("assets/guard.png")
+        tiles[122] = image.load("assets/speech_bubble.png")
+
         # 200-299 player assets
         tiles[200] = image.load("assets/Player.png")
         tiles[-200] = image.load("assets/player_under_armor.png")
