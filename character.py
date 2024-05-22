@@ -458,15 +458,15 @@ class Character():
             loop.change_loop(returnLoopType)
 
     def add_skill(self, new_skill):
-        for skill in self.skills:
+        for skill in self.parent.mage.known_spells:
             if skill.name == new_skill.name:
                 return
         self.parent.mage.add_spell(new_skill)
 
     def remove_skill(self, skill_name):
-        for skill in self.skills:
+        for skill in self.parent.mage.known_spells:
             if skill.name == skill_name:
-                self.skills.remove(skill)
+                self.parent.mage.known_spells.remove(skill)
                 break
     
     def get_enchantable(self):

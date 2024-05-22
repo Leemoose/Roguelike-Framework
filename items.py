@@ -506,10 +506,15 @@ class Shield(Armor):
                 entity.unequip(entity.equipment_slots["hand_slot"][1])
             entity.equipment_slots["hand_slot"][1] = self
             self.activate(entity)
+            if self.attached_skill_exists:
+                entity.add_skill(self.attached_skill(entity.parent))
 
     def unequip(self, entity):
         entity.equipment_slots["hand_slot"][1] = None
         self.deactivate(entity)
+        if self.attached_skill_exists:
+            entity.remove_skill(self.attached_skill(entity.parent).name)
+        
 
 class BasicShield(Shield):
     def __init__(self, render_tag):
@@ -550,14 +555,6 @@ class Aegis(Shield):
                                 self.skill_duration, 
                                 self.skill_activation_chance, 
                                 self.skill_range)
-
-    def activate(self, entity):
-        entity.add_skill(self.attached_skill(entity.parent))
-        return super().activate(entity)
-
-    def deactivate(self, entity):
-        entity.remove_skill(self.attached_skill(entity.parent).name)
-        return super().deactivate(entity)
 
     def level_up(self):
         self.enchant()
@@ -630,10 +627,14 @@ class BodyArmor(Armor):
             entity.unequip(entity.equipment_slots["body_armor_slot"][0])
         entity.equipment_slots["body_armor_slot"][0] = self
         self.activate(entity)
+        if self.attached_skill_exists:
+            entity.add_skill(self.attached_skill(entity.parent).name)
     
     def unequip(self, entity):
         entity.equipment_slots["body_armor_slot"][0] = None
         self.deactivate(entity)
+        if self.attached_skill_exists:
+            entity.remove_skill(self.attached_skill(entity.parent).name)
 
 class Chestarmor(BodyArmor):
     def __init__(self, render_tag):
@@ -688,14 +689,6 @@ class GildedArmor(BodyArmor):
     def attached_skill(self, owner):
         self.attached_skill_exists = True
         return S.ShrugOff(owner, self.skill_cooldown, self.skill_cost, self.activation_chance, action_cost=100)
-
-    def activate(self, entity):
-        entity.add_skill(self.attached_skill(entity.parent))
-        return super().activate(entity)
-
-    def deactivate(self, entity):
-        entity.remove_skill(self.attached_skill(entity.parent).name)
-        return super().deactivate(entity)
 
     def level_up(self):
         self.enchant()
@@ -754,12 +747,10 @@ class WarlordArmor(BodyArmor):
 
 
     def activate(self, entity):
-        entity.add_skill(self.attached_skill(entity.parent))
         self.wearer = entity
         return super().activate(entity)
 
     def deactivate(self, entity):
-        entity.remove_skill(self.attached_skill(entity.parent).name)
         self.wearer = None
         return super().deactivate(entity)
 
@@ -911,10 +902,11 @@ class Boots(Armor):
             entity.add_skill(self.attached_skill(entity.parent))
 
     def unequip(self, entity):
-        entity.equipment_slots["boots_slot"] = None
+        entity.equipment_slots["boots_slot"][0] = None
         self.deactivate(entity)
         if self.attached_skill_exists:
             entity.remove_skill(self.attached_skill(entity.parent).name)
+            print("Remove boot skill")
 
     def level_up(self):
         self.enchant()
@@ -944,9 +936,9 @@ class BlackenedBoots(Boots):
         if self.level == 6:
             self.description = "You ride on screaming winds."
 
-class BootsOfEscape(Armor):
+class BootsOfEscape(Boots):
     def __init__(self, render_tag):
-        super().__init__(-1,-1, 0, render_tag, "Boots of Escape")
+        super().__init__(render_tag)
         self.equipment_type = "Boots"
         self.name = "Boots of Escape"
         self.armor = 0
@@ -1409,10 +1401,14 @@ class Pants(Armor):
             entity.unequip(entity.equipment_slots["pants_slot"][0])
         entity.equipment_slots["pants_slot"][0] = self
         self.activate(entity)
+        if self.attached_skill_exists:
+            entity.add_skill(self.attached_skill(entity.parent))
 
     def unequip(self, entity):
         entity.equipment_slots["pants_slot"][0] = None
         self.deactivate(entity)
+        if self.attached_skill_exists:
+            entity.remove_skill(self.attached_skill(entity.parent).name)
 
     def level_up(self):
         self.enchant()
@@ -1444,6 +1440,8 @@ class Ring(Equipment):
             if ring == None:
                 entity.equipment_slots["ring_slot"][i] = self
                 self.activate(entity)
+                if self.attached_skill_exists:
+                    entity.add_skill(self.attached_skill(entity.parent))
                 self.equipped = True
                 break
         if equipped == False:
@@ -1452,13 +1450,22 @@ class Ring(Equipment):
                 if ring == None:
                     entity.equipment_slots["ring_slot"][i] = self
                     self.activate(entity)
+                    if self.attached_skill_exists:
+                        entity.add_skill(self.attached_skill(entity.parent))
                     self.equipped = True
 
     def unequip(self, entity):
-        for ring in entity.equipment_slots["ring_slot"]:
+        for i, ring in enumerate(entity.equipment_slots["ring_slot"]):
             if entity.equipment_slots["ring_slot"][ring] == self:
                 entity.equipment_slots["ring_slot"][ring] = None
                 self.deactivate(entity)
+                if self.attached_skill_exists:
+                    skill_still_exists = False
+                    for ring_2 in entity.equipment_slots["ring_slot"]:
+                        if ring_2.name == self.name:
+                            skill_still_exists = True
+                    if not skill_still_exists:
+                        entity.remove_skill(self.attached_skill(entity.parent).name)
                 self.equipped = False
 
 
@@ -1489,14 +1496,6 @@ class BloodRing(Ring):
     def attached_skill(self, owner):
         self.attached_skill_exists = True
         return S.BloodPact(owner, cooldown=10, cost=25, strength_increase=5, duration=5, action_cost=100)
-
-    def activate(self, entity):
-        entity.add_skill(self.attached_skill(entity.parent))
-
-    def deactivate(self, entity):
-        if entity.ring_1 != None and entity.ring_1.name == "Blood Ring":
-            return  # don't remove skill if other ring was a blood ring
-        entity.remove_skill(self.attached_skill(entity.parent).name)
 
 
 class RingOfMight(Ring):
@@ -1579,14 +1578,14 @@ class RingOfTeleportation(Ring):
         return S.Teleport(owner, self.skill_cooldown, self.skill_cost)
 
     def activate(self, entity):
-        entity.add_skill(self.attached_skill(entity.parent))
+        # entity.add_skill(self.attached_skill(entity.parent))
         self.wearer = entity
         return super().activate(entity)
 
     def deactivate(self, entity):
-        if entity.ring_1 != None and entity.ring_1.name == "Ring of Teleportation":
-            return  # don't remove skill if other ring was a teleportation ring
-        entity.remove_skill(self.attached_skill(entity.parent).name)
+        #if entity.ring_1 != None and entity.ring_1.name == "Ring of Teleportation":
+        #    return  # don't remove skill if other ring was a teleportation ring
+        # entity.remove_skill(self.attached_skill(entity.parent).name)
         self.wearer = None
         return super().deactivate(entity)
 
@@ -1622,6 +1621,8 @@ class Amulet(Equipment):
     def unequip(self, entity):
         entity.equipment_slots["amulet_slot"][0] = None
         self.deactivate(entity)
+        if self.attached_skill_exists:
+            entity.remove_skill(self.attached_skill(entity.parent).name)
 
 
 
