@@ -711,7 +711,7 @@ class TileMap(TrackingMap):
           #      self.cellular_caves()
             self.place_stairs(depth)
         self.render_to_map(depth)
-        print(f"{depth}: {self.stairs}")
+        # print(f"{depth}: {self.stairs}")
         self.quality_check_map()
 
     def __str__(self):

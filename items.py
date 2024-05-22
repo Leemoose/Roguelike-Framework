@@ -139,6 +139,8 @@ class Weapon(Equipment):
 
     def equip(self, entity):
         if entity.strength >= self.required_strength and entity.free_equipment_slots("hand_slot") >= self.slots_taken:
+            if entity.equipment_slots["hand_slot"][0] != None:
+                entity.unequip(entity.equipment_slots["hand_slot"][0])
             entity.add_item_to_equipment_slot(self, "hand_slot", self.slots_taken)
             if self.attached_skill_exists:
                 entity.add_skill(self.attached_skill(entity.parent))
@@ -495,12 +497,14 @@ class Shield(Armor):
         self.equipment_type = "Shield"
         self.name = name
         self.shield = True
+        self.offhand = True
         self.description = "A shield that you can use to block things."
 
     def equip(self, entity):
         if entity.strength >= self.required_strength:
             if entity.equipment_slots["hand_slot"][1] != None:
                 entity.unequip(entity.equipment_slots["hand_slot"][1])
+            entity.equipment_slots["hand_slot"][1] = self
             self.activate(entity)
 
     def unequip(self, entity):

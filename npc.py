@@ -95,6 +95,7 @@ class Bob(NPC):
             loop.add_message(self.name + " says: 'Goblins. I hate those nasty buggers. They keep stealing all my stuff! If you kill 3 of them and bring me back proof, I can reward you handsomely' ;)")
             loop.player.add_quest(quest.GoblinQuest())
             self.gave_quest = True
+            self.has_stuff_to_say = False
 
 class King(NPC):
     def __init__(self, x, y, render_tag= 120, name="King"):
