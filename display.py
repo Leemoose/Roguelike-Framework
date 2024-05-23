@@ -488,7 +488,7 @@ class Display:
             return False 
         if (not loop.generator.in_map(x, y)) or not floormap.track_map[x][y].visible:
             return False
-        black_screen = pygame.transform.scale(pygame.image.load("assets/black_screen.png"), (self.screen_width // 5, self.screen_height // 5))
+        black_screen = pygame.transform.scale(pygame.image.load("assets/ui/black_screen.png"), (self.screen_width // 5, self.screen_height // 5))
         self.win.blit(black_screen, (0, 0))
         
         any_item_found = False
@@ -1128,7 +1128,7 @@ class Display:
         image_size = 100
         image_offset_from_left = (self.screen_width - image_size) // 2
         image_offset_from_top = self.screen_height // 2
-        self.win.blit(pygame.transform.scale(pygame.image.load('assets/yendorb_deactivated.png'),(image_size,image_size)), (image_offset_from_left, image_offset_from_top))
+        self.win.blit(pygame.transform.scale(pygame.image.load('assets/monsters/yendorb_deactivated.png'),(image_size,image_size)), (image_offset_from_left, image_offset_from_top))
         font = pygame.font.Font('freesansbold.ttf', 12)
 
     def update_entity(self, loop, item_screen = True, create = False):

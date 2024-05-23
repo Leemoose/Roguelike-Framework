@@ -66,40 +66,40 @@
     "#stat_change_left_dark":
     {
         "normal_image" : {
-            "path": "assets/stat_down_dark.png"
+            "path": "assets/ui/stat_down_dark.png"
         },
         "hovered_image" : {
-            "path": "assets/stat_down_dark.png"
+            "path": "assets/ui/stat_down_dark.png"
         }
     },
 
     "#stat_change_left":
     {
         "normal_image" : {
-            "path": "assets/stat_down.png"
+            "path": "assets/ui/stat_down.png"
         },
         "hovered_image" : {
-            "path": "assets/stat_down.png"
+            "path": "assets/ui/stat_down.png"
         }
     },
 
     "#stat_change_right_dark":
     {
         "normal_image" : {
-            "path": "assets/stat_up_dark.png"
+            "path": "assets/ui/stat_up_dark.png"
         },
         "hovered_image" : {
-            "path": "assets/stat_up_dark.png"
+            "path": "assets/ui/stat_up_dark.png"
         }
     },
 
     "#stat_change_right":
     {
         "normal_image" : {
-            "path": "assets/stat_up.png"
+            "path": "assets/ui/stat_up.png"
         },
         "hovered_image" : {
-            "path": "assets/stat_up.png"
+            "path": "assets/ui/stat_up.png"
         }
     },
 
