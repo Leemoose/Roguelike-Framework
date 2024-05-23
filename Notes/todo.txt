@@ -1,0 +1,1 @@
+Make new interface with spells to allow for more than 7. Maybe use current setup to show most recent 7 spells used
