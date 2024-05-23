@@ -1,5 +1,8 @@
 import objects as O
 import npc
+import copy
+import monster as M
+
 class Floor(O.Tile):
     def __init__(self, x, y, render_tag = 2, passable = True, blocks_vision = False, id_tag = 0):
         super().__init__(x, y,  render_tag = render_tag, passable = passable, id_tag = id_tag, blocks_vision=blocks_vision)
@@ -23,6 +26,18 @@ class NPCSpawn(Floor):
     #Not currently supported
     def spawn_entity(self):
         return self.entity
+    
+class MonsterSpawn(Floor):
+    def __init__(self, x, y, render_tag, passable = False, id_tag = 0, entity = None):
+        super().__init__(x, y,  render_tag = render_tag, passable = passable, id_tag = id_tag)
+        self.entity = copy.deepcopy(entity(x, y))
+    
+    def spawn_entity(self):
+        return self.entity
+
+class DummyTile(MonsterSpawn):
+    def __init__(self, x, y, render_tag = 6, passable = False, id_tag = 0, entity = M.Dummy):
+        super().__init__(x, y,  render_tag = render_tag, passable = passable, id_tag = id_tag, entity=entity)
 
 class KingTile(NPCSpawn):
     def __init__(self, x, y, render_tag = 2, passable = True, id_tag = 0, entity = npc.King):
@@ -40,6 +55,9 @@ class Wall(O.Tile):
     def __init__(self, x, y, render_tag = 1, passable = False, blocks_vision = True, id_tag = 0):
         super().__init__(x, y,  render_tag = render_tag, passable = passable, blocks_vision = blocks_vision, id_tag = id_tag)
 
+class SenseiTile(NPCSpawn):
+    def __init__(self, x, y, render_tag = 6, passable = True, id_tag = 0, entity = npc.Sensei):
+        super().__init__(x, y,  render_tag = render_tag, passable = passable, id_tag = id_tag, entity=entity)
 
 class Stairs(O.Tile):
     def __init__(self, x, y, render_tag = 0, passable = True, id_tag = 0, downward = False):

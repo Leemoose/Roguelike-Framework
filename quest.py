@@ -1,4 +1,5 @@
 import items as I
+import monster as M
 
 class Quest():
     def __init__(self, experience_given = 10, name = "Quest"):
@@ -105,5 +106,21 @@ class BrothersQuest(Quest):
         if loop.player.character.get_item(loop, item):
             self.active = False
 
-
-
+class DojoQuest(Quest):
+    def __init__(self, experience_given=20, name="Dojo Quest"):
+        super().__init__(experience_given=experience_given, name=name)
+        self.descriptions[1] = "Destroy the training dummy to prove your might to this weird guy calling himself your teacher."
+    
+    def check_for_completion(self, loop):
+        if self.active:
+            for monster in loop.generator.monster_map.all_entities():           
+                if isinstance(monster, M.Dummy):
+                    return False
+            print("Quest Complete")
+            return True
+        return False 
+    
+    def give_reward(self, loop):
+        item = I.PermanentStrengthPotion(401)
+        if loop.player.character.get_item(loop, item):
+            self.active = False

@@ -100,7 +100,7 @@ class Player(O.Objects):
         tile_map = loop.generator.tile_map
         for monster in loop.generator.monster_map.all_entities():
             monster_loc = monster.get_location()
-            if tile_map.track_map[monster_loc[0]][monster_loc[1]].visible:
+            if tile_map.track_map[monster_loc[0]][monster_loc[1]].visible and monster.stops_autoexplore:
                 loop.add_message("You cannot autoexplore while enemies are visible.")
                 loop.change_loop(L.LoopType.action)
                 return False
@@ -147,7 +147,7 @@ class Player(O.Objects):
         tile_map = loop.generator.tile_map
         for monster in loop.generator.monster_map.all_entities():
             monster_loc = monster.get_location()
-            if tile_map.track_map[monster_loc[0]][monster_loc[1]].visible:
+            if tile_map.track_map[monster_loc[0]][monster_loc[1]].visible and monster.stops_autoexplore:
                 loop.add_message("You cannot autoexplore while enemies are tracking you.")
                 loop.change_loop(L.LoopType.action)
                 return
@@ -171,7 +171,7 @@ class Player(O.Objects):
             shadowcasting.compute_fov(loop)
             for monster in loop.generator.monster_map.all_entities():
                 monster_loc = monster.get_location()
-                if tile_map.track_map[monster_loc[0]][monster_loc[1]].visible:
+                if tile_map.track_map[monster_loc[0]][monster_loc[1]].visible and monster.stops_autoexplore:
                     loop.add_message("You cannot autoexplore while enemies are tracking you.")
                     loop.change_loop(L.LoopType.action)
                     return

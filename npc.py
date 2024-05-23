@@ -101,7 +101,8 @@ class King(NPC):
     def __init__(self, x, y, render_tag= 120, name="King"):
         super().__init__(x=x, y=y, render_tag = render_tag, name = name)
         self.options = ["Quest"]
-        self.has_stuff_to_say = True
+        self.has_stuff_to_say = True # separate variable from gave_quest in case we want traders to keep this icon
+        self.quest = quest.KingdomQuest()
 
     def give_quest(self, loop):
         if self.gave_quest == True:
@@ -127,6 +128,7 @@ class BobBrother(Guard):
         super().__init__(x=x, y=y, render_tag = render_tag, name = name)
         self.options.append("Quest")
         self.has_stuff_to_say = True
+        self.quest = quest.BrothersQuest()
 
     def give_quest(self, loop):
         if self.gave_quest == True:
@@ -139,3 +141,25 @@ class BobBrother(Guard):
             self.has_stuff_to_say = False
             self.gave_quest = True
 
+class Sensei(NPC):
+    def __init__(self, x, y, render_tag= 123, name="Sensei"):
+        super().__init__(x=x, y=y, render_tag = render_tag, name = name)
+        self.options = ["Talk", "Quest"]
+        self.has_stuff_to_say = True
+        self.quest = quest.DojoQuest()
+
+    def talk(self, loop):
+        super().talk(loop)
+        loop.add_message(self.name + " says: 'No better place to train than surrounded by monsters.")
+        loop.add_message(loop.player.name + " says: 'Who are you?'")
+        loop.add_message(self.name + " doesn't seem to hear you.")
+
+    def give_quest(self, loop):
+        if self.gave_quest == True:
+            if self.quest.check_for_completion(loop):
+                loop.add_message(self.name + " nods in acknolwedgement of your strength.")
+        else:
+            loop.add_message(self.name + " says: 'Think yourself a master of combat? Prove your training here by destroying this training dummy.'")
+            loop.player.add_quest(quest.DojoQuest())
+            self.gave_quest = True
+            self.has_stuff_to_say = False

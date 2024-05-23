@@ -342,8 +342,9 @@ class Loops():
                 self.generator.monster_map.remove_thing(monster)
                 if isinstance(monster_corpse, items.Corpse):
                     self.generator.item_map.place_thing(monster_corpse)
-                gold = items.Gold(1, x = monster.x, y = monster.y)
-                self.generator.item_map.place_thing(gold)
+                if monster.gold_value > 0:
+                    gold = items.Gold(monster.gold_value, x = monster.x, y = monster.y)
+                    self.generator.item_map.place_thing(gold)
 
 
     def down_floor(self):

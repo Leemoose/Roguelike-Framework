@@ -499,6 +499,24 @@ class Stumpy_AI(Monster_AI):
                            "flee": (-1, 0),
                            "stairs": (-1, 0)
                            }
+        
+class Dummy_AI(Monster_AI):
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.tendencies = {"combat": (-1, 0),
+                           "pickup": (-1, 0),
+                           "find_item": (-1, 0),
+                           "equip": (-1, 0),
+                           "consume": (-1, 0),
+                           "move": (100, 10),
+                           "ungroup": (-1, 0),
+                           "skill": (-1, 0),
+                           "flee": (-1, 0),
+                           "stairs": (-1, 0)
+                           }
+    
+    def do_move(self, loop):
+        return
 
 class Slime_AI(Monster_AI):
     def __init__(self, parent):

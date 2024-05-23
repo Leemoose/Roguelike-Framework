@@ -38,7 +38,8 @@ class statUpgrades():
         
         return tuple(map(lambda i, j: i - j, this_level, prev_level))
 
-    
+
+# not equippable or consumable
 class Corpse(O.Item):
     def __init__(self, x, y, id_tag = -1, render_tag = 199, name = "Unknown Corpse"):
         super().__init__(x,y, id_tag = id_tag, render_tag = render_tag, name = name)
@@ -53,6 +54,11 @@ class Gold(O.Item):
     def __init__(self, amount, x=-1, y=-1, id_tag = -1, render_tag = 210, name = "Gold"):
         super().__init__(x,y, id_tag, render_tag, name)
         self.amount = amount
+
+class DestroyedDummy(O.Item):
+    def __init__(self, x=-1, y=-1, id_tag = -1, render_tag = 125, name = "Destroyed Dummy"):
+        super().__init__(x,y, id_tag, render_tag, name)
+
 """
 All detailed items are initialized here.
 """

@@ -82,6 +82,8 @@ class TileDict():
         tiles[-4] = pygame.transform.scale(image.load("assets/tiles/floor_dirty1_shaded.png"), (32,32))
         tiles[5] = image.load("assets/tiles/red_carpet.png")
         tiles[-5] = image.load("assets/tiles/red_carpet_shaded.png")
+        tiles[6] = image.load("assets/tiles/wooden_floor.png")
+        tiles[-6] = image.load("assets/tiles/wooden_floor_shaded.png")
 
         tiles[11] = pygame.transform.scale(image.load("assets/tiles/wall_extra_rounded.png"), (32,32))
         tiles[-11] = pygame.transform.scale(image.load("assets/tiles/wall_extra_rounded_shaded.png"), (32,32))
@@ -115,6 +117,9 @@ class TileDict():
         tiles[120] = image.load("assets/npc/king.png")
         tiles[121] = image.load("assets/npc/guard.png")
         tiles[122] = image.load("assets/npc/speech_bubble.png")
+        tiles[123] = image.load("assets/npc/sensei.png")
+        tiles[124] = image.load("assets/npc/training_dummy.png")
+        tiles[125] = image.load("assets/npc/destroyed_dummy.png")
 
         # 200-299 player assets
         tiles[200] = image.load("assets/player/Player.png")
@@ -346,6 +351,9 @@ class DungeonGenerator():
         self.player = player
         self.summoner = []
 
+        if depth == 1 or depth == 2:
+            print(str(self.tile_map))
+
         self.npc_dict = ID()
         if self.depth != 1:
             self.place_monsters(depth)
@@ -508,11 +516,13 @@ class DungeonGenerator():
                     self.tile_map.track_map[startx + change[0]][starty + change[1]] = O.Tile(startx + change[0], starty + change[1], 2, True)
 
             self.npc_dict.tag_subject(npc)
-        else:
-            for x in range(self.width):
-                for y in range(self.height):
-                    if isinstance(self.tile_map.locate(x,y), T.NPCSpawn):
-                        self.npc_dict.tag_subject(self.tile_map.locate(x,y).spawn_entity())
+        
+        for x in range(self.width):
+            for y in range(self.height):
+                if isinstance(self.tile_map.locate(x,y), T.NPCSpawn):
+                    self.npc_dict.tag_subject(self.tile_map.locate(x,y).spawn_entity())
+                if isinstance(self.tile_map.locate(x,y), T.MonsterSpawn):
+                    self.place_monster_at_location(self.tile_map.locate(x,y).spawn_entity(), x, y)
 
     def place_items(self, depth):
         itemSpawns = Spawns.item_spawner.spawnItems(depth)
@@ -686,6 +696,18 @@ class TileMap(TrackingMap):
         self.rooms = []
         self.depth = depth
 
+        # sometimes, rooms can be replaced by prefab rooms, for special quests, events etc. 
+        # keep track of prefabs, how many more times it can be placed, which floor they can be placed on 
+        # probability it will be placed and the function called to place it.
+        self.prefabs = [
+            # dojo (sensei quest)
+            {"prefab": prefab.dojoify, 
+             "min_floor": 2,
+             "max_floor": 5,
+             "spawns_available": 1, # not sure if there will be prefabs we want to spawn multiple times through dungeon but left it as a possibility
+             "spawn_chance": 1.0}
+        ]
+
         self.render_mapping = {"x": T.Wall,
                                ".": T.Floor,
                                ">": T.DownStairs,
@@ -693,7 +715,10 @@ class TileMap(TrackingMap):
                                "K": T.KingTile,
                                "G": T.GuardTile,
                                "d": T.Door,
-                               "BB": T.BobBrotherTile}
+                               "BB": T.BobBrotherTile,
+                               "S": T.SenseiTile,
+                               "D": T.DummyTile
+                               }
 
         self.track_map_render = [x[:] for x in [["x"] * self.height] * self.width]
         self.image = [x[:] for x in [[-1] * self.height] * self.width]
@@ -705,11 +730,26 @@ class TileMap(TrackingMap):
                 size = random.randint(4, mapData.roomSize)
                 self.place_room(size, size, mapData.circularity)
 
+            #if depth == 2:
+            #    import pdb; pdb.set_trace()
+
+            available_prefabs = [x for x in self.prefabs if x["min_floor"] <= depth and x["max_floor"] >= depth and x["spawns_available"] > 0 and x["spawn_chance"] > random.random()]
+
+            if depth == 2:
+                print(available_prefabs)
+
+            for p in available_prefabs:
+                room_to_replace = random.choice(self.rooms)
+                self.track_map_render = p["prefab"](room_to_replace, self.track_map_render, self.image, depth)
+                p["spawns_available"] -= 1
+
             # Connect Rooms
             for i in range(len(self.rooms) - 1):
                 self.connect_rooms(self.rooms[i], self.rooms[i + 1])
           #      self.cellular_caves()
             self.place_stairs(depth)
+        if depth == 1 or depth == 2:
+            print(str(self))
         self.render_to_map(depth)
         # print(f"{depth}: {self.stairs}")
         self.quality_check_map()
@@ -754,12 +794,15 @@ class TileMap(TrackingMap):
             temp = []
             for y in range(self.height):
                 #print(x,y, self.width, self.height, len(self.track_map_render))
+                if (isinstance(self.track_map_render[x][y], T.NPCSpawn) and depth == 2) \
+                    or (isinstance(self.track_map_render[x][y], T.MonsterSpawn) and depth == 2):
+                    import pdb; pdb.set_trace()
                 if x == 0 or y == 0 or x == self.width - 1 or y == self.height - 1:
                     if self.track_map_render[x][y] != "x":
                         print("Warning: You did not properly buffer the edges of your map and it was overridden to walls")
                     temp.append(self.render_mapping["x"](x, y))
                 elif self.track_map_render[x][y] in self.render_mapping:
-                    if self.image[x][y] != -1:
+                    if self.image[x][y] != -1 and self.track_map_render[x][y] == ".":
                         tile = self.render_mapping[self.track_map_render[x][y]](x, y, render_tag = self.image[x][y])
                     else:
                         tile = self.render_mapping[self.track_map_render[x][y]](x, y)
@@ -826,7 +869,9 @@ class TileMap(TrackingMap):
 
     def place_stairs(self, depth):
         if depth > 2:
+            
             startx, starty = self.get_random_location_ascaii()
+            # while track_map_ren
             #tile = T.Stairs(startx, starty, 90, True, downward=False)
             self.track_map_render[startx][starty] = "<"
             #self.stairs.append(tile)
@@ -927,7 +972,8 @@ class TileMap(TrackingMap):
 
         for x in range(lower1X, upper1X):
             for y in range(lower1Y, upper1Y):
-                self.track_map_render[x][y] = "."
+                if self.track_map_render[x][y] == "x":
+                    self.track_map_render[x][y] = "."
 
         lower2X = min(room2.GetCenterX(), cornerX)
         upper2X = max(room2.GetCenterX(), cornerX) + 1
@@ -936,7 +982,8 @@ class TileMap(TrackingMap):
 
         for x in range(lower2X, upper2X):
             for y in range(lower2Y, upper2Y):
-                self.track_map_render[x][y] = "."
+                if self.track_map_render[x][y] == "x":
+                    self.track_map_render[x][y] = "."
 
     def get_random_location_ascaii(self, stairs_block = True):
         startx = random.randint(0, self.width - 1)

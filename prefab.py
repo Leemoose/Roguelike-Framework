@@ -47,3 +47,24 @@ def pillerify(room, startx, starty):
         for col in range(2):
             if startx + row < len(room)-1 and starty + col <len(room[row])-1:
                 room[startx + row][starty + col] = "x"
+
+def dojoify(room, render_map, image, depth):
+    for row in range(room.x, room.x + room.width):
+        for col in range(room.y, room.y + room.height):
+            image[row][col] = 6
+    
+    midpoint = (room.x + room.width // 2, room.y + room.height // 2)
+    directions = [(0, -1), (0, 1), (-1, 0), (1, 0), (-1, -1), (-1, 1), (1, -1), (1, 1)]
+    rand_direction = random.choice(directions)
+    dummypoint = (midpoint[0] + rand_direction[0], midpoint[1] + rand_direction[1])
+
+    render_map[midpoint[0]][midpoint[1]] = "S"
+    render_map[dummypoint[0]][dummypoint[1]] = "D"
+
+    if depth == 2:
+        outpit = ""
+        for row in render_map:
+            outpit += "".join(row) + "\n"
+        print(outpit)
+
+    return render_map

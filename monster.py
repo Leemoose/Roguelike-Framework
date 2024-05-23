@@ -16,6 +16,9 @@ class Monster(O.Objects):
         self.asleep = False
         self.flee = False
 
+        self.stops_autoexplore = True
+        self.gold_value = 1
+
         self.character.experience_given = experience_given
         self.brain = brain(self)
         self.skills = []
@@ -282,6 +285,26 @@ class Stumpy(Monster):
         self.intelligence = 8
         self.character.armor = 10
         self.type["wood"] = True
+
+class Dummy(Monster):
+    def __init__(self, x=-1, y=-1, render_tag=124, name="Training Dummy"):
+        super().__init__(x=x, y=y, render_tag = render_tag, name = name)
+        self.brain = ai.Dummy_AI(self)
+        self.character.experience_given = 0
+        self.description = "A training dummy that will not move or attack, but seems to repair itself if not one-shot."
+        self.character.health = 25
+        self.character.max_health = 25
+        self.strength = 0
+        self.dexterity = 0
+        self.endurance = 0
+        self.intelligence = 0
+        self.character.armor = 0
+        self.type["wood"] = True
+        self.character.health_regen = 50
+        self.stops_autoexplore = False
+        remnants = I.DestroyedDummy()
+        self.character.inventory.append(remnants)
+        self.gold_value = 0
 
 class BossOrb(Monster):
     def __init__(self, x=-1, y=-1, render_tag=1060, name="ORB OF YENDORB"):
