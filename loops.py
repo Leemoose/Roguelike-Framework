@@ -350,7 +350,7 @@ class Loops():
                     self.generator.item_map.place_thing(gold)
 
 
-    def down_floor(self):
+    def change_floor(self, downward):
         self.taking_stairs = True
         playerx, playery = self.player.get_location()
         if self.player.character.energy < 0:
@@ -358,17 +358,29 @@ class Loops():
             self.monster_loop(-self.player.character.energy)
             self.player.character.energy = 0
 
-        self.floor_level += 1
-        print(self.generator.tile_map.track_map)
-        print(self.floor_level)
-        print(self.generator.tile_map.stairs)
         # import pdb; pdb.set_trace()
         print("The stairs you are taking is {}".format(self.generator.tile_map.track_map[playerx][playery]))
-        self.player.x, self.player.y = (self.generator.tile_map.locate(playerx, playery).pair.get_location())
-        self.generator = self.memory.generators[self.branch][self.floor_level]
-        self.monster_map = self.generator.monster_map
+        current_stairs = self.generator.tile_map.locate(playerx, playery)
+        if isinstance(current_stairs, TI.Stairs):
+            if downward and isinstance(current_stairs, TI.DownStairs):
+                if current_stairs.pair is None:
+                    if current_stairs.downward: #Don't know why it wouldn't be but who knows
+                        for other_stairs in self.memory.generators[self.branch][self.floor_level + 1].tile_map.get_stairs():
+                            if (other_stairs.pair == None and not other_stairs.downward):
+                                current_stairs.pair_stairs(other_stairs)
+                                break
+                self.floor_level += 1
+            elif not downward and isinstance(current_stairs, TI.UpStairs) and self.floor_level != 1:
+                if current_stairs.pair is None:
+                    if not current_stairs.downward: #Don't know why it wouldn't be but who knows
+                        for other_stairs in self.memory.generators[self.branch][self.floor_level - 1].tile_map.get_stairs():
+                            if (other_stairs.pair == None and other_stairs.downward):
+                                current_stairs.pair_stairs(other_stairs)
+                                break
+                self.floor_level -= 1
+            self.player.x, self.player.y = (current_stairs.pair.get_location())
+            self.generator = self.memory.generators[self.branch][self.floor_level]
 
-        self.memory.floor_level += 1
         self.taking_stairs = False
 
     def change_branch(self):
@@ -384,9 +396,6 @@ class Loops():
         depth = gate.pair.get_depth()
 
         self.floor_level = depth
-        print(self.generator.tile_map.track_map)
-        print(self.floor_level)
-        print(self.generator.tile_map.stairs)
         # import pdb; pdb.set_trace()
         print("The gateway you are taking is {}".format(self.generator.tile_map.track_map[playerx][playery]))
         self.player.x, self.player.y = (gate.pair.get_location())
@@ -395,25 +404,6 @@ class Loops():
         self.memory.floor_level = depth
         self.memory.branch = branch
         self.taking_stairs = False
-
-    def up_floor(self):
-        playerx, playery = self.player.get_location()
-        tile = self.generator.tile_map.track_map[playerx][playery]
-        if self.floor_level != 1 and isinstance(tile, TI.Stairs) and not tile.downward:
-            self.taking_stairs = True
-
-            if self.player.character.energy < 0:
-                self.time_passes(-self.player.character.energy)
-                self.monster_loop(-self.player.character.energy)
-                self.player.character.energy = 0
-
-            self.floor_level -= 1
-
-            self.taking_stairs = False
-            self.memory.floor_level -= 1
-            self.player.x, self.player.y = (self.generator.tile_map.track_map[playerx][playery]).pair.get_location()
-            self.generator = self.memory.generators[self.floor_level]
-            self.monster_map = self.generator.monster_map
 
     def init_game(self, display):
         self.main_buttons = display.create_main_screen(self)
@@ -426,15 +416,6 @@ class Loops():
         while self.floor_level < 10:
             if self.floor_level > self.memory.explored_levels:
                 generator = M.DungeonGenerator(self.floor_level, self.player, self.branch)
-                if self.floor_level != 1:
-                    for stairs in (generator.tile_map.get_stairs()):
-                        if not stairs.downward:
-                            for old_stairs in self.generator.tile_map.get_stairs():
-                                if (old_stairs.pair == None and old_stairs.downward) or \
-                                    (old_stairs.downward and self.floor_level == 2):
-                                    old_stairs.pair = stairs
-                                    stairs.pair = old_stairs
-                                    break
                 self.generator = generator
                 self.memory.explored_levels += 1
                 self.memory.generators[self.branch][self.floor_level] = generator
@@ -446,15 +427,6 @@ class Loops():
         self.memory.explored_levels = 1
         while self.floor_level < 5:
             generator = M.DungeonGenerator(self.floor_level, self.player, self.branch)
-            if self.floor_level != 1:
-                for stairs in (generator.tile_map.get_stairs()):
-                    if not stairs.downward:
-                        for old_stairs in self.generator.tile_map.get_stairs():
-                            if (old_stairs.pair == None and old_stairs.downward) or \
-                                    (old_stairs.downward and self.floor_level == 2):
-                                old_stairs.pair = stairs
-                                stairs.pair = old_stairs
-                                break
             self.generator = generator
             self.memory.explored_levels += 1
             self.memory.generators[self.branch][self.floor_level] = generator
@@ -473,6 +445,7 @@ class Loops():
         self.branch = "Dungeon"
         self.floor_level = 1
         self.memory.floor_level = 1
+        self.memory.explored_levels = 1
         self.generator = self.memory.generators[self.branch][self.floor_level]
         self.monster_map = self.generator.monster_map
 

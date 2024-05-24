@@ -237,7 +237,7 @@ class Player(O.Objects):
         if (isinstance(loop.generator.tile_map.track_map[self.x][self.y], T.Stairs)
                 and loop.generator.tile_map.track_map[self.x][self.y].downward and self.character.movable):
             self.character.energy -= self.character.action_costs["move"]
-            loop.down_floor()
+            loop.change_floor(downward = True)
         elif (isinstance(loop.generator.tile_map.track_map[self.x][self.y], T.Gateway) and self.character.movable):
             self.character.energy -= self.character.action_costs["move"]
             loop.change_branch()
@@ -251,7 +251,7 @@ class Player(O.Objects):
         if (isinstance(loop.generator.tile_map.track_map[self.x][self.y], T.Stairs)
                 and not loop.generator.tile_map.track_map[self.x][self.y].downward and self.character.movable):
             self.character.energy -= self.character.action_costs["move"]
-            loop.up_floor()
+            loop.change_floor(downward = False)
         elif self.character.movable:
             loop.add_message("There are no stairs here!")
         else:

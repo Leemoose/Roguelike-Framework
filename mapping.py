@@ -91,6 +91,8 @@ class TileDict():
         tiles[-11] = pygame.transform.scale(image.load("assets/tiles/wall_extra_rounded_shaded.png"), (32,32))
         tiles[12] = pygame.transform.scale(image.load("assets/tiles/floor_rounded.png"), (32,32))
         tiles[-12] = pygame.transform.scale(image.load("assets/tiles/floor_rounded_shaded.png"), (32,32))
+        tiles[13] = image.load("assets/tiles/forest_floor.png")
+        tiles[-13] = image.load("assets/tiles/forest_floor_shaded.png")
 
         tiles[20] = pygame.transform.scale(image.load("assets/fire.png"), (32,32))
 
@@ -615,8 +617,6 @@ class TrackingMap(Maps):
         return self.dict.num_entities()
 
     def remove_thing(self, thing):
-        print(thing, thing.id_tag)
-        print("Dictionary is above")
         self.clear_location(thing.x, thing.y)
         return self.dict.remove_subject(thing.id_tag)
 
@@ -730,11 +730,19 @@ class TileMap(TrackingMap):
                                "D": T.DummyTile
                                }
 
-        self.image_mapping = {"x": 7}
+        self.image_mapping = {"Forest":
+                                {
+                                "x": 7,
+                                ".": 13
+                                },
+                                "Dungeon":
+                                {
+                                }
+                              }
 
         self.track_map_render = [x[:] for x in [["x"] * self.height] * self.width]
         self.image = [x[:] for x in [[-1] * self.height] * self.width]
-        if depth == 1:
+        if depth == 1 and self.branch == "Dungeon":
             self.track_map_render = prefab.throneify(0,0, self.track_map_render, self.image, self.width, self.height)
         else:
             # Add rooms
@@ -829,10 +837,11 @@ class TileMap(TrackingMap):
                         print("Warning: You did not properly buffer the edges of your map and it was overridden to walls")
                     temp.append(self.render_mapping["x"](x, y))
                 elif self.track_map_render[x][y] in self.render_mapping:
-                    if self.image[x][y] != -1 and self.track_map_render[x][y] == ".":
-                        tile = self.render_mapping[self.track_map_render[x][y]](x, y, render_tag = self.image[x][y])
-                    elif self.branch == "Forest" and self.track_map_render[x][y] in self.image_mapping:
-                        tile = self.render_mapping[self.track_map_render[x][y]](x, y, render_tag=self.image_mapping[self.track_map_render[x][y]])
+                    if self.image[x][y] != -1:
+                        tile = self.render_mapping[self.track_map_render[x][y]](x, y, render_tag=self.image[x][y])
+                    elif self.track_map_render[x][y] in self.image_mapping[self.branch]:
+                        tile = self.render_mapping[self.track_map_render[x][y]](x, y, render_tag=self.image_mapping[self.branch]
+                            [self.track_map_render[x][y]])
                     else:
                         tile = self.render_mapping[self.track_map_render[x][y]](x, y)
                     temp.append(tile)
@@ -900,7 +909,6 @@ class TileMap(TrackingMap):
 
     def place_stairs(self, depth):
         if depth > 2:
-            
             startx, starty = self.get_random_location_ascaii()
             # while track_map_ren
             #tile = T.Stairs(startx, starty, 90, True, downward=False)

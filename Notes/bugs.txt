@@ -5,9 +5,11 @@ RingOfTeleportation not functional with Teleport moved from skills to spell
 
 unequip button missing on item screen
 
-rings might be broken
+rings might be broken (rings are definitely broken)
 
 need to test what happens if item and skill book give same skill/spell and deal with that
 maybe give each skill/spell a source parameter and check against that for removing/adding
 
 enchant scrolls maybe broken
+
+Dojo art covering stairs?

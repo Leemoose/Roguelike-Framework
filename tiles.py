@@ -65,6 +65,11 @@ class Stairs(O.Tile):
         self.stairs = True
         self.pair = None
 
+    def pair_stairs(self, other_stairs):
+        self.pair = other_stairs
+        other_stairs.pair = self
+
+
 class DownStairs(Stairs):
     def __init__(self, x, y, render_tag = 91, passable = True, id_tag = 0):
         super().__init__(x, y, render_tag = render_tag, passable = passable, id_tag = id_tag)

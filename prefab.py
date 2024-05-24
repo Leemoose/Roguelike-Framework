@@ -30,13 +30,13 @@ def throneify(startx, starty, render_tile_map, image_map, width, height):
                         render_tile_map[x][y] = "G"
                 elif (x == 4 or x == width - 5) and (y <= 3 or y >= height - 3) and render_tile_map[x][y] != "x":
                     render_tile_map[x][y] = "d"
-    for y in range(height):
-        if y > top and y < bottom:
-            image_map[midpoint][y] = 5
-
     render_tile_map[midpoint][top] = ">"
     render_tile_map[midpoint][top - 1] = "K"
     render_tile_map[midpoint][bottom] = "<"
+
+    for y in range(height):
+        if y > top and y < bottom and render_tile_map[x][y] == ".":
+            image_map[midpoint][y] = 5
 
     return render_tile_map
 
