@@ -1,1 +1,14 @@
 Make new interface with spells to allow for more than 7. Maybe use current setup to show most recent 7 spells used
+
+Make a central file with all configs
+    - Branches
+    - Max depth
+    - Width
+    - Height
+    - Available monsters + min / max depth + branch
+    - Available items + min / max depth + branch
+
+Make a central file for all dictionarys
+    - Render to tile mappings
+    - Ascaii to tile mappings
+    - Ascaii to render mappings (branch specific)

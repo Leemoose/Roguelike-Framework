@@ -432,7 +432,7 @@ class Loops():
             self.memory.generators[self.branch][self.floor_level] = generator
             self.floor_level += 1
 
-        gateway1 = self.memory.generators["Dungeon"][1].tile_map.get_gateway()[0]
+        gateway1 = self.memory.generators["Dungeon"][5].tile_map.get_gateway()[0]
         gateway2  = self.memory.generators["Forest"][1].tile_map.get_gateway()[0]
 
         gateway1.pair = gateway2

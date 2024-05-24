@@ -416,7 +416,7 @@ class Display:
                 else:
                     if floormap.track_map[x][y].passable:
                         if floormap.track_map[x][y].visible and not monster_map.get_passable(x,y):
-                            pygame.draw.rect(self.win, (200, 0, 0),
+                            pygame.draw.rect(self.win, (207, 207, 207),
                                              pygame.Rect(map_offset_from_left + map_tile_size * (x - x_map_start),
                                                          map_offset_from_top + map_tile_size * (y - y_map_start),
                                                          map_tile_size, map_tile_size))
@@ -430,8 +430,13 @@ class Display:
                                                  pygame.Rect(map_offset_from_left + map_tile_size * (x - x_map_start),
                                                              map_offset_from_top + map_tile_size * (y - y_map_start),
                                                              map_tile_size, map_tile_size))
+                        elif isinstance(floormap.track_map[x][y], T.Gateway):
+                            pygame.draw.rect(self.win, (0, 75, 100),
+                                                 pygame.Rect(map_offset_from_left + map_tile_size * (x - x_map_start),
+                                                             map_offset_from_top + map_tile_size * (y - y_map_start),
+                                                             map_tile_size, map_tile_size))
                         else:
-                            pygame.draw.rect(self.win, (200, 200, 200),
+                            pygame.draw.rect(self.win, (131, 131, 131),
                                              pygame.Rect(map_offset_from_left + map_tile_size * (x - x_map_start),
                                                          map_offset_from_top + map_tile_size * (y - y_map_start),
                                                          map_tile_size, map_tile_size))

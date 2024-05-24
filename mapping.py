@@ -792,7 +792,7 @@ class TileMap(TrackingMap):
         if self.branch == "Dungeon":
             print("Branch is {}".format(self.branch))
             print("Depth is {}".format(self.depth))
-            if self.depth == 1:
+            if self.depth == 5:
                 startx, starty = self.get_random_location_ascaii()
                 self.track_map_render[startx][starty] = "fg"
                 print("Placing gateway")
