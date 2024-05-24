@@ -1,10 +1,5 @@
-import pygame
-import pygame_gui
-import items as I
-import ui
-import objects as O
-import monster as M
-import tiles as T
+from .ui import *
+
 class Display:
     """
     Display is responsible for put images in the screen. Currently have it set that each function will update a
@@ -26,7 +21,7 @@ class Display:
         self.r_x = num_tiles_wide // 2
         self.r_y = num_tiles_height // 2
 
-        self.uiManager = pygame_gui.UIManager((width, height), "assets/theme.json")
+        self.uiManager = pygame_gui.UIManager((width, height), "../assets/theme.json")
         self.windows = []
         self.clock = pygame.time.Clock()
         self.colorDict = None
@@ -44,7 +39,7 @@ class Display:
 
     def create_display(self, loop):
         self.uiManager.clear_and_reset()
-        fps_counter = ui.FPSCounter(
+        fps_counter = FPSCounter(
            pygame.Rect((0,0),(400,40)),
             self.uiManager
         )
@@ -113,7 +108,7 @@ class Display:
                 views_num_buttons_width + 1) // (views_num_buttons_width + 1)
 
         # Writing messages
-        text_box = ui.MessageBox(
+        text_box = MessageBox(
             pygame.Rect((message_offset_from_left, message_offset_from_top),
                                       (message_width, message_height)),
             manager=self.uiManager,
@@ -125,12 +120,12 @@ class Display:
                             map_width, map_height)
         
         #Depth
-        depth_label = ui.DepthDisplay(pygame.Rect((map_offset_from_left, map_offset_from_top),
-                                                                (map_message_width, map_message_height)),
-                                    manager=self.uiManager,
-                                    loop=loop)
+        depth_label = DepthDisplay(pygame.Rect((map_offset_from_left, map_offset_from_top),
+                                                  (map_message_width, map_message_height)),
+                                      manager=self.uiManager,
+                                      loop=loop)
         
-        stat_box = ui.StatBox(
+        stat_box = StatBox(
             pygame.Rect((stats_offset_from_left, stats_offset_from_top), (stats_width, stats_height)),
             self.uiManager,
             player
@@ -262,7 +257,7 @@ class Display:
                                                     (skill_button_width, skill_button_height))
                 img2 = pygame.transform.scale(tileDict.tiles[-skill.render_tag],
                                                     (skill_button_width, skill_button_height))
-                button = ui.SkillButton(
+                button = SkillButton(
                     rect=pygame.Rect((
                                                 skill_bar_offset_from_left + skill_button_offset_from_each_other_width +(skill_button_offset_from_each_other_width + skill_button_width) * i,
                                                 skill_button_offset_from_top),
@@ -279,8 +274,8 @@ class Display:
                 #                     offset_factor=10, text_offset=(12, (0.6)))
 
 
-        healthBar = ui.HealthBar(pygame.Rect((stats_offset_from_left + 70, stats_offset_from_top + 12), (stats_width//3, stats_height//12)), self.uiManager, player)
-        manaBar = ui.ManaBar(pygame.Rect((stats_offset_from_left + 70, stats_offset_from_top + 38), (stats_width//3, stats_height//12)), self.uiManager, player)
+        healthBar = HealthBar(pygame.Rect((stats_offset_from_left + 70, stats_offset_from_top + 12), (stats_width // 3, stats_height // 12)), self.uiManager, player)
+        manaBar = ManaBar(pygame.Rect((stats_offset_from_left + 70, stats_offset_from_top + 38), (stats_width // 3, stats_height // 12)), self.uiManager, player)
 
     def update_display(self, loop):
         self.win.fill((0,0,0))
@@ -425,12 +420,12 @@ class Display:
                                              pygame.Rect(map_offset_from_left + map_tile_size * (x - x_map_start),
                                                          map_offset_from_top + map_tile_size * (y - y_map_start),
                                                          map_tile_size, map_tile_size))
-                        elif isinstance(floormap.track_map[x][y], T.Stairs):
+                        elif floormap.track_map[x][y].has_trait("stairs"):
                             pygame.draw.rect(self.win, (0, 0, 200),
                                                  pygame.Rect(map_offset_from_left + map_tile_size * (x - x_map_start),
                                                              map_offset_from_top + map_tile_size * (y - y_map_start),
                                                              map_tile_size, map_tile_size))
-                        elif isinstance(floormap.track_map[x][y], T.Gateway):
+                        elif floormap.track_map[x][y].has_trait("gateway"):
                             pygame.draw.rect(self.win, (0, 75, 100),
                                                  pygame.Rect(map_offset_from_left + map_tile_size * (x - x_map_start),
                                                              map_offset_from_top + map_tile_size * (y - y_map_start),
@@ -634,7 +629,7 @@ class Display:
         for i, item in enumerate(player.character.inventory):
             item_name = item.name
             if equipment_type == None or item.equipment_type == equipment_type:
-                if isinstance(item, I.Equipment):
+                if item.has_trait("equipment"):
                     if equipment_type == "Enchantable" and item not in enchantable:
                         continue
                     elif equipment_type != None and equipment_type != "Enchantable" and item.equipment_type != equipment_type:
@@ -1133,7 +1128,7 @@ class Display:
         image_size = 100
         image_offset_from_left = (self.screen_width - image_size) // 2
         image_offset_from_top = self.screen_height // 2
-        self.win.blit(pygame.transform.scale(pygame.image.load('assets/monsters/yendorb_deactivated.png'),(image_size,image_size)), (image_offset_from_left, image_offset_from_top))
+        self.win.blit(pygame.transform.scale(pygame.image.load('display_generation/yendorb_deactivated.png'), (image_size, image_size)), (image_offset_from_left, image_offset_from_top))
         font = pygame.font.Font('freesansbold.ttf', 12)
 
     def update_entity(self, loop, item_screen = True, create = False):
@@ -1249,9 +1244,9 @@ class Display:
         entity_text = ""
         entity_text += entity.description  + "<br><br>"
 
-        if isinstance(entity,O.Item):
+        if entity.has_trait("item"):
             item = entity
-            if isinstance(entity, I.Equipment):
+            if entity.has_trait("equipment"):
                 if item.equipped:
                     entity_text += "Currently equipped<br>"
                 if item.cursed:
@@ -1263,9 +1258,7 @@ class Display:
                     else:
                         req_str_text = "Required Strength: " + str(item.required_strength) + "<br>"
                     entity_text += req_str_text
-                #if isinstance(item, I.Armor):
-                    #entity_text += "Armor: " + str(item.armor) + "<br>"
-                if isinstance(item, I.Weapon):
+                if item.has_trait("weapon"):
                     entity_text += "Damage: " + str(item.damage_min + player.character.base_damage) + " - " + str(item.damage_max + player.character.base_damage) + "<br>"
                     if item.on_hit:
                         entity_text += "On hit: " + item.on_hit_description + "<br>"
@@ -1291,12 +1284,12 @@ class Display:
                     entity_text += "Armor: +" + str(stats[4]) + "<br>"
                 elif stats[4]<0:
                     entity_text += "Armor: " + str(stats[4]) + "<br>"
-            elif isinstance(entity, I.Potion) or isinstance(entity, I.Ring):
+            elif entity.has_trait("potion") or entity.has_trait("ring"):
                 entity_text += "Effect: " + str(entity.action_description) + "<br>"
             if item.attached_skill_exists:
                 entity_text += "Grants skill: " + item.get_attached_skill_description() + "<br>"
 
-        if isinstance(entity, M.Monster):
+        if entity.has_trait("monster"):
             entity_text += "Health: " + str(entity.character.health) + " / " + str(entity.character.max_health) + "<br>"
             entity_text += "Attack: " + str(entity.character.get_damage_min()) + " - " + str(entity.character.get_damage_max()) + "<br>"
             entity_text += "Armor: " + str(entity.character.armor) + "<br>"
@@ -1472,7 +1465,7 @@ class Display:
             stat_change_right_dark = pygame.transform.scale(tileDict.tiles[-50],
                                         (stat_change_button_width, stat_change_button_height))
             
-            button = ui.StatDownButton(
+            button = StatDownButton(
                 rect=pygame.Rect((stat_change_button_offset_from_left, 
                                   stat_change_button_offset_from_top + i * (stat_line_height + stat_change_button_offset_from_each_other_height)),
                                  (stat_change_button_width, stat_change_button_height)),
@@ -1487,7 +1480,7 @@ class Display:
             
             # self.draw_on_button(button, stat_change_left, letter = "", button_size=(stat_change_button_width, stat_change_button_height), shrink=False, offset_factor=12, text_offset=(15, 0.8))
 
-            ui.StatChangeText(
+            StatChangeText(
                 rect=pygame.Rect(
                     (stat_change_text_offset_left, 
                     stat_change_button_offset_from_top + i * (stat_line_height + stat_change_button_offset_from_each_other_height)),
@@ -1496,7 +1489,7 @@ class Display:
                 player=player,
                 index=i)
             
-            button_2 = ui.StatUpButton(
+            button_2 = StatUpButton(
                 rect=pygame.Rect((stat_change_button_offset_from_left + stat_change_button_width + stat_change_offset_from_each_other_width, 
                                            stat_change_button_offset_from_top + i * (stat_line_height + stat_change_button_offset_from_each_other_height)),
                                           (stat_change_button_width, stat_change_button_height)),
@@ -1677,7 +1670,6 @@ class Display:
             manager=self.uiManager
         )
 
-        return buttons
 
     def create_story_screen(self, loop):
         button_width = self.screen_width // 4

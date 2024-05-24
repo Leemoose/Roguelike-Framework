@@ -17,6 +17,7 @@ class Quest():
 
     def check_for_progress(self, loop):
         pass
+
     def check_for_completion(self, player):
         return self.level > len(self.descriptions)
 

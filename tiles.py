@@ -64,6 +64,7 @@ class Stairs(O.Tile):
         super().__init__(x, y, render_tag, passable, id_tag, type = "Stairs")
         self.stairs = True
         self.pair = None
+        self.traits["stairs"] = True
 
     def pair_stairs(self, other_stairs):
         self.pair = other_stairs
@@ -86,6 +87,7 @@ class Gateway(O.Tile):
         self.branch = branch
         self.level = level
         self.pair = None
+        self.traits["gateway"] = True
 
     def get_branch(self):
         return self.branch

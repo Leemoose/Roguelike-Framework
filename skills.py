@@ -1,8 +1,7 @@
 import random
-import monster as M
 import effect as E
-import character as C
-import pathfinding
+from navigation import pathfinding
+
 
 class Skill():
     def __init__(self, name, parent, cooldown=0, cost=0, range=-1, action_cost=100):

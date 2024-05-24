@@ -1,6 +1,4 @@
 import random
-import player
-import ai
 import monster as M
 import effect as E
 
@@ -103,7 +101,7 @@ class SummonSchool(School):
 
         def create_monster(self):
             monster = self.monster()
-            monster.brain = ai.Friendly_AI(monster)
+            monster.make_friendly()
             return monster
 
         def activate(self, target, loop):
@@ -181,12 +179,12 @@ class SpaceSchool(School):
                 startx = random.randint(0, width - 1)
                 starty = random.randint(0, height - 1)
 
-            if isinstance(target, player.Player):
+            if target.type == "Player":
                 target.x = startx
                 target.y = starty
                 loop.add_message("You teleported somewhere randomly!")
                 return
-            elif isinstance(target, M.Monster):
+            elif target.type == "Monster":
                 monster_map = loop.generator.monster_map
                 x, y = target.x, target.y
                 monster_map.clear_location(x, y)
@@ -236,7 +234,7 @@ class SpaceSchool(School):
                     startx = random.randint(0, width - 1)
                     starty = random.randint(0, height - 1)
 
-                if isinstance(self.parent, player.Player):
+                if self.parent.type == "Player":
                     self.parent.x = startx
                     self.parent.y = starty
                     loop.add_message("You teleported somewhere randomly!")

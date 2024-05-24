@@ -1,7 +1,6 @@
 import ai
 import objects as O
 import character as C
-import dice as R
 import items as I
 import random
 
@@ -12,9 +11,10 @@ class Monster(O.Objects):
     def __init__(self, x=-1, y = -1, render_tag = -1, name="Unknown monster", experience_given = 0, brain = ai.Monster_AI, rarity = "Common", health = 10, min_damage = 2, max_damage=3):
         super().__init__(x=x, y=y, render_tag=render_tag, name=name)
         self.character = C.Character(self, health = health, min_damage=min_damage, max_damage = max_damage)
-
+        self.type = "Monster"
         self.asleep = False
         self.flee = False
+        self.traits["monster"] = True
 
         self.stops_autoexplore = True
         self.gold_value = 1
@@ -35,6 +35,9 @@ class Monster(O.Objects):
 
     def die(self):
         return
+
+    def make_friendly(self):
+        self.brain = ai.Friendly_AI(self)
 
     def move(self, move_x, move_y, loop):
         monster_map = loop.generator.monster_map

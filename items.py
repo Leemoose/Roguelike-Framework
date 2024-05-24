@@ -1,6 +1,5 @@
 import random
 
-import dice as R
 import objects as O
 import effect as E
 import skills as S
@@ -72,6 +71,7 @@ class Equipment(O.Item):
         self.rarity = "Common"
         self.required_strength = 0
         self.stats = statUpgrades()
+        self.traits["equipment"] = True
 
     def activate(self, entity):
         self.wearer = entity
@@ -139,6 +139,7 @@ class Weapon(Equipment):
         self.effective = []
         self.attack_cost = attack_cost
         self.diff_action_cost = 0
+        self.traits["weapon"] = True
 
     def can_be_equipped(self, entity):
         return super().can_be_equipped(entity) and entity.free_equipment_slots("hand_slot") >= self.slots_taken
@@ -1437,6 +1438,7 @@ class Ring(Equipment):
         self.can_be_levelled = False
         self.required_strength = -100
         self.action_description = "Power courses through your hands"
+        self.traits["ring"] = True
 
     def equip(self, entity):
         if self.equipped:
@@ -1651,6 +1653,7 @@ class Potion(O.Item):
         self.action_description = "Something flows through your body"
         self.rarity = "Common"
         self.yendorb = False
+        self.traits["potion"] = True
 
     def can_be_equipped(self, entity):
         return False

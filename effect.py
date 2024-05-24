@@ -1,4 +1,4 @@
-import dice as R
+
 import monster as M
 import ai
 

@@ -1,6 +1,5 @@
-import pygame, random, pygame_gui
-import mapping as M
-import display as D
+import pygame
+from display_generation import *
 import keyboard as K
 import loops as L
 import static_configs
@@ -25,7 +24,7 @@ textHeight = int(height / textSize)
 tileDict = static_configs.TileDict(textSize)
 #Responsible for game loops
 
-display = D.Display(width, height, textSize, textWidth, textHeight)
+display = Display(width, height, textSize, textWidth, textHeight)
 keyboard = K.Keyboard()
 loop = L.Loops(width, height, textSize, tileDict, display, keyboard)
 

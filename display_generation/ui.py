@@ -1,5 +1,5 @@
 import pygame, pygame_gui
-import character
+
 
 class HealthBar(pygame_gui.elements.UIProgressBar):
     def __init__(self, rect, manager, player):

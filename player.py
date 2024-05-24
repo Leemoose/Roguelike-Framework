@@ -2,12 +2,11 @@ import objects as O
 import character as C
 import random
 import loops as L
-import pathfinding
+from navigation import pathfinding, shadowcasting
 import spell
 import tiles as T
 import skills as S
 import statistics
-import shadowcasting
 
 
 class Player(O.Objects):
@@ -16,6 +15,8 @@ class Player(O.Objects):
         self.character = C.Character(self, mana=50)
         self.mage = spell.Mage(self)
         self.statistics = statistics.StatTracker()
+
+        self.type = "Player"
 
         self.level = 1
         self.max_level = 20

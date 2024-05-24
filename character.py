@@ -1,10 +1,5 @@
 import random
-import dice as R
-import objects as O
 import effect as E
-import pathfinding
-import shadowcasting
-import skills as S
 import items as I
 import loops as L
 

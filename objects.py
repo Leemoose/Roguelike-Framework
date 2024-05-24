@@ -6,11 +6,18 @@ class Objects():
         self.shaded_render_tag = -render_tag
         self.name = name
         self.description = ""
+        self.traits = {"object": True}
         self.x = x
         self.y = y
 
     def __str__(self):
         return self.name
+
+    def has_trait(self, trait):
+        if trait in self.traits:
+            return self.traits[trait]
+        else:
+            return False
 
     def gain_ID(self, ID):
         self.id_tag = ID
@@ -64,3 +71,4 @@ class Item(Objects):
         self.level = 1
         self.attached_skill_exists = False
         self.equipment_type = None
+        self.traits["item"] = True

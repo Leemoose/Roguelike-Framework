@@ -1,14 +1,10 @@
-import random
-
 import pygame, pygame_gui
-import display as D
 import items
 import mapping as M
 import player
-import objects as O
 import targets as T
 import tiles as TI
-import shadowcasting
+from navigation import shadowcasting
 from enum import Enum
 import dill
 
