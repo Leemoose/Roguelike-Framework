@@ -3,6 +3,7 @@ import mapping as M
 import display as D
 import keyboard as K
 import loops as L
+import static_configs
 
 
 import warnings
@@ -21,7 +22,7 @@ textWidth = int(width / textSize)
 
 textHeight = int(height / textSize)
 #dictionary mapping renderID to the image
-tileDict = M.TileDict(textSize)
+tileDict = static_configs.TileDict(textSize)
 #Responsible for game loops
 
 display = D.Display(width, height, textSize, textWidth, textHeight)
