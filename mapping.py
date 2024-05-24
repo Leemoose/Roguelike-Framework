@@ -84,6 +84,8 @@ class TileDict():
         tiles[-5] = image.load("assets/tiles/red_carpet_shaded.png")
         tiles[6] = image.load("assets/tiles/wooden_floor.png")
         tiles[-6] = image.load("assets/tiles/wooden_floor_shaded.png")
+        tiles[7] = image.load("assets/tiles/forest_wall.png")
+        tiles[-7] = image.load("assets/tiles/forest_wall_shaded.png")
 
         tiles[11] = pygame.transform.scale(image.load("assets/tiles/wall_extra_rounded.png"), (32,32))
         tiles[-11] = pygame.transform.scale(image.load("assets/tiles/wall_extra_rounded_shaded.png"), (32,32))
@@ -108,6 +110,8 @@ class TileDict():
         tiles[-90] = image.load("assets/tiles/stairs_up_shaded.png")
         tiles[91] = image.load("assets/tiles/stairs_down.png")
         tiles[-91] = image.load("assets/tiles/stairs_down_shaded.png")
+        tiles[92] = image.load("assets/tiles/gateway.png")
+        tiles[-92] = image.load("assets/tiles/gateway_shaded.png")
 
         # pants
         tiles[100] = image.load("assets/items/armor/pants.png")
@@ -726,6 +730,8 @@ class TileMap(TrackingMap):
                                "D": T.DummyTile
                                }
 
+        self.image_mapping = {"x": 7}
+
         self.track_map_render = [x[:] for x in [["x"] * self.height] * self.width]
         self.image = [x[:] for x in [[-1] * self.height] * self.width]
         if depth == 1:
@@ -754,7 +760,7 @@ class TileMap(TrackingMap):
                 self.connect_rooms(self.rooms[i], self.rooms[i + 1])
           #      self.cellular_caves()
             self.place_stairs(depth)
-            self.place_gateway()
+        self.place_gateway()
         if depth == 1 or depth == 2:
             print(str(self))
         self.render_to_map(depth)
@@ -776,9 +782,12 @@ class TileMap(TrackingMap):
         return self.gateway
     def place_gateway(self):
         if self.branch == "Dungeon":
-            if self.depth == 9:
+            print("Branch is {}".format(self.branch))
+            print("Depth is {}".format(self.depth))
+            if self.depth == 1:
                 startx, starty = self.get_random_location_ascaii()
                 self.track_map_render[startx][starty] = "fg"
+                print("Placing gateway")
         elif self.branch == "Forest":
             if self.depth == 1:
                 startx, starty = self.get_random_location_ascaii()
@@ -822,13 +831,15 @@ class TileMap(TrackingMap):
                 elif self.track_map_render[x][y] in self.render_mapping:
                     if self.image[x][y] != -1 and self.track_map_render[x][y] == ".":
                         tile = self.render_mapping[self.track_map_render[x][y]](x, y, render_tag = self.image[x][y])
+                    elif self.branch == "Forest" and self.track_map_render[x][y] in self.image_mapping:
+                        tile = self.render_mapping[self.track_map_render[x][y]](x, y, render_tag=self.image_mapping[self.track_map_render[x][y]])
                     else:
                         tile = self.render_mapping[self.track_map_render[x][y]](x, y)
                     temp.append(tile)
                     if isinstance(tile, T.Stairs):
                         self.stairs.append(tile)
                     elif isinstance(tile, T.Gateway):
-                        self.gateway.append(T.Gateway)
+                        self.gateway.append(tile)
                 else:
                     raise Exception("You have the incorrect format in the mapping {}",format(self.track_map_render[x][y]))
 

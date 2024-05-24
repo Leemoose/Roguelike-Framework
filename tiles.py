@@ -94,13 +94,10 @@ class Gateway(O.Tile):
 
 
 class ForestGateway(Gateway):
-    def __init__(self, x, y, level = 10, branch = "Dungeon", render_tag = 91, passable = True, id_tag = 0):
+    def __init__(self, x, y, level = 1, branch = "Dungeon", render_tag = 92, passable = True, id_tag = 0):
         super().__init__(x, y, level, branch, render_tag = render_tag, passable = passable, id_tag = id_tag)
-        self.branch = branch
-        self.level = level
 class DungeonGateway(Gateway):
-    def __init__(self, x, y, level = 1, branch = "Forest", render_tag = 91, passable = True, id_tag = 0):
+    def __init__(self, x, y, level = 1, branch = "Forest", render_tag = 92, passable = True, id_tag = 0):
         super().__init__(x, y,level, branch, render_tag = render_tag, passable = passable, id_tag = id_tag)
-        self.branch = branch
-        self.level = level
+
 

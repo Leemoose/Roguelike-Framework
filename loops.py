@@ -380,8 +380,8 @@ class Loops():
             self.player.character.energy = 0
 
         gate = self.generator.tile_map.locate(playerx, playery)
-        branch = gate.get_branch()
-        depth = gate.get_depth()
+        branch = gate.pair.get_branch()
+        depth = gate.pair.get_depth()
 
         self.floor_level = depth
         print(self.generator.tile_map.track_map)
@@ -460,9 +460,14 @@ class Loops():
             self.memory.generators[self.branch][self.floor_level] = generator
             self.floor_level += 1
 
-        #gateway1 = self.memory.generators["Dungeon"][9].tile_map.get_gateway()[0]
-        #gateway2  = self.memory.generators["Forest"][1].tile_map.get_gateway()[0]
-        #gateway1.pair_gateway(gateway2)
+        gateway1 = self.memory.generators["Dungeon"][1].tile_map.get_gateway()[0]
+        gateway2  = self.memory.generators["Forest"][1].tile_map.get_gateway()[0]
+
+        gateway1.pair = gateway2
+        gateway2.pair = gateway1
+
+        print(gateway1, gateway1.get_depth(), gateway1.get_branch(), gateway1.pair)
+        print(gateway2, gateway2.get_depth(), gateway2.get_branch(), gateway2.pair)
 
 
         self.branch = "Dungeon"
