@@ -4,8 +4,8 @@ import copy
 import monster as M
 
 class Floor(O.Tile):
-    def __init__(self, x, y, render_tag = 2, passable = True, blocks_vision = False, id_tag = 0):
-        super().__init__(x, y,  render_tag = render_tag, passable = passable, id_tag = id_tag, blocks_vision=blocks_vision)
+    def __init__(self, x, y, render_tag = 2, passable = True, blocks_vision = False, id_tag = 0, type = "Floor"):
+        super().__init__(x, y,  render_tag = render_tag, passable = passable, id_tag = id_tag, blocks_vision=blocks_vision, type = type)
 
 class Door(Floor):
     def __init__(self, x, y, render_tag = 30, passable = True, blocks_vision = True, id_tag = 0):
@@ -20,7 +20,7 @@ class Door(Floor):
 
 class NPCSpawn(Floor):
     def __init__(self, x, y, render_tag = 2, passable = True, id_tag = 0, entity = None):
-        super().__init__(x, y,  render_tag = render_tag, passable = passable, id_tag = id_tag)
+        super().__init__(x, y,  render_tag = render_tag, passable = passable, id_tag = id_tag, type = "NPCSpawn")
         self.entity = entity(x, y)
 
     #Not currently supported
@@ -29,7 +29,7 @@ class NPCSpawn(Floor):
     
 class MonsterSpawn(Floor):
     def __init__(self, x, y, render_tag, passable = False, id_tag = 0, entity = None):
-        super().__init__(x, y,  render_tag = render_tag, passable = passable, id_tag = id_tag)
+        super().__init__(x, y,  render_tag = render_tag, passable = passable, id_tag = id_tag, type = "MonsterSpawn")
         self.entity = copy.deepcopy(entity(x, y))
     
     def spawn_entity(self):
@@ -53,15 +53,15 @@ class BobBrotherTile(GuardTile):
 
 class Wall(O.Tile):
     def __init__(self, x, y, render_tag = 1, passable = False, blocks_vision = True, id_tag = 0):
-        super().__init__(x, y,  render_tag = render_tag, passable = passable, blocks_vision = blocks_vision, id_tag = id_tag)
+        super().__init__(x, y,  render_tag = render_tag, passable = passable, blocks_vision = blocks_vision, id_tag = id_tag, type = "Wall")
 
 class SenseiTile(NPCSpawn):
     def __init__(self, x, y, render_tag = 6, passable = True, id_tag = 0, entity = npc.Sensei):
         super().__init__(x, y,  render_tag = render_tag, passable = passable, id_tag = id_tag, entity=entity)
 
 class Stairs(O.Tile):
-    def __init__(self, x, y, render_tag = 0, passable = True, id_tag = 0, downward = False):
-        super().__init__(x, y, render_tag, passable, id_tag)
+    def __init__(self, x, y, render_tag = 0, passable = True, id_tag = 0):
+        super().__init__(x, y, render_tag, passable, id_tag, type = "Stairs")
         self.stairs = True
         self.pair = None
 
@@ -82,7 +82,7 @@ class UpStairs(Stairs):
 
 class Gateway(O.Tile):
     def __init__(self, x, y, level, branch, render_tag = 91, passable = True, id_tag = 0):
-        super().__init__(x, y, render_tag = render_tag, passable = passable, id_tag = id_tag)
+        super().__init__(x, y, render_tag = render_tag, passable = passable, id_tag = id_tag, type = "Gateway")
         self.branch = branch
         self.level = level
         self.pair = None
