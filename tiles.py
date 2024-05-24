@@ -64,13 +64,43 @@ class Stairs(O.Tile):
         super().__init__(x, y, render_tag, passable, id_tag)
         self.stairs = True
         self.pair = None
-        self.downward = downward
 
 class DownStairs(Stairs):
-    def __init__(self, x, y, render_tag = 91, passable = True, id_tag = 0, downward = True):
-        super().__init__(x, y, render_tag = render_tag, passable = passable, id_tag = id_tag, downward = downward)
+    def __init__(self, x, y, render_tag = 91, passable = True, id_tag = 0):
+        super().__init__(x, y, render_tag = render_tag, passable = passable, id_tag = id_tag)
+        self.downward = True
 
 class UpStairs(Stairs):
-    def __init__(self, x, y, render_tag = 90, passable = True, id_tag = 0, downward = False):
-        super().__init__(x, y, render_tag = render_tag, passable = passable, id_tag = id_tag, downward = downward)
+    def __init__(self, x, y, render_tag = 90, passable = True, id_tag = 0):
+        super().__init__(x, y, render_tag = render_tag, passable = passable, id_tag = id_tag)
+        self.downward = False
+
+class Gateway(O.Tile):
+    def __init__(self, x, y, level, branch, render_tag = 91, passable = True, id_tag = 0):
+        super().__init__(x, y, render_tag = render_tag, passable = passable, id_tag = id_tag)
+        self.branch = branch
+        self.level = level
+        self.pair = None
+
+    def get_branch(self):
+        return self.branch
+
+    def get_depth(self):
+        return self.level
+
+    def pair_gateway(self, other_gateway):
+        self.pair = other_gateway
+        other_gateway.pair = self
+
+
+class ForestGateway(Gateway):
+    def __init__(self, x, y, level = 10, branch = "Dungeon", render_tag = 91, passable = True, id_tag = 0):
+        super().__init__(x, y, level, branch, render_tag = render_tag, passable = passable, id_tag = id_tag)
+        self.branch = branch
+        self.level = level
+class DungeonGateway(Gateway):
+    def __init__(self, x, y, level = 1, branch = "Forest", render_tag = 91, passable = True, id_tag = 0):
+        super().__init__(x, y,level, branch, render_tag = render_tag, passable = passable, id_tag = id_tag)
+        self.branch = branch
+        self.level = level
 

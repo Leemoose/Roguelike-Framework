@@ -337,13 +337,14 @@ class ID():
 class DungeonGenerator():
     #Generates a width by height 2d array of tiles. Each type of tile has a unique tile
     #tag ranging from 0 to 99
-    def __init__(self, depth, player):
+    def __init__(self, depth, player, branch):
         self.mapData = MapOptions[depth]
         self.depth = depth
+        self.branch = branch
         self.width = self.mapData.width
         self.height = self.mapData.height
         self.summoner = []
-        self.tile_map = TileMap(self.mapData, depth)
+        self.tile_map = TileMap(self.mapData, depth, self.branch)
         self.monster_map = TrackingMap(self.width, self.height) #Should I include items as well?
         #self.flood_map = FloodMap(self, self.width, self.height)
         self.item_map = TrackingMap(self.width, self.height)
@@ -359,6 +360,7 @@ class DungeonGenerator():
             self.place_monsters(depth)
             self.place_items(depth)
         self.place_npcs(depth)
+
 
     def get_random_location(self, stairs_block = True):
         startx = random.randint(0, self.width - 1)
@@ -688,13 +690,15 @@ class TileMap(TrackingMap):
             self.track_map_render = [x[:] for x in [[0 if random.random() > .6 else 1] * self.width] * self.height]
             self.cellular_caves()
     """
-    def __init__(self, mapData, depth):
+    def __init__(self, mapData, depth, branch):
         super().__init__(mapData.width, mapData.height)
         self.mapData = mapData
         self.track_map = []
         self.stairs = []
+        self.gateway = []
         self.rooms = []
         self.depth = depth
+        self.branch = branch
 
         # sometimes, rooms can be replaced by prefab rooms, for special quests, events etc. 
         # keep track of prefabs, how many more times it can be placed, which floor they can be placed on 
@@ -712,6 +716,8 @@ class TileMap(TrackingMap):
                                ".": T.Floor,
                                ">": T.DownStairs,
                                "<": T.UpStairs,
+                               "fg": T.ForestGateway,
+                               "dg": T.DungeonGateway,
                                "K": T.KingTile,
                                "G": T.GuardTile,
                                "d": T.Door,
@@ -748,6 +754,7 @@ class TileMap(TrackingMap):
                 self.connect_rooms(self.rooms[i], self.rooms[i + 1])
           #      self.cellular_caves()
             self.place_stairs(depth)
+            self.place_gateway()
         if depth == 1 or depth == 2:
             print(str(self))
         self.render_to_map(depth)
@@ -765,6 +772,17 @@ class TileMap(TrackingMap):
             map += "\n"
         return map
 
+    def get_gateway(self):
+        return self.gateway
+    def place_gateway(self):
+        if self.branch == "Dungeon":
+            if self.depth == 9:
+                startx, starty = self.get_random_location_ascaii()
+                self.track_map_render[startx][starty] = "fg"
+        elif self.branch == "Forest":
+            if self.depth == 1:
+                startx, starty = self.get_random_location_ascaii()
+                self.track_map_render[startx][starty] = "dg"
     def quality_check_map(self):
         for x in range(self.width):
             for y in range(self.height):
@@ -809,6 +827,8 @@ class TileMap(TrackingMap):
                     temp.append(tile)
                     if isinstance(tile, T.Stairs):
                         self.stairs.append(tile)
+                    elif isinstance(tile, T.Gateway):
+                        self.gateway.append(T.Gateway)
                 else:
                     raise Exception("You have the incorrect format in the mapping {}",format(self.track_map_render[x][y]))
 
