@@ -1,7 +1,8 @@
 import objects as O
+import monster as M
 import npc
 import copy
-import monster as M
+
 
 class Floor(O.Tile):
     def __init__(self, x, y, render_tag = 2, passable = True, blocks_vision = False, id_tag = 0, type = "Floor"):

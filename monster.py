@@ -303,6 +303,7 @@ class Dummy(Monster):
         self.intelligence = 0
         self.character.armor = 0
         self.type["wood"] = True
+        self.traits["dummy"] = True
         self.character.health_regen = 50
         self.stops_autoexplore = False
         remnants = I.DestroyedDummy()

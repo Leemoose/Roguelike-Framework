@@ -7,6 +7,7 @@ import tiles as TI
 from navigation import shadowcasting
 from enum import Enum
 import dill
+from display_generation import *
 
 """
 Theme: Loops is the central brain of which part of the program it is choosing.
@@ -111,21 +112,21 @@ class Loops():
         self.quest_recieved = False
 
 
-        self.create_display_options = {LoopType.action: self.display.create_display,
-                                       LoopType.targeting: self.display.create_display,
-                                       LoopType.examine: self.display.create_display,
-                                       LoopType.inventory: self.display.create_inventory,
-                                       LoopType.enchant: self.display.create_inventory,
-                                       LoopType.level_up: self.display.create_level_up,
-                                       LoopType.victory: self.display.create_victory_screen,
-                                       LoopType.equipment: self.display.create_equipment,
-                                       LoopType.main: self.display.create_main_screen,
-                                       LoopType.paused: self.display.create_pause_screen,
-                                       LoopType.help: self.display.create_help_screen,
-                                       LoopType.story: self.display.create_story_screen,
-                                       LoopType.death: self.display.create_death_screen,
-                                       LoopType.trade: self.display.create_trade_screen,
-                                       LoopType.quest: self.display.create_quest_screen
+        self.create_display_options = {LoopType.action: create_display,
+                                       LoopType.targeting: create_display,
+                                       LoopType.examine: create_display,
+                                       LoopType.inventory: create_inventory,
+                                       LoopType.enchant: create_inventory,
+                                       LoopType.level_up: create_level_up,
+                                       LoopType.victory: create_victory_screen,
+                                       LoopType.equipment: create_equipment,
+                                       LoopType.main: create_main_screen,
+                                       LoopType.paused: create_pause_screen,
+                                       LoopType.help: create_help_screen,
+                                       LoopType.story: create_story_screen,
+                                       LoopType.death: create_death_screen,
+                                       LoopType.trade: create_trade_screen,
+                                       LoopType.quest: create_quest_screen
                                        }
         self.update_display_options = {
                                        LoopType.victory: self.display.update_screen,
@@ -133,7 +134,7 @@ class Loops():
                                        LoopType.help: self.display.update_screen,
                                        LoopType.story: self.display.update_screen,
                                        LoopType.trade: self.display.update_screen_without_fill,
-                                       LoopType.level_up: self.display.update_level_up,
+                                       LoopType.level_up: update_level_up,
                                        LoopType.equipment: self.display.update_screen,
                                        LoopType.main: self.display.update_main,
                                        LoopType.quest: self.display.update_screen_without_fill,
@@ -169,7 +170,7 @@ class Loops():
         self.currentLoop = newLoop
         self.update_screen = True
         if newLoop in self.create_display_options:
-            self.create_display_options[newLoop](self)
+            self.create_display_options[newLoop](self.display, self)
         elif newLoop == LoopType.items:
             self.display.update_entity(self, item_screen=True, create=True)
 
@@ -402,7 +403,6 @@ class Loops():
         self.taking_stairs = False
 
     def init_game(self, display):
-        self.main_buttons = display.create_main_screen(self)
         self.player = player.Player(0, 0)
         self.memory.player = self.player
         self.branch = "Dungeon"

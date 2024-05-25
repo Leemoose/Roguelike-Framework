@@ -1,6 +1,4 @@
 
-import monster as M
-import ai
 
 """
 class TileEffect()
@@ -165,14 +163,14 @@ class Fear(StatusEffect):
     
     def apply_effect(self, target):
         print("When trying to apply fear effect, {} is the target".format(target))
-        if isinstance(target.parent, M.Monster):
+        if target.parent.has_trait("monster"):
             self.old_values = target.parent.brain.get_tendency("flee")
             target.parent.brain.change_tendency("flee", (1000,0))
             target.parent.flee = True
             print("The {} is inflicted with fear".format(target))
     
     def remove(self, target):
-        if isinstance(target.parent, M.Monster):
+        if target.parent.has_trait("monster"):
             target.parent.brain.change_tendency("flee", self.old_values)
             target.parent.flee = False
 
@@ -184,12 +182,12 @@ class Charm(StatusEffect):
         self.old_brain = None
 
     def apply_effect(self, target):
-        if isinstance(target.parent, M.Monster):
+        if target.parent.has_trait("monster"):
             self.old_brain = target.parent.brain
-            target.parent.brain = ai.Friendly_AI(target.parent)
+            target.parent.make_friendly()
 
     def remove(self, target):
-        if isinstance(target.parent, M.Monster):
+        if target.parent.has_trait("monster"):
             target.parent.brain = self.old_brain
 
 class Invincible(StatusEffect):

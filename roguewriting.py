@@ -1,4 +1,4 @@
-import pygame
+import pygame, pygame
 from display_generation import *
 import keyboard as K
 import loops as L
