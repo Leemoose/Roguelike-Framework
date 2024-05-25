@@ -83,7 +83,6 @@ class TileMap(TrackingMap):
         self.place_gateway(gateway_data)
         if depth == 1 or depth == 2:
             print(str(self))
-        self.place_gateway()
 
         self.render_to_map(depth)
         self.quality_check_map()
