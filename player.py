@@ -8,6 +8,7 @@ import tiles as T
 import skills as S
 import statistics
 import shadowcasting
+import items as I
 
 
 class Player(O.Objects):
@@ -99,7 +100,7 @@ class Player(O.Objects):
         if self.character.needs_rest(self):
             loop.after_rest = L.LoopType.exploring
             loop.change_loop(L.LoopType.resting)
-            self.character.rest(loop)
+            # self.character.rest(loop)
             return # rest until ready to explore
         loop.after_rest = L.LoopType.action # in case we rested need to reset this to default
         tile_map = loop.generator.tile_map
@@ -113,6 +114,15 @@ class Player(O.Objects):
                 loop.change_loop(L.LoopType.action)
                 return False
         
+        # auto pickup gold
+        gold_locations = []
+        for item in loop.generator.item_map.all_entities():
+                if isinstance(item, I.Gold):
+                    if item.x == self.x and item.y == self.y:
+                        self.character.grab(item, loop)
+                    else:
+                        gold_locations.append((item.x, item.y))
+        
         if len(self.path) <= 1:
             start = (self.x, self.y)
             all_seen, unseen = loop.generator.all_seen()
@@ -124,25 +134,37 @@ class Player(O.Objects):
                 loop.update_screen = True
                 self.path = []
                 return False
-            endx = unseen[0]
-            endy = unseen[1]
-            while (not tile_map.get_passable(endx, endy)) and not (tile_map.track_map[endx][endy].seen):
-                if self.x == endx and self.y == endy:
-                    loop.change_loop(L.LoopType.action)
-                    self.path = []
-                    return
-                if endx != tile_map.width - 1:
-                    endx += 1
-                else:
-                    endx = 0
-                    if endy == tile_map.height - 1:
-                        endy = 0
-                    else:
-                        endy += 1
-            end = (endx, endy)
-            self.path = pathfinding.astar_multi_goal(tile_map.track_map, start, loop.generator.get_all_frontier_tiles(),
-                                                     loop.generator.monster_map, loop.player)
+            # endx = unseen[0]
+            # endy = unseen[1]
+            # while (not tile_map.get_passable(endx, endy)) and not (tile_map.track_map[endx][endy].seen):
+            #     if self.x == endx and self.y == endy:
+            #         loop.change_loop(L.LoopType.action)
+            #         self.path = []
+            #         return
+            #     if endx != tile_map.width - 1:
+            #         endx += 1
+            #     else:
+            #         endx = 0
+            #         if endy == tile_map.height - 1:
+            #             endy = 0
+            #         else:
+            #             endy += 1
+            # end = (endx, endy)
+            # self.path = pathfinding.astar_multi_goal(tile_map.track_map, start, loop.generator.get_all_frontier_tiles(),
+            #                                         loop.generator.monster_map, loop.player)
             # if all tiles have been seen don't autoexplore
+
+            # Attempt to redo autoexplore with simpler BFS
+            # in-line end condition so we can use tile_map
+            def autoexplore_condition(position_tuple):
+                return position_tuple in gold_locations or \
+                       (tile_map.get_passable(position_tuple[0], position_tuple[1]) and \
+                        not (tile_map.track_map[position_tuple[0]][position_tuple[1]].seen))
+            self.path = pathfinding.conditional_bfs(tile_map.track_map, start, autoexplore_condition, loop.generator.npc_dict)
+            if not self.path:
+                self.path = []
+                loop.change_loop(L.LoopType.action)
+                return
         # import pdb; pdb.set_trace()
         x, y = self.path.pop(0)
         if (x == self.x and y == self.y):
@@ -162,7 +184,7 @@ class Player(O.Objects):
         if self.character.needs_rest(self):
             loop.after_rest = L.LoopType.stairs
             loop.change_loop(L.LoopType.resting)
-            self.character.rest(loop)
+            # self.character.rest(loop)
             return # rest until ready to explore
         tile_map = loop.generator.tile_map
         for monster in loop.generator.monster_map.all_entities():
@@ -180,8 +202,10 @@ class Player(O.Objects):
             end = None
             nearest_stairs = 100000 # abritrary large number much greater than map size, so distance will always be less
             # on_target = False
+            stairs_list = []
             for stairs in loop.generator.tile_map.get_stairs():
                 if stairs.downward and stairs.seen:
+                    stairs_list.append(stairs.get_location())
                     # manhattan distance so we path to closest pair of stairs
                     if (abs(stairs.get_location()[0] - start[0]) + \
                         abs(stairs.get_location()[1] - start[1]) < nearest_stairs):
@@ -190,13 +214,19 @@ class Player(O.Objects):
                 loop.add_message("You have not found the stairs yet")
                 return
             if (start == end):
-                print(start)
-                print(end)
                 self.path = []
                 loop.change_loop(L.LoopType.action)
                 return
-            self.path = pathfinding.astar(tile_map.track_map, start, end, loop.generator.monster_map, loop.player)
-
+            
+            def stairs_condition(position_tuple):
+                return position_tuple in stairs_list
+            self.path = pathfinding.conditional_bfs(tile_map.track_map, start, stairs_condition, loop.generator.npc_dict)
+            if not self.path: # checks null and empty
+                self.path = []
+                loop.change_loop(L.LoopType.action)
+                return
+        if self.path == []:
+            import pdb; pdb.set_trace()
         x, y = self.path.pop(0)
         if (x == self.x and y == self.y):
             # Pathfinding messed up - pop this just in case
