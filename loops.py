@@ -467,30 +467,19 @@ class Loops():
         self.player = player.Player(0, 0)
         self.memory.player = self.player
         self.branch = "Dungeon"
-        self.floor_level += 1
+        self.floor_level = 1
+
         gateway_data = configs.GatewayData()
+        dungeon_data = configs.DungeonData()
 
         self.render_exploration = True
         self.memory.render_exploration = self.render_exploration
-        self.memory.generators[self.branch] = {}
-        while self.floor_level < 10:
-            if self.floor_level > self.memory.explored_levels:
-                generator = M.DungeonGenerator(self.floor_level, self.player, self.branch, gateway_data)
-                self.generator = generator
-                self.memory.explored_levels += 1
-                self.memory.generators[self.branch][self.floor_level] = generator
-                self.floor_level += 1
 
-        self.branch = "Forest"
-        self.memory.generators[self.branch] = {}
-        self.floor_level = 1
-        self.memory.explored_levels = 1
-        while self.floor_level < 5:
-            generator = M.DungeonGenerator(self.floor_level, self.player, self.branch, gateway_data)
-            self.generator = generator
-            self.memory.explored_levels += 1
-            self.memory.generators[self.branch][self.floor_level] = generator
-            self.floor_level += 1
+        for branch in dungeon_data.get_branches():
+            self.memory.generators[branch] = {}
+            for level in range(1, dungeon_data.get_depth(branch) + 1):
+                generator = M.DungeonGenerator(level, self.player, branch, gateway_data)
+                self.memory.generators[branch][level] = generator
 
         known_gateways = gateway_data.all_gateways()
         for lair in known_gateways:
@@ -500,12 +489,6 @@ class Loops():
             gateway1.pair = gateway2
 
 
-        print(gateway1, gateway1.get_depth(), gateway1.get_branch(), gateway1.pair)
-        print(gateway2, gateway2.get_depth(), gateway2.get_branch(), gateway2.pair)
-
-
-        self.branch = "Dungeon"
-        self.floor_level = 1
         self.memory.floor_level = 1
         self.memory.explored_levels = 1
         self.generator = self.memory.generators[self.branch][self.floor_level]

@@ -157,6 +157,7 @@ class TileMap(TrackingMap):
                             "Warning: You did not properly buffer the edges of your map and it was overridden to walls")
                     temp.append(self.ascaii_mapping.ascaii_tile("x")(x, y))
                 elif text in self.ascaii_mapping.tiles:
+                    print(self.branch)
                     if self.image[x][y] != -1:
                         tile = self.ascaii_mapping.ascaii_tile(text)(x, y, render_tag=self.image[x][y])
                     elif text in self.ascaii_mapping.image_mapping[self.branch]:
