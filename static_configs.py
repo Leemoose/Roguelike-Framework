@@ -230,6 +230,7 @@ class AscaiiTileDict():
         tiles["."] = T.Floor
         tiles[">"] = T.DownStairs
         tiles["<"] = T.UpStairs
+        tiles["g"] = T.Gateway
         tiles["fg"] = T.ForestGateway
         tiles["dg"] = T.DungeonGateway
         tiles["K"] = T.KingTile

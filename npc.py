@@ -1,4 +1,3 @@
-import items as I
 import objects as O
 import loops as L
 import quest

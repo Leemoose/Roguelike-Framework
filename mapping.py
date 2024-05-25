@@ -2,9 +2,7 @@
 import objects as O
 import static_configs
 import tiles as T
-
 import random
-
 import configs
 import spawnparams as Spawns
 import npc as N
@@ -26,14 +24,14 @@ Classes:
 class DungeonGenerator():
     #Generates a width by height 2d array of tiles. Each type of tile has a unique tile
     #tag ranging from 0 to 99
-    def __init__(self, depth, player, branch):
+    def __init__(self, depth, player, branch, gateway_data):
         self.mapData = configs.get_map_data(depth, branch)
         self.depth = depth
         self.branch = branch
         self.width = self.mapData.width
         self.height = self.mapData.height
         self.summoner = []
-        self.tile_map = TileMap(self.mapData, depth, self.branch, static_configs.AscaiiTileDict())
+        self.tile_map = TileMap(self.mapData, depth, self.branch, static_configs.AscaiiTileDict(), gateway_data)
         self.monster_map = TrackingMap(self.width, self.height) #Should I include items as well?
         #self.flood_map = FloodMap(self, self.width, self.height)
         self.item_map = TrackingMap(self.width, self.height)

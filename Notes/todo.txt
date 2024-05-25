@@ -12,3 +12,8 @@ Make a central file for all dictionarys
     - Render to tile mappings
     - Ascaii to tile mappings
     - Ascaii to render mappings (branch specific)
+
+Make a dictionary in static configs mapping gateways to each other (so that can be done automatically)
+Add a swap with monster spell
+Fully migrate some skills to spells (maybe decide how to decide difference between the two)
+Finish splitting out display file

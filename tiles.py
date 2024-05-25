@@ -83,13 +83,16 @@ class UpStairs(Stairs):
         self.downward = False
 
 class Gateway(O.Tile):
-    def __init__(self, x, y, level, branch, render_tag = 91, passable = True, id_tag = 0):
+    def __init__(self, x, y, level = 1, branch = "Dungeon", render_tag = 92, passable = True, id_tag = 0):
         super().__init__(x, y, render_tag = render_tag, passable = passable, id_tag = id_tag, type = "Gateway")
         self.branch = branch
         self.level = level
         self.pair = None
         self.traits["gateway"] = True
 
+    def relocate(self, branch, level):
+        self.branch = branch
+        self.level = level
     def get_branch(self):
         return self.branch
 

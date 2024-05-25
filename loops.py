@@ -1,4 +1,6 @@
 import pygame, pygame_gui
+
+import configs
 import items
 import mapping as M
 import player
@@ -407,11 +409,12 @@ class Loops():
         self.memory.player = self.player
         self.branch = "Dungeon"
         self.floor_level += 1
+        gateway_data = configs.GatewayData()
 
         self.memory.generators[self.branch] = {}
         while self.floor_level < 10:
             if self.floor_level > self.memory.explored_levels:
-                generator = M.DungeonGenerator(self.floor_level, self.player, self.branch)
+                generator = M.DungeonGenerator(self.floor_level, self.player, self.branch, gateway_data)
                 self.generator = generator
                 self.memory.explored_levels += 1
                 self.memory.generators[self.branch][self.floor_level] = generator
@@ -422,17 +425,19 @@ class Loops():
         self.floor_level = 1
         self.memory.explored_levels = 1
         while self.floor_level < 5:
-            generator = M.DungeonGenerator(self.floor_level, self.player, self.branch)
+            generator = M.DungeonGenerator(self.floor_level, self.player, self.branch, gateway_data)
             self.generator = generator
             self.memory.explored_levels += 1
             self.memory.generators[self.branch][self.floor_level] = generator
             self.floor_level += 1
 
-        gateway1 = self.memory.generators["Dungeon"][5].tile_map.get_gateway()[0]
-        gateway2  = self.memory.generators["Forest"][1].tile_map.get_gateway()[0]
+        known_gateways = gateway_data.all_gateways()
+        for lair in known_gateways:
+            gateway1 = self.memory.generators[lair[0]][lair[1]].tile_map.get_gateway()[0]
+            lair2 = gateway_data.paired_gateway(lair)
+            gateway2 = self.memory.generators[lair2[0]][lair2[1]].tile_map.get_gateway()[0]
+            gateway1.pair = gateway2
 
-        gateway1.pair = gateway2
-        gateway2.pair = gateway1
 
         print(gateway1, gateway1.get_depth(), gateway1.get_branch(), gateway1.pair)
         print(gateway2, gateway2.get_depth(), gateway2.get_branch(), gateway2.pair)

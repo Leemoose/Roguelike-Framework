@@ -28,7 +28,7 @@ class TileMap(TrackingMap):
             self.cellular_caves()
     """
 
-    def __init__(self, mapData, depth, branch, diff_tile_dict):
+    def __init__(self, mapData, depth, branch, diff_tile_dict, gateway_data):
         super().__init__(mapData.width, mapData.height)
         self.mapData = mapData
         self.track_map = []
@@ -82,7 +82,7 @@ class TileMap(TrackingMap):
                 self.connect_rooms(self.rooms[i], self.rooms[i + 1])
             #      self.cellular_caves()
             self.place_stairs(depth)
-        self.place_gateway()
+        self.place_gateway(gateway_data)
         if depth == 1 or depth == 2:
             print(str(self))
 
@@ -104,18 +104,13 @@ class TileMap(TrackingMap):
     def get_gateway(self):
         return self.gateway
 
-    def place_gateway(self):
-        if self.branch == "Dungeon":
+    def place_gateway(self, gateway_data):
+        if gateway_data.has_gateway(self.branch, self.depth):
             print("Branch is {}".format(self.branch))
             print("Depth is {}".format(self.depth))
-            if self.depth == 5:
-                startx, starty = self.get_random_location_ascaii()
-                self.track_map_render[startx][starty] = "fg"
-                print("Placing gateway")
-        elif self.branch == "Forest":
-            if self.depth == 1:
-                startx, starty = self.get_random_location_ascaii()
-                self.track_map_render[startx][starty] = "dg"
+            startx, starty = self.get_random_location_ascaii()
+            self.track_map_render[startx][starty] = "g"
+            print("Placing gateway")
 
     def quality_check_map(self):
         for x in range(self.width):
@@ -178,6 +173,7 @@ class TileMap(TrackingMap):
                         self.stairs.append(tile)
                     elif tile.type == "Gateway":
                         self.gateway.append(tile)
+                        tile.relocate(self.branch, self.depth)
                 else:
                     raise Exception("You have the incorrect format in the mapping {}",
                                     format(self.track_map_render[x][y]))
