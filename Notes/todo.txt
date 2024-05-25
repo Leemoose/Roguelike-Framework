@@ -13,7 +13,11 @@ Make a central file for all dictionarys
     - Ascaii to tile mappings
     - Ascaii to render mappings (branch specific)
 
+
 Make a dictionary in static configs mapping gateways to each other (so that can be done automatically)
 Add a swap with monster spell
 Fully migrate some skills to spells (maybe decide how to decide difference between the two)
 Finish splitting out display file
+
+Update monster behaviour to fight if it can't escape because of allies in hallway
+

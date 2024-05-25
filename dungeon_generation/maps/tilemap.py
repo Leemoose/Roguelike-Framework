@@ -48,7 +48,7 @@ class TileMap(TrackingMap):
              "max_floor": 5,
              "spawns_available": 1,
              # not sure if there will be prefabs we want to spawn multiple times through dungeon but left it as a possibility
-             "spawn_chance": 1.0}
+             "spawn_chance": 0.5}
         ]
         self.ascaii_mapping = diff_tile_dict
 
@@ -69,9 +69,6 @@ class TileMap(TrackingMap):
                                  x["min_floor"] <= depth and x["max_floor"] >= depth and x["spawns_available"] > 0 and
                                  x["spawn_chance"] > random.random()]
 
-            if depth == 2:
-                print(available_prefabs)
-
             for p in available_prefabs:
                 room_to_replace = random.choice(self.rooms)
                 self.track_map_render = p["prefab"](room_to_replace, self.track_map_render, self.image, depth)
@@ -82,12 +79,13 @@ class TileMap(TrackingMap):
                 self.connect_rooms(self.rooms[i], self.rooms[i + 1])
             #      self.cellular_caves()
             self.place_stairs(depth)
+
         self.place_gateway(gateway_data)
         if depth == 1 or depth == 2:
             print(str(self))
+        self.place_gateway()
 
         self.render_to_map(depth)
-        # print(f"{depth}: {self.stairs}")
         self.quality_check_map()
 
     def __str__(self):

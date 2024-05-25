@@ -68,7 +68,7 @@ class Monster_AI():
         return max(-1, random.randint(average - spread, average + spread))
 
     def rank_actions(self, loop):
-        print(self.parent.character.energy)
+        # print(self.parent.character.energy)
         max_utility = 0
         called_function = (0, self.do_nothing)
 
@@ -80,7 +80,7 @@ class Monster_AI():
 
         # print(max_utility)
         self.parent.character.energy -= 1
-        print(f"{self.parent} is doing {called_function} with utility {max_utility}")
+        # print(f"{self.parent} is doing {called_function} with utility {max_utility}")
         self.options[called_function][1](loop)
 
     def rank_stairs(self, loop):
@@ -113,7 +113,7 @@ class Monster_AI():
             loop.add_message("The monster follows you on the stairs")
 
     def rank_flee(self, loop):
-        print("Does this monster have the flee condition? {}".format(self.parent.flee))
+        # print("Does this monster have the flee condition? {}".format(self.parent.flee))
         if self.parent.flee or self.parent.character.health / self.parent.character.max_health < .25:
             return self.randomize_action("flee")  # must flee if flag is set
         return -1
@@ -142,7 +142,7 @@ class Monster_AI():
                 if other_monster.name in self.personality and utility < -self.personality[other_monster.name]:
                     utility = -self.personality[other_monster.name]
                     self.target = other_monster
-                    print("{} is going to attack {}".format(self.parent.name, self.target.name))
+                    # print("{} is going to attack {}".format(self.parent.name, self.target.name))
         if self.target != None:
             return self.randomize_action("combat")
         else:

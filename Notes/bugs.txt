@@ -13,3 +13,5 @@ maybe give each skill/spell a source parameter and check against that for removi
 enchant scrolls maybe broken
 
 Dojo art covering stairs?
+
+rest is broken

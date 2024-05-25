@@ -43,6 +43,9 @@ class LoopType(Enum):
     help = 17
     death = 18
     story = 19
+    resting = 20
+    exploring = 21
+    stairs = 22
 
 class Memory():
     """
@@ -55,9 +58,10 @@ class Memory():
         self.branch = ""
         self.generators = {}
         self.player = None
+        self.render_exploration = True
 
     def save_objects(self):
-        save = [self.explored_levels, self.floor_level, self.generators, self.player, self.branch]
+        save = [self.explored_levels, self.floor_level, self.generators, self.player, self.branch, self.render_exploration]
         try:
             with open("data.dill", "wb") as f:
                 print("Saved the game")
@@ -75,6 +79,7 @@ class Memory():
         self.generators = save[2]
         self.player = save[3]
         self.branch = save[4]
+        self.render_exploration = save[5]
 
 
 class Loops():
@@ -112,7 +117,12 @@ class Loops():
         self.taking_stairs = False
         self.npc_focus = None
         self.quest_recieved = False
+        self.quest_completed = False
 
+        self.rest_count = 0 # how many turns have you been resting for
+        self.after_rest = LoopType.action # what loop type to revert to after finishing resting, default action
+        self.explore_count = 0 # how many turns have you been exploring for
+        self.stairs_count = 0 # how many turns have you been searching for stairs
 
         self.create_display_options = {LoopType.action: create_display,
                                        LoopType.targeting: create_display,
@@ -160,7 +170,10 @@ class Loops():
                                        LoopType.main: keyboard.key_main_screen,
                                        LoopType.paused: keyboard.key_paused,
                                        LoopType.trade: keyboard.key_trade,
-                                       LoopType.quest: keyboard.key_quest
+                                       LoopType.quest: keyboard.key_quest,
+                                       LoopType.resting: keyboard.key_rest,
+                                       LoopType.exploring: keyboard.key_explore,
+                                       LoopType.stairs: keyboard.key_explore
                                        }
 
         # Start the game by going to the main screen
@@ -226,6 +239,37 @@ class Loops():
 
             display.uiManager.process_events(event)
 
+        if self.currentLoop == LoopType.action:
+            if self.rest_count != 0:
+                print(f"Rested for {self.rest_count} turns.")
+                self.rest_count = 0
+
+            if self.explore_count != 0:
+                print(f"Explored for {self.explore_count} turns.")
+                self.explore_count = 0
+            
+            if self.stairs_count != 0:
+                print(f"Pathed to stairs for {self.stairs_count} turns")
+                self.stairs_count = 0
+
+        # check autoexplore and rest
+        if self.currentLoop == LoopType.resting:
+            self.player.character.rest(self, self.after_rest)
+            self.rest_count += 1
+        if self.currentLoop == LoopType.exploring:
+            self.player.autoexplore(self)
+            self.explore_count += 1
+            # uncomment this to closely follow pathing
+            # import time
+            # time.sleep(0.2)
+        if self.currentLoop == LoopType.stairs:
+            self.player.find_stairs(self)
+            self.stairs_count += 1
+            # uncomment this to closely follow pathing
+            # import time
+            # time.sleep(0.2)
+
+
         if self.player.character.energy < 0:
             self.time_passes(-self.player.character.energy)
             self.monster_loop(-self.player.character.energy)
@@ -240,6 +284,7 @@ class Loops():
         return True
 
     def monster_loop(self, energy, stairs = None):
+        
         for monster in self.monster_map.all_entities():
             if monster.character.alive:
                 # do status effect stuff
@@ -248,6 +293,7 @@ class Loops():
 
                 # do action stuff
                 if monster.brain.is_awake and not monster.asleep:
+                    # import pdb; pdb.set_trace()
                     monster.character.energy += energy
                     while monster.character.energy > 0:
                         monster.brain.rank_actions(self)
@@ -287,6 +333,11 @@ class Loops():
                             self.screen_focus = None
             elif self.currentLoop == LoopType.items:
                 display.update_entity(self)
+            elif (self.currentLoop == LoopType.resting or self.currentLoop == LoopType.exploring or self.currentLoop == LoopType.stairs):
+                self.clean_up()
+                shadowcasting.compute_fov(self)
+                if self.render_exploration:
+                    display.update_display(self)
             elif self.currentLoop == LoopType.examine or self.currentLoop == LoopType.targeting:
                 display.update_display(self)
                 mos_x, mos_y = pygame.mouse.get_pos()
@@ -311,6 +362,13 @@ class Loops():
         if self.player.quest_recieved == True:
             display.update_questpopup_screen(self, "{} Recieved".format(self.player.quests[-1].name))
             self.player.quest_recieved = False
+
+        # if self.quest_completed == True:
+        #     for quest in self.player.quests:
+        #         if quest.active and quest.check_
+        #     display.update_questpopup_screen(self, "{} Recieved".format(self.player.quests[-1].name))
+
+    
 
         tile = self.generator.tile_map.locate(self.player.x, self.player.y)
         if isinstance(tile, TI.Door):
@@ -379,6 +437,7 @@ class Loops():
                 self.floor_level -= 1
             self.player.x, self.player.y = (current_stairs.pair.get_location())
             self.generator = self.memory.generators[self.branch][self.floor_level]
+            self.monster_map = self.generator.monster_map
 
         self.taking_stairs = False
 
@@ -411,6 +470,8 @@ class Loops():
         self.floor_level += 1
         gateway_data = configs.GatewayData()
 
+        self.render_exploration = True
+        self.memory.render_exploration = self.render_exploration
         self.memory.generators[self.branch] = {}
         while self.floor_level < 10:
             if self.floor_level > self.memory.explored_levels:
@@ -449,6 +510,8 @@ class Loops():
         self.memory.explored_levels = 1
         self.generator = self.memory.generators[self.branch][self.floor_level]
         self.monster_map = self.generator.monster_map
+
+        # import pdb; pdb.set_trace()
 
         for stairs in (self.generator.tile_map.get_stairs()):
             if not stairs.downward:
@@ -500,6 +563,8 @@ class Loops():
         self.player = self.memory.player
         self.player.character.energy = 0
         self.change_loop(LoopType.action)
+
+        self.render_exploration = self.memory.render_exploration
 
     def clear_data(self):
         self.change_loop(LoopType.main)
