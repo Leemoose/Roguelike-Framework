@@ -1,6 +1,7 @@
 import objects as O
 import heapq
 import time
+import random
 
 class Node():
     """A node class for A* Pathfinding"""
@@ -114,6 +115,52 @@ def astar_multi_goal(maze, start, goals, monster_map, player, monster_blocks = F
             heapq.heappush(open_list, new_node)
 
     return []
+
+# specifically for player auto-explore and find stairs
+# because we can just search for nearest tile that fulfills a condition rather than decide goal arbitrarily
+def conditional_bfs(maze, start, goal_condition, npc_ID):
+    npc_map = {}
+    for key in npc_ID.subjects:
+        npc = npc_ID.get_subject(key)
+        npc_map[(npc.x, npc.y)] = npc
+    
+    open_list = [(start, [])]
+    closed_list = set()
+    closed_list.add(start)
+
+    directions = [(-1, 0), (1, 0), (0, -1), (0, 1), (1, 1), (-1, -1), (1, -1), (-1, 1)]
+
+    while len(open_list) > 0:
+        (curr_x, curr_y), path = open_list.pop(0)
+
+        if goal_condition((curr_x, curr_y)):
+            return path
+        
+        # randomize direction we check neighbors in
+        random.shuffle(directions)
+        
+        for dir in directions:
+            new_pos = (curr_x + dir[0], curr_y + dir[1])
+            if new_pos[0] > (len(maze) - 1) or new_pos[0] < 0 or new_pos[1] > (len(maze[len(maze)-1]) -1) or new_pos[1] < 0:
+                continue
+            
+            # not a wall
+            if not maze[new_pos[0]][new_pos[1]].passable:
+                continue
+
+            # because this path finding is player character only, we don't worry about monster block or player block case
+
+            # does not try to walk through npc
+            if new_pos in npc_map.keys():
+                continue
+
+            # not already visited
+            if (new_pos in closed_list):
+                continue
+
+            open_list.append((new_pos, path + [new_pos]))
+            closed_list.add(new_pos)
+    return None
 
 
 def main():

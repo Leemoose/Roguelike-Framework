@@ -134,7 +134,8 @@ class Keyboard():
                 loop.display.uiManager.set_visual_debug_mode(True)
         elif key == "s":
             # find stairs
-            player.find_stairs(loop)
+            # player.find_stairs(loop)
+            loop.change_loop(LoopType.stairs)
         elif key == ">":
             loop.player.down_stairs(loop)
         elif key == "<":
@@ -150,7 +151,8 @@ class Keyboard():
             loop.update_screen = True
         elif key == "o":
             print(loop.generator.tile_map)
-            loop.player.autoexplore(loop)
+            # loop.player.autoexplore(loop)
+            loop.change_loop(LoopType.exploring)
         elif key == "m":
             memory.save_objects()
         elif key == "t":
@@ -158,6 +160,7 @@ class Keyboard():
         elif key == "esc":
             loop.change_loop(LoopType.paused)
         elif key == "z":
+            loop.after_rest = LoopType.action
             loop.change_loop(LoopType.resting)
         elif key == 'c':
             loop.change_loop(LoopType.quest)
@@ -195,6 +198,10 @@ class Keyboard():
 
     def key_rest(self, loop, key):
         loop.add_message("Input detected. Ending rest early.")
+        loop.change_loop(LoopType.action)
+
+    def key_explore(self, loop, key):
+        loop.add_message("Input detected. Ending exploration early.")
         loop.change_loop(LoopType.action)
 
     def key_enchant(self, loop, key):
