@@ -241,6 +241,7 @@ class Loops():
         return True
 
     def monster_loop(self, energy, stairs = None):
+        
         for monster in self.monster_map.all_entities():
             if monster.character.alive:
                 # do status effect stuff
@@ -249,6 +250,7 @@ class Loops():
 
                 # do action stuff
                 if monster.brain.is_awake and not monster.asleep:
+                    # import pdb; pdb.set_trace()
                     monster.character.energy += energy
                     while monster.character.energy > 0:
                         monster.brain.rank_actions(self)
@@ -380,6 +382,7 @@ class Loops():
                 self.floor_level -= 1
             self.player.x, self.player.y = (current_stairs.pair.get_location())
             self.generator = self.memory.generators[self.branch][self.floor_level]
+            self.monster_map = self.generator.monster_map
 
         self.taking_stairs = False
 
@@ -448,6 +451,8 @@ class Loops():
         self.memory.explored_levels = 1
         self.generator = self.memory.generators[self.branch][self.floor_level]
         self.monster_map = self.generator.monster_map
+
+        # import pdb; pdb.set_trace()
 
         for stairs in (self.generator.tile_map.get_stairs()):
             if not stairs.downward:
