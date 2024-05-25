@@ -44,6 +44,8 @@ class LoopType(Enum):
     help = 17
     death = 18
     story = 19
+    resting = 20
+    # exploring = 21
 
 class Memory():
     """
@@ -113,11 +115,16 @@ class Loops():
         self.taking_stairs = False
         self.npc_focus = None
         self.quest_recieved = False
+        self.quest_completed = False
+
+        self.rest_count = 0 # how many turns have you been resting for
+        self.after_rest = LoopType.action # what loop type to revert to after finishing resting, default action
 
 
         self.create_display_options = {LoopType.action: self.display.create_display,
                                        LoopType.targeting: self.display.create_display,
                                        LoopType.examine: self.display.create_display,
+                                       LoopType.resting: self.display.create_display,
                                        LoopType.inventory: self.display.create_inventory,
                                        LoopType.enchant: self.display.create_inventory,
                                        LoopType.level_up: self.display.create_level_up,
@@ -161,7 +168,8 @@ class Loops():
                                        LoopType.main: keyboard.key_main_screen,
                                        LoopType.paused: keyboard.key_paused,
                                        LoopType.trade: keyboard.key_trade,
-                                       LoopType.quest: keyboard.key_quest
+                                       LoopType.quest: keyboard.key_quest,
+                                       LoopType.resting: keyboard.key_rest
                                        }
 
         # Start the game by going to the main screen
@@ -226,6 +234,12 @@ class Loops():
             self.update_screen = True
 
             display.uiManager.process_events(event)
+
+        # check autoexplore and rest
+        if self.currentLoop == LoopType.resting:
+            self.player.character.rest(self, self.after_rest)
+            self.rest_count += 1
+
 
         if self.player.character.energy < 0:
             self.time_passes(-self.player.character.energy)
@@ -314,6 +328,13 @@ class Loops():
         if self.player.quest_recieved == True:
             display.update_questpopup_screen(self, "{} Recieved".format(self.player.quests[-1].name))
             self.player.quest_recieved = False
+
+        # if self.quest_completed == True:
+        #     for quest in self.player.quests:
+        #         if quest.active and quest.check_
+        #     display.update_questpopup_screen(self, "{} Recieved".format(self.player.quests[-1].name))
+
+    
 
         tile = self.generator.tile_map.locate(self.player.x, self.player.y)
         if isinstance(tile, TI.Door):

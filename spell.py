@@ -59,7 +59,7 @@ class Spell():
         return False
 
     def in_range(self, target):
-        print(target)
+        # print(target)
         if isinstance(target, tuple):
             targetx, targety = target
         else:

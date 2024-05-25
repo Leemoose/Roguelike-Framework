@@ -41,9 +41,6 @@ class DungeonGenerator():
         self.player = player
         self.summoner = []
 
-        if depth == 1 or depth == 2:
-            print(str(self.tile_map))
-
         self.npc_dict = ID()
         if self.depth != 1:
             self.place_monsters(depth)

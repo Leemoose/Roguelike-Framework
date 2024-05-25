@@ -158,7 +158,7 @@ class Keyboard():
         elif key == "esc":
             loop.change_loop(LoopType.paused)
         elif key == "z":
-            player.character.rest(loop, loop.currentLoop)
+            loop.change_loop(LoopType.resting)
         elif key == 'c':
             loop.change_loop(LoopType.quest)
         elif key == "tab":
@@ -192,6 +192,10 @@ class Keyboard():
                 if loop.limit_inventory == None or player.character.inventory[i].equipment_type == loop.limit_inventory:
                     loop.screen_focus = player.character.inventory[i]
                     loop.change_loop(LoopType.items)
+
+    def key_rest(self, loop, key):
+        loop.add_message("Input detected. Ending rest early.")
+        loop.change_loop(LoopType.action)
 
     def key_enchant(self, loop, key):
         player = loop.player

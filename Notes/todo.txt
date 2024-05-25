@@ -12,3 +12,5 @@ Make a central file for all dictionarys
     - Render to tile mappings
     - Ascaii to tile mappings
     - Ascaii to render mappings (branch specific)
+
+Update monster behaviour to fight if it can't escape because of allies in hallway

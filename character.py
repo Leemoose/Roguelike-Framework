@@ -7,6 +7,7 @@ import shadowcasting
 import skills as S
 import items as I
 import loops as L
+import monster as M
 
 class Character():
     def __init__(self, parent, endurance = 0, intelligence = 0, dexterity = 0, strength = 0, health = 100, mana = 0, health_regen=0.2, mana_regen=0.2, min_damage = 2, max_damage = 3):
@@ -390,8 +391,12 @@ class Character():
         return messages
     
     def tick_cooldowns(self):
-        for skill in self.skills:
-            skill.tick_cooldown()
+        if isinstance(self.parent, M.Monster):
+            for skill in self.skills: # monsters still use skill system instead of spells
+                skill.tick_cooldown()
+        else:
+            for skill in self.player.known_spells: # players use spell system
+                skill.tick_cooldown()
 
     def cast_skill(self, skill_num, target, loop):
         self.parent.mage.cast_spell(skill_num, target, loop)
@@ -413,50 +418,59 @@ class Character():
             self.gain_mana(self.mana_partial // 1)
             self.mana_partial = self.mana_partial % 1
 
-    def needs_rest(self):
+    def needs_rest(self, player):
+        # skills_ready = True
+        for skill in player.mage.known_spells:
+            if skill.ready != 0:
+                return True
         return self.health < self.max_health or self.mana < self.max_mana
     
-    def rest(self, loop, returnLoopType):
-        #print("in_rest")
+    def rest(self, loop, returnLoop):
+        # print("in_rest")
         if not self.safe_rest:
             loop.add_message("Your ring is draining your health, it is not safe to rest now.")
+            loop.change_loop(L.LoopType.action)
+            return
+        
+        if not self.needs_rest(loop.player) and returnLoop == L.LoopType.action:
+            loop.add_message("No point in resting right now.")
             loop.change_loop(L.LoopType.action)
             return
 
         tile_map = loop.generator.tile_map
         no_monster_active = True
         for monster in loop.generator.monster_map.all_entities():
-            if monster.brain.is_awake:
+            if monster.brain.is_awake and monster.stops_autoexplore:
                 no_monster_active = False
                 break
-        if no_monster_active:
+        if no_monster_active or loop.rest_count > 50: # if you've rested peacefully for 50 turns, your probably not getting hunted, if we dont put this check, rest sometimes seems laggy
             # can freely rest to full health
             self.health = self.max_health
             self.mana = self.max_mana
-            for skill in self.skills:
+            for skill in loop.player.mage.known_spells:
                 skill.ready = 0
             for effect in self.status_effects:
-                if not effect.positive:
+                if effect.duration != -100: # remove any non-permanent effects
                     self.remove_status_effect(effect)
             loop.add_message("You rest for a while")
-            loop.change_loop(returnLoopType)
+            loop.change_loop(returnLoop)
             return
 
         for monster in loop.generator.monster_map.all_entities():
             monster_loc = monster.get_location()
             if tile_map.track_map[monster_loc[0]][monster_loc[1]].visible and monster.stops_autoexplore:
                 loop.add_message("You cannot rest while enemies are nearby.")
-                loop.change_loop(L.LoopType.action)
+                loop.change_loop(returnLoop)
                 return
 
         self.wait()
         #print(self.energy)
         #print(self.health)
         #print(self.max_health)
-        if not self.needs_rest():
+        if not self.needs_rest(loop.player):
             loop.add_message("You rest for a while")
-            loop.change_loop(returnLoopType)
-
+            loop.change_loop(returnLoop)
+        
     def add_skill(self, new_skill):
         for skill in self.parent.mage.known_spells:
             if skill.name == new_skill.name:

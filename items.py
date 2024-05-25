@@ -912,7 +912,7 @@ class Boots(Armor):
         self.deactivate(entity)
         if self.attached_skill_exists:
             entity.remove_skill(self.attached_skill(entity.parent).name)
-            print("Remove boot skill")
+            # print("Remove boot skill")
 
     def level_up(self):
         self.enchant()

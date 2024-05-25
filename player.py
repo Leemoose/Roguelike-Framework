@@ -42,7 +42,7 @@ class Player(O.Objects):
                 spell.HypnosisSchool().Charm(self), # 2
                 # S.BlinkStrike(self, cooldown=0, cost=10, damage=25, range=10, action_cost=1), # 3
                 #spell.SummonGargoyle(self), # 2
-                S.BurningAttack(self, cooldown=0, cost=10, damage=20, burn_damage=10, burn_duration=10, range=10),  # 2
+                S.BurningAttack(self, cooldown=10, cost=10, damage=20, burn_damage=10, burn_duration=10, range=10),  # 2
                 # S.Petrify(self, cooldown=0, cost=10, duration=3, activation_chance=1, range=10), #3
                 # S.ShrugOff(self, cooldown=0, cost=10, activation_chance=1.0, action_cost=1), #4
                 # S.Berserk(self, cooldown=0, cost=10, activation_threshold=50, strength_increase=10, action_cost=1), #5
@@ -95,8 +95,8 @@ class Player(O.Objects):
 
     def autoexplore(self, loop):
         all_seen = False
-        if self.character.needs_rest():
-            self.character.rest(loop, loop.currentLoop)
+        if self.character.needs_rest(self):
+            self.character.rest(loop)
         tile_map = loop.generator.tile_map
         for monster in loop.generator.monster_map.all_entities():
             monster_loc = monster.get_location()
@@ -109,6 +109,7 @@ class Player(O.Objects):
             all_seen, unseen = loop.generator.all_seen()
             if all_seen:
                 loop.change_loop(L.LoopType.action)
+                loop.add_message("Finished exploring this level. Press s to path to stairs")
                 loop.update_screen = True
                 return False
             endx = unseen[0]
