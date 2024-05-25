@@ -1,0 +1,20 @@
+
+School that changes tile effects
+    -Lava (damage)
+    - ice (keep moving)
+    -Smoke (no vision)
+    -Pit(moves to floor below)
+    -Spikes (slow + damage)
+    -Quicksand (can't move)
+    -Antimagic
+
+Necromancer school
+    -Corpse explosion
+    -Raise skeleton
+    -Resurrect enemy
+    -Bone armor
+    -Cheat death
+    -Army of arms (mass slow)
+
+Swap with monster spell
+More cohesive storyline with quests?

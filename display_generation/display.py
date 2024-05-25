@@ -520,9 +520,12 @@ class Display:
             pretext = ""
             action = ""
             if item.equipable:
+                print("Item is equipable")
                 if item.equipped:
+                    print("Item is equipped")
                     pretext = "Unequip"
                     action = "u"
+                    show = True
                     if item.cursed:
                         show = False
                 else:

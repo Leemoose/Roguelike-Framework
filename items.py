@@ -164,8 +164,8 @@ class Weapon(Equipment):
         return damage
 
 class Ax(Weapon):
-    def __init__(self, render_tag):
-        super().__init__(-1, -1, 0, render_tag, "Axe")
+    def __init__(self, render_tag = 300):
+        super().__init__(-1, -1, 0, render_tag = render_tag, name = "Axe")
         self.melee = True
         self.name = "Axe"
         self.description = "An axe with a round edge (could be rounder). A solid weapon for a solid warrior."
