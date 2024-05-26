@@ -23,7 +23,7 @@ class Display:
         self.r_x = num_tiles_wide // 2
         self.r_y = num_tiles_height // 2
 
-        self.uiManager = pygame_gui.UIManager((width, height), "../assets/theme.json")
+        self.uiManager = pygame_gui.UIManager((width, height), "./assets/theme.json")
         self.windows = []
         self.clock = pygame.time.Clock()
         self.colorDict = None

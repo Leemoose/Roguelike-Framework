@@ -1,5 +1,5 @@
-import pygame, pygame_gui
 
+from loop_workflow import *
 import configs
 import items
 import mapping as M
@@ -7,8 +7,7 @@ import player
 import targets as T
 import tiles as TI
 from navigation import shadowcasting
-from enum import Enum
-import dill
+
 from display_generation import *
 
 """
@@ -19,67 +18,6 @@ Classes:
     Memory --> Dictionary of everything important for saving
     Loops --> After input, controls what the game should do
 """
-
-
-class LoopType(Enum):
-    none = -1
-    action = 0
-
-    inventory = 2
-    equipment = 3
-    main = 4
-    race = 5
-    classes = 6
-    items = 7
-    examine = 8
-    trade = 9
-    paused = 10
-    targeting = 11
-    specific_examine = 12
-    enchant = 13
-    quest = 14
-    level_up = 15
-    victory = 16
-    help = 17
-    death = 18
-    story = 19
-    resting = 20
-    exploring = 21
-    stairs = 22
-
-class Memory():
-    """
-    Used to save the game
-    """
-
-    def __init__(self):
-        self.explored_levels = 0
-        self.floor_level = 0
-        self.branch = ""
-        self.generators = {}
-        self.player = None
-        self.render_exploration = True
-
-    def save_objects(self):
-        save = [self.explored_levels, self.floor_level, self.generators, self.player, self.branch, self.render_exploration]
-        try:
-            with open("data.dill", "wb") as f:
-                print("Saved the game")
-                dill.dump(save, f)
-        except Exception as ex:
-            print("Error during pickling object (Possibly unsupported):", ex)
-
-    def load_objects(self):
-        with open('data.dill', 'rb') as f:
-            # Call load method to deserialze
-            print("Loaded the game")
-            save = dill.load(f)
-        self.explored_levels = save[0]
-        self.floor_level = save[1]
-        self.generators = save[2]
-        self.player = save[3]
-        self.branch = save[4]
-        self.render_exploration = save[5]
 
 
 class Loops():
@@ -154,26 +92,26 @@ class Loops():
                                         LoopType.inventory: self.display.update_screen,
                                         LoopType.enchant: self.display.update_screen
                                        }
-        self.action_options =          {LoopType.action: keyboard.key_action,
-                                       LoopType.inventory: keyboard.key_inventory,
-                                       LoopType.level_up: keyboard.key_level_up,
-                                       LoopType.victory: keyboard.key_victory,
-                                       LoopType.enchant: keyboard.key_enchant,
-                                       LoopType.equipment: keyboard.key_equipment,
-                                       LoopType.items: keyboard.key_item_screen,#Need to do self.change_loop if change was made (put in keyboard)
-                                       LoopType.examine: keyboard.key_examine_screen,
-                                       LoopType.targeting: keyboard.key_targeting_screen,
-                                       LoopType.specific_examine: keyboard.key_specific_examine,
-                                       LoopType.help: keyboard.key_help,
-                                       LoopType.story: keyboard.key_help,
-                                       LoopType.death: keyboard.key_death,
-                                       LoopType.main: keyboard.key_main_screen,
-                                       LoopType.paused: keyboard.key_paused,
-                                       LoopType.trade: keyboard.key_trade,
-                                       LoopType.quest: keyboard.key_quest,
-                                       LoopType.resting: keyboard.key_rest,
-                                       LoopType.exploring: keyboard.key_explore,
-                                       LoopType.stairs: keyboard.key_explore
+        self.action_options =          {LoopType.action: key_action,
+                                       LoopType.inventory: key_inventory,
+                                       LoopType.level_up: key_level_up,
+                                       LoopType.victory: key_victory,
+                                       LoopType.enchant: key_enchant,
+                                       LoopType.equipment: key_equipment,
+                                       LoopType.items: key_item_screen,#Need to do self.change_loop if change was made (put in keyboard)
+                                       LoopType.examine: key_examine_screen,
+                                       LoopType.targeting: key_targeting_screen,
+                                       LoopType.specific_examine: key_specific_examine,
+                                       LoopType.help: key_help,
+                                       LoopType.story: key_help,
+                                       LoopType.death: key_death,
+                                       LoopType.main: key_main_screen,
+                                       LoopType.paused: key_paused,
+                                       LoopType.trade: key_trade,
+                                       LoopType.quest: key_quest,
+                                       LoopType.resting: key_rest,
+                                       LoopType.exploring: key_explore,
+                                       LoopType.stairs: key_explore
                                        }
 
         # Start the game by going to the main screen

@@ -2,8 +2,6 @@ import ai
 import objects as O
 import character as C
 import items as I
-import random
-
 import skills as S
 
 
@@ -172,10 +170,6 @@ class Gargoyle(Monster):
         # 30% chance to petrify for 3 turns
         self.character.skills.append(S.Petrify(self, cooldown=10, cost=0, duration=3, activation_chance=0.3, range=3))
         self.character.experience_given = 20
-
-        sword = I.Sword()
-        self.character.inventory.append(sword)
-        self.character.equip(sword)
 
         self.description = "A stone creature that you feel could petrify you if it was rounder."
         self.character.health = 20

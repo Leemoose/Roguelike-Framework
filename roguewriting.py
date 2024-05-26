@@ -1,6 +1,5 @@
-import pygame, pygame
 from display_generation import *
-import keyboard as K
+from loop_workflow import keyboard as K
 import loops as L
 import static_configs
 
