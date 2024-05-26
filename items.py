@@ -1,7 +1,7 @@
 import random
 
 import objects as O
-import effect as E
+from spell_effects import effect as E
 import skills as S
 import loops as L
 import spell

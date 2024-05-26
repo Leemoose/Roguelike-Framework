@@ -1,5 +1,5 @@
 import random
-import effect as E
+from spell_effects import effect as E
 import items as I
 import loops as L
 import monster as M
