@@ -1,5 +1,5 @@
 import random
-from navigation import pathfinding
+from navigation_utility import pathfinding
 
 class Monster_AI():
     def __init__(self, parent):

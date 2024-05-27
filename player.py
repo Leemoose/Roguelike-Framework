@@ -2,7 +2,7 @@ import objects as O
 import character as C
 import random
 import loops as L
-from navigation import pathfinding, shadowcasting
+from navigation_utility import pathfinding, shadowcasting
 import tiles as T
 import skills as S
 import statistics

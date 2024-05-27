@@ -1,12 +1,11 @@
 
 from loop_workflow import *
-import configs
 import items
 import mapping as M
 import player
 import targets as T
 import tiles as TI
-from navigation import shadowcasting
+from navigation_utility import shadowcasting
 
 from display_generation import *
 
@@ -128,7 +127,7 @@ class Loops():
     # Sets the internal loop type, and does the initialization that it needs.
     # Mostly here to cache UI pieces, which shouldn't be remade every frame.
     def change_loop(self, newLoop):
-        print(self.currentLoop, newLoop)
+        self.clear_message()
         self.currentLoop = newLoop
         self.update_screen = True
         if newLoop in self.create_display_options:
@@ -434,20 +433,24 @@ class Loops():
                 self.memory.generators[branch][level] = generator
 
         known_gateways = gateway_data.all_gateways()
+        #for gateway in known_gateways:
+         #   print("This is known {}".format(gateway))
         for lair in known_gateways:
+            print("Investigating lair: {}".format(lair))
             gateway1 = -1
             for gateways in self.memory.generators[lair[0]][lair[1]].tile_map.get_gateway():
+                print("Initial gateway is: {}".format(gateways))
                 gateway1 = gateways
                 if not gateway1.has_outgoing():
-                    break
-            lair2 = gateway_data.paired_gateway(lair)
-            gateway2 = -1
-            for gateways in self.memory.generators[lair2[0]][lair2[1]].tile_map.get_gateway():
-                gateway2 = gateways
-                if not gateway2.has_incoming():
-                    break
-            if not (gateway1.has_outgoing() or gateway2.has_incoming()):
-                gateway1.pair_gateway(gateway2)
+                    for lair2 in gateway_data.paired_gateway(lair):
+                        print("Potential link is {}".format(lair2))
+                        gateway2 = -1
+                        for gateways in self.memory.generators[lair2[0]][lair2[1]].tile_map.get_gateway():
+                            gateway2 = gateways
+                            if not gateway2.has_incoming():
+                                print("Linking {} with {}".format(gateway1, gateway2))
+                                gateway1.pair_gateway(gateway2)
+                                break
 
 
         self.memory.floor_level = 1
@@ -510,6 +513,7 @@ class Loops():
         self.player = self.memory.player
         self.player.character.energy = 0
         self.change_loop(LoopType.action)
+       # self.keyboard = self.memory.keyboard
 
         self.render_exploration = self.memory.render_exploration
 

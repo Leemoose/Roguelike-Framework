@@ -1583,7 +1583,7 @@ class RingOfTeleportation(Ring):
 
     def attached_skill(self, owner):
         self.attached_skill_exists = True
-        return S.Teleport(owner, self.skill_cooldown, self.skill_cost)
+        return Teleport(parent = owner,cooldown = self.skill_cooldown, cost = self.skill_cost)
 
     def activate(self, entity):
         # entity.add_skill(self.attached_skill(entity.parent))

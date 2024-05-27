@@ -2,8 +2,6 @@ Autoexplore sometimes fails with: RecursionError: maximum recursion depth exceed
 Autoexplore sometimes fails with: AttributeError: 'tuple' object has no attribute 'pop'
 moving sometimes fails on if self.generator.tile_map.track_map[monster.x][monster.y].on_fire: IndexError: list index out of range
 
-RingOfTeleportation not functional with Teleport moved from skills to spell
-
 rings might be broken (rings are definitely broken)
 
 need to test what happens if item and skill book give same skill/spell and deal with that

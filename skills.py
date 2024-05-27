@@ -1,6 +1,6 @@
 import random
 from spell_implementation import effect as E
-from navigation import pathfinding
+from navigation_utility import pathfinding
 
 
 class Skill():

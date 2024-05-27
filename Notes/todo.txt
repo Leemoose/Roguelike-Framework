@@ -1,17 +1,6 @@
-Make new interface with spells to allow for more than 7. Maybe use current setup to show most recent 7 spells used
+Decide if we want to keep current spell display now that there is a spell screen
 
-Make a central file with all configs
-    - Branches
-    - Max depth
-    - Width
-    - Height
-    - Available monsters + min / max depth + branch
-    - Available items + min / max depth + branch
-
-Make a central file for all dictionarys
-    - Render to tile mappings
-    - Ascaii to tile mappings
-    - Ascaii to render mappings (branch specific)
+Utilize central file with configs better
 
 Fully migrate some skills to spells (maybe decide how to decide difference between the two)
 

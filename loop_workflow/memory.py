@@ -12,9 +12,10 @@ class Memory():
         self.generators = {}
         self.player = None
         self.render_exploration = True
+        self.keyboard = None
 
     def save_objects(self):
-        save = [self.explored_levels, self.floor_level, self.generators, self.player, self.branch, self.render_exploration]
+        save = [self.explored_levels, self.floor_level, self.generators, self.player, self.branch, self.render_exploration, self.keyboard]
         try:
             with open("data.dill", "wb") as f:
                 print("Saved the game")
@@ -33,3 +34,4 @@ class Memory():
         self.player = save[3]
         self.branch = save[4]
         self.render_exploration = save[5]
+        self.keyboard = save[6]

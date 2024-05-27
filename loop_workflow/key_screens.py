@@ -172,8 +172,6 @@ def key_action(loop, key):
         print(loop.generator.tile_map)
         # loop.player.autoexplore(loop)
         loop.change_loop(LoopType.exploring)
-    elif key == "m":
-        memory.save_objects()
     elif key == "t":
         loop.player.talk(loop)
     elif key == "esc":
@@ -381,6 +379,7 @@ def key_paused(loop, key):
         loop.clear_data()
         loop.init_game(display)
     elif key == 's':
+        loop.memory.keyboard =  loop.keyboard
         loop.memory.save_objects()
     elif key == "q":
         return False

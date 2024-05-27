@@ -1,15 +1,5 @@
-from collections import namedtuple
-class MapData():
-    def __init__(self, width, height, numRooms, roomSize, circularity, squarelike):
-        self.width = width
-        self.height = height
-        self.numRooms = numRooms
-        self.roomSize = roomSize
-        self.circularity = circularity
-        self.squarelike = squarelike
-
-# Config data!
-
+from .map_data import MapData
+from .gateway_data import GatewayData
 
 class DungeonData():
     def __init__(self):
@@ -49,25 +39,3 @@ class DungeonData():
     def get_map_data(self, branch, depth):
         return self.master_map_data[branch][depth]
 
-
-class GatewayData():
-    def __init__(self):
-        Lair = namedtuple("Lair", ["branch", "depth"])
-        self.gateway_mapping = {
-            Lair("Dungeon", 1): Lair("Forest", 1),
-            Lair("Forest", 1): Lair("Dungeon", 1),
-            Lair("Forest", 1): Lair("Ocean", 1),
-            Lair("Ocean", 1): Lair("Forest", 1)
-        }
-
-    def has_gateway(self, branch, depth):
-        Lair = namedtuple("Lair", ["branch", "depth"])
-        if Lair(branch, depth) in self.gateway_mapping:
-            return True
-        return False
-
-    def all_gateways(self):
-        return self.gateway_mapping.keys()
-
-    def paired_gateway(self, old_lair):
-        return self.gateway_mapping[old_lair]

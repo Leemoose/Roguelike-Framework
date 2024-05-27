@@ -103,11 +103,12 @@ class TileMap(TrackingMap):
 
     def place_gateway(self, gateway_data):
         if gateway_data.has_gateway(self.branch, self.depth):
-            print("Branch is {}".format(self.branch))
-            print("Depth is {}".format(self.depth))
-            startx, starty = self.get_random_location_ascaii()
-            self.track_map_render[startx][starty] = "g"
-            print("Placing gateway")
+            for i in range(gateway_data.get_num_gateways(self.branch, self.depth)):
+                print("Branch is {}".format(self.branch))
+                print("Depth is {}".format(self.depth))
+                startx, starty = self.get_random_location_ascaii()
+                self.track_map_render[startx][starty] = "g"
+                print("Placing gateway")
 
     def quality_check_map(self):
         for x in range(self.width):

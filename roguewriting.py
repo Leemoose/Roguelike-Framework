@@ -1,4 +1,4 @@
-import configs
+from configuration_data import *
 from display_generation import *
 from loop_workflow import keyboard as K
 import loops as L
@@ -23,7 +23,7 @@ textHeight = int(height / textSize)
 #dictionary mapping renderID to the image
 tileDict = static_configs.TileDict(textSize)
 ascaiiDict = static_configs.AscaiiTileDict()
-dungeonData = configs.DungeonData()
+dungeonData = DungeonData()
 #Responsible for game loops
 
 display = Display(width, height, textSize, textWidth, textHeight)
