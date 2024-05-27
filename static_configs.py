@@ -21,6 +21,8 @@ class TileDict():
         tiles[-6] = image.load("assets/tiles/wooden_floor_shaded.png")
         tiles[7] = image.load("assets/tiles/forest_wall.png")
         tiles[-7] = image.load("assets/tiles/forest_wall_shaded.png")
+        tiles[8] = image.load("assets/tiles/ocean_floor.png")
+        tiles[-8] = image.load("assets/tiles/ocean_floor_shaded.png")
 
         tiles[11] = pygame.transform.scale(image.load("assets/tiles/wall_extra_rounded.png"), (32, 32))
         tiles[-11] = pygame.transform.scale(image.load("assets/tiles/wall_extra_rounded_shaded.png"), (32, 32))
@@ -28,6 +30,8 @@ class TileDict():
         tiles[-12] = pygame.transform.scale(image.load("assets/tiles/floor_rounded_shaded.png"), (32, 32))
         tiles[13] = image.load("assets/tiles/forest_floor.png")
         tiles[-13] = image.load("assets/tiles/forest_floor_shaded.png")
+        tiles[14] = image.load("assets/tiles/ocean_wall.png")
+        tiles[-14] = image.load("assets/tiles/ocean_wall_shaded.png")
 
         tiles[20] = pygame.transform.scale(image.load("assets/fire.png"), (32, 32))
 
@@ -231,8 +235,6 @@ class AscaiiTileDict():
         tiles[">"] = T.DownStairs
         tiles["<"] = T.UpStairs
         tiles["g"] = T.Gateway
-        tiles["fg"] = T.ForestGateway
-        tiles["dg"] = T.DungeonGateway
         tiles["K"] = T.KingTile
         tiles["G"] = T.GuardTile
         tiles["d"] = T.Door
@@ -248,6 +250,11 @@ class AscaiiTileDict():
                             },
                         "Dungeon":
                             {
+                            },
+                        "Ocean":
+                            {
+                                "x": 14,
+                                ".": 8
                             }
                         }
 

@@ -12,7 +12,9 @@ class Monster(O.Objects):
         self.type = "Monster"
         self.asleep = False
         self.flee = False
+
         self.traits["monster"] = True
+        self.attributes = {}
 
         self.stops_autoexplore = True
         self.gold_value = 1
@@ -22,12 +24,6 @@ class Monster(O.Objects):
         self.skills = []
         self.orb = False
         self.rarity = rarity
-
-        self.type = {"wood": False,
-                     "stone": False,
-                     "humanoid": False,
-                     "beast": False
-                     }
 
         self.description = f"This is a {self.name}. It wants to eat you."
 
@@ -73,12 +69,17 @@ class Kobold(Monster):
 
         self.description = "A small, scaly creature with a mysterious satchel on its back."
 
+        self.traits["kobald"] = True
+        self.attributes["humanoid"] = True
+
 class Slime(Monster):
     def __init__(self, x=-1, y=-1, render_tag=1100, name="Slime"):
         super().__init__(x=x, y=y, render_tag = render_tag, name = name, experience_given=5,brain = ai.Slime_AI,health=5, min_damage=1,max_damage=1)
 
         self.description = "A small blob of experienc... I mean ooze."
         self.character.action_costs["grab"] = 0
+
+        self.traits["slime"] = True
 
 """
 GOBLIN
@@ -103,6 +104,9 @@ class Goblin(Monster):
         self.endurance = 0
         self.intelligence = 0
 
+        self.traits["goblin"] = True
+        self.attributes["humanoid"] = True
+
     def die(self):
         corpse = I.Corpse(self.x, self.y, -1, 199, self.name + " Monster Corpse")
         corpse.monster_type = self.name #Should be fixed to monster type at some point
@@ -115,6 +119,8 @@ class Looter(Goblin):
                          min_damage=min_damage, max_damage=max_damage, rarity=rarity)
         self.character.action_costs["move"] = 25
         self.character.action_costs["grab"] = 1
+
+        self.traits["looter"] = True
 
 class GoblinShaman(Monster):
     def __init__(self, x=-1, y=-1, render_tag=1001, name="Goblin Shaman", activation_threshold=0.4):
@@ -234,7 +240,7 @@ class Golem(Monster):
         self.endurance = 2
         self.intelligence = 2
         self.character.armor = 1
-        self.type["stone"] = True
+        self.attributes["stone"] = True
 
 class Raptor(Monster):
     def __init__(self, x=-1, y=-1, render_tag=1030, name="Velociraptor"):
@@ -281,7 +287,7 @@ class Stumpy(Monster):
         self.endurance = 8
         self.intelligence = 8
         self.character.armor = 10
-        self.type["wood"] = True
+        self.attributes["wood"] = True
 
 class Dummy(Monster):
     def __init__(self, x=-1, y=-1, render_tag=124, name="Training Dummy"):
@@ -296,7 +302,7 @@ class Dummy(Monster):
         self.endurance = 0
         self.intelligence = 0
         self.character.armor = 0
-        self.type["wood"] = True
+        self.attributes["wood"] = True
         self.traits["dummy"] = True
         self.character.health_regen = 50
         self.stops_autoexplore = False

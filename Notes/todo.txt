@@ -14,9 +14,6 @@ Make a central file for all dictionarys
     - Ascaii to render mappings (branch specific)
 
 Fully migrate some skills to spells (maybe decide how to decide difference between the two)
-Create spell screen
-
-Finish splitting out display file
 
 Update monster behaviour to fight if it can't escape because of allies in hallway
 

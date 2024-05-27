@@ -25,7 +25,7 @@ class Loops():
     This is the brains of the game and after accepting an input from keyboard, will decide what needs to be done
     """
 
-    def __init__(self, width, height, textSize, tileDict, display, keyboard):
+    def __init__(self, width, height, textSize, tileDict, display, keyboard, ascaii_data, dungeon_data):
         self.display = display
         self.update_screen = True
         self.limit_inventory = None
@@ -42,6 +42,8 @@ class Loops():
         self.memory = Memory()
         self.tile_map = None
         self.tileDict = tileDict
+        self.ascii_data = ascaii_data
+        self.dungeon_data = dungeon_data
 
         self.generator = None  # Dungeon Generator
         self.messages = []
@@ -391,13 +393,13 @@ class Loops():
             self.player.character.energy = 0
 
         gate = self.generator.tile_map.locate(playerx, playery)
-        branch = gate.pair.get_branch()
-        depth = gate.pair.get_depth()
+        branch = gate.outgoing.get_branch()
+        depth = gate.outgoing.get_depth()
 
         self.floor_level = depth
         # import pdb; pdb.set_trace()
         print("The gateway you are taking is {}".format(self.generator.tile_map.track_map[playerx][playery]))
-        self.player.x, self.player.y = (gate.pair.get_location())
+        self.player.x, self.player.y = (gate.outgoing.get_location())
         self.branch = branch
         self.generator = self.memory.generators[branch][self.floor_level]
         self.memory.floor_level = depth
@@ -410,8 +412,8 @@ class Loops():
         self.branch = "Dungeon"
         self.floor_level = 1
 
-        gateway_data = configs.GatewayData()
-        dungeon_data = configs.DungeonData()
+        gateway_data = self.dungeon_data.gateway_data
+        dungeon_data = self.dungeon_data
 
         self.render_exploration = True
         self.memory.render_exploration = self.render_exploration
@@ -419,15 +421,24 @@ class Loops():
         for branch in dungeon_data.get_branches():
             self.memory.generators[branch] = {}
             for level in range(1, dungeon_data.get_depth(branch) + 1):
-                generator = M.DungeonGenerator(level, self.player, branch, gateway_data)
+                generator = M.DungeonGenerator(level, self.player, branch, gateway_data, dungeon_data)
                 self.memory.generators[branch][level] = generator
 
         known_gateways = gateway_data.all_gateways()
         for lair in known_gateways:
-            gateway1 = self.memory.generators[lair[0]][lair[1]].tile_map.get_gateway()[0]
+            gateway1 = -1
+            for gateways in self.memory.generators[lair[0]][lair[1]].tile_map.get_gateway():
+                gateway1 = gateways
+                if not gateway1.has_outgoing():
+                    break
             lair2 = gateway_data.paired_gateway(lair)
-            gateway2 = self.memory.generators[lair2[0]][lair2[1]].tile_map.get_gateway()[0]
-            gateway1.pair = gateway2
+            gateway2 = -1
+            for gateways in self.memory.generators[lair2[0]][lair2[1]].tile_map.get_gateway():
+                gateway2 = gateways
+                if not gateway2.has_incoming():
+                    break
+            if not (gateway1.has_outgoing() or gateway2.has_incoming()):
+                gateway1.pair_gateway(gateway2)
 
 
         self.memory.floor_level = 1

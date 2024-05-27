@@ -1,5 +1,5 @@
 import random
-from spell_effects import effect as E
+from spell_implementation import effect as E
 from navigation import pathfinding
 
 

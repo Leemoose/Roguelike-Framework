@@ -32,15 +32,12 @@ class StatusEffect():
         self.active = True
         self.message = message
         self.positive = False
-
     def apply_effect(self, target):
         pass
-
     def description(self):
         if self.duration == -100:
             return self.name + " (permanent)"
         return self.name + " (" + str(self.duration) + ")"
-
     def tick(self, target):
         if self.duration == -100: # -100 is a special value that means the effect lasts forever, -1 probably works too but made it larger just in case
             return
@@ -233,6 +230,18 @@ class ArmorShredding(StatusEffect):
         target.armor += self.armor_shredded
         self.armor_shredded = 0
 
+class ArmorBuff(StatusEffect):
+    def __init__(self, duration, inflictor = None):
+        super().__init__(806, "Fortified", "armor is buffed", duration)
+        self.armor_buffed = 0
+    def apply_effect(self, target):
+        target.armor += 5
+        self.armor_buffed += 5
+
+    def remove(self, target):
+        target.armor -= self.armor_buffed
+        self.armor_buffed = 0
+
 class Bleed(StatusEffect):
     def __init__(self, duration, damage, inflictor):
         super().__init__(801, "Bleed", "is Bleeding", duration)
@@ -254,3 +263,4 @@ class Bleed(StatusEffect):
 
     def remove(self, target):
         pass
+

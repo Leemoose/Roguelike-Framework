@@ -1,10 +1,10 @@
 import random
 
 import objects as O
-from spell_effects import effect as E
+from spell_implementation import *
 import skills as S
 import loops as L
-import spell
+
 
 class statUpgrades():
     def __init__(self, base_str=0, max_str=0, base_dex=0, max_dex = 0, base_int = 0, max_int = 0, base_end = 0, max_end = 0, base_arm=0, max_arm=0):
@@ -191,7 +191,7 @@ class SlicingAx(Ax):
         self.description = "Like cutting paper "
         self.can_be_levelled = True
 
-        self.on_hit = (lambda inflictor: E.Bleed(3, 4, inflictor))
+        self.on_hit = (lambda inflictor: Bleed(3, 4, inflictor))
         self.on_hit_description = f"The target starts to bleed."
 
         self.wearer = None  # items with stat buffs or skills need to keep track of owner for level ups
@@ -266,7 +266,7 @@ class ScreamingDagger(Dagger):
         self.damage_max = 1
         self.can_be_levelled = False
 
-        self.on_hit = (lambda inflictor: E.Tormented(5))
+        self.on_hit = (lambda inflictor: Tormented(5))
         self.on_hit_description = f"Torments the target for half health damage over."
 
         self.wearer = None  # items with stat buffs or skills need to keep track of owner for level ups
@@ -330,7 +330,7 @@ class SleepingSword(Sword):
         self.description = "...on the treetops. When the wind blows"
         self.can_be_levelled = False
 
-        self.on_hit = (lambda inflictor: E.Asleep(8))
+        self.on_hit = (lambda inflictor: Asleep(8))
         self.change_to_hit = 25
         self.on_hit_description = f"The target is sleeping."
 
@@ -369,7 +369,7 @@ class FlamingSword(Weapon):
 
         self.on_hit_burn = 4
         self.on_hit_burn_duration = 3
-        self.on_hit = (lambda inflictor: E.Burn(self.on_hit_burn, self.on_hit_burn_duration, inflictor))
+        self.on_hit = (lambda inflictor: Burn(self.on_hit_burn, self.on_hit_burn_duration, inflictor))
         self.on_hit_description = f"Burns the target for {self.on_hit_burn} damage over {self.on_hit_burn_duration} turns."
 
         self.skill_cooldown = 8
@@ -429,7 +429,7 @@ class CrushingHammer(Hammer):
         self.description = "Player smash. "
         self.can_be_levelled = True
 
-        self.on_hit = (lambda inflictor: E.ArmorShredding(5))
+        self.on_hit = (lambda inflictor: ArmorShredding(5))
         self.on_hit_description = f"Shreds the targets armor."
 
         self.wearer = None  # items with stat buffs or skills need to keep track of owner for level ups
@@ -1946,30 +1946,30 @@ class Book(O.Item):
         else:
             return None
 
-class BookofSummoning(Book):
-    def __init__(self, render_tag = 480):
-        self.school = spell.SummonSchool()
-        self.skill = self.school.random_spell()
-        super().__init__(render_tag, skill = self.skill, name = "Book of Summoning")
-        self.name = "Book of Summoning"
+#class BookofSummoning(Book):
+#    def __init__(self, render_tag = 480):
+#        self.school = spell.SummonSchool()
+#        self.skill = self.school.random_spell()
+#        super().__init__(render_tag, skill = self.skill, name = "Book of Summoning")
+#        self.name = "Book of Summoning"
 
 class BookofSpace(Book):
     def __init__(self, render_tag = 480):
-        self.school = spell.SpaceSchool()
+        self.school = SpaceSchool()
         self.skill = self.school.random_spell()
         super().__init__(render_tag, skill = self.skill, name = "Book of Space")
         self.name = "Book of Space"
 
 class BookofFire(Book):
     def __init__(self, render_tag = 480):
-        self.school = spell.FireSchool()
+        self.school = FireSchool()
         self.skill = self.school.random_spell()
         super().__init__(render_tag, skill = self.skill, name = "Book of Fire")
         self.name = "Book of Fire"
 
 class BookofHypnosis(Book):
     def __init__(self, render_tag = 480):
-        self.school = spell.MindSchool()
+        self.school = MindSchool()
         self.skill = self.school.random_spell()
         super().__init__(render_tag, skill = self.skill, name = "Book of Hypnosis")
         self.name = "Book of Hypnosis"

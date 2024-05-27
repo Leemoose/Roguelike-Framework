@@ -1,6 +1,6 @@
-from school import School
-from spell import Spell
-from effect import Burn
+from .school import School
+from .spell import Spell
+from .effect import Burn
 
 class FireSchool(School):
     def __init__(self):

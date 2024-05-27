@@ -3,10 +3,10 @@ import character as C
 import random
 import loops as L
 from navigation import pathfinding, shadowcasting
-import spell
 import tiles as T
 import skills as S
 import statistics
+from spell_implementation import Mage
 
 import items as I
 
@@ -18,7 +18,7 @@ class Player(O.Objects):
         self.character = C.Character(self, mana=50)
         self.character.inventory = [I.Ax()]
 
-        self.mage = spell.Mage(self)
+        self.mage = Mage(self)
         self.statistics = statistics.StatTracker()
 
         self.type = "Player"
@@ -46,7 +46,6 @@ class Player(O.Objects):
         if self.invincible:  # only get the gun if you're invincible at the start
             self.mage.known_spells.extend([
                 S.Gun(self),  # 1
-                spell.MindSchool().Charm(self), # 2
                 # S.BlinkStrike(self, cooldown=0, cost=10, damage=25, range=10, action_cost=1), # 3
                 #spell.SummonGargoyle(self), # 2
                 S.BurningAttack(self, cooldown=10, cost=10, damage=20, burn_damage=10, burn_duration=10, range=10),  # 2

@@ -1,3 +1,4 @@
+import configs
 from display_generation import *
 from loop_workflow import keyboard as K
 import loops as L
@@ -21,11 +22,13 @@ textWidth = int(width / textSize)
 textHeight = int(height / textSize)
 #dictionary mapping renderID to the image
 tileDict = static_configs.TileDict(textSize)
+ascaiiDict = static_configs.AscaiiTileDict()
+dungeonData = configs.DungeonData()
 #Responsible for game loops
 
 display = Display(width, height, textSize, textWidth, textHeight)
 keyboard = K.Keyboard()
-loop = L.Loops(width, height, textSize, tileDict, display, keyboard)
+loop = L.Loops(width, height, textSize, tileDict, display, keyboard, ascaiiDict, dungeonData)
 
 player_turn = True
 loop.init_game(display)

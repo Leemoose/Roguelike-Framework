@@ -1,11 +1,6 @@
-
-import objects as O
 import static_configs
-import tiles as T
 import random
-import configs
 import spawnparams as Spawns
-import npc as N
 
 from dungeon_generation import *
 
@@ -24,8 +19,8 @@ Classes:
 class DungeonGenerator():
     #Generates a width by height 2d array of tiles. Each type of tile has a unique tile
     #tag ranging from 0 to 99
-    def __init__(self, depth, player, branch, gateway_data):
-        self.mapData = configs.get_map_data(depth, branch)
+    def __init__(self, depth, player, branch, gateway_data, dungeon_data):
+        self.mapData = dungeon_data.get_map_data(branch, depth)
         self.depth = depth
         self.branch = branch
         self.width = self.mapData.width
@@ -171,13 +166,6 @@ class DungeonGenerator():
             new = directions[ran]
         return new
 
-    def square_room(self, startx, starty, length, depth):
-        for x in range(length):
-            for y in range(depth):
-                if startx + x >= 0 and startx + x < self.width and starty+y >= 0 and starty + y < self.height:
-                    tile = O.Tile(startx + x, starty + y, 1, True)
-                    self.tile_map[startx + x][starty + y] = tile
-
     def place_monsters(self, depth):
         monsterSpawns = Spawns.monster_spawner.spawnMonsters(depth)
         for monster in monsterSpawns:
@@ -193,21 +181,11 @@ class DungeonGenerator():
         self.monster_map.place_thing(creature)
 
     def place_npcs(self, depth):
-        if depth == 2:
-            startx, starty = self.get_random_location()
-            npc = N.Bob(110, startx, starty)
-            directions = [(0, 1), (0, -1), (1, 0), (-1, 0), (1, 1), (-1, -1), (1, -1), (-1, 1)]
-            for change in directions:
-                if not self.tile_map.get_passable(startx + change[0], starty + change[1]):
-                    self.tile_map.track_map[startx + change[0]][starty + change[1]] = O.Tile(startx + change[0], starty + change[1], 2, True)
-
-            self.npc_dict.tag_subject(npc)
-        
         for x in range(self.width):
             for y in range(self.height):
-                if isinstance(self.tile_map.locate(x,y), T.NPCSpawn):
+                if self.tile_map.locate(x,y).has_trait("npc_spawn"):
                     self.npc_dict.tag_subject(self.tile_map.locate(x,y).spawn_entity())
-                if isinstance(self.tile_map.locate(x,y), T.MonsterSpawn):
+                if self.tile_map.locate(x,y).has_trait("monster_spawn"):
                     self.place_monster_at_location(self.tile_map.locate(x,y).spawn_entity(), x, y)
 
     def place_items(self, depth):

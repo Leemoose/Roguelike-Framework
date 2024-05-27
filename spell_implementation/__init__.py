@@ -3,3 +3,5 @@ from .school import School
 from .effect import *
 from .mind_school import MindSchool
 from .space_school import SpaceSchool
+from .fire_school import FireSchool
+from .mage import Mage

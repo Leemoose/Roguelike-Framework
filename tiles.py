@@ -23,6 +23,7 @@ class NPCSpawn(Floor):
     def __init__(self, x, y, render_tag = 2, passable = True, id_tag = 0, entity = None):
         super().__init__(x, y,  render_tag = render_tag, passable = passable, id_tag = id_tag, type = "NPCSpawn")
         self.entity = entity(x, y)
+        self.traits["npc_spawn"] = True
 
     #Not currently supported
     def spawn_entity(self):
@@ -32,6 +33,7 @@ class MonsterSpawn(Floor):
     def __init__(self, x, y, render_tag, passable = False, id_tag = 0, entity = None):
         super().__init__(x, y,  render_tag = render_tag, passable = passable, id_tag = id_tag, type = "MonsterSpawn")
         self.entity = copy.deepcopy(entity(x, y))
+        self.traits["monster_spawn"] = True
     
     def spawn_entity(self):
         return self.entity
@@ -87,7 +89,8 @@ class Gateway(O.Tile):
         super().__init__(x, y, render_tag = render_tag, passable = passable, id_tag = id_tag, type = "Gateway")
         self.branch = branch
         self.level = level
-        self.pair = None
+        self.outgoing = None
+        self.incoming = None
         self.traits["gateway"] = True
 
     def relocate(self, branch, level):
@@ -100,15 +103,11 @@ class Gateway(O.Tile):
         return self.level
 
     def pair_gateway(self, other_gateway):
-        self.pair = other_gateway
-        other_gateway.pair = self
+        self.outgoing = other_gateway
+        other_gateway.incoming = self
 
+    def has_outgoing(self):
+        return self.outgoing != None
 
-class ForestGateway(Gateway):
-    def __init__(self, x, y, level = 1, branch = "Dungeon", render_tag = 92, passable = True, id_tag = 0):
-        super().__init__(x, y, level, branch, render_tag = render_tag, passable = passable, id_tag = id_tag)
-class DungeonGateway(Gateway):
-    def __init__(self, x, y, level = 1, branch = "Forest", render_tag = 92, passable = True, id_tag = 0):
-        super().__init__(x, y,level, branch, render_tag = render_tag, passable = passable, id_tag = id_tag)
-
-
+    def has_incoming(self):
+        return self.incoming != None

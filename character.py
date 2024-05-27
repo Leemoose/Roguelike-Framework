@@ -1,5 +1,5 @@
 import random
-from spell_effects import effect as E
+from spell_implementation import effect as E
 import items as I
 import loops as L
 import monster as M
@@ -305,8 +305,8 @@ class Character():
         if weapon is not None:
             defense = defender.character.defend() - weapon.armor_piercing
             for types in weapon.effective:
-                if types in defender.type:
-                    if defender.type[types] == True:
+                if types in defender.attribute:
+                    if defender.attribute[types] == True:
                         effectiveness += 1
                         loop.add_message("The attack is effective against {} as it is a {} type.".format(defender.name, types))
         else:
