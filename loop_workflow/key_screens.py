@@ -185,7 +185,7 @@ def key_action(loop, key):
         loop.change_loop(LoopType.quest)
     elif key == "tab":
         player.smart_attack(loop)
-    elif key.isdigit():
+    elif key in (1,2,3,4,5,6,7,8,9):
         # cast a skill
         skill_num = int(key) - 1
         if skill_num < len(player.mage.known_spells):
@@ -384,6 +384,9 @@ def key_paused(loop, key):
         loop.memory.save_objects()
     elif key == "q":
         return False
+    elif key == "b":
+        loop.change_loop(LoopType.binding)
+        loop.add_message("Please enter the key you want to map from (click return when done):")
     return True
 
 def key_spell(loop, key):
@@ -404,3 +407,31 @@ def key_spell(loop, key):
                     loop.start_targetting(start_on_player=(not player.mage.known_spells[skill_num].targets_monster))
                     loop.screen_focus = loop.targets.target_current
                     loop.targets.store_skill(skill_num, player.mage.known_spells[skill_num], player.character)
+
+def key_binding(loop, key):
+    if key == "esc":
+        loop.change_loop(LoopType.action)
+        loop.clear_message()
+    else:
+        if loop.keyboard.key_bindings.accepting_binding == False:
+            if key == "return":
+                loop.keyboard.key_bindings.accepting_binding = True
+                loop.clear_message()
+                loop.add_message("Please enter the keys you want to map to (click return when done): ")
+            else:
+                loop.keyboard.key_bindings.temp_binding = key
+                loop.clear_message()
+                loop.add_message("The key you have chosen is: " + key)
+        else:
+            if key == "return":
+                loop.keyboard.key_bindings.save_key_binding()
+                loop.change_loop(LoopType.action)
+                loop.clear_message()
+            else:
+                loop.keyboard.key_bindings.temp_binding_map.append(key)
+                loop.clear_message()
+                messages = ""
+                for m in loop.keyboard.key_bindings.temp_binding_map:
+                    messages += m + " "
+                loop.add_message("The keys you have chosen are: " + messages)
+    return True

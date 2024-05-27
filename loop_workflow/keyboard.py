@@ -1,5 +1,6 @@
 import pygame
 from .key_screens import key_targeting_screen, key_action
+from .bindings import Bindings
 
 class Keyboard():
     """
@@ -60,11 +61,17 @@ class Keyboard():
         keys_to_string["<"] = "<"
 
         self.keys_to_string = keys_to_string
+        self.key_bindings = Bindings()
 
     def key_string(self, key, shift_pressed):
         if not shift_pressed:
             try:
-                return self.keys_to_string[key]
+                print(key)
+                if self.key_bindings.has_binding(self.keys_to_string[key]):
+                    self.key_bindings.use_keybinding(self.keys_to_string[key])
+                    print(self.key_bindings.key_queue)
+                else:
+                    return self.keys_to_string[key]
             except:
                 return -1
         else:

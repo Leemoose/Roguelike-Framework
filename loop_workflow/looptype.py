@@ -25,3 +25,4 @@ class LoopType(Enum):
     resting = 20
     exploring = 21
     stairs = 22
+    binding = 23

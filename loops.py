@@ -44,6 +44,7 @@ class Loops():
         self.tileDict = tileDict
         self.ascii_data = ascaii_data
         self.dungeon_data = dungeon_data
+        self.keyboard = keyboard
 
         self.generator = None  # Dungeon Generator
         self.messages = []
@@ -79,7 +80,8 @@ class Loops():
                                        LoopType.death: create_death_screen,
                                        LoopType.trade: create_trade_screen,
                                        LoopType.quest: create_quest_screen,
-                                       LoopType.spell: create_spellcasting
+                                       LoopType.spell: create_spellcasting,
+                                       LoopType.binding: create_binding_screen
                                        }
         self.update_display_options = {
                                        LoopType.victory: self.display.update_screen,
@@ -94,7 +96,8 @@ class Loops():
                                         LoopType.paused: self.display.update_screen_without_fill,
                                         LoopType.inventory: self.display.update_screen,
                                         LoopType.enchant: self.display.update_screen,
-                                        LoopType.spell: self.display.update_screen
+                                        LoopType.spell: self.display.update_screen,
+                                        LoopType.binding: self.display.update_screen
                                        }
         self.action_options =          {LoopType.action: key_action,
                                        LoopType.inventory: key_inventory,
@@ -116,7 +119,8 @@ class Loops():
                                        LoopType.resting: key_rest,
                                        LoopType.exploring: key_explore,
                                        LoopType.stairs: key_explore,
-                                       LoopType.spell: key_spell
+                                       LoopType.spell: key_spell,
+                                       LoopType.binding: key_binding
                                        }
 
         # Start the game by going to the main screen
@@ -149,6 +153,11 @@ class Loops():
                         key = keyboard.key_string(event.key, False)
                     elif event.mod & pygame.KMOD_SHIFT and event.key:
                         key = keyboard.key_string(event.key, True)
+                    while keyboard.key_bindings.has_queue():
+                        key = keyboard.key_bindings.next_key()
+                        if self.currentLoop in self.action_options:
+                            if key != None and self.action_options[self.currentLoop](self, key) == False:
+                                return False
 
                 else:
                     if hasattr(event.ui_element, "row"):
@@ -460,6 +469,9 @@ class Loops():
             self.messages.pop(0)
         self.messages.append(message)
         self.dirty_messages = True
+
+    def clear_message(self):
+        self.messages = []
 
     def add_target(self, target):
         self.prev_target = self.target_to_display

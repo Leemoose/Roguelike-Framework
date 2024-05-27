@@ -13,3 +13,4 @@ from .inventory_screen import *
 from .equipment_screen import *
 from .action_screen import *
 from .spell_screen import *
+from .binding_screen import *
