@@ -12,9 +12,9 @@ class SpaceSchool(School):
     """
     def __init__(self):
         super().__init__()
-        self.level = {1: self.Teleport,
-                      2: self.TeleportOther,
-                      3: self.Blink}
+        self.level = {1: Teleport,
+                      2: TeleportOther,
+                      3: Blink}
 
 class TeleportOther(Spell):
     def __init__(self, parent, name = "Teleport Other", cooldown=20, cost=5, range=5, action_cost=300):

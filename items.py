@@ -1969,7 +1969,7 @@ class BookofFire(Book):
 
 class BookofHypnosis(Book):
     def __init__(self, render_tag = 480):
-        self.school = spell.HypnosisSchool()
+        self.school = spell.MindSchool()
         self.skill = self.school.random_spell()
         super().__init__(render_tag, skill = self.skill, name = "Book of Hypnosis")
         self.name = "Book of Hypnosis"

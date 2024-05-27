@@ -83,10 +83,6 @@ class Keyboard():
                 return -1
         return -1
 
-
-
-
-
     def action_mouse_to_keyboard(self, loop, x_tile, y_tile):
         player = loop.player
         if player.get_distance(x_tile, y_tile) == 0:

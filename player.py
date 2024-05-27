@@ -46,7 +46,7 @@ class Player(O.Objects):
         if self.invincible:  # only get the gun if you're invincible at the start
             self.mage.known_spells.extend([
                 S.Gun(self),  # 1
-                spell.HypnosisSchool().Charm(self), # 2
+                spell.MindSchool().Charm(self), # 2
                 # S.BlinkStrike(self, cooldown=0, cost=10, damage=25, range=10, action_cost=1), # 3
                 #spell.SummonGargoyle(self), # 2
                 S.BurningAttack(self, cooldown=10, cost=10, damage=20, burn_damage=10, burn_duration=10, range=10),  # 2

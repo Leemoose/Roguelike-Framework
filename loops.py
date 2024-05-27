@@ -76,7 +76,8 @@ class Loops():
                                        LoopType.story: create_story_screen,
                                        LoopType.death: create_death_screen,
                                        LoopType.trade: create_trade_screen,
-                                       LoopType.quest: create_quest_screen
+                                       LoopType.quest: create_quest_screen,
+                                       LoopType.spell: create_spellcasting
                                        }
         self.update_display_options = {
                                        LoopType.victory: self.display.update_screen,
@@ -90,7 +91,8 @@ class Loops():
                                        LoopType.quest: self.display.update_screen_without_fill,
                                         LoopType.paused: self.display.update_screen_without_fill,
                                         LoopType.inventory: self.display.update_screen,
-                                        LoopType.enchant: self.display.update_screen
+                                        LoopType.enchant: self.display.update_screen,
+                                        LoopType.spell: self.display.update_screen
                                        }
         self.action_options =          {LoopType.action: key_action,
                                        LoopType.inventory: key_inventory,
@@ -111,7 +113,8 @@ class Loops():
                                        LoopType.quest: key_quest,
                                        LoopType.resting: key_rest,
                                        LoopType.exploring: key_explore,
-                                       LoopType.stairs: key_explore
+                                       LoopType.stairs: key_explore,
+                                       LoopType.spell: key_spell
                                        }
 
         # Start the game by going to the main screen

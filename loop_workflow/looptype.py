@@ -3,7 +3,7 @@ from enum import Enum
 class LoopType(Enum):
     none = -1
     action = 0
-
+    spell = 1
     inventory = 2
     equipment = 3
     main = 4

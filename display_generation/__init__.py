@@ -12,3 +12,4 @@ from .pause_screen import *
 from .inventory_screen import *
 from .equipment_screen import *
 from .action_screen import *
+from .spell_screen import *

@@ -148,13 +148,13 @@ def key_action(loop, key):
     elif key == "l":
         if loop.player.stat_points > 0:
             loop.change_loop(LoopType.level_up)
-    elif key == "p":
-        if loop.player.invincible:
-            loop.display.uiManager.set_visual_debug_mode(True)
+    #elif key == "p":
+    #    if loop.player.invincible:
+    #        loop.display.uiManager.set_visual_debug_mode(True)
     elif key == "s":
-        # find stairs
-        # player.find_stairs(loop)
         loop.change_loop(LoopType.stairs)
+    elif key == "p":
+        loop.change_loop(LoopType.spell)
     elif key == ">":
         loop.player.down_stairs(loop)
     elif key == "<":
@@ -385,3 +385,22 @@ def key_paused(loop, key):
     elif key == "q":
         return False
     return True
+
+def key_spell(loop, key):
+    player = loop.player
+    if key == "esc":
+        loop.change_loop(LoopType.action)
+    else:
+        if isinstance(key, str) and len(key) == 1:
+            skill_num = (ord(key) - 97)
+            if skill_num < len(player.mage.known_spells) and skill_num >= 0:
+                if not player.mage.known_spells[skill_num].targetted:
+                    if player.mage.known_spells[skill_num].castable(player):
+                        print("Casted a spell.")
+                        player.cast_spell(skill_num, loop.player, loop)
+                    else:
+                        loop.add_message("You can't cast " + player.character.skills[skill_num].name + " right now.")
+                else:
+                    loop.start_targetting(start_on_player=(not player.mage.known_spells[skill_num].targets_monster))
+                    loop.screen_focus = loop.targets.target_current
+                    loop.targets.store_skill(skill_num, player.mage.known_spells[skill_num], player.character)
