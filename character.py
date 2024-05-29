@@ -306,7 +306,7 @@ class Character():
             defense = defender.character.defend() - weapon.armor_piercing
             for types in weapon.effective:
                 if types in defender.attributes:
-                    if defender.attribute[types] == True:
+                    if defender.attributes[types] == True:
                         effectiveness += 1
                         loop.add_message("The attack is effective against {} as it is a {} type.".format(defender.name, types))
         else:

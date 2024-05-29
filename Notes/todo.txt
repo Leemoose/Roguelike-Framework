@@ -10,6 +10,12 @@ Range weapons
 
 Add more comments to the code
 
-Move NPC to its own map
+Move NPC to the monster map (turn into entity map)
 
 Autoexplore picks up items
+
+Ocean:
+    Deep water (maybe boats?)
+    Add flying
+
+Split item screen description to description and buttons seperately (so it can be reused)

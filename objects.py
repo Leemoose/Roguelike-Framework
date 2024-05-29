@@ -29,10 +29,12 @@ class Objects():
         return ((self.x - x)**2 + (self.y - y)**2)**(1/2)
 
 class Tile(Objects):
-    def __init__(self, x, y, render_tag = 0, passable = False, blocks_vision = True, id_tag = 0, type = None):
+    def __init__(self, x, y, render_tag = 0, passable = False, blocks_vision = True, id_tag = 0, type = None, walkable = False):
         super().__init__(x, y, id_tag, render_tag, "Tile")
         self.passable = passable
         self.blocks_vision = blocks_vision
+        self.walkable = walkable
+
         self.seen = False
         self.visible = False
         self.on_fire = False

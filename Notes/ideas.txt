@@ -17,3 +17,21 @@ Necromancer school
     -Army of arms (mass slow)
 
 Swap with monster spell
+Flint and steel (can start a fire on your tile)
+Music
+
+Change monster alertness system
+Skill tree?
+Can create portal to first floor?
+Combining potions with equipment to create status effects
+
+More complicated combat modifiers:
+    Armor piercing <=> Armor
+    Magic penetration <=> MR
+    Mental power <=> Will power
+    Attribute (either suceptible or resistent)
+    Accuracy <=> Dodge
+    True damage
+    On hit modifiers
+
+Split player into: body, mage, statistics, warrior character

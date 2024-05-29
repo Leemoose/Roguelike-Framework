@@ -101,7 +101,7 @@ class Monster_AI():
         else:
             new_level = loop.floor_level - 1
 
-        new_generator = loop.memory.generators[new_level]
+        new_generator = loop.memory.generators[loop.branch][new_level]
         new_stairs = stairs.pair
         empty_tile = new_generator.nearest_empty_tile(new_stairs.get_location(), move=True)
         if empty_tile != None:
