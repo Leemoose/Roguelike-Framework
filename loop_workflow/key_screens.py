@@ -331,7 +331,7 @@ def key_main_screen(loop, key):
     elif key == "s":
         loop.change_loop(LoopType.story)
     else:
-        loop.change_loop(LoopType.action)
+        loop.change_loop(LoopType.classes)
     return True
 
 
@@ -434,3 +434,15 @@ def key_binding(loop, key):
                     messages += m + " "
                 loop.add_message("The keys you have chosen are: " + messages)
     return True
+
+def key_classes(loop, key):
+    if key == "esc":
+        loop.change_loop(LoopType.main)
+    elif key == "return" and loop.class_selection != None:
+        loop.implement_class()
+        loop.change_loop(LoopType.action)
+    if key in ("1","2","3","4","5","6","7","8","9"):
+        classes = loop.get_available_classes()
+        if int(key) <= len(classes):
+            loop.class_selection = classes[int(key) - 1]
+        loop.change_loop(loop.currentLoop)

@@ -120,3 +120,4 @@ class Keyboard():
                     loop.update_screen = True
             else:
                 key_targeting_screen("return", self)
+

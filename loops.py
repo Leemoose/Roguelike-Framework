@@ -6,6 +6,7 @@ import player
 import targets as T
 import tiles as TI
 from navigation_utility import shadowcasting
+from classes import Rogue, Warrior
 
 from display_generation import *
 
@@ -56,6 +57,7 @@ class Loops():
         self.timer = 0
         self.taking_stairs = False
         self.npc_focus = None
+        self.class_selection = None
         self.quest_recieved = False
         self.quest_completed = False
 
@@ -80,7 +82,8 @@ class Loops():
                                        LoopType.trade: create_trade_screen,
                                        LoopType.quest: create_quest_screen,
                                        LoopType.spell: create_spellcasting,
-                                       LoopType.binding: create_binding_screen
+                                       LoopType.binding: create_binding_screen,
+                                       LoopType.classes: create_class_screen
                                        }
         self.update_display_options = {
                                        LoopType.victory: self.display.update_screen,
@@ -92,11 +95,12 @@ class Loops():
                                        LoopType.equipment: self.display.update_screen,
                                        LoopType.main: self.display.update_main,
                                        LoopType.quest: self.display.update_screen_without_fill,
-                                        LoopType.paused: self.display.update_screen_without_fill,
+                                       LoopType.paused: self.display.update_screen_without_fill,
                                         LoopType.inventory: self.display.update_screen,
                                         LoopType.enchant: self.display.update_screen,
                                         LoopType.spell: self.display.update_screen,
-                                        LoopType.binding: self.display.update_screen
+                                        LoopType.binding: self.display.update_screen,
+                                        LoopType.classes: self.display.update_screen
                                        }
         self.action_options =          {LoopType.action: key_action,
                                        LoopType.inventory: key_inventory,
@@ -119,7 +123,8 @@ class Loops():
                                        LoopType.exploring: key_explore,
                                        LoopType.stairs: key_explore,
                                        LoopType.spell: key_spell,
-                                       LoopType.binding: key_binding
+                                       LoopType.binding: key_binding,
+                                       LoopType.classes: key_classes
                                        }
 
         # Start the game by going to the main screen
@@ -554,5 +559,21 @@ class Loops():
                     monster.character.take_damage(self.player, 5)
 
         self.timer = self.timer % 100
+
+    def get_available_classes(self):
+        return [Rogue(), Warrior()]
+
+    def implement_class(self):
+        player = self.player
+        chosen_class = self.class_selection
+        endurance, intelligence, dexterity, strength = chosen_class.get_attributes()
+        player.character.endurance += endurance
+        player.character.intelligence += intelligence
+        player.character.dexterity += dexterity
+        player.character.strength += strength
+        for spell in chosen_class.get_spells():
+            player.mage.add_spell(spell(player))
+        for item in chosen_class.get_items():
+            player.character.get_item(self, item)
 
 
