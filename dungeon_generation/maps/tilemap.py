@@ -56,6 +56,8 @@ class TileMap(TrackingMap):
         self.image = [x[:] for x in [[-1] * self.height] * self.width]
         if depth == 1 and self.branch == "Dungeon":
             self.track_map_render = throneify(0, 0, self.track_map_render, self.image, self.width, self.height)
+        elif self.branch == "Ocean":
+            self.cellular_caves()
         else:
             # Add rooms
             for roomNum in range(mapData.numRooms):
@@ -81,11 +83,12 @@ class TileMap(TrackingMap):
             self.place_stairs(depth)
 
         self.place_gateway(gateway_data)
-        if depth == 1 or depth == 2:
-            print(str(self))
+
+        if self.branch == "Ocean":
+            self.add_sand()
 
         self.render_to_map(depth)
-        self.quality_check_map()
+        #self.quality_check_map() #Make sure to listen to this check and fix ocean problem
 
     def __str__(self):
         map = ""
@@ -185,9 +188,8 @@ class TileMap(TrackingMap):
         return self.track_map[x][y]
 
     def cellular_caves(self):
-        iterations = 3
-        self.track_map_render = [x[:] for x in [["x"] * self.width] * self.height]
-        survival_rate = 0.45
+        iterations = 6
+        survival_rate = 0.35
         for x in range(1, self.width - 1):
             for y in range(1, self.height - 1):
                 if (random.uniform(0, 1) >= survival_rate):
@@ -196,16 +198,16 @@ class TileMap(TrackingMap):
             self.iterate_cellular_map()
 
     def iterate_cellular_map(self):
-        temp_track_map_render = [x[:] for x in [["x"] * self.width] * self.height]
+        temp_track_map_render = [x[:] for x in [["x"] * self.height] * self.width]
         birth_limit = 4
         death_limit = 3
         for x in range(1, self.width - 1):
             for y in range(1, self.height - 1):
                 count = self.count_neighbors(x, y)
-                if count >= birth_limit and self.track_map_render[x][y] == "x":
-                    temp_track_map_render[x][y] = "."
-                elif count <= death_limit and self.track_map_render[x][y] == ".":
+                if count >= birth_limit and self.track_map_render[x][y] == ".":
                     temp_track_map_render[x][y] = "x"
+                elif count <= death_limit and self.track_map_render[x][y] == "x":
+                    temp_track_map_render[x][y] = "."
                 else:
                     temp_track_map_render[x][y] = self.track_map_render[x][y]
         self.track_map_render = temp_track_map_render
@@ -223,12 +225,6 @@ class TileMap(TrackingMap):
                 elif self.track_map_render[neighbor_x][neighbor_y] == "x":
                     count += 1
         return count
-
-    def carve_rooms(self):
-        for x in range(self.width - 2):
-            for y in range(self.height - 2):
-                tile = O.Tile(x + 1, y + 1, 2, True)
-                self.track_map[x + 1][y + 1] = tile
 
     def place_stairs(self, depth):
         if depth > 2:
@@ -288,7 +284,6 @@ class TileMap(TrackingMap):
         return self.point_in_squircle(room.x, room.y, circularity) and self.point_in_squircle(room.x + room.width - 1,
                                                                                               room.y + room.width - 1,
                                                                                               circularity)
-
     def place_room(self, rWidth, rHeight, circularity):
         MaxTries = 100
         startX = random.randint(1, self.width - rWidth - 1)
@@ -355,4 +350,23 @@ class TileMap(TrackingMap):
             startx = random.randint(0, self.width - 1)
             starty = random.randint(0, self.height - 1)
         return startx, starty
+
+    def add_sand(self):
+        for x in range(self.width):
+            for y in range(self.height):
+                if self.track_map_render[x][y] == "." and self.next_to_tile(x, y, ["x","g"]):
+                    print("Adding sand at {}".format((x,y)))
+                    self.image[x][y] = 9
+
+    def next_to_tile(self, x, y, tile):
+        directions = [(0, 1), (0, -1), (1, 0), (-1, 0)]
+        for direction in directions:
+            newx = x + direction[0]
+            newy = y + direction[1]
+            if self.in_map(newx, newy):
+                if self.track_map_render[newx][newy] in tile:
+                    return True
+
+    def in_map(self, x, y):
+        return x >= 0 and y >= 0 and x < self.width and y < self.height
 
