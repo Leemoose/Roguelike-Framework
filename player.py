@@ -164,7 +164,7 @@ class Player(O.Objects):
                 return position_tuple in gold_locations or \
                        (tile_map.get_passable(position_tuple[0], position_tuple[1]) and \
                         not (tile_map.track_map[position_tuple[0]][position_tuple[1]].seen))
-            self.path = pathfinding.conditional_bfs(tile_map.track_map, start, autoexplore_condition, loop.generator.npc_dict)
+            self.path = pathfinding.conditional_bfs(tile_map.track_map, start, autoexplore_condition, loop.generator.interact_map.dict)
             if not self.path:
                 self.path = []
                 loop.change_loop(L.LoopType.action)
@@ -224,7 +224,7 @@ class Player(O.Objects):
             
             def stairs_condition(position_tuple):
                 return position_tuple in stairs_list
-            self.path = pathfinding.conditional_bfs(tile_map.track_map, start, stairs_condition, loop.generator.npc_dict)
+            self.path = pathfinding.conditional_bfs(tile_map.track_map, start, stairs_condition, loop.generator.interact_map.dict)
             if not self.path: # checks null and empty
                 self.path = []
                 loop.change_loop(L.LoopType.action)
@@ -324,14 +324,12 @@ class Player(O.Objects):
         location = []
         for x, y in directions:
             location.append((x + self.x, y + self.y))
-        for key in loop.generator.npc_dict.subjects:
-            npc = loop.generator.npc_dict.get_subject(key)
-            for spot in location:
-                if spot == npc.get_location():
-                    loop.add_message("You say hello to your friendly neighbor.")
-                    npc.welcome(loop)
-                    spoke = True
-                    loop.change_loop(L.LoopType.trade)
+            if loop.generator.interact_map.locate(x + self.x, y + self.y) != -1:
+                loop.add_message("You say hello to your friendly neighbor.")
+                loop.generator.interact_map.locate(x + self.x, y + self.y).welcome(loop)
+                spoke = True
+                loop.change_loop(L.LoopType.trade)
+
         if spoke == False:
             loop.add_message("You feel lonely.")
 

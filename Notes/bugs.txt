@@ -13,4 +13,6 @@ Dojo art covering stairs?
 
 rest is broken
 
-fix gateways so that there can be a different outgoing and incoming
+fix gateways so that there can be a different outgoing and incoming (sort of fixed)
+
+npc not talking (likely to do with switching them from dictionary to map)

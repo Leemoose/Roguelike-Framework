@@ -57,7 +57,7 @@ class Display:
         tileDict = loop.tileDict
         monsterID = loop.generator.monster_map.dict
         item_ID = loop.generator.item_map.dict
-        npc_ID = loop.generator.npc_dict
+        npc_ID = loop.generator.interact_map.dict
         monster_map = loop.monster_map
         player = loop.player
         messages = loop.messages
