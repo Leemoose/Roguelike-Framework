@@ -131,8 +131,6 @@ class TileMap(TrackingMap):
         for x in range(self.width):
             for y in range(self.height):
                 if flood_map.locate(x, y) < 0 and self.get_passable(x, y):
-                    print(flood_map)
-                    print(self)
                     return True
         return False
 
@@ -187,7 +185,7 @@ class TileMap(TrackingMap):
         return self.track_map[x][y]
 
     def cellular_caves(self):
-        iterations = 6
+        iterations = 7
         survival_rate = 0.35
         for x in range(1, self.width - 1):
             for y in range(1, self.height - 1):
@@ -360,11 +358,13 @@ class TileMap(TrackingMap):
         directions = [(0, 1), (0, -1), (1, 0), (-1, 0)]
         for x in range(self.width):
             for y in range(self.height):
-                if self.track_map_render[x][y] == "w" and not self.next_to_tile(x, y, ["."]):
+                if self.track_map_render[x][y] == "w":
                     add_water = True
                     for direction in directions:
-                        if not self.next_to_tile(x + direction[0], y + direction[1], ["w", "dw"]):
-                            add_water = False
+                        for i in range(5):
+                            if self.in_map(x + i * direction[0], y + i * direction[1]) and self.track_map_render[x + i * direction[0]][y + i * direction[1]] not in ["w", "dw"]:
+                                add_water = False
+
                     if add_water:
                         self.track_map_render[x][y] = "dw"
 
@@ -376,6 +376,7 @@ class TileMap(TrackingMap):
             if self.in_map(newx, newy):
                 if self.track_map_render[newx][newy] in tile:
                     return True
+        return False
 
     def in_map(self, x, y):
         return x >= 0 and y >= 0 and x < self.width and y < self.height
