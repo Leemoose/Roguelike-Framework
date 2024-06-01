@@ -58,6 +58,8 @@ class TileMap(TrackingMap):
             self.track_map_render = throneify(0, 0, self.track_map_render, self.image, self.width, self.height)
         elif self.branch == "Ocean":
             self.cellular_caves()
+            self.add_water()
+            self.add_deep_water()
         else:
             # Add rooms
             for roomNum in range(mapData.numRooms):
@@ -83,9 +85,6 @@ class TileMap(TrackingMap):
             self.place_stairs(depth)
 
         self.place_gateway(gateway_data)
-
-        if self.branch == "Ocean":
-            self.add_sand()
 
         self.render_to_map(depth)
         #self.quality_check_map() #Make sure to listen to this check and fix ocean problem
@@ -351,12 +350,23 @@ class TileMap(TrackingMap):
             starty = random.randint(0, self.height - 1)
         return startx, starty
 
-    def add_sand(self):
+    def add_water(self):
         for x in range(self.width):
             for y in range(self.height):
-                if self.track_map_render[x][y] == "." and self.next_to_tile(x, y, ["x","g"]):
-                    print("Adding sand at {}".format((x,y)))
-                    self.image[x][y] = 9
+                if self.track_map_render[x][y] == "." and not self.next_to_tile(x, y, ["x","g"]):
+                    self.track_map_render[x][y] = "w"
+
+    def add_deep_water(self):
+        directions = [(0, 1), (0, -1), (1, 0), (-1, 0)]
+        for x in range(self.width):
+            for y in range(self.height):
+                if self.track_map_render[x][y] == "w" and not self.next_to_tile(x, y, ["."]):
+                    add_water = True
+                    for direction in directions:
+                        if not self.next_to_tile(x + direction[0], y + direction[1], ["w", "dw"]):
+                            add_water = False
+                    if add_water:
+                        self.track_map_render[x][y] = "dw"
 
     def next_to_tile(self, x, y, tile):
         directions = [(0, 1), (0, -1), (1, 0), (-1, 0)]

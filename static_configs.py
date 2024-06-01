@@ -25,6 +25,9 @@ class TileDict():
         tiles[-8] = image.load("assets/tiles/ocean_floor_shaded.png")
         tiles[9] = image.load("assets/tiles/sand_floor.png")
         tiles[-9] = image.load("assets/tiles/sand_floor_shaded.png")
+        tiles[10] = image.load("assets/tiles/deep_ocean_floor.png")
+        tiles[-10] = image.load("assets/tiles/deep_ocean_floor_shaded.png")
+
 
         tiles[11] = pygame.transform.scale(image.load("assets/tiles/wall_extra_rounded.png"), (32, 32))
         tiles[-11] = pygame.transform.scale(image.load("assets/tiles/wall_extra_rounded_shaded.png"), (32, 32))
@@ -234,6 +237,8 @@ class AscaiiTileDict():
         tiles = {}
         tiles["x"] = T.Wall
         tiles["."] = T.Floor
+        tiles["w"] = T.Water
+        tiles["dw"] = T.DeepWater
         tiles[">"] = T.DownStairs
         tiles["<"] = T.UpStairs
         tiles["g"] = T.Gateway
@@ -256,7 +261,7 @@ class AscaiiTileDict():
                         "Ocean":
                             {
                                 "x": 1,
-                                ".": 8
+                                ".": 9
                             }
                         }
 
