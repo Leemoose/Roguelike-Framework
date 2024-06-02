@@ -6,7 +6,7 @@ import player
 import targets as T
 import tiles as TI
 from navigation_utility import shadowcasting
-from classes import Rogue, Warrior
+from classes import Rogue, Warrior, Mage
 
 from display_generation import *
 
@@ -565,7 +565,7 @@ class Loops():
         self.timer = self.timer % 100
 
     def get_available_classes(self):
-        return [Rogue(), Warrior()]
+        return [Rogue(), Warrior(), Mage()]
 
     def implement_class(self):
         player = self.player
