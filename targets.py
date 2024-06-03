@@ -7,6 +7,7 @@ class Target:
         self.skill_to_cast = None
         self.caster = None
         self.temp_cast = None
+        self.quick_cast = False
 
     def start_target(self, starting_target):
         self.target_current = starting_target
@@ -20,11 +21,12 @@ class Target:
             loop.screen_focus = self.target_current
 
 
-    def store_skill(self, index_to_cast, skill_to_cast, caster, temp_cast = False):
+    def store_skill(self, index_to_cast, skill_to_cast, caster, temp_cast = False, quick_cast=False):
         self.index_to_cast = index_to_cast
         self.skill_to_cast = skill_to_cast
         self.caster = caster
         self.temp_cast = temp_cast
+        self.quick_cast = quick_cast
 
     def void_skill(self):
         if self.temp_cast:
@@ -53,7 +55,7 @@ class Target:
                     loop.add_message("You cast " + str(self.skill_to_cast.name) + " on " + monster.name)
                     self.void_skill()
                 else:
-                    self.caster.cast_skill(self.index_to_cast, monster, loop)
+                    self.caster.cast_skill(self.index_to_cast, monster, loop, self.quick_cast)
                     loop.add_message("You cast " + str(self.skill_to_cast.name) + " on " + monster.name)
                     self.void_skill()
             else:

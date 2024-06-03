@@ -393,15 +393,16 @@ class Character():
             for skill in self.player.known_spells: # players use spell system
                 skill.tick_cooldown()
 
-    def cast_skill(self, skill_num, target, loop):
-        self.parent.mage.cast_spell(skill_num, target, loop)
+    def cast_skill(self, skill_num, target, loop, quick_cast=False):
+        self.parent.mage.cast_spell(skill_num, target, loop, quick_cast)
     
-    def cast_skill_by_name(self, skill_name, target, loop):
-        for skill in self.skills:
-            if skill.name == skill_name:
-                self.energy -= skill.action_cost
-                return skill.try_to_activate(target, loop)
-        return False
+    # should be outdated and unused with updated spell system
+    # def cast_skill_by_name(self, skill_name, target, loop):
+    #     for skill in self.skills:
+    #         if skill.name == skill_name:
+    #             self.energy -= skill.action_cost
+    #             return skill.try_to_activate(target, loop)
+    #     return False
 
     def tick_regen(self):
         self.health_partial += self.health_regen

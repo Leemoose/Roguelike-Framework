@@ -1,5 +1,5 @@
-Autoexplore sometimes fails with: RecursionError: maximum recursion depth exceeded in comparison
-Autoexplore sometimes fails with: AttributeError: 'tuple' object has no attribute 'pop'
+hopefully fixed - Autoexplore sometimes fails with: RecursionError: maximum recursion depth exceeded in comparison
+hopefully fixed - Autoexplore sometimes fails with: AttributeError: 'tuple' object has no attribute 'pop'
 moving sometimes fails on if self.generator.tile_map.track_map[monster.x][monster.y].on_fire: IndexError: list index out of range
 
 rings might be broken (rings are definitely broken)
@@ -14,3 +14,7 @@ Dojo art covering stairs?
 rest is broken
 
 fix gateways so that there can be a different outgoing and incoming
+
+upstairs after going through a portal don't lead anywhere so crash
+
+one downstairs in forest crashes

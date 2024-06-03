@@ -183,20 +183,20 @@ def key_action(loop, key):
         loop.change_loop(LoopType.quest)
     elif key == "tab":
         player.smart_attack(loop)
-    elif key in (1,2,3,4,5,6,7,8,9):
+    elif key in "12345678": # upto 8 quick cast skills
         # cast a skill
         skill_num = int(key) - 1
         if skill_num < len(player.mage.known_spells):
-            if not player.mage.known_spells[skill_num].targetted:
-                if player.mage.known_spells[skill_num].castable(player):
+            if not player.mage.quick_cast_spells[skill_num].targetted:
+                if player.mage.quick_cast_spells[skill_num].castable(player):
                     print("Casted a spell.")
-                    player.cast_spell(skill_num, loop.player, loop)
+                    player.cast_spell(skill_num, loop.player, loop, quick_cast=True)
                 else:
                     loop.add_message("You can't cast " + player.character.skills[skill_num].name + " right now.")
             else:
-                loop.start_targetting(start_on_player=(not player.mage.known_spells[skill_num].targets_monster))
+                loop.start_targetting(start_on_player=(not player.mage.quick_cast_spells[skill_num].targets_monster))
                 loop.screen_focus = loop.targets.target_current
-                loop.targets.store_skill(skill_num, player.mage.known_spells[skill_num], player.character)
+                loop.targets.store_skill(skill_num, player.mage.quick_cast_spells[skill_num], player.character, quick_cast=True)
 
 
 def key_inventory(loop, key):

@@ -44,17 +44,21 @@ class Player(O.Objects):
         self.quest_recieved = False
 
         if self.invincible:  # only get the gun if you're invincible at the start
-            self.mage.known_spells.extend([
+            bug_test_spells = [
                 S.Gun(self),  # 1
                 # S.BlinkStrike(self, cooldown=0, cost=10, damage=25, range=10, action_cost=1), # 3
                 #spell.SummonGargoyle(self), # 2
                 S.BurningAttack(self, cooldown=10, cost=10, damage=20, burn_damage=10, burn_duration=10, range=10),  # 2
-                # S.Petrify(self, cooldown=0, cost=10, duration=3, activation_chance=1, range=10), #3
-                # S.ShrugOff(self, cooldown=0, cost=10, activation_chance=1.0, action_cost=1), #4
-                # S.Berserk(self, cooldown=0, cost=10, activation_threshold=50, strength_increase=10, action_cost=1), #5
-                # S.Terrify(self, cooldown=0, cost=0, duration=5, activation_chance=1, range=15), #6
-                # S.Escape(self, cooldown=0, cost=0, self_fear=False, activation_threshold=1.1, action_cost=1) #7
-            ])
+                S.Petrify(self, cooldown=0, cost=10, duration=3, activation_chance=1, range=10), #3
+                S.ShrugOff(self, cooldown=0, cost=10, activation_chance=1.0, action_cost=1), #4
+                S.Berserk(self, cooldown=0, cost=10, duration=-100, activation_threshold=50, strength_increase=10, action_cost=1), #5
+                S.Terrify(self, cooldown=0, cost=0, duration=5, activation_chance=1, range=15), #6
+                S.Escape(self, cooldown=0, cost=0, self_fear=False, dex_buff=5, str_debuff=5, int_debuff=5, haste_duration=5, activation_threshold=1.1, action_cost=1), #7
+                S.MagicMissile(self, cooldown=0, cost=10, damage=20, range=10, action_cost=100),  # 8
+            ]
+            for spell in bug_test_spells:
+                self.mage.add_spell(spell)
+
     def gain_experience(self, experience):
         self.experience += experience
         self.check_for_levelup()

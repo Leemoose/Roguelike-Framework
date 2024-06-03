@@ -35,3 +35,5 @@ More complicated combat modifiers:
     On hit modifiers
 
 Split player into: body, mage, statistics, warrior character
+
+Some kind of way to path to portals
