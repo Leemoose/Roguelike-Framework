@@ -34,7 +34,7 @@ class Player(O.Objects):
         self.path = []
         self.explore_path = []
 
-        self.invincible = True
+        self.invincible = False
 
         self.type = {
                      "humanoid": True

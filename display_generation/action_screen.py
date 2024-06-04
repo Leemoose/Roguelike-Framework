@@ -53,7 +53,7 @@ def create_display(display, loop):
     skill_bar_width = stats_offset_from_left - skill_bar_offset_from_left
     skill_bar_offset_from_top = action_screen_height
 
-    num_skill_buttons = 8
+    num_skill_buttons = len(player.mage.quick_cast_spells) + 1
     skill_button_width = (action_screen_width - skill_bar_offset_from_left) // (num_skill_buttons + 1)
     skill_button_height = (display.screen_height - action_screen_height) * 3 // 4
     skill_button_offset_from_top = (display.screen_height - action_screen_height) // 8 + skill_bar_offset_from_top
@@ -225,8 +225,8 @@ def create_display(display, loop):
     #    if clear_target:
     #        target_to_display = None
 
-    num_skill = len(player.mage.known_spells)
-    if num_skill == 0:
+    num_skill = len(player.mage.quick_cast_spells) + 1
+    if player.mage.quick_cast_spells.count(None) == len(player.mage.quick_cast_spells):
         display.draw_empty_box(skill_bar_offset_from_left,
                             skill_bar_offset_from_top,
                             skill_bar_width, skill_bar_height)
@@ -234,7 +234,9 @@ def create_display(display, loop):
         display.draw_empty_box(skill_bar_offset_from_left,
                             skill_bar_offset_from_top,
                             skill_bar_width, skill_bar_height)
-        for i, skill in enumerate(player.mage.known_spells):
+        for i, skill in enumerate(player.mage.quick_cast_spells):
+            if skill == None:
+                continue
             img1 = pygame.transform.scale(tileDict.tiles[skill.render_tag],
                                           (skill_button_width, skill_button_height))
             img2 = pygame.transform.scale(tileDict.tiles[-skill.render_tag],
@@ -255,6 +257,16 @@ def create_display(display, loop):
             button.action = chr(ord("1") + i)
             # display.draw_on_button(button, img, chr(ord("1") + i), (skill_button_width, skill_button_height), shrink=True,
             #                     offset_factor=10, text_offset=(12, (0.6)))
+        button = pygame_gui.elements.UIButton(
+                    relative_rect=pygame.Rect((
+                        skill_bar_offset_from_left + skill_button_offset_from_each_other_width + (
+                                    skill_button_offset_from_each_other_width + skill_button_width) * (num_skill - 1),
+                        skill_button_offset_from_top),
+                        (skill_button_width, skill_button_height)),
+                text="All S(p)ells",
+                manager=display.uiManager,
+                starting_height=800)
+        button.action = "p"
 
     healthBar = HealthBar(
         pygame.Rect((stats_offset_from_left + 70, stats_offset_from_top + 12), (stats_width // 3, stats_height // 12)),

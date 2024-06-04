@@ -27,3 +27,4 @@ class LoopType(Enum):
     stairs = 22
     binding = 23
     spell_individual = 24
+    quickcast = 25

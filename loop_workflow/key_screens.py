@@ -186,7 +186,9 @@ def key_action(loop, key):
     elif key in "12345678": # upto 8 quick cast skills
         # cast a skill
         skill_num = int(key) - 1
-        if skill_num < len(player.mage.known_spells):
+        if skill_num < len(player.mage.quick_cast_spells):
+            if player.mage.quick_cast_spells[skill_num] == None:
+                return
             if not player.mage.quick_cast_spells[skill_num].targetted:
                 if player.mage.quick_cast_spells[skill_num].castable(player):
                     print("Casted a spell.")
@@ -197,8 +199,6 @@ def key_action(loop, key):
                 loop.start_targetting(start_on_player=(not player.mage.quick_cast_spells[skill_num].targets_monster))
                 loop.screen_focus = loop.targets.target_current
                 loop.targets.store_skill(skill_num, player.mage.quick_cast_spells[skill_num], player.character, quick_cast=True)
-
-
 
 def key_inventory(loop, key):
     player = loop.player
@@ -361,6 +361,7 @@ def key_item_screen(loop, key):
             loop.change_loop(LoopType.inventory)
     elif key == "r":
         player.character.read(item, loop, item_dict, item_map)
+        loop.currentLoop = LoopType.action
     loop.change_loop(loop.currentLoop)
 
 
@@ -393,6 +394,7 @@ def key_spell(loop, key):
     player = loop.player
     if key == "esc":
         loop.change_loop(LoopType.action)
+        loop.current_spell = None
     else:
         if isinstance(key, str) and len(key) == 1:
             skill_num = (ord(key) - 97)
@@ -405,17 +407,35 @@ def key_spell_individual(loop, key):
     skill_num = loop.current_spell
     if key == "esc":
         loop.change_loop(LoopType.spell)
+        loop.current_spell = None
     elif key == "c":
         if not player.mage.known_spells[skill_num].targetted:
             if player.mage.known_spells[skill_num].castable(player):
                 print("Casted a spell.")
                 player.cast_spell(skill_num, loop.player, loop)
+                loop.current_spell = None
             else:
                 loop.add_message("You can't cast " + player.character.skills[skill_num].name + " right now.")
+                loop.current_spell = None
         else:
             loop.start_targetting(start_on_player=(not player.mage.known_spells[skill_num].targets_monster))
             loop.screen_focus = loop.targets.target_current
             loop.targets.store_skill(skill_num, player.mage.known_spells[skill_num], player.character)
+            loop.current_spell = None
+    elif key == "q":
+        loop.change_loop(LoopType.quickcast)
+
+
+def key_quickselect(loop, key):
+    player = loop.player
+    spell = player.mage.known_spells[loop.current_spell]
+    if key == "esc":
+        loop.change_loop(LoopType.spell)
+    elif key in "12345678": # upto 8 quick cast skills
+        # cast a skill
+        skill_num = int(key) - 1
+        if skill_num < len(player.mage.quick_cast_spells):
+            player.mage.set_quick_cast(spell, skill_num)
 
 def key_binding(loop, key):
     if key == "esc":

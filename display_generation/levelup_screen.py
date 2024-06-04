@@ -1,5 +1,5 @@
 import pygame, pygame_gui
-from .ui import StatDownButton,StatUpButton, LevelUpHeader
+from .ui import StatChangeText, StatDownButton,StatUpButton, LevelUpHeader
 
 def create_level_up(display, loop):
     player = loop.player
@@ -164,8 +164,9 @@ def create_level_up(display, loop):
     button.action = "return"
     button.row = None
 
-def update_level_up(display, loop):
+def update_level_up(loop):
     line_to_outline = loop.current_stat
+    display = loop.display
     player = loop.player
     entity_screen_width = display.screen_width // 2
     entity_screen_height = display.screen_height // 2

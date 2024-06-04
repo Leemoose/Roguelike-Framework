@@ -72,6 +72,7 @@ class Loops():
                                        LoopType.inventory: create_inventory,
                                        LoopType.enchant: create_inventory,
                                        LoopType.level_up: create_level_up,
+                                       LoopType.quickcast: create_quickselect,
                                        LoopType.victory: create_victory_screen,
                                        LoopType.equipment: create_equipment,
                                        LoopType.main: create_main_screen,
@@ -125,7 +126,8 @@ class Loops():
                                        LoopType.spell: key_spell,
                                        LoopType.binding: key_binding,
                                        LoopType.classes: key_classes,
-                                       LoopType.spell_individual: key_spell_individual
+                                       LoopType.spell_individual: key_spell_individual,
+                                       LoopType.quickcast: key_quickselect
                                        }
 
         # Start the game by going to the main screen

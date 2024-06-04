@@ -477,6 +477,9 @@ class Character():
         for skill in self.parent.mage.known_spells:
             if skill.name == skill_name:
                 self.parent.mage.known_spells.remove(skill)
+                if skill in self.parent.mage.quick_cast_spells:
+                    idx = self.parent.mage.quick_cast_spells.index(skill)
+                    self.parent.mage.quick_cast_spells[idx] = None
                 break
     
     def get_enchantable(self):
