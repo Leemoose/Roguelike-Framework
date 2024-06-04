@@ -199,6 +199,7 @@ def key_action(loop, key):
                 loop.targets.store_skill(skill_num, player.mage.quick_cast_spells[skill_num], player.character, quick_cast=True)
 
 
+
 def key_inventory(loop, key):
     player = loop.player
     if key == "esc":
@@ -396,16 +397,25 @@ def key_spell(loop, key):
         if isinstance(key, str) and len(key) == 1:
             skill_num = (ord(key) - 97)
             if skill_num < len(player.mage.known_spells) and skill_num >= 0:
-                if not player.mage.known_spells[skill_num].targetted:
-                    if player.mage.known_spells[skill_num].castable(player):
-                        print("Casted a spell.")
-                        player.cast_spell(skill_num, loop.player, loop)
-                    else:
-                        loop.add_message("You can't cast " + player.character.skills[skill_num].name + " right now.")
-                else:
-                    loop.start_targetting(start_on_player=(not player.mage.known_spells[skill_num].targets_monster))
-                    loop.screen_focus = loop.targets.target_current
-                    loop.targets.store_skill(skill_num, player.mage.known_spells[skill_num], player.character)
+                loop.current_spell = skill_num
+                loop.change_loop(LoopType.spell_individual)
+
+def key_spell_individual(loop, key):
+    player = loop.player
+    skill_num = loop.current_spell
+    if key == "esc":
+        loop.change_loop(LoopType.spell)
+    elif key == "c":
+        if not player.mage.known_spells[skill_num].targetted:
+            if player.mage.known_spells[skill_num].castable(player):
+                print("Casted a spell.")
+                player.cast_spell(skill_num, loop.player, loop)
+            else:
+                loop.add_message("You can't cast " + player.character.skills[skill_num].name + " right now.")
+        else:
+            loop.start_targetting(start_on_player=(not player.mage.known_spells[skill_num].targets_monster))
+            loop.screen_focus = loop.targets.target_current
+            loop.targets.store_skill(skill_num, player.mage.known_spells[skill_num], player.character)
 
 def key_binding(loop, key):
     if key == "esc":

@@ -26,3 +26,4 @@ class LoopType(Enum):
     exploring = 21
     stairs = 22
     binding = 23
+    spell_individual = 24

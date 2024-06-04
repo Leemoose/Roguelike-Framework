@@ -124,7 +124,8 @@ class Loops():
                                        LoopType.stairs: key_explore,
                                        LoopType.spell: key_spell,
                                        LoopType.binding: key_binding,
-                                       LoopType.classes: key_classes
+                                       LoopType.classes: key_classes,
+                                       LoopType.spell_individual: key_spell_individual
                                        }
 
         # Start the game by going to the main screen
@@ -139,6 +140,8 @@ class Loops():
             self.create_display_options[newLoop](self.display, self)
         elif newLoop == LoopType.items:
             self.display.update_entity(self, item_screen=True, create=True)
+        elif newLoop == LoopType.spell_individual:
+            update_spell_window(self, create=True)
 
     def action_loop(self, keyboard, display):
         """
@@ -289,6 +292,8 @@ class Loops():
                             self.screen_focus = None
             elif self.currentLoop == LoopType.items:
                 display.update_entity(self)
+            elif self.currentLoop == LoopType.spell_individual:
+                update_spell_window(self)
             elif (self.currentLoop == LoopType.resting or self.currentLoop == LoopType.exploring or self.currentLoop == LoopType.stairs):
                 self.clean_up()
                 shadowcasting.compute_fov(self)
