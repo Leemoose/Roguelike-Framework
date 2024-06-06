@@ -1,5 +1,5 @@
 from items import Dagger, Sword
-from spell_implementation import TeleportOther
+from spell_implementation import TeleportOther, BurningAttack, Lullaby
 class PlayerClass():
     def __init__(self, name = "Class", items = [], spells = [], endurance = 0, intelligence = 0, dexterity = 0, strength = 0, description = ""):
         self.name = name
@@ -36,3 +36,10 @@ class Warrior(PlayerClass):
 
     def get_spell_names(self):
         return [""]
+
+class Mage(PlayerClass):
+    def __init__(self):
+        super().__init__(name = "Mage", items = [], spells = [BurningAttack, Lullaby], dexterity=1, intelligence=2, description= "Logic and cool decision making ends in the best outcome.")
+
+    def get_spell_names(self):
+        return ["Burning Attack", "Lullaby"]

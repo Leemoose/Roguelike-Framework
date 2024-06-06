@@ -26,15 +26,15 @@ class DungeonGenerator():
         self.width = self.mapData.width
         self.height = self.mapData.height
         self.summoner = []
+
         self.tile_map = TileMap(self.mapData, depth, self.branch, static_configs.AscaiiTileDict(), gateway_data)
         self.monster_map = TrackingMap(self.width, self.height) #Should I include items as well?
-        #self.flood_map = FloodMap(self, self.width, self.height)
+        self.interact_map = TrackingMap(self.width, self.height)
         self.item_map = TrackingMap(self.width, self.height)
 
         self.player = player
         self.summoner = []
 
-        self.npc_dict = ID()
         if self.depth != 1:
             self.place_monsters(depth)
             self.place_items(depth)
@@ -134,11 +134,7 @@ class DungeonGenerator():
             print("You are trying to parse a non tuple")
         if location == None:
             return None
-        elif self.monster_map.get_passable(location[0], location[1]) and self.not_on_player(location[0], location[1]) and self.tile_map.get_passable(location[0], location[1]):
-            for key in self.npc_dict.subjects:
-                npc = self.npc_dict.get_subject(key)
-                if location == npc.get_location():
-                    return False
+        elif self.monster_map.get_passable(location[0], location[1]) and self.not_on_player(location[0], location[1]) and self.tile_map.get_passable(location[0], location[1]) and self.interact_map.get_passable(location[0], location[1]):
             return True
         return False
 
@@ -184,7 +180,7 @@ class DungeonGenerator():
         for x in range(self.width):
             for y in range(self.height):
                 if self.tile_map.locate(x,y).has_trait("npc_spawn"):
-                    self.npc_dict.tag_subject(self.tile_map.locate(x,y).spawn_entity())
+                    self.interact_map.place_thing(self.tile_map.locate(x,y).spawn_entity())
                 if self.tile_map.locate(x,y).has_trait("monster_spawn"):
                     self.place_monster_at_location(self.tile_map.locate(x,y).spawn_entity(), x, y)
 
