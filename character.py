@@ -456,7 +456,7 @@ class Character():
             monster_loc = monster.get_location()
             if tile_map.track_map[monster_loc[0]][monster_loc[1]].visible and monster.stops_autoexplore:
                 loop.add_message("You cannot rest while enemies are nearby.")
-                loop.change_loop(returnLoop)
+                loop.change_loop(L.LoopType.action)
                 return
 
         self.wait()

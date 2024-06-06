@@ -59,11 +59,13 @@ def create_class_screen(display, loop):
         text += "Description: " + chosen_class.get_description() + "\n"
         text += "Spells: "
         for spell in chosen_class.get_spell_names():
-            text += spell
+            text += spell + ", "
+        text = text[:-2] # removes last comma
         text += "\n"
         text += "Items: "
         for item in chosen_class.get_items():
-            text += item.name
+            text += item.name + ", "
+        text = text[:-2] # removes last comma
         text += "\n"
 
 

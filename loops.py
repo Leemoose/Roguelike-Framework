@@ -544,7 +544,7 @@ class Loops():
 
     def time_passes(self, time):
         self.timer += time
-        for i in range(self.timer // 100):
+        for i in range(int(self.timer // 100)):
             # do status effect stuff
             self.player.character.tick_all_status_effects(self)
             self.player.mage.tick_cooldowns()
@@ -586,5 +586,6 @@ class Loops():
             player.mage.add_spell(spell(player))
         for item in chosen_class.get_items():
             player.character.get_item(self, item)
+            player.character.equip(item)
 
 

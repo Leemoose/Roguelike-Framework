@@ -82,7 +82,7 @@ class Bob(NPC):
             self.name + " says: 'See for yourself. Nothing special but it'll get the job done.'")
 
     def talk(self, loop):
-        super().talk(loop)
+        # super().talk(loop)
         loop.add_message(self.name + " says: 'I didn't scare you off already? There is something foul afoot here. Young boys go missing every month."
                                      "The seamstress says there's a demon involved, sucking the souls out and leaving nothing but bones."
                                      " It's an old wives tale. My bet is they're sneaking off to the war.'")
@@ -121,7 +121,7 @@ class Guard(NPC):
         self.options = ["Talk"]
 
     def talk(self, loop):
-        super().talk(loop)
+        # super().talk(loop)
         loop.add_message(self.name + " says: 'Now move along.")
 
 class BobBrother(Guard):
@@ -150,7 +150,7 @@ class Sensei(NPC):
         self.quest = quest.DojoQuest()
 
     def talk(self, loop):
-        super().talk(loop)
+        # super().talk(loop)
         loop.add_message(self.name + " says: 'No better place to train than surrounded by monsters.")
         loop.add_message(loop.player.name + " says: 'Who are you?'")
         loop.add_message(self.name + " doesn't seem to hear you.")
