@@ -37,6 +37,8 @@ class TileDict():
         tiles[-13] = image.load("assets/tiles/forest_floor_shaded.png")
         tiles[14] = image.load("assets/tiles/ocean_wall.png")
         tiles[-14] = image.load("assets/tiles/ocean_wall_shaded.png")
+        tiles[15] = image.load("assets/tiles/stone_floor.png")
+        tiles[-15] = image.load("assets/tiles/stone_floor_shaded.png")
 
         tiles[20] = pygame.transform.scale(image.load("assets/fire.png"), (32, 32))
 
@@ -260,7 +262,7 @@ class AscaiiTileDict():
                             },
                         "Ocean":
                             {
-                                "x": 1,
+                                "x": 15,
                                 ".": 9
                             }
                         }
