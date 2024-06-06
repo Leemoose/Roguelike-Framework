@@ -7,6 +7,7 @@ import tiles as T
 import skills as S
 import statistics
 from spell_implementation import Mage
+from loop_workflow import LoopType
 
 import items as I
 
@@ -86,7 +87,8 @@ class Player(O.Objects):
                 "move"]  # / (1.02**(self.character.dexterity + self.character.round_bonus())))
             self.y += move_y
             self.x += move_x
-            loop.add_message("The player moved.")
+            if loop.currentLoop != LoopType.exploring and loop.currentLoop != LoopType.stairs:
+                loop.add_message("The player moved.")
         else:
             loop.add_message("You can't move there")
 

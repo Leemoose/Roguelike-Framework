@@ -135,7 +135,7 @@ class Loops():
     # Sets the internal loop type, and does the initialization that it needs.
     # Mostly here to cache UI pieces, which shouldn't be remade every frame.
     def change_loop(self, newLoop):
-        self.clear_message()
+        # self.clear_message()
         self.currentLoop = newLoop
         self.update_screen = True
         if newLoop in self.create_display_options:
@@ -202,15 +202,15 @@ class Loops():
 
         if self.currentLoop == LoopType.action:
             if self.rest_count != 0:
-                print(f"Rested for {self.rest_count} turns.")
+                # print(f"Rested for {self.rest_count} turns.")
                 self.rest_count = 0
 
             if self.explore_count != 0:
-                print(f"Explored for {self.explore_count} turns.")
+                # print(f"Explored for {self.explore_count} turns.")
                 self.explore_count = 0
             
             if self.stairs_count != 0:
-                print(f"Pathed to stairs for {self.stairs_count} turns")
+                # print(f"Pathed to stairs for {self.stairs_count} turns")
                 self.stairs_count = 0
 
         # check autoexplore and rest

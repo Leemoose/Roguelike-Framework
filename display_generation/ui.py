@@ -95,7 +95,6 @@ class MessageBox(pygame_gui.elements.UITextBox):
         self.set_message()
 
     def update(self, time_delta: float):
-        
         if (self.loop.dirty_messages):
             self.set_message()
 

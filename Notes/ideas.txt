@@ -43,3 +43,5 @@ Update mouse-gameplay by allowing pathing to non-adjacent locations.
 Maybe create a new pathing looptype and standardize autoexplore, stairs pathing, portal pathing, mouse click pathing etc.
 
 Could introduce pathing to specific items (might need ctrl+f for items like dcss to be usable)
+
+mini-icons that appear on monster/player tiles to indicate active status effects
