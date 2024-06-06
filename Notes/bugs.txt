@@ -11,10 +11,12 @@ enchant scrolls maybe broken
 
 Dojo art covering stairs?
 
-rest is broken
+rest is broken (maybe fixed)
 
 fix gateways so that there can be a different outgoing and incoming
 
 upstairs after going through a portal don't lead anywhere so crash
 
 one downstairs in forest crashes
+
+message log is broken
