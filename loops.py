@@ -6,7 +6,7 @@ import player
 import targets as T
 import tiles as TI
 from navigation_utility import shadowcasting
-from classes import Rogue, Warrior
+from classes import Rogue, Warrior, Mage
 
 from display_generation import *
 
@@ -553,8 +553,9 @@ class Loops():
             for quest in self.player.quests:
                 quest.check_for_progress(self)
 
-            if self.generator.tile_map.track_map[self.player.x][self.player.y].on_fire:
-                self.player.character.take_damage(self.player, 5)
+            if self.generator.tile_map.locate(self.player.x,self.player.y).check_if_status_applies(self.player):
+                for status_effect in self.generator.tile_map.locate(self.player.x,self.player.y).get_status_effects():
+                    self.player.character.add_status_effect(status_effect)
 
             for monster in self.monster_map.all_entities():
                 monster.character.tick_all_status_effects(self)
@@ -562,13 +563,16 @@ class Loops():
                 monster.character.tick_cooldowns()
                 # tick regen
                 monster.character.tick_regen()
-                if self.generator.tile_map.track_map[monster.x][monster.y].on_fire:
-                    monster.character.take_damage(self.player, 5)
+
+                if self.generator.tile_map.locate(monster.x, monster.y).check_if_status_applies(monster):
+                    for status_effect in self.generator.tile_map.locate(monster.x,
+                                                                        monster.y).get_status_effects():
+                        monster.character.add_status_effect(status_effect)
 
         self.timer = self.timer % 100
 
     def get_available_classes(self):
-        return [Rogue(), Warrior()]
+        return [Rogue(), Warrior(), Mage()]
 
     def implement_class(self):
         player = self.player

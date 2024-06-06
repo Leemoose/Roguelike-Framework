@@ -46,7 +46,9 @@ class NPC(O.Objects):
         pass
 
     def talk(self, loop):
-        pass
+        loop.add_message(
+            self.name + " says: 'Move along now.'")
+
     def welcome(self, loop):
         loop.messages = []
         loop.npc_focus = self

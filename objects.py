@@ -40,6 +40,8 @@ class Tile(Objects):
         self.on_fire = False
         self.type = type
 
+        self.effect = []
+
     def is_visible(self):
         return self.visible
 
@@ -51,6 +53,12 @@ class Tile(Objects):
 
     def is_blocking_vision(self):
         return self.blocks_vision
+
+    def check_if_status_applies(self, entity):
+        return True
+
+    def get_status_effects(self):
+        return self.effect
 
     def __str__(self):
         if self.passable:

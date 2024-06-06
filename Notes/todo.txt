@@ -8,10 +8,6 @@ Update monster behaviour to fight if it can't escape because of allies in hallwa
 
 Range weapons
 
-Add more comments to the code
-
-Move NPC to the monster map (turn into entity map)
-
 Autoexplore picks up items
 
 Ocean:

@@ -1,0 +1,6 @@
+Adding new loop type
+    1. Add new loop type to looptype.py
+    2. Add new screen in folder display_generation (make sure to import)
+    3. Add new keyboard inputs under key_screens
+    3. Link the loop type to correct function under create_screen, update_screen and action_options in loops.py dictionary
+    4. It should work!

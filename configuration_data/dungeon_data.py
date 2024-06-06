@@ -25,7 +25,7 @@ class DungeonData():
             5: MapData(35, 35, 7, 6, 0.2, 0)
             }
         self.master_map_data["Ocean"] = {
-            1: MapData(20, 30, 4, 5, 1.0, 1),
+            1: MapData(100, 100, 4, 5, 1.0, 1),
         }
 
         self.gateway_data = GatewayData()

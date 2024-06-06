@@ -20,10 +20,11 @@ def create_class_screen(display, loop):
     option_button_height =((class_screen_height - class_title_height) // 8)
     option_margin_between_buttons_width = (option_button_width) // (num_option_buttons + 1)
 
+
     message_width = class_screen_width
     message_offset_from_left = class_offset_from_left
     message_offset_from_top = option_button_offset_from_top + option_button_height + 10
-    message_height = display.screen_height - message_offset_from_top - class_offset_from_top
+    message_height = (class_screen_height -message_offset_from_top + class_offset_from_top) * 2 // 3
 
     pygame.draw.rect(display.win, (50, 50, 50),
                      pygame.Rect(class_offset_from_left - 10, class_offset_from_top - 10, class_screen_width + 20,
@@ -31,6 +32,14 @@ def create_class_screen(display, loop):
     pygame.draw.rect(display.win, (0, 0, 0),
                      pygame.Rect(class_offset_from_left, class_offset_from_top, class_screen_width,
                                  class_screen_height))
+
+    num_buttons = 2
+    button_width = min((class_screen_width) // (num_buttons + 1), 300)
+    button_offset_from_top = message_offset_from_top + message_height
+    button_offset_from_each_other = class_screen_width // (num_buttons + 1) // (num_buttons + 1)
+    button_offset_from_left = class_offset_from_left
+    button_height = min ((class_screen_height - button_offset_from_top + class_offset_from_top), 60)
+
 
     display.draw_escape_button(class_offset_from_left, class_offset_from_top, class_screen_width,
                             class_screen_height)
@@ -76,3 +85,18 @@ def create_class_screen(display, loop):
             text=chr(ord("1") + i) + ". " + "{}".format(options[i].name),
             manager=display.uiManager)
         button.action = chr(ord("1") + i)
+
+    button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect(
+        (button_offset_from_left + button_offset_from_each_other + button_width * 0 + button_offset_from_each_other * 0, button_offset_from_top),
+        (button_width, button_height)),
+                                          text='Continue',
+                                          manager=display.uiManager)
+    button.action = "return"
+
+
+    button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect(
+        (button_offset_from_left + button_offset_from_each_other + button_width * 1 + button_offset_from_each_other * 1, button_offset_from_top),
+        (button_width, button_height)),
+        text='Main Menu',
+        manager=display.uiManager)
+    button.action = "esc"
