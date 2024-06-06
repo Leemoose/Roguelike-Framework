@@ -115,13 +115,12 @@ def update_spell_window(loop, create = False):
                     text="Cast",
                     manager=display.uiManager)
         button.action = "c"
-        if entity not in player.mage.quick_cast_spells:
-            button = pygame_gui.elements.UIButton(
-                        relative_rect=pygame.Rect((entity_button_offset_from_left + (entity_button_width + entity_button_offset_from_each_other), entity_button_offset_from_top),
-                                                  (entity_button_width, entity_button_height)),
-                        text="Set (q)uickcast",
-                        manager=display.uiManager)
-            button.action = "q"
+        button = pygame_gui.elements.UIButton(
+                    relative_rect=pygame.Rect((entity_button_offset_from_left + (entity_button_width + entity_button_offset_from_each_other), entity_button_offset_from_top),
+                                              (entity_button_width, entity_button_height)),
+                    text="Set (q)uickcast",
+                    manager=display.uiManager)
+        button.action = "q"
 
     if create == True:
         text_box = pygame_gui.elements.UITextBox(
