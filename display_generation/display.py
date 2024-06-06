@@ -423,7 +423,7 @@ class Display:
                         "Skill Damage Bonus: " + str(player.character.skill_damage_increase()) + "<br>"
                         "Effect Duration Bonus: " + str(player.character.skill_duration_increase()) + "<br>"
                         "<br>Known Skills:<br>"
-                        + "<br>".join([str(i + 1) + ". " + skill.description() for i, skill in enumerate(player.character.skills)])
+                        + "<br>".join([str(i + 1) + ". " + skill.description() for i, skill in enumerate(player.mage.known_spells)])
                         ,
             manager=self.uiManager
         )
