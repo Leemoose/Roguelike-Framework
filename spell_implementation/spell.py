@@ -51,6 +51,10 @@ class Spell():
 
     def description(self):
         return self.name + "(" + str(self.cost) + " cost, " + str(self.cooldown) + " turn cooldown"
+    
+    # overwrite for spells that need a more detailed description
+    def full_description(self):
+        return self.description()
 
     def can_learn(self):
         return self.parent.character.intelligence >= self.required_intelligence

@@ -47,6 +47,12 @@ class TeleportOther(Spell):
             target.y = starty
             monster_map.place_thing(target)
 
+    def full_description(self):
+        desc = "Bend space to teleport a target to a random spot on the map.\n\n"
+        desc += f"Costs {self.cost} mana on a {self.cooldown} turn cooldown"
+
+        return desc
+
 class Blink(Spell):
     def __init__(self, parent, name = "Blink", cooldown=20, cost=5, range=5, action_cost=300):
         super().__init__(parent, name, cooldown, cost, range, action_cost)
@@ -69,6 +75,14 @@ class Blink(Spell):
     def description(self):
         return self.name + "(" + str(self.cost) + " cost, " + str(
             self.cooldown) + " turn cooldown" + ", blink to empty space in range " + str(self.range) + ")"
+    
+    def full_description(self):
+        desc = f"Bend space to teleport to an empty space within {self.range} tiles.\n\n"
+        desc += f"Costs {self.cost} mana on a {self.cooldown} turn cooldown"
+
+        return desc
+    
+
 
 class Teleport(Spell):
     def __init__(self, parent, name = "Teleport", cooldown=20, cost=5, range=-1, action_cost=300):
@@ -101,3 +115,9 @@ class Teleport(Spell):
                 self.parent.x = startx
                 self.parent.y = starty
                 monster_map.place_thing(self.parent)
+
+    def full_description(self):
+        desc = "Bend space to teleport yourself to a random spot on the map.\n\n"
+        desc += f"Costs {self.cost} mana on a {self.cooldown} turn cooldown"
+
+        return desc

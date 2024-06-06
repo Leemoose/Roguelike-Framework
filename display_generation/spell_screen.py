@@ -106,7 +106,7 @@ def update_spell_window(loop, create = False):
             object_id='#title_small')
 
     entity_text = ""
-    entity_text += entity.description()  + "<br><br>"
+    entity_text += entity.full_description()  + "<br><br>"
 
     if create == True:
         button = pygame_gui.elements.UIButton(
@@ -209,7 +209,7 @@ def update_quickselect(loop, create=True):
             object_id='#title_small')
         
     entity_text = ""
-    entity_text += entity.description()  + "<br><br>"
+    entity_text += entity.full_description()  + "<br><br>"
 
     entity_text += f"Select 1-7 to assign {spell.name} a quickcast slot"    
 

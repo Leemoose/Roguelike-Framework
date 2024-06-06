@@ -40,6 +40,16 @@ class BurningAttack(Spell):
             self.damage) + " damage at range " + str(self.range) + ", " + str(
             self.burn_damage) + " burn damage for " + str(self.burn_duration) + " turns)"
 
+    def full_description(self):
+        desc = "Throw a small bolt of fire at a target that sets the target ablaze.\n\n"
+        desc += f"Deals {self.damage} at range {self.range}\n"
+        desc += f"Burns target for {self.burn_damage} burn damage every turn for {self.burn_duration} turns\n"
+        desc += f"Costs {self.cost} mana on a {self.cooldown} turn cooldown"
+
+        return desc
+
+
+
 class BurningCircle(Spell):
     def __init__(self, parent, name = "Burning Circle", cooldown = 10, cost= 5, range = 5, action_cost = 50, damage = 3, burn_damage = 3, burn_duration=5):
         super().__init__(parent, name, cooldown, cost, range, action_cost)
@@ -55,6 +65,12 @@ class BurningCircle(Spell):
                 loop.generator.tile_map.track_map[self.parent.x + x][self.parent.y + y].on_fire = True
         self.parent.character.mana -= self.cost
         return True  # return true if successfully cast, burningAttack cannot fail
+    
+    def full_description(self):
+        desc = "Emit a ring of fire at all targets around you, setting adjacent spaces ablaze.\n\n"
+        desc += f"Costs {self.cost} mana on a {self.cooldown} turn cooldown"
+
+        return desc
 
 class Fireball(Spell):
     def __init__(self, parent, name = "Fireball", cooldown = 20, cost= 10, range = 10, action_cost = 150, damage = 10, burn_damage = 3, burn_duration=2, required_intelligence = 5):
@@ -85,5 +101,13 @@ class Fireball(Spell):
 
     def castable(self, target):
         return super().castable(target) and self.in_range(target)
+    
+    def full_description(self):
+        desc = "Throw a giant ball of fire at a target that hits a 3x3 area centered on the target, setting all enemies in range ablaze.\n\n"
+        desc += f"Deals {self.damage} at range {self.range}\n"
+        desc += f"Burns target for {self.burn_damage} burn damage every turn for {self.burn_duration} turns\n"
+        desc += f"Costs {self.cost} mana on a {self.cooldown} turn cooldown"
+
+        return desc
 
 

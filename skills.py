@@ -58,6 +58,9 @@ class Skill():
     
     def description(self):
         return self.name + "(" + str(self.cost) + " cost, " + str(self.cooldown) + " turn cooldown"
+    
+    def full_description(self):
+        return self.description()
 
 class MassTorment(Skill):
     def __init__(self, parent):
@@ -77,6 +80,11 @@ class MassTorment(Skill):
                 monster.character.health /= 2
         player.character.health /= 2
 
+    def full_description(self):
+        desc = "Channel dark magic to half the health of all targets in line of sight.\n\n"
+        desc += "Hits both enemies and allies\n"
+        desc += f"Costs {self.cost} mana on a {self.cooldown} turn cooldown"
+        return desc
 
 class MassHeal(Skill):
     def __init__(self, parent):
@@ -95,6 +103,12 @@ class MassHeal(Skill):
             if tile_map.track_map[monster.x][monster.y].visible:
                 monster.character.health = monster.character.max_health
         player.character.health = player.character.max_health
+
+    def full_description(self):
+        desc = "Channel holy magic to heal all targets in line of sight.\n\n"
+        desc += "Affects both enemies and allies\n"
+        desc += f"Costs {self.cost} mana on a {self.cooldown} turn cooldown"
+        return desc
 
 class Invinciblity(Skill):
     def __init__(self, parent, cost, cooldown, duration, activation_threshold=1.1, by_scroll=True):
@@ -120,6 +134,13 @@ class Invinciblity(Skill):
     def description(self):
         return self.name + "(" + str(self.cost) + " cost, " + str(self.cooldown) + " turn cooldown" + ", invincible for " + str(self.dur) + ", castable below " + str(int(self.threshold * 100)) + "% health)"
 
+    def full_description(self):
+        desc = f"Ignore the call of death for {self.dur} turns.\n\n"
+        if self.threshold <= 1.0:
+            desc += "Can only be cast below " + str(int(self.threshold * 100)) + "% health\n"
+        desc += f"Costs {self.cost} mana on a {self.cooldown} turn cooldown"
+        return desc
+
 class Awaken_Monsters(Skill):
     def __init__(self, parent, cooldown, cost):
         super().__init__("Awaken Monsters", parent, cooldown, cost)
@@ -129,6 +150,12 @@ class Awaken_Monsters(Skill):
         for monster_key in monster_dict.subjects:
             monster = monster_dict.get_subject(monster_key)
             monster.brain.is_awake = True
+
+    # pretty sure this is scroll only but implemented this function just in case
+    def full_description(self):
+        desc = "Wake up all monsters on the map.\n\n"
+        desc += f"Costs {self.cost} mana on a {self.cooldown} turn cooldown"
+        return desc
 
 
 # !!! keep monster exclusive for now, pathing breaks if a player tries to use it !!!
@@ -177,6 +204,12 @@ class MagicMissile(Skill):
     
     def description(self):
         return self.name + "(" + str(self.cost) + " cost, " + str(self.cooldown) + " turn cooldown" + ", " + str(self.damage) + " damage at range " + str(self.range) + ")"
+    
+    def full_description(self):
+        desc = "Blast the target with a bolt of arcane energy.\n\n"
+        desc += f"Deals {self.damage} at range {self.range}\n"
+        desc += f"Costs {self.cost} mana on a {self.cooldown} turn cooldown"
+        return desc
 
 class BurningAttack(Skill):
     def __init__(self, parent, cooldown, cost, damage, burn_damage, burn_duration, range):
@@ -203,6 +236,15 @@ class BurningAttack(Skill):
             return self.name + "(" + str(self.cost) + " cost, " + str(self.cooldown) + " turn cooldown" + ", " + str(self.damage) + " damage at range " + str(self.range) + ", " + str(self.burn_damage) + " burn damage permanently)"
         return self.name + "(" + str(self.cost) + " cost, " + str(self.cooldown) + " turn cooldown" + ", " + str(self.damage) + " damage at range " + str(self.range) + ", " + str(self.burn_damage) + " burn damage for " + str(self.burn_duration) + " turns)"
     
+    def full_description(self):
+        desc = "Throw a small bolt of fire at a target that sets the target ablaze.\n\n"
+        desc += f"Deals {self.damage} at range {self.range}\n"
+        desc += f"Burns target for {self.burn_damage} burn damage every turn for {self.burn_duration} turns\n"
+        desc += f"Costs {self.cost} mana on a {self.cooldown} turn cooldown"
+
+        return desc
+
+
 class Petrify(Skill):
     def __init__(self, parent, cooldown, cost, duration, activation_chance, range):
         super().__init__("Petrify", parent, cooldown, cost, range)
@@ -231,6 +273,13 @@ class Petrify(Skill):
             return self.name + "(" + str(self.cost) + " cost, " + str(self.cooldown) + " turn cooldown" + ", " + str(int(self.activation_chance * 100)) + "% chance to petrify at range " + str(self.range) + ")"
         return self.name + "(" + str(self.cost) + " cost, " + str(self.cooldown) + " turn cooldown" + ", " + str(int(100 * self.activation_chance)) + "% chance to petrify at range " + str(self.range) + "for " + str(self.duration) + " turns)"
     
+    def full_description(self):
+        desc = f"Turn the targets body to stone, preventing them from acting for {self.duration} turns.\n\n"
+        desc += f"Has a {int(100 * self.activation_chance)}% chance of succeeding.\n"
+        desc += f"Costs {self.cost} mana on a {self.cooldown} turn cooldown"
+
+        return desc
+
 class ShrugOff(Skill):
     def __init__(self, parent, cooldown, cost, activation_chance, action_cost):
         super().__init__("Shrug off", parent, cooldown, cost, -1, action_cost)
@@ -254,6 +303,13 @@ class ShrugOff(Skill):
     def description(self):
         
         return self.name + "(" + str(self.cost) + " cost, " + str(self.cooldown) + " turn cooldown" + ", " + str(self.activation_chance * 100) + "% chance to remove a negative effect)"
+    
+    def full_description(self):
+        desc = "Shrug off and end a random negative status effect\n\n"
+        desc += f"Has a {int(100 * self.activation_chance)}% chance of succeeding.\n"
+        desc += f"Costs {self.cost} mana on a {self.cooldown} turn cooldown"
+
+        return desc
 
 class Berserk(Skill):
     # self-might if below certain health percent
@@ -282,6 +338,13 @@ class Berserk(Skill):
             return self.name + "(" + str(self.cost) + " health cost, " + str(self.cooldown) + " turn cooldown" + ", +" + str(self.strength_increase) + " strength if below " + str(int(self.threshold * 100)) + "% health)"
         return self.name + "(" + str(self.cost) + " cost, " + str(self.cooldown) + " turn cooldown" + ", +" + str(self.strength_increase) + " strength for " + str(self.duration) + " turns if below " + str(int(self.threshold * 100)) + "% health)"
 
+    def full_description(self):
+        desc = f"Give into your anger and gain {self.strength_increase} increased strength for {self.duration} turns\n\n"
+        desc += f"Only castable below {int(100 * self.threshold)}% health.\n"
+        desc += f"Costs {self.cost} mana on a {self.cooldown} turn cooldown"
+
+        return desc
+
 class BloodPact(Skill):
     def __init__(self, parent, cooldown, cost, strength_increase, duration, action_cost):
         super().__init__("Blood pact", parent, cooldown, cost, -1, action_cost)
@@ -296,12 +359,18 @@ class BloodPact(Skill):
         return True
 
     def castable(self, target):
-        return self.health_cost_requirements and not self.parent.character.has_effect("Might")
+        return self.health_cost_requirements() and not self.parent.character.has_effect("Might")
     
     def description(self):
         if self.duration == -100:
             return self.name + "(" + str(self.cost) + " health cost, " + str(self.cooldown) + " turn cooldown" + ", +" + str(self.strength_increase) + " strength)"
         return self.name + "(" + str(self.cost) + " health cost, " + str(self.cooldown) + " turn cooldown" + ", +" + str(self.strength_increase) + " strength for " + str(self.duration) + " turns)"
+
+    def full_description(self):
+        desc = f"Pay the price in blood to gain {self.strength_increase} increased strength for {self.duration} turns\n\n"
+        desc += f"Costs {self.cost} health on a {self.cooldown} turn cooldown"
+
+        return desc
 
 # I only want this for playtesting, it's not a real skill
 class Gun(Skill):
@@ -321,6 +390,10 @@ class Gun(Skill):
     
     def description(self):
         return "Gun (Pew Pew)"
+    
+    def full_description(self):
+        desc = "It's a gun. It goes Pew Pew. It has no real numbers"
+        return desc
     
 class Terrify(Skill):
     def __init__(self, parent, cooldown, cost, duration, activation_chance, range):
@@ -350,6 +423,12 @@ class Terrify(Skill):
             return self.name + "(" + str(self.cost) + " cost, " + str(self.cooldown) + " turn cooldown" + ", " + str(int(self.activation_chance * 100)) + "% chance to terrify at range " + str(self.range) + ")"
         return self.name + "(" + str(self.cost) + " cost, " + str(self.cooldown) + " turn cooldown" + ", " + str(int(self.activation_chance * 100)) + "% chance to terrify at range " + str(self.range) + "for " + str(self.duration) + " turns)"
 
+    def full_description(self):
+        desc = f"Emanates a terrifying aura, forcing a target in range {self.range} to flee for {self.duration} turns.\n\n"
+        desc += f"Has a {int(100 * self.activation_chance)}% chance of succeeding.\n"
+        desc += f"Costs {self.cost} mana on a {self.cooldown} turn cooldown"
+
+        return desc
 
 class Escape(Skill):
     def __init__(self, parent, cooldown, cost, self_fear, dex_buff, str_debuff, int_debuff, haste_duration, activation_threshold, action_cost):
@@ -392,6 +471,12 @@ class Escape(Skill):
             return self.name + "(" + str(self.cost) + " cost, " + str(self.cooldown) + " turn cooldown, gain " + str(self.dex_buff) + " dexterity, lose " + str(self.str_debuff) + " strength, lose " + str(self.int_debuff) + " intelligence)" + addition
         return self.name + "(" + str(self.cost) + " cost, " + str(self.cooldown) + " turn cooldown" + ", castable below " + str(self.threshold * 100) + "% health), gain " + str(self.dex_buff) + " dexterity, lose " + str(self.str_debuff) + " strength, lose " + str(self.int_debuff) + " intelligence)" + addition
     
+    def full_description(self):
+        desc = f"Sacrifice your other stats to gain a {self.dex_buff} gain in dexterity for {self.duration} turns. \n\n"
+        desc += f"Costs {self.cost} mana, {self.str_debuff} strength and {self.int_debuff} intelligence on a {self.cooldown} turn cooldown"
+
+        return desc
+
 class Heal(Skill):
     def __init__(self, parent, cooldown, cost, heal_amount, activation_threshold, action_cost):
         super().__init__("Heal", parent, cooldown, cost, -1, action_cost)
@@ -410,6 +495,12 @@ class Heal(Skill):
     def description(self):
         return self.name + "(" + str(self.cost) + " cost, " + str(self.cooldown) + " turn cooldown" + ", " + str(self.heal_amount) + " health restored when below " + str(int(self.threshold * 100)) + "% health"
     
+    def full_description(self):
+        desc = "Call on holy magic to heal yourself.\n\n"
+        desc += f"Only castable below {int(100 * self.threshold)}% health.\n"
+        desc += f"Costs {self.cost} mana on a {self.cooldown} turn cooldown"
+        return desc
+
 class Torment(Skill):
     def __init__(self, parent, cooldown, cost, slow_duration, damage_percent, slow_amount, range, action_cost):
         super().__init__("Torment", parent, cooldown, cost, range, action_cost)
@@ -438,6 +529,10 @@ class Torment(Skill):
             return self.name + "(" + str(self.cost) + " cost, " + str(self.cooldown) + " turn cooldown" + ", " + str(int(self.damage_percent * 100)) + "% of target's health as damage, " + str(self.slow_amount) + " strength slow permanently)"
         return self.name + "(" + str(self.cost) + " cost, " + str(self.cooldown) + " turn cooldown" + ", " + str(int(self.damage_percent * 100)) + "% of target's health as damage, " + str(self.slow_amount) + " strength slow for " + str(self.duration) + " turns)"
     
-
+    def full_description(self):
+        desc = f"Call on dark magic to half the health of and slow down a target in range {self.range}\n\n"
+        desc += f"Slows the target by {self.slow_amount} dexterity for {self.duration} turns \n"
+        desc += f"Costs {self.cost} mana on a {self.cooldown} turn cooldown"
+        return desc
 
 
