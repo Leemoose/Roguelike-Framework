@@ -1,4 +1,5 @@
 import pygame, pygame_gui
+from .action_screen import *
 
 def create_spellcasting(display, loop):
     player = loop.player
@@ -130,68 +131,95 @@ def update_spell_window(loop, create = False):
 
     display.uiManager.draw_ui(display.win)
 
-def create_quickselect(display, loop):
+def update_quickselect(loop, create=True):
+    display = loop.display
+    display.uiManager.clear_and_reset()
+    display.win.fill((0,0,0))
+
     player = loop.player
     spell = player.mage.known_spells[loop.current_spell]
+    entity = spell
     tileDict = loop.tileDict
     entity_screen_width = display.screen_width // 2
     entity_screen_height = display.screen_height // 4
     entity_offset_from_left = display.screen_width // 4
-    entity_offset_from_top = display.screen_height // 3
+    entity_offset_from_top = display.screen_height // 4
 
     entity_message_width = entity_screen_width // 2
-    entity_message_height = entity_screen_height // 5
+    entity_message_height = entity_screen_height // 10
     entity_message_offset_from_left = entity_offset_from_left + entity_screen_width // 4
     entity_message_offset_from_top = entity_offset_from_top + entity_screen_height // 30
 
     border_width = 8
     border_height = 8
-    pygame.draw.rect(display.win, (0, 0, 0), pygame.Rect(entity_offset_from_left - border_width // 2,
-                                                      entity_offset_from_top - border_height // 2,
-                                                      entity_screen_width + border_width,
-                                                      entity_screen_height + border_height))
-    pygame.draw.rect(display.win, (112, 128, 144),
-                     pygame.Rect(entity_offset_from_left, entity_offset_from_top, entity_screen_width,
-                                 entity_screen_height))
-    
-    message_width = entity_screen_width // 4 * 5
-    message_height = entity_screen_height // 10
-    message_offset_from_left = entity_offset_from_left + entity_screen_width // 6
-    message_offset_from_top = entity_offset_from_top + entity_screen_height // 4
-    
-
-    display.draw_escape_button(entity_message_offset_from_left, entity_message_offset_from_top,
-                            message_width, entity_screen_height)
-    
-    description = f"Select 1-7 to assign {spell.name} a quickcast slot"
-    pygame_gui.elements.UILabel(
-        relative_rect=pygame.Rect((message_offset_from_left, message_offset_from_top),
-                                  (message_width, message_height)),
-        text=description,
-        manager=display.uiManager)
-    
-def update_quickselect(loop):
-    display = loop.display
+    if create == True:
+        display.uiManager.clear_and_reset()
+    display.win.fill((0,0,0))
     entity_screen_width = display.screen_width // 2
-    entity_screen_height = display.screen_height // 4
+    entity_screen_height = display.screen_height // 2
     entity_offset_from_left = display.screen_width // 4
-    entity_offset_from_top = display.screen_height // 3
+    entity_offset_from_top = display.screen_height // 4
 
-    entity_message_width = entity_screen_width // 2
-    entity_message_height = entity_screen_height // 5
-    entity_message_offset_from_left = entity_offset_from_left + entity_screen_width // 4
-    entity_message_offset_from_top = entity_offset_from_top + entity_screen_height // 30
+    entity_message_width = display.screen_width // 2
+    entity_message_height = display.screen_height // 10
+    entity_message_offset_from_left = display.screen_width // 4
+    entity_message_offset_from_top = display.screen_height  // 4
 
-    border_width = 8
-    border_height = 8
+    entity_image_width = display.screen_width // 20
+    entity_image_height = display.screen_width // 20
+    entity_image_offset_from_left = display.screen_width // 4 + display.screen_width // 50
+    entity_image_offset_from_top = display.screen_height // 4
 
-    pygame.draw.rect(display.win, (0, 0, 0), pygame.Rect(entity_offset_from_left - border_width // 2,
-                                                      entity_offset_from_top - border_height // 2,
-                                                      entity_screen_width + border_width,
-                                                      entity_screen_height + border_height))
-    pygame.draw.rect(display.win, (112, 128, 144),
-                     pygame.Rect(entity_offset_from_left, entity_offset_from_top, entity_screen_width,
-                                 entity_screen_height))
-    pygame.draw.rect(display.win, (0, 0, 0), pygame.Rect((0, 0), (display.screen_width // 2, 40)))
+    entity_button_width = display.screen_width // 10
+    entity_button_height = display.screen_height // 30
+    entity_button_offset_from_left = (display.screen_width) // 2 - entity_button_width * 3 //2
+    entity_button_offset_from_top = entity_screen_height + entity_offset_from_top - entity_button_height - display.screen_height // 50
+    entity_button_offset_from_each_other =  entity_button_width // 2
+
+    entity_text_offset_from_left = entity_offset_from_left + entity_screen_width // 20
+    entity_text_offset_from_top = entity_image_offset_from_top + entity_message_height
+    entity_text_width = entity_screen_width * 11 // 12
+    entity_text_height = entity_screen_height * 3 // 5
+    entity_image = pygame.transform.scale(tileDict.tiles[entity.render_tag],
+                                    (entity_image_width, entity_image_height))
+
+    pygame.draw.rect(display.win, (112,128,144), pygame.Rect(entity_offset_from_left, entity_offset_from_top, entity_screen_width, entity_screen_height))
+
+    display.win.blit(entity_image, (entity_image_offset_from_left, entity_image_offset_from_top))
+
+    if (create == True):
+        display.draw_escape_button(entity_offset_from_left, entity_offset_from_top, entity_screen_width, entity_screen_height)
+
+    entity_name = entity.name
+    if create == True:
+        pygame_gui.elements.UILabel(
+            relative_rect=pygame.Rect((entity_message_offset_from_left, entity_message_offset_from_top),
+                                        (entity_message_width, entity_message_height)),
+            text=entity_name,
+            manager=display.uiManager,
+            object_id='#title_small')
+
+    entity_name = entity.name
+    if create == True:
+        pygame_gui.elements.UILabel(
+            relative_rect=pygame.Rect((entity_message_offset_from_left, entity_message_offset_from_top),
+                                        (entity_message_width, entity_message_height)),
+            text=entity_name,
+            manager=display.uiManager,
+            object_id='#title_small')
+        
+    entity_text = ""
+    entity_text += entity.description()  + "<br><br>"
+
+    entity_text += f"Select 1-7 to assign {spell.name} a quickcast slot"    
+
+    if create == True:
+        text_box = pygame_gui.elements.UITextBox(
+            relative_rect=pygame.Rect((entity_text_offset_from_left, entity_text_offset_from_top), (entity_text_width, entity_text_height)),
+            html_text = entity_text,
+            manager=display.uiManager)
+
+    create_skill_bar(display, loop)
 
     display.uiManager.draw_ui(display.win)
+    

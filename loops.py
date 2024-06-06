@@ -72,7 +72,6 @@ class Loops():
                                        LoopType.inventory: create_inventory,
                                        LoopType.enchant: create_inventory,
                                        LoopType.level_up: create_level_up,
-                                       LoopType.quickcast: create_quickselect,
                                        LoopType.victory: create_victory_screen,
                                        LoopType.equipment: create_equipment,
                                        LoopType.main: create_main_screen,
@@ -97,11 +96,12 @@ class Loops():
                                        LoopType.main: self.display.update_main,
                                        LoopType.quest: self.display.update_screen_without_fill,
                                        LoopType.paused: self.display.update_screen_without_fill,
-                                        LoopType.inventory: self.display.update_screen,
-                                        LoopType.enchant: self.display.update_screen,
-                                        LoopType.spell: self.display.update_screen,
-                                        LoopType.binding: self.display.update_screen,
-                                        LoopType.classes: self.display.update_screen
+                                       LoopType.inventory: self.display.update_screen,
+                                       LoopType.enchant: self.display.update_screen,
+                                       LoopType.spell: self.display.update_screen,
+                                       LoopType.binding: self.display.update_screen,
+                                       LoopType.classes: self.display.update_screen,
+                                       LoopType.quickcast: update_quickselect
                                        }
         self.action_options =          {LoopType.action: key_action,
                                        LoopType.inventory: key_inventory,

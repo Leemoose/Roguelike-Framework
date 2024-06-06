@@ -192,7 +192,7 @@ def key_action(loop, key):
             if not player.mage.quick_cast_spells[skill_num].targetted:
                 if player.mage.quick_cast_spells[skill_num].castable(player):
                     print("Casted a spell.")
-                    player.cast_spell(skill_num, loop.player, loop, quick_cast=True)
+                    player.mage.cast_spell(skill_num, loop.player, loop, quick_cast=True)
                 else:
                     loop.add_message("You can't cast " + player.character.skills[skill_num].name + " right now.")
             else:
@@ -430,12 +430,13 @@ def key_quickselect(loop, key):
     player = loop.player
     spell = player.mage.known_spells[loop.current_spell]
     if key == "esc":
-        loop.change_loop(LoopType.spell)
+        loop.change_loop(LoopType.spell_individual)
     elif key in "12345678": # upto 8 quick cast skills
         # cast a skill
         skill_num = int(key) - 1
         if skill_num < len(player.mage.quick_cast_spells):
             player.mage.set_quick_cast(spell, skill_num)
+            loop.change_loop(LoopType.action)
 
 def key_binding(loop, key):
     if key == "esc":

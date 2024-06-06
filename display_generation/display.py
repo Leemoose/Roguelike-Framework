@@ -50,6 +50,7 @@ class Display:
                                              (image_size, image_size)), (image_offset_from_left, image_offset_from_top))
         font = pygame.font.Font('freesansbold.ttf', 12)
 
+
     def update_display(self, loop):
         self.win.fill((0,0,0))
 
