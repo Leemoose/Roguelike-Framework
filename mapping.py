@@ -4,6 +4,7 @@ import spawnparams as Spawns
 
 from dungeon_generation import *
 
+
 """
 Theme: Mapping is responsible for creating all maps at the start of the level, placing monsters, placing items,
  as well as providing basic information about those maps.
@@ -185,7 +186,7 @@ class DungeonGenerator():
                     self.place_monster_at_location(self.tile_map.locate(x,y).spawn_entity(), x, y)
 
     def place_items(self, depth):
-        itemSpawns = Spawns.item_spawner.spawnItems(depth)
+        itemSpawns = item_spawner.spawnItems(depth, "dungeon")
         first = True
         force_near_stairs = False
         for item in itemSpawns:

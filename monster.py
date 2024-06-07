@@ -69,7 +69,7 @@ class Kobold(Monster):
 
         self.description = "A small, scaly creature with a mysterious satchel on its back."
 
-        self.traits["kobald"] = True
+        self.traits["kobold"] = True
         self.attributes["humanoid"] = True
 
 class Slime(Monster):
