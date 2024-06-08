@@ -163,6 +163,17 @@ class Weapon(Equipment):
         damage = random.randint(self.damage_min, self.damage_max)
         return damage
 
+class RangedWeapon(Weapon): #Still working
+    def __init__(self, render_tag = 351):
+        super().__init__(-1, -1, 0, render_tag = render_tag, name = "Ranged Weapon")
+        self.melee = True
+        self.name = "Ranged Weapon"
+        self.description = "A ranged weapon"
+        self.damage_min = 4
+        self.damage_max = 7
+        self.effective.append("wood")
+        self.traits["ranged_weapon"] = True
+
 class Ax(Weapon):
     def __init__(self, render_tag = 300):
         super().__init__(-1, -1, 0, render_tag = render_tag, name = "Axe")

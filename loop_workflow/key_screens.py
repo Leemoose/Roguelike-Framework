@@ -128,12 +128,18 @@ def key_action(loop, key):
         player.attack_move(-1, 1, loop)
     elif key == "n":
         player.attack_move(1, 1, loop)
-    elif key == "g":
+    elif key == "g": #This could be so much simpler to grab
         for item in loop.generator.item_map.all_entities():
             print(item)
             if item.x == player.x and item.y == player.y:
                 player.character.grab(item, loop)
                 break
+    elif key == "f":
+        for weapon in player.character.get_items_in_equipment_slot("hand_slot"):
+            if weapon.has_trait("ranged_weapon"):
+               # loop.start_targetting(start_on_player=True)
+               # player.character.melee(loop.targets.target_current, loop)
+                pass #change to targeting screen
     elif key == "i":
         #  loop.limit_inventory = None
         loop.change_loop(LoopType.inventory)

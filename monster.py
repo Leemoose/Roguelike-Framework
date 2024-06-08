@@ -9,7 +9,6 @@ class Monster(O.Objects):
     def __init__(self, x=-1, y = -1, render_tag = -1, name="Unknown monster", experience_given = 0, brain = ai.Monster_AI, rarity = "Common", health = 10, min_damage = 2, max_damage=3):
         super().__init__(x=x, y=y, render_tag=render_tag, name=name)
         self.character = C.Character(self, health = health, min_damage=min_damage, max_damage = max_damage)
-        self.type = "Monster"
         self.asleep = False
         self.flee = False
 
@@ -36,9 +35,6 @@ class Monster(O.Objects):
     def move(self, move_x, move_y, loop):
         monster_map = loop.generator.monster_map
         generator = loop.generator
-        # print(self.character.movable)
-        # print(move_x)
-        # print(move_y)
         if not self.character.movable:
             self.character.energy -= self.character.action_costs["move"]#(self.character.move_cost - self.character.dexterity)
             return
@@ -71,6 +67,22 @@ class Kobold(Monster):
 
         self.traits["kobald"] = True
         self.attributes["humanoid"] = True
+
+class Squid(Monster):
+    def __init__(self, x=-1, y=-1, render_tag=1500, name="Squid"):
+        super().__init__(x=x, y=y, render_tag = render_tag, name = name, experience_given=10,health=20)
+        self.skills = []
+        self.character.health = 10
+        self.character.max_health = 10
+        self.endurance = 0
+        self.strength = 0
+        self.dexterity = 4
+        self.intelligence = 4
+
+        self.description = "A small, squidlike creature lurking in the water."
+
+        self.traits["squid"] = True
+        self.attributes["water"] = True
 
 class Slime(Monster):
     def __init__(self, x=-1, y=-1, render_tag=1100, name="Slime"):

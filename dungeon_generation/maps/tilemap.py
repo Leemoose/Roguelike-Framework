@@ -224,20 +224,23 @@ class TileMap(TrackingMap):
         return count
 
     def place_stairs(self, depth):
-        if depth > 2:
+        if depth == 2 and self.branch == "Dungeon":
             startx, starty = self.get_random_location_ascaii()
-            # while track_map_ren
-            # tile = T.Stairs(startx, starty, 90, True, downward=False)
             self.track_map_render[startx][starty] = "<"
-            # self.stairs.append(tile)
-        if (depth < 10):
+        elif depth > 1:
+            for i in range(2):
+                startx, starty = self.get_random_location_ascaii()
+                # while track_map_ren
+                # tile = T.Stairs(startx, starty, 90, True, downward=False)
+                self.track_map_render[startx][starty] = "<"
+                # self.stairs.append(tile)
+        if (depth < 10): #Should be number of stairs from previous tilemap
             for i in range(2):
                 startx, starty = self.get_random_location_ascaii()
                 # tile = T.Stairs(startx, starty, 91, True, downward=True)
                 self.track_map_render[startx][starty] = ">"
                 # self.stairs.append(tile)
-        startx, starty = self.get_random_location_ascaii()
-        self.track_map_render[startx][starty] = "<"
+
 
     def get_stairs(self):
         return self.stairs

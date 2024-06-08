@@ -93,6 +93,14 @@ class TileDict():
         tiles[332] = image.load("assets/items/weapons/magic_wand.png")
         tiles[340] = image.load("assets/items/weapons/sword.png")
         tiles[341] = image.load("assets/items/weapons/sleeping_sword.png")
+        tiles[351] = image.load("assets/items/weapons/bow.png")
+
+        # shield assets
+        # list of shields: basic, aegis, tower, magic focus
+        tiles[311] = image.load("assets/items/armor/shield.png")
+        tiles[312] = image.load("assets/items/armor/aegis.png")
+        tiles[313] = image.load("assets/items/armor/tower_shield.png")
+        tiles[314] = image.load("assets/items/armor/magic_focus.png")
 
         # 400-499 consumeables assets
         tiles[401] = image.load("assets/items/consumeables/health_orb_bigger.png")
@@ -127,12 +135,6 @@ class TileDict():
         tiles[605] = image.load("assets/items/armor/karate_gi.png")
         tiles[606] = image.load("assets/items/armor/bloodstained_armor.png")
 
-        # shield assets
-        # list of shields: basic, aegis, tower, magic focus
-        tiles[311] = image.load("assets/items/armor/shield.png")
-        tiles[312] = image.load("assets/items/armor/aegis.png")
-        tiles[313] = image.load("assets/items/armor/tower_shield.png")
-        tiles[314] = image.load("assets/items/armor/magic_focus.png")
 
         # boots assets
         # list of boots: basic, escape
@@ -226,6 +228,8 @@ class TileDict():
         tiles[1090] = image.load('assets/monsters/stumpy.png')
         tiles[1100] = image.load('assets/monsters/slime.png')
         tiles[161] = image.load('assets/monsters/yendorb_deactivated.png')
+
+        tiles[1500] = image.load('assets/monsters/squid.png')
 
         tiles[199] = image.load('assets/monsters/monster_corpse.png')
 

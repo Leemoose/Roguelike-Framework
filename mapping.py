@@ -35,7 +35,7 @@ class DungeonGenerator():
         self.player = player
         self.summoner = []
 
-        if self.depth != 1:
+        if self.depth != 1 or self.branch != "Dungeon":
             self.place_monsters(depth)
             self.place_items(depth)
         self.place_npcs(depth)
@@ -163,7 +163,7 @@ class DungeonGenerator():
         return new
 
     def place_monsters(self, depth):
-        monsterSpawns = Spawns.monster_spawner.spawnMonsters(depth)
+        monsterSpawns = Spawns.monster_spawner.spawnMonsters(self.branch, depth)
         for monster in monsterSpawns:
             self.place_monster(monster)
 

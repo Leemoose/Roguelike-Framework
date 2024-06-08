@@ -428,6 +428,7 @@ class Loops():
 
     def init_game(self, display):
         self.player = player.Player(0, 0)
+        self.player.character.get_item(self, items.RangedWeapon())
         self.memory.player = self.player
         self.branch = "Dungeon"
         self.floor_level = 1

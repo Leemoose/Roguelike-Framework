@@ -20,6 +20,10 @@ Swap with monster spell
 Flint and steel (can start a fire on your tile)
 Music
 
+Ocean:
+ (maybe boats?)
+    Add flying
+
 Change monster alertness system
 Skill tree?
 Can create portal to first floor?

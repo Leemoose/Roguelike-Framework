@@ -126,6 +126,16 @@ class Character():
         self.equipment_slots[slot].append(None)
         return True
 
+    def get_items_in_equipment_slot(self, slot):
+        carried = []
+        if slot not in self.equipment_slots:
+            raise Exception("You are trying to find a {} in {}'s equipment slot".format(slot, self.parent.name))
+        else:
+            for item in self.equipment_slots[slot]:
+                if item != None:
+                    carried.append(item)
+        return carried
+
     def is_alive(self):
         if self.health <= 0 and not self.invincible:
             self.alive = False

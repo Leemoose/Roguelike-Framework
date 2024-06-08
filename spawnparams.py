@@ -366,6 +366,7 @@ MonsterSpawns.append(MonsterSpawnParams(M.Raptor(-1, -1), 7, 9, 0, 0))
 MonsterSpawns.append(MonsterSpawnParams(M.Tormentorb(-1, -1), 8, 9, 0, 0))
 MonsterSpawns.append(MonsterSpawnParams(M.Golem(-1, -1), 7, 9, 0, 0))
 MonsterSpawns.append(MonsterSpawnParams(M.BossOrb(-1, -1), 10, 10, 1, 1))
+MonsterSpawns.append(MonsterSpawnParams(M.Squid(-1, -1), 1, 5, 1, 1))
 
 
 Monster_Distributions = [(1.0, 0.0), # floor 1
@@ -403,7 +404,7 @@ class MonsterSpawner():
         else:
             return random.randint(6, 9)
     
-    def spawnMonsters(self, depth):
+    def spawnMonsters(self, branch, depth):
         if depth > 10:
             depth = 10
         monsters = []
@@ -411,6 +412,13 @@ class MonsterSpawner():
         orbAtDepth = [i for i in self.orbMonsters if i.AllowedAtDepth(depth)]
         if orbAtDepth == []:
             orbAtDepth = normalAtDepth
+
+        if branch == "Ocean": #Something doesn't seem to be working
+            monster_spawn = [i for i in self.MonsterSpawns if "water" in i.monster.attributes]
+            for i in range(self.countSpawn(depth)):
+                monster = monster_spawn[random.randint(0, len(monster_spawn))-1].GetLeveledCopy(self.random_level(depth))
+                monsters.append(monster)
+            return monsters
 
         if self.forceSpawn:
             for _ in range(self.forceSpawn[1]):
