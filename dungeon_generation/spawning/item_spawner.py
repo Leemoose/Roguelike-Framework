@@ -1,5 +1,5 @@
 import random
-from .distributions import dists
+from .branch_params import branch_params
 from .item_initializations import ItemSpawns
 import items as I
 
@@ -45,7 +45,7 @@ class ItemSpawner():
             return random.randint(0, 3)
     
     def spawnItems(self, depth, branch):
-        distribution = dists[branch]
+        distribution = branch_params[branch]
         if depth > 10:
             depth = 10
         items = []

@@ -25,6 +25,9 @@ class Monster(O.Objects):
         self.orb = False
         self.rarity = rarity
 
+        # parameter that is checked according to specific branch distributions, specific branches will write functions describing what a particular restriction does
+        self.restriction = ""
+
         self.description = f"This is a {self.name}. It wants to eat you."
 
     def die(self):
@@ -241,6 +244,7 @@ class Golem(Monster):
         self.intelligence = 2
         self.character.armor = 1
         self.attributes["stone"] = True
+        self.restriction = "deep water"
 
 class Raptor(Monster):
     def __init__(self, x=-1, y=-1, render_tag=1030, name="Velociraptor"):

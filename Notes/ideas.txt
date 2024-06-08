@@ -49,3 +49,4 @@ mini-icons that appear on monster/player tiles to indicate active status effects
 
 Add more comments to code
 
+need to add more monsters that fit into new rarity/groups scheme, to allow for more varied generation on later floors

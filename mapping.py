@@ -23,6 +23,7 @@ class DungeonGenerator():
         self.mapData = dungeon_data.get_map_data(branch, depth)
         self.depth = depth
         self.branch = branch
+        self.spawn_params = branch_params[branch]
         self.width = self.mapData.width
         self.height = self.mapData.height
         self.summoner = []
@@ -35,18 +36,22 @@ class DungeonGenerator():
         self.player = player
         self.summoner = []
 
-        if self.depth != 1:
+        if (self.depth != 1 or branch != "Dungeon"): # prefab first floor of dungeon has no monsters and items
             self.place_monsters(depth)
             self.place_items(depth)
         self.place_npcs(depth)
 
 
-    def get_random_location(self, stairs_block = True):
-        startx = random.randint(0, self.width - 1)
-        starty = random.randint(0, self.height - 1)
-        while (not self.get_passable((startx,starty)) or (not stairs_block or self.on_stairs(startx, starty))):
-            startx = random.randint(0, self.width - 1)
-            starty = random.randint(0, self.height - 1)
+    def get_random_location(self, stairs_block = True, condition = None):
+        candidates = []
+        if condition == None:
+            condition = self.get_passable
+        for x in range(0, self.width):
+            for y in range(0, self.height):
+                if condition((x, y)) or \
+                    (not stairs_block or self.on_stairs(x, y)):
+                    candidates.append((x, y))
+        startx, starty = random.choice(candidates)
         return startx, starty
 
     def monsters_in_sight(self):
@@ -171,32 +176,38 @@ class DungeonGenerator():
                 self.place_monster(monster)
 
     def place_monster(self, creature):
-        x, y = self.get_random_location()
+        def monster_restriction(location):
+            return self.spawn_params.check_monster_restrictions(creature, self.tile_map, location, self)
+
+        x, y = self.get_random_location(condition=monster_restriction)
         self.place_monster_at_location(creature, x, y)
 
     def place_pack(self, pack):
         pack_size = len(pack)
         count = 0
         iters = 0
-        while count < pack_size:
-            x, y = self.get_random_location()
-            locations = []
+
+        area_to_check = 2 # check all tiles in radius 2 (this technically caps pack size at 25, up this area if any dungeon has a higher max pack size)
+        directions = [(dx, dy) for dx in range(-1 * area_to_check, area_to_check + 1) for dy in range(-1 * area_to_check, area_to_check + 1)]
+
+        def pack_condition(location):
             count = 0
-            iters += 1
-            area_to_check = 2 # check all tiles in radius 2 (this technically caps pack size at 25, up this area if any dungeon has a higher max pack size)
-            directions = [(dx, dy) for dx in range(-1 * area_to_check, area_to_check + 1) for dy in range(-1 * area_to_check, area_to_check + 1)]
-            random.shuffle(directions)
             for (dx, dy) in directions:
-                if self.get_passable((x + dx, y + dy)):
-                    locations.append((x + dx, y + dy))
+                if self.get_passable((location[0] + dx, location[1] + dy)):
                     count += 1
-                    # break early as soon as we find a location that can fit the full pack
-                    if count >= pack_size:
-                        break
-            
-            # for debugging, to check if we get stuck in this loop
-            if iters != 0 and iters % 1000 == 0:
-                print("have searched for pack location for 1000 iterations, possibly stuck")
+            return count >= pack_size
+
+        x, y = self.get_random_location(condition=pack_condition)
+        locations = []
+        random.shuffle(directions) # varies the arangement of packs
+
+        for (dx, dy) in directions:
+            if self.get_passable((x + dx, y + dy)):
+                locations.append((x + dx, y + dy))
+                count += 1
+                # break early as soon as we find a location that can fit the full pack
+                if count >= pack_size:
+                    break
 
         for i, monster in enumerate(pack):
             x, y = locations[i]
@@ -212,7 +223,7 @@ class DungeonGenerator():
             for y in range(self.height):
                 if self.tile_map.locate(x,y).has_trait("npc_spawn"):
                     self.interact_map.place_thing(self.tile_map.locate(x,y).spawn_entity())
-                if self.tile_map.locate(x,y).has_trait("monster_spawn"):
+                if self.tile_map.locate(x,y).has_trait("monster_spawn"): # this is used for static monster spawns
                     self.place_monster_at_location(self.tile_map.locate(x,y).spawn_entity(), x, y)
 
     def place_items(self, depth):

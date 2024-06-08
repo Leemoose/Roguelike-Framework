@@ -1,13 +1,20 @@
 import random
 
-# can overwrite distributions for individual branches
-class BranchDistributions:
+# can overwrite params for individual branches
+class BranchParams:
     def __init__(self):
         self.branch_name = None
+
+        # variables that determine monster spawn difficulties, can be overwritten in specific branches
         self.difficulty_base = 3 # min sum of tiers of encounters
         self.difficulty_growth = 1 # how much sum of tiers of encounters grow with depth
         self.difficulty_variance = 1 # how much sum of tiers of encounters can vary
 
+        self.pack_size_base = 3 # min size of monster packs
+        self.pack_growth = 0.5 # how much size of monster pack grows with depth
+        self.pack_variance = 2 # how much size of monster pack can vary
+
+        # NOT YET IMPLEMENTED
         # relative weights for equipment types, this lets us adjust equipment types as we generate to bias towards equipment slots not generated yet
         #                      weapon,  shield, body armor, boots,  helmets, gloves,    pants,  rings,  amulets 
         self.equipment_type = [4,       1,      1,          0.5,    0.5,     0.5,       1,      1,      0.5]
@@ -68,6 +75,9 @@ class BranchDistributions:
                          (0.1, 0.7, 0.2, 0.0), # floor 8
                          (0.1, 0.5, 0.2, 0.2), # floor 9
                          (0.1, 0.3, 0.3, 0.3)] # floor 10
+        
+
+    ### Functions that determine how difficult monster spawns are, defaults are for dungeon, can be overwritten for specific branches
     
     # since monsters exist in groups across every 3 floors, have a slight chance of easy monsters appearing later so dungeon doesn't feel totally different across floors
     # exists in this function in case other branches want to overwrite the grouping of every 3 floors that exists in dungeon
@@ -77,15 +87,25 @@ class BranchDistributions:
         return (depth - 2 // 3) * 3 + 1
 
     def depth_difficulty(self, depth):
-        min_difficulty = self.difficulty_base + self.difficulty_growth * depth - self.difficulty_variance
-        max_difficulty = self.difficulty_base + self.difficulty_growth * depth + self.difficulty_variance
+        min_difficulty = self.difficulty_base + int(self.difficulty_growth * depth) - self.difficulty_variance
+        max_difficulty = self.difficulty_base + int(self.difficulty_growth * depth) + self.difficulty_variance
         return random.randint(min_difficulty, max_difficulty)
     
     # maybe define these by branch but for now its just here
-    def monster_pack_size(self, depth, base_size=3, growth=0.5, variance=2):
-        min_size = base_size + int(growth * depth)
-        max_size = min_size + variance
+    def monster_pack_size(self, depth,):
+        min_size = self.pack_size_base + int(self.pack_growth * depth)
+        max_size = min_size + self.pack_variance
         return random.randint(min_size, max_size)
+    
+    def random_level(self, depth):
+        if depth < 5:
+            return random.randint(0, 1)
+        elif depth < 8:
+            return random.randint(2, 5)
+        else:
+            return random.randint(6, 9)
+
+    ### Functions that determine how numerous item spawns are, defaults are for dungeon, can be overwritten for specific branches
 
     def countEquipment(self, depth):
         return random.randint(int(2 + 0.2 * (depth)), int(3 + 0.3 * (depth)))
@@ -98,18 +118,24 @@ class BranchDistributions:
     
     def countScrorbs(self, depth):
         return random.randint(int(2 + 0.1 * (depth)), int(3 + 0.2 * (depth)))
+    
+    # specific branches can overwrite this with any restrictions they can check on the monster
+    # returns true on tiles that can be spawned on
+    def check_monster_restrictions(self, monster, tileMap, location, generator):
+        return generator.get_passable(location)
+        
 
-class DungeonDistributions(BranchDistributions):
+class DungeonParams(BranchParams):
     def __init__(self):
         super().__init__()
         self.branch_name = "Dungeon"
 
-class ForestDistributions(BranchDistributions):
+class ForestParams(BranchParams):
     def __init__(self):
         super().__init__()
         self.branch_name = "Forest"
 
-        # forest has rarer potions but fewer of them
+        # forest has rarer potions but fewer of them and no equipment
         # no real reason for this, just to test spawning so can be changed
 
         self.potiorbs = [(0.4, 0.6), # floor 1
@@ -130,14 +156,27 @@ class ForestDistributions(BranchDistributions):
     def countPotiorbs(self, depth):
         return random.randint(int(1 + 0.5 * (depth)), int(2 + 0.5 * (depth)))
     
-class OceanDistributions(BranchDistributions):
+    def countEquipment(self, depth):
+        return 0
+
+class OceanParams(BranchParams):
     def __init__(self):
         super().__init__()
         self.branch_name = "Ocean"
+        self.seen = set()
 
-dists_list = [DungeonDistributions(),
-              ForestDistributions(),
-              OceanDistributions()]
+    def check_monster_restrictions(self, monster, tileMap, location, generator):
+        if monster.restriction == "deep water":    
+            if tileMap.track_map_render[location[0]][location[1]] != "dw":
+                return False
+            else:
+                return True
+            
+        return generator.get_passable(location)
 
-# make distributions into dictionary keyed on branch names for ease of use
-dists = {d.branch_name : d for d in dists_list}
+params_list = [DungeonParams(),
+              ForestParams(),
+              OceanParams()]
+
+# make params into dictionary keyed on branch names for ease of use
+branch_params = {d.branch_name : d for d in params_list}

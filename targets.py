@@ -48,6 +48,7 @@ class Target:
                 self.void_skill()
                 return
             monster = monster_map.locate(x,y)
+            # print(monster)
             if self.skill_to_cast.castable(monster):
                 if self.temp_cast:
                     self.skill_to_cast.try_to_activate(monster, loop)

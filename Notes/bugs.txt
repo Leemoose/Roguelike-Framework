@@ -1,5 +1,5 @@
-hopefully fixed - Autoexplore sometimes fails with: RecursionError: maximum recursion depth exceeded in comparison
-hopefully fixed - Autoexplore sometimes fails with: AttributeError: 'tuple' object has no attribute 'pop'
+[x] Autoexplore sometimes fails with: RecursionError: maximum recursion depth exceeded in comparison
+[x] Autoexplore sometimes fails with: AttributeError: 'tuple' object has no attribute 'pop'
 moving sometimes fails on if self.generator.tile_map.track_map[monster.x][monster.y].on_fire: IndexError: list index out of range
 
 rings might be broken (rings are definitely broken)
@@ -11,15 +11,19 @@ enchant scrolls maybe broken
 
 Dojo art covering stairs?
 
-rest is broken (maybe fixed)
+Dojo spawning on every possible floor (should only spawn on 1)
+
+[x] rest is broken (maybe fixed)
 
 upstairs after going through a portal don't lead anywhere so crash
 
 one downstairs in forest crashes
 
-message log is broken
+[x] message log is broken
 
 fix gateways so that there can be a different outgoing and incoming (sort of fixed)
 
 npc not talking (likely to do with switching them from dictionary to map)
 
+attack_move in dungeon branches crashes game with: AttributeError: 'int' object has no attribute 'x'
+seems to have something to do with monster_map in branches being different from dungeon?

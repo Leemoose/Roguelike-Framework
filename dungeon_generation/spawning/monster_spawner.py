@@ -1,5 +1,5 @@
 import random
-from .distributions import dists
+from .branch_params import branch_params
 from .monster_initializations import MonsterSpawns
 import items as I
 
@@ -14,19 +14,6 @@ class MonsterSpawner():
         self.forceSpawn = None
         # self.forceSpawn = ("Slime", 1)
         # self.forceSpawn = ("Hobgorblin", 5) 
-
-    def countSpawn(self, depth):
-        if depth == 10:
-            return 1
-        return random.randint(int(5 + 0.5 * (depth)), int(8 + 1.0 * (depth)))
-    
-    def random_level(self, depth):
-        if depth < 5:
-            return random.randint(0, 1)
-        elif depth < 8:
-            return random.randint(2, 5)
-        else:
-            return random.randint(6, 9)
         
     def generate_encounter_numbers(self, target_difficulty, distribution):
         possible_tiers = [0, 1, 2, 3]
@@ -45,7 +32,7 @@ class MonsterSpawner():
 
         return encounter_nums
     
-    def make_monster_pack(self, depth, branch, tier):
+    def make_monster_pack(self, depth, branch, params, tier):
         if tier < 2 or tier > 3:
             print("invalid tier for monster pack")
             return []
@@ -74,7 +61,7 @@ class MonsterSpawner():
         if monsterGroupsRare == {} and tier == 3:
             tier -= 1
 
-        pack_size = dists[branch].monster_pack_size(depth)
+        pack_size = params.monster_pack_size(depth)
 
         monsters = []
 
@@ -86,47 +73,47 @@ class MonsterSpawner():
         
         for _ in range(pack_size):
             monster_spawn = random.choice(monsterGroups[group])
-            monsters.append(monster_spawn.GetLeveledCopy(self.random_level(depth)))
+            monsters.append(monster_spawn.GetLeveledCopy(params.random_level(depth)))
         
         # maybe change this so packs can have multiple rares but for now just 1 rare in tier 3 packs
         if tier == 3:
             monster_spawn = random.choice(monsterGroupsRare[group])
-            monsters.append(monster_spawn.GetLeveledCopy(self.random_level(depth)))
+            monsters.append(monster_spawn.GetLeveledCopy(params.random_level(depth)))
 
         return monsters
     
-    def get_tier_zero_possibs(self, depth, branch, dist):
+    def get_tier_zero_possibs(self, depth, branch, params):
         if depth == 1:
             return []
-        prev_depth = dist.prev_monster_dist(depth)
-        monsters = self.make_monster_pack(prev_depth, branch, random.randint(2, 3))
+        prev_depth = params.prev_monster_dist(depth)
+        monsters = self.make_monster_pack(prev_depth, branch, params, random.randint(2, 3))
         return monsters
     
-    def get_tier_one_possibs(self, depth, branch, _):
+    def get_tier_one_possibs(self, depth, branch, params):
         commonAtDepth = [i for i in self.commonMonsters if i.AllowedAtDepth(depth, branch)]
         if commonAtDepth == []:
             return None
         monster_spawn = random.choice(commonAtDepth)
-        monster = monster_spawn.GetLeveledCopy(self.random_level(depth))
+        monster = monster_spawn.GetLeveledCopy(params.random_level(depth))
         return monster
 
-    def get_tier_two_possibs(self, depth, branch, dist):
+    def get_tier_two_possibs(self, depth, branch, params):
         pack_prob = random.random()
         rareAtDepth = [i for i in self.rareMonsters if i.AllowedAtDepth(depth, branch)]
-        if pack_prob < dist.monster_pack_chance or rareAtDepth == []:
-            return self.make_monster_pack(depth, branch, 2)
+        if pack_prob < params.monster_pack_chance or rareAtDepth == []:
+            return self.make_monster_pack(depth, branch, params, 2)
         
         monster_spawn = random.choice(rareAtDepth)
-        monster = monster_spawn.GetLeveledCopy(self.random_level(depth))
+        monster = monster_spawn.GetLeveledCopy(params.random_level(depth))
         return monster
 
-    def get_tier_three_possibs(self, depth, branch, _):
-        return self.make_monster_pack(depth, branch, 3)
+    def get_tier_three_possibs(self, depth, branch, params):
+        return self.make_monster_pack(depth, branch, params, 3)
 
     def spawnMonsters(self, depth, branch):
         if depth > 10:
             depth = 10
-        distribution = dists[branch]
+        params = branch_params[branch]
 
         monsters = []
 
@@ -141,7 +128,7 @@ class MonsterSpawner():
         for boss in bossAtDepth:
             print("Boss monster: " + boss.monster.name)
             # maybe can change this so bosses aren't leveled if we want to just manually buff bosses so they are less random
-            monster = boss.GetLeveledCopy(self.random_level(depth))
+            monster = boss.GetLeveledCopy(params.random_level(depth))
             monsters.append(monster)
         
         # monster spawning now works on tiers
@@ -150,14 +137,14 @@ class MonsterSpawner():
         # tier 2 is either pack of normal monsters or rare monster (less common to show up)
         # tier 3 is pack of rare monster + normal monsters (less common to show up)
         # sum of tier levels equals a difficulty calculated based on depth and branch
-        difficulty = distribution.depth_difficulty(depth)
+        difficulty = params.depth_difficulty(depth)
 
-        encounters = self.generate_encounter_numbers(difficulty, distribution.monsters[depth - 1])
+        encounters = self.generate_encounter_numbers(difficulty, params.monsters[depth - 1])
         tier_possibs = [self.get_tier_zero_possibs, self.get_tier_one_possibs, self.get_tier_two_possibs, self.get_tier_three_possibs]
 
         for tier, tier_count in enumerate(encounters):
             for _ in range(tier_count):
-                monster = tier_possibs[tier](depth, branch, distribution)
+                monster = tier_possibs[tier](depth, branch, params)
                 if monster != None and monster != []:
                     monsters.append(monster)
         
