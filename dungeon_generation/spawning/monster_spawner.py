@@ -121,7 +121,7 @@ class MonsterSpawner():
 
         bossAtDepth = [i for i in self.bossMonsters if i.AllowedAtDepth(depth, branch)]
 
-        print(bossAtDepth)
+        # print(bossAtDepth)
 
         if self.forceSpawn:
             for _ in range(self.forceSpawn[1]):
@@ -130,7 +130,7 @@ class MonsterSpawner():
                 monsters.append(monster)
 
         for boss in bossAtDepth:
-            print("Boss monster: " + boss.monster.name)
+            # print("Boss monster: " + boss.monster.name)
             # maybe can change this so bosses aren't leveled if we want to just manually buff bosses so they are less random
             monster = boss.GetLeveledCopy(params.random_level(depth))
             monsters.append(monster)

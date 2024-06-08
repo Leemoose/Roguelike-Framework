@@ -224,7 +224,16 @@ class TileMap(TrackingMap):
         return count
 
     def place_stairs(self, depth):
-        if depth > 2:
+        # print(self.branch)
+        # if self.branch == "Forest":
+        #     import pdb; pdb.set_trace()
+        if depth > 2 and self.branch == "Dungeon": # special case because of prefab
+            startx, starty = self.get_random_location_ascaii()
+            # while track_map_ren
+            # tile = T.Stairs(startx, starty, 90, True, downward=False)
+            self.track_map_render[startx][starty] = "<"
+            # self.stairs.append(tile)
+        if depth > 1 and self.branch != "Dungeon":
             startx, starty = self.get_random_location_ascaii()
             # while track_map_ren
             # tile = T.Stairs(startx, starty, 90, True, downward=False)
@@ -236,8 +245,9 @@ class TileMap(TrackingMap):
                 # tile = T.Stairs(startx, starty, 91, True, downward=True)
                 self.track_map_render[startx][starty] = ">"
                 # self.stairs.append(tile)
-        startx, starty = self.get_random_location_ascaii()
-        self.track_map_render[startx][starty] = "<"
+        if depth != 1:
+            startx, starty = self.get_random_location_ascaii()
+            self.track_map_render[startx][starty] = "<"
 
     def get_stairs(self):
         return self.stairs
