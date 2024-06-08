@@ -13,6 +13,7 @@ Autoexplore picks up items
 Ocean:
     Deep water (maybe boats?)
     Add flying
+    Targetting does not work over deep water
 
 Split item screen description to description and buttons seperately (so it can be reused)
 

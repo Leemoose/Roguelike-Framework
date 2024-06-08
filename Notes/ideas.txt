@@ -36,17 +36,17 @@ More complicated combat modifiers:
 
 Split player into: body, mage, statistics, warrior character
 
+More pathing stuff:
+    Some kind of way to path to portals
+    Update mouse-gameplay by allowing pathing to non-adjacent locations. 
+    Maybe create a new pathing looptype and standardize autoexplore, stairs pathing, portal pathing, mouse click pathing etc.
+    Could introduce pathing to specific items (might need ctrl+f for items like dcss to be usable)
 
-Some kind of way to path to portals
-
-Update mouse-gameplay by allowing pathing to non-adjacent locations. 
-
-Maybe create a new pathing looptype and standardize autoexplore, stairs pathing, portal pathing, mouse click pathing etc.
-
-Could introduce pathing to specific items (might need ctrl+f for items like dcss to be usable)
-
-mini-icons that appear on monster/player tiles to indicate active status effects
+More UI:
+    mini-icons that appear on monster/player tiles to indicate active status effects
 
 Add more comments to code
 
-need to add more monsters that fit into new rarity/groups scheme, to allow for more varied generation on later floors
+More Spawning:
+    need to add more monsters that fit into new rarity/groups scheme, to allow for more varied generation on later floors
+    monsters on deep water need to get special brains to move through deep water
