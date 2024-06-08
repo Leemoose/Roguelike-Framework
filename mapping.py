@@ -1,6 +1,5 @@
 import static_configs
 import random
-import spawnparams as Spawns
 
 from dungeon_generation import *
 
@@ -164,13 +163,44 @@ class DungeonGenerator():
         return new
 
     def place_monsters(self, depth):
-        monsterSpawns = Spawns.monster_spawner.spawnMonsters(depth)
+        monsterSpawns = monster_spawner.spawnMonsters(depth, self.branch)
         for monster in monsterSpawns:
-            self.place_monster(monster)
+            if type(monster) == list:
+                self.place_pack(monster)
+            else:
+                self.place_monster(monster)
 
     def place_monster(self, creature):
         x, y = self.get_random_location()
         self.place_monster_at_location(creature, x, y)
+
+    def place_pack(self, pack):
+        pack_size = len(pack)
+        count = 0
+        iters = 0
+        while count < pack_size:
+            x, y = self.get_random_location()
+            locations = []
+            count = 0
+            iters += 1
+            area_to_check = 2 # check all tiles in radius 2 (this technically caps pack size at 25, up this area if any dungeon has a higher max pack size)
+            directions = [(dx, dy) for dx in range(-1 * area_to_check, area_to_check + 1) for dy in range(-1 * area_to_check, area_to_check + 1)]
+            random.shuffle(directions)
+            for (dx, dy) in directions:
+                if self.get_passable((x + dx, y + dy)):
+                    locations.append((x + dx, y + dy))
+                    count += 1
+                    # break early as soon as we find a location that can fit the full pack
+                    if count >= pack_size:
+                        break
+            
+            # for debugging, to check if we get stuck in this loop
+            if iters != 0 and iters % 1000 == 0:
+                print("have searched for pack location for 1000 iterations, possibly stuck")
+
+        for i, monster in enumerate(pack):
+            x, y = locations[i]
+            self.place_monster_at_location(monster, x, y)
 
     def place_monster_at_location(self, creature, x, y):
         creature.x = x
@@ -186,7 +216,7 @@ class DungeonGenerator():
                     self.place_monster_at_location(self.tile_map.locate(x,y).spawn_entity(), x, y)
 
     def place_items(self, depth):
-        itemSpawns = item_spawner.spawnItems(depth, "dungeon")
+        itemSpawns = item_spawner.spawnItems(depth, self.branch)
         first = True
         force_near_stairs = False
         for item in itemSpawns:

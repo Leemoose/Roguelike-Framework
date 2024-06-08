@@ -15,16 +15,17 @@ class ItemSpawnParams:
         return copy.deepcopy(self.item)
     
 class MonsterSpawnParams:
-    def __init__(self, monster, minFloor, maxFloor, branch, rarity, group = None):
+    def __init__(self, monster, minFloor=1, maxFloor=10, branch="Dungeon", rarity="Common", group = None, boss=False):
         self.monster = monster
         self.minFloor = minFloor
         self.maxFloor = maxFloor
         self.rarity = rarity
         self.branch = branch
         self.group = group
+        self.boss = boss
 
     def AllowedAtDepth(self, depth, branch=None):
-        return (depth >= self.minFloor and depth <= self.maxFloor and self.branch == branch)
+        return (depth >= self.minFloor and depth <= self.maxFloor and (self.branch == "all" or self.branch == branch))
 
     def GetLeveledCopy(self, depth):
         copied = copy.deepcopy(self.monster)
@@ -43,3 +44,7 @@ class MonsterSpawnParams:
                 
 
         return copied
+    
+class BossSpawnParams(MonsterSpawnParams):
+    def __init__(self, monster, depth, branch="dungeon", rarity="Common", group = None):
+        super().__init__(monster, minFloor=depth, maxFloor=depth, branch=branch, rarity=rarity, group=group, boss=True)
