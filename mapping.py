@@ -1,8 +1,8 @@
 import static_configs
 import random
-import spawnparams as Spawns
 
 from dungeon_generation import *
+
 
 """
 Theme: Mapping is responsible for creating all maps at the start of the level, placing monsters, placing items,
@@ -23,6 +23,7 @@ class DungeonGenerator():
         self.mapData = dungeon_data.get_map_data(branch, depth)
         self.depth = depth
         self.branch = branch
+        self.spawn_params = branch_params[branch]
         self.width = self.mapData.width
         self.height = self.mapData.height
         self.summoner = []
@@ -35,18 +36,32 @@ class DungeonGenerator():
         self.player = player
         self.summoner = []
 
-        if self.depth != 1 or self.branch != "Dungeon":
+
+        if (self.depth != 1 or branch != "Dungeon"): # prefab first floor of dungeon has no monsters and items
             self.place_monsters(depth)
             self.place_items(depth)
         self.place_npcs(depth)
 
+    def get_random_location_basic(self, stairs_block = True):
+        start_x = random.randint(0, self.width - 1)
+        start_y = random.randint(0, self.height - 1)
 
-    def get_random_location(self, stairs_block = True):
-        startx = random.randint(0, self.width - 1)
-        starty = random.randint(0, self.height - 1)
-        while (not self.get_passable((startx,starty)) or (not stairs_block or self.on_stairs(startx, starty))):
-            startx = random.randint(0, self.width - 1)
-            starty = random.randint(0, self.height - 1)
+        while (self.get_passable((start_x, start_y))) or (not stairs_block or self.on_stairs(start_x, start_y)):
+            start_x = random.randint(0, self.width - 1)
+            start_y = random.randint(0, self.height - 1)
+
+        return start_x, start_y
+
+    def get_random_location(self, stairs_block = True, condition = None):
+        candidates = []
+        if condition == None:
+            return self.get_random_location_basic(stairs_block)
+        for x in range(0, self.width):
+            for y in range(0, self.height):
+                if condition((x, y)) or \
+                    (not stairs_block or self.on_stairs(x, y)):
+                    candidates.append((x, y))
+        startx, starty = random.choice(candidates)
         return startx, starty
 
     def monsters_in_sight(self):
@@ -163,13 +178,49 @@ class DungeonGenerator():
         return new
 
     def place_monsters(self, depth):
-        monsterSpawns = Spawns.monster_spawner.spawnMonsters(self.branch, depth)
+        monsterSpawns = monster_spawner.spawnMonsters(depth, self.branch)
         for monster in monsterSpawns:
-            self.place_monster(monster)
+            if type(monster) == list:
+                self.place_pack(monster)
+            else:
+                self.place_monster(monster)
 
     def place_monster(self, creature):
-        x, y = self.get_random_location()
+        if self.spawn_params.check_monster_restrictions != None:
+            def monster_restriction(location):
+                return self.spawn_params.check_monster_restrictions(creature, self.tile_map, location, self)
+        else:
+            monster_restriction = None
+        x, y = self.get_random_location(condition=monster_restriction)
         self.place_monster_at_location(creature, x, y)
+
+    def place_pack(self, pack):
+        pack_size = len(pack)
+        count = 0
+        iters = 0
+
+        area_to_check = 2 # check all tiles in radius 2 (this technically caps pack size at 25, up this area if any dungeon has a higher max pack size)
+        directions = [(dx, dy) for dx in range(-1 * area_to_check, area_to_check + 1) for dy in range(-1 * area_to_check, area_to_check + 1)]
+
+        while count < pack_size:
+            x, y = self.get_random_location()
+            locations = []
+            count = 0
+            random.shuffle(directions) # varies the arangement of packs
+
+            for (dx, dy) in directions:
+                if self.get_passable((x + dx, y + dy)):
+                    locations.append((x + dx, y + dy))
+                    count += 1
+                    # break early as soon as we find a location that can fit the full pack
+                    if count >= pack_size:
+                        break
+
+        for i, monster in enumerate(pack):
+            if i >= len(locations):
+                import pdb; pdb.set_trace()
+            x, y = locations[i]
+            self.place_monster_at_location(monster, x, y)
 
     def place_monster_at_location(self, creature, x, y):
         creature.x = x
@@ -181,11 +232,11 @@ class DungeonGenerator():
             for y in range(self.height):
                 if self.tile_map.locate(x,y).has_trait("npc_spawn"):
                     self.interact_map.place_thing(self.tile_map.locate(x,y).spawn_entity())
-                if self.tile_map.locate(x,y).has_trait("monster_spawn"):
+                if self.tile_map.locate(x,y).has_trait("monster_spawn"): # this is used for static monster spawns
                     self.place_monster_at_location(self.tile_map.locate(x,y).spawn_entity(), x, y)
 
     def place_items(self, depth):
-        itemSpawns = Spawns.item_spawner.spawnItems(depth)
+        itemSpawns = item_spawner.spawnItems(depth, self.branch)
         first = True
         force_near_stairs = False
         for item in itemSpawns:

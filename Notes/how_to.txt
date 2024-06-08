@@ -4,3 +4,24 @@ Adding new loop type
     3. Add new keyboard inputs under key_screens
     3. Link the loop type to correct function under create_screen, update_screen and action_options in loops.py dictionary
     4. It should work!
+
+Adding spawns to new branches
+    1. Add new parameter class in branch_params.py
+        a. Make sure to assign branch_name identical to branch_name defined in DungeonData
+        b. (Optionally) Specify monster difficulties (including level scaling, difficulty scaling and monster pack size scaling), item distributions and item counts
+        c. (Optionally) Specify any possible spawning restrictions on monsters in check_monster_restrictions. 
+                        Define monster resrictions for specific keywords
+                        In monster.py, set self.restriction to keyword defined in check_monster_restrictions
+                        Note: too many floors with restrictions may make initialization slower
+                
+    
+    2. Add any branch specific items to item_initializations.py
+        a. by default items appear on any branch on any floor
+        b. (Optionally) specify minFloor, maxFloor, or branch for more specific spawning
+    
+    3. Add any branch specific monsters to monster_initializations.py
+        a. by default, monsters are common, do not appear in packs, and appear on any floor in the Dungeon
+        b. (Optionally) specify minFloor, maxFloor or branch for more specific spawning
+        c. (Optionally) specify branch = "all" to spawn across all branches
+        d. (Optionally) specify group to allow monster to appear in packs (with other monsters in same group)
+        e. (Optionally) specify rarity to make monster more rare, and unique within its packs 

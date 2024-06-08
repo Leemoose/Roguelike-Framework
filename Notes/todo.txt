@@ -8,4 +8,16 @@ Range weapons
 
 Autoexplore picks up items
 
+
 Split item screen description to description and buttons seperately (so it can be reused)
+
+Ocean:
+    Deep water (maybe boats?)
+    Add flying
+    Targetting does not work over deep water
+
+Split item screen description to description and buttons seperately (so it can be reused)
+
+Skill buttons on quickcast selection screen don't work properly for some reason
+
+make spell screen creation more in line with other functions (to get rid of if statements in loops)

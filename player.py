@@ -222,6 +222,7 @@ class Player(O.Objects):
                         end = stairs.get_location()
             if end == None:
                 loop.add_message("You have not found the stairs yet")
+                loop.change_loop(L.LoopType.action)
                 return
             if (start == end):
                 self.path = []
