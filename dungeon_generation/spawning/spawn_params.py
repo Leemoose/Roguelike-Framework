@@ -24,7 +24,7 @@ class MonsterSpawnParams:
         self.group = group
         self.boss = boss
 
-    def AllowedAtDepth(self, depth, branch=None):
+    def AllowedAtDepth(self, depth, branch="Dungeon"):
         return (depth >= self.minFloor and depth <= self.maxFloor and (self.branch == "all" or self.branch == branch))
 
     def GetLeveledCopy(self, depth):
@@ -46,5 +46,5 @@ class MonsterSpawnParams:
         return copied
     
 class BossSpawnParams(MonsterSpawnParams):
-    def __init__(self, monster, depth, branch="dungeon", rarity="Common", group = None):
+    def __init__(self, monster, depth, branch="Dungeon", rarity="Common", group = None):
         super().__init__(monster, minFloor=depth, maxFloor=depth, branch=branch, rarity=rarity, group=group, boss=True)

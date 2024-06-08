@@ -27,3 +27,7 @@ npc not talking (likely to do with switching them from dictionary to map)
 
 attack_move in dungeon branches crashes game with: AttributeError: 'int' object has no attribute 'x'
 seems to have something to do with monster_map in branches being different from dungeon?
+
+boss spawn broken
+
+current spawning makes map generation kind of slow

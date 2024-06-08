@@ -121,8 +121,9 @@ class BranchParams:
     
     # specific branches can overwrite this with any restrictions they can check on the monster
     # returns true on tiles that can be spawned on
-    def check_monster_restrictions(self, monster, tileMap, location, generator):
-        return generator.get_passable(location)
+    # def check_monster_restrictions(self, monster, tileMap, location, generator):
+    #     return generator.get_passable(location)
+    check_monster_restrictions = None
         
 
 class DungeonParams(BranchParams):

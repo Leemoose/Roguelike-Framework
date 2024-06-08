@@ -12,6 +12,7 @@ Adding spawns to new branches
         c. (Optionally) Specify any possible spawning restrictions on monsters in check_monster_restrictions. 
                         Define monster resrictions for specific keywords
                         In monster.py, set self.restriction to keyword defined in check_monster_restrictions
+                        Note: too many floors with restrictions may make initialization slower
                 
     
     2. Add any branch specific items to item_initializations.py

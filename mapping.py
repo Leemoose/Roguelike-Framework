@@ -41,11 +41,20 @@ class DungeonGenerator():
             self.place_items(depth)
         self.place_npcs(depth)
 
+    def get_random_location_basic(self, stairs_block = True):
+        start_x = random.randint(0, self.width - 1)
+        start_y = random.randint(0, self.height - 1)
+
+        while (self.get_passable((start_x, start_y))) or (not stairs_block or self.on_stairs(start_x, start_y)):
+            start_x = random.randint(0, self.width - 1)
+            start_y = random.randint(0, self.height - 1)
+
+        return start_x, start_y
 
     def get_random_location(self, stairs_block = True, condition = None):
         candidates = []
         if condition == None:
-            condition = self.get_passable
+            return self.get_random_location_basic(stairs_block)
         for x in range(0, self.width):
             for y in range(0, self.height):
                 if condition((x, y)) or \
@@ -176,9 +185,11 @@ class DungeonGenerator():
                 self.place_monster(monster)
 
     def place_monster(self, creature):
-        def monster_restriction(location):
-            return self.spawn_params.check_monster_restrictions(creature, self.tile_map, location, self)
-
+        if self.spawn_params.check_monster_restrictions != None:
+            def monster_restriction(location):
+                return self.spawn_params.check_monster_restrictions(creature, self.tile_map, location, self)
+        else:
+            monster_restriction = None
         x, y = self.get_random_location(condition=monster_restriction)
         self.place_monster_at_location(creature, x, y)
 
@@ -190,26 +201,23 @@ class DungeonGenerator():
         area_to_check = 2 # check all tiles in radius 2 (this technically caps pack size at 25, up this area if any dungeon has a higher max pack size)
         directions = [(dx, dy) for dx in range(-1 * area_to_check, area_to_check + 1) for dy in range(-1 * area_to_check, area_to_check + 1)]
 
-        def pack_condition(location):
+        while count < pack_size:
+            x, y = self.get_random_location()
+            locations = []
             count = 0
+            random.shuffle(directions) # varies the arangement of packs
+
             for (dx, dy) in directions:
-                if self.get_passable((location[0] + dx, location[1] + dy)):
+                if self.get_passable((x + dx, y + dy)):
+                    locations.append((x + dx, y + dy))
                     count += 1
-            return count >= pack_size
-
-        x, y = self.get_random_location(condition=pack_condition)
-        locations = []
-        random.shuffle(directions) # varies the arangement of packs
-
-        for (dx, dy) in directions:
-            if self.get_passable((x + dx, y + dy)):
-                locations.append((x + dx, y + dy))
-                count += 1
-                # break early as soon as we find a location that can fit the full pack
-                if count >= pack_size:
-                    break
+                    # break early as soon as we find a location that can fit the full pack
+                    if count >= pack_size:
+                        break
 
         for i, monster in enumerate(pack):
+            if i >= len(locations):
+                import pdb; pdb.set_trace()
             x, y = locations[i]
             self.place_monster_at_location(monster, x, y)
 

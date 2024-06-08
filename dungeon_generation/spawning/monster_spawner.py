@@ -10,6 +10,8 @@ class MonsterSpawner():
         self.rareMonsters = [i for i in self.MonsterSpawns if i.rarity == "Rare"]
         self.bossMonsters = [i for i in self.MonsterSpawns if i.boss == True]
 
+        print("Boss monsters: " + str(self.bossMonsters))
+
         # useful for debugging specific monsters, separate from generator
         self.forceSpawn = None
         # self.forceSpawn = ("Slime", 1)
@@ -118,6 +120,8 @@ class MonsterSpawner():
         monsters = []
 
         bossAtDepth = [i for i in self.bossMonsters if i.AllowedAtDepth(depth, branch)]
+
+        print(bossAtDepth)
 
         if self.forceSpawn:
             for _ in range(self.forceSpawn[1]):
