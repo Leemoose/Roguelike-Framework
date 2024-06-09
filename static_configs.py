@@ -268,7 +268,9 @@ class AscaiiTileDict():
                             {
                                 "x": 15,
                                 ".": 9
-                            }
+                            },
+                        "Hub": {},
+                        "Throne": {}
                         }
 
 

@@ -13,6 +13,8 @@ class NPC(O.Objects):
         self.quest = None
         self.options = ["Talk", "Trade", "Quest"]
         self.has_stuff_to_say = False
+        self.talking = False #In the midst of talking
+        self.talking_queue = []
 
     def change_purpose(self, purpose, loop):
         if isinstance(purpose, int):
@@ -110,10 +112,19 @@ class King(NPC):
             if self.quest.check_for_completion(loop):
                 loop.add_message(self.name + " says: 'The Kingdom is now safe.'")
         else:
-            loop.add_message(self.name + " says: 'I have summoned you at great expense and with time quickly running out. The monsters grow stronger. Please defeat them.")
+            self.talking = True
+            loop.add_message(self.name + "'What's this? Another failure! I can't believe we spent so much to summon you from another dimension.'")
+            self.talking_queue.append("Guards! Prepare another summoning! We can't fail again else we'll be overrun by the rift monsters. They are nearly at the palace portals!")
+            self.talking_queue.append(
+                "Why are you still here?!? Move along to the portal room and we'll be sorted out. Maybe you'll even manage to kill a goblin or two.")
             loop.player.add_quest(quest.KingdomQuest())
             self.gave_quest = True
             self.has_stuff_to_say = False
+
+    def continue_talking(self, loop):
+        loop.add_message(self.talking_queue.pop(0))
+        if len(self.talking_queue) == 0:
+            self.talking = False
 
 class Guard(NPC):
     def __init__(self, x, y, render_tag= 121, name="Guard"):

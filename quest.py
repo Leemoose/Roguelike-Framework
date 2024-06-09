@@ -52,7 +52,7 @@ class GoblinQuest(Quest):
 class KingdomQuest(Quest):
     def __init__(self, experience_given = 10, name = "Kingdom Quest"):
         super().__init__(experience_given = experience_given, name = name)
-        self.descriptions[1] = "The king has asked you to push back the darkness, and push back the darkness you will."
+        self.descriptions[1] = "The king has asked you to push back the darkness and though he is an idiot, push back the darkness you will."
         self.descriptions[2] = "You find killing in the kings name an easy thing to do..."
         self.descriptions[3] = "Monsters fall like wheat being reaped by the farmer. Like leaves falling from the tree. You revel in the blood..."
 

@@ -4,9 +4,11 @@ class GatewayData():
     def __init__(self):
         Lair = namedtuple("Lair", ["branch", "depth"])
         self.gateway_mapping = {
-            Lair("Dungeon", 1): [Lair("Forest", 1)],
-            Lair("Forest", 1): [Lair("Ocean", 1)],
-            Lair("Ocean", 1): [Lair("Dungeon", 1)]
+            Lair("Throne", 1): [Lair("Hub", 1)],
+            Lair("Hub", 1): [Lair("Dungeon", 1), Lair("Forest", 1), Lair("Ocean",1), Lair("Throne",1)],
+            Lair("Dungeon", 1): [Lair("Hub", 1)],
+            Lair("Forest", 1): [Lair("Hub", 1)],
+            Lair("Ocean", 1): [Lair("Hub", 1)]
         }
 
     def has_gateway(self, branch, depth):

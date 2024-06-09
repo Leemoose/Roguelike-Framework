@@ -54,8 +54,11 @@ class TileMap(TrackingMap):
 
         self.track_map_render = [x[:] for x in [["x"] * self.height] * self.width]
         self.image = [x[:] for x in [[-1] * self.height] * self.width]
-        if depth == 1 and self.branch == "Dungeon":
+        if depth == 1 and self.branch == "Throne":
             self.track_map_render = throneify(0, 0, self.track_map_render, self.image, self.width, self.height)
+        elif branch == "Hub":
+            print(self.track_map_render)
+            self.track_map_render = squarify(0, 0, self.track_map_render, self.image, self.width, self.height)
         elif self.branch == "Ocean":
             self.cellular_caves()
             self.add_water()
@@ -105,7 +108,7 @@ class TileMap(TrackingMap):
 
     def place_gateway(self, gateway_data):
         if gateway_data.has_gateway(self.branch, self.depth):
-            for i in range(gateway_data.get_num_gateways(self.branch, self.depth)):
+            while self.count_ascaii_tiles("g") < gateway_data.get_num_gateways(self.branch, self.depth):
                 print("Branch is {}".format(self.branch))
                 print("Depth is {}".format(self.depth))
                 startx, starty = self.get_random_location_ascaii()
@@ -396,4 +399,12 @@ class TileMap(TrackingMap):
 
     def in_map(self, x, y):
         return x >= 0 and y >= 0 and x < self.width and y < self.height
+
+    def count_ascaii_tiles(self, tile):
+        num = 0
+        for x in range(self.width):
+            for y in range(self.height):
+                if self.track_map_render[x][y] == tile:
+                    num += 1
+        return num
 

@@ -5,6 +5,8 @@ class DungeonData():
     def __init__(self):
 
         self.master_map_data = {}
+        self.master_map_data["Throne"] = {1: MapData(20, 30, 4, 5, 1.0, 1)}
+        self.master_map_data["Hub"] = {1: MapData(10, 10, 4, 5, 1.0, 1)}
         self.master_map_data["Dungeon"] = {
             1: MapData(20, 30, 4, 5, 1.0, 1),
             2: MapData(60, 60, 15, 10, .05, 1),

@@ -131,6 +131,16 @@ class DungeonParams(BranchParams):
         super().__init__()
         self.branch_name = "Dungeon"
 
+class ThroneParams(BranchParams):
+    def __init__(self):
+        super().__init__()
+        self.branch_name = "Throne"
+
+class HubParams(BranchParams):
+    def __init__(self):
+        super().__init__()
+        self.branch_name = "Hub"
+
 class ForestParams(BranchParams):
     def __init__(self):
         super().__init__()
@@ -177,7 +187,9 @@ class OceanParams(BranchParams):
 
 params_list = [DungeonParams(),
               ForestParams(),
-              OceanParams()]
+              OceanParams(),
+                HubParams(),
+               ThroneParams()]
 
 # make params into dictionary keyed on branch names for ease of use
 branch_params = {d.branch_name : d for d in params_list}

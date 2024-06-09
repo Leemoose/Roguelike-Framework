@@ -1,6 +1,5 @@
 import static_configs
 import random
-
 from dungeon_generation import *
 
 
@@ -37,7 +36,7 @@ class DungeonGenerator():
         self.summoner = []
 
 
-        if (self.depth != 1 or branch != "Dungeon"): # prefab first floor of dungeon has no monsters and items
+        if (self.depth != 1 or (branch != "Throne" and branch != "Hub")): # prefab first floor of dungeon has no monsters and items
             self.place_monsters(depth)
             self.place_items(depth)
         self.place_npcs(depth)

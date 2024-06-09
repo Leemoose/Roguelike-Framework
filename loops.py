@@ -434,7 +434,7 @@ class Loops():
         self.player = player.Player(0, 0)
         self.player.character.get_item(self, items.RangedWeapon())
         self.memory.player = self.player
-        self.branch = "Dungeon"
+        self.branch = "Throne"
         self.floor_level = 1
 
         gateway_data = self.dungeon_data.gateway_data
@@ -467,7 +467,10 @@ class Loops():
                             if not gateway2.has_incoming():
                                 print("Linking {} with {}".format(gateway1, gateway2))
                                 gateway1.pair_gateway(gateway2)
+                                gateway2.pair_gateway(gateway1)
                                 break
+                        break
+
 
 
         self.memory.floor_level = 1

@@ -254,6 +254,8 @@ def key_trade(loop, key):
     if key == "esc":
         loop.change_loop(LoopType.action)
         return
+    elif loop.npc_focus.talking:
+        loop.npc_focus.continue_talking(loop)
     elif key == "1":
         loop.npc_focus.change_purpose(1, loop)
     elif key == '2':
