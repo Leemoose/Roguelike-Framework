@@ -163,24 +163,21 @@ class Monster_AI():
             stuff = monster.character.inventory
             for i, item in enumerate(stuff):
                 if item.equipable:
-                    if item.equipment_type == "Weapon" and monster.character.equipment_slots["hand_slot"][0] == None:
+                    if item.equipment_type == "Weapon" and monster.character.free_equipment_slots("hand_slot") > 0:
                         utility = 70
-                    elif item.equipment_type == "Shield" and monster.character.equipment_slots["hand_slot"][1] == None:
+                    elif item.equipment_type == "Shield" and monster.character.free_equipment_slots("hand_slot") > 0:
                         if utility < 60:
                             utility = 60
-                    elif item.equipment_type == "Body Armor" and monster.character.equipment_slots["body_armor_slot"][
-                        0] == None:
+                    elif item.equipment_type == "Body Armor" and monster.character.free_equipment_slots("body_armor_slot") > 0:
                         if utility < 60:
                             utility = 60
-                    elif item.equipment_type == "Helmet" and monster.character.equipment_slots["helmet_slot"][
-                        0] == None:
+                    elif item.equipment_type == "Helmet" and monster.character.free_equipment_slots("helmet_slot") > 0:
                         if utility < 40:
                             utility = 40
-                    elif item.equipment_type == "Boots" and monster.character.equipment_slots["boots_slot"][0] == None:
+                    elif item.equipment_type == "Boots" and monster.character.free_equipment_slots("boots_slot") > 0:
                         if utility < 20:
                             utility = 20
-                    elif item.equipment_type == "Gloves" and monster.character.equipment_slots["gloves_slot"][
-                        0] == None:
+                    elif item.equipment_type == "Gloves" and monster.character.free_equipment_slots("gloves_slot") > 0:
                         if utility < 20:
                             utility = 20
                 # elif item.equipment_type == "Ring" and (monster.character.ring_1 == None or monster.character.ring_2 == None):

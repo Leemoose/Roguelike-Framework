@@ -6,6 +6,7 @@ class StatusEffect():
         self.active = True
         self.message = message
         self.positive = False
+        self.traits = {"status_effect": True}
     def apply_effect(self, target):
         pass
     def description(self):
@@ -18,6 +19,11 @@ class StatusEffect():
         self.duration -= 1
         if self.duration <= 0:
             self.active = False
+    def has_trait(self, trait):
+        if trait in self.traits:
+            return self.traits[trait]
+        else:
+            return False
 
 
 class Burn(StatusEffect):
@@ -177,6 +183,8 @@ class Invincible(StatusEffect):
 class Asleep(StatusEffect):
     def __init__(self, duration, inflictor = None):
         super().__init__(806, "Asleep", "...", duration)
+        self.traits["asleep"] = True
+
     def apply_effect(self, target):
         actual = target.parent
         actual.asleep = True

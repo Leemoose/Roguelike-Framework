@@ -160,17 +160,17 @@ class Display:
                     self.win.blit(monster_tile, (self.textSize*(monster.x - self.x_start), self.textSize*(monster.y - self.y_start)))
 
         #Draw base character depending on armor state
-        if (player.character.equipment_slots["body_armor_slot"][0] == None):
+        if (player.character.free_equipment_slots("body_armor_slot") == 0):
             self.win.blit(tileDict.tile_string(200), (self.r_x * self.textSize, self.r_y * self.textSize)) # DONG MODE ENGAGED
         else:
             self.win.blit(tileDict.tile_string(-200), (self.r_x * self.textSize, self.r_y * self.textSize))
 
         #Draw items on top
-        if player.character.equipment_slots["boots_slot"][0] != None:
+        if player.character.free_equipment_slots("boots_slot") == 0:
             self.win.blit(tileDict.tile_string(201), (self.r_x * self.textSize, self.r_y * self.textSize))
-        if player.character.equipment_slots["gloves_slot"][0] != None:
+        if player.character.free_equipment_slots("gloves_slot") == 0:
             self.win.blit(tileDict.tile_string(202), (self.r_x * self.textSize, self.r_y * self.textSize))
-        if player.character.equipment_slots["helmet_slot"][0] != None:
+        if player.character.free_equipment_slots("helmet_slot") == 0:
             self.win.blit(tileDict.tile_string(203), (self.r_x * self.textSize, self.r_y * self.textSize))
         self.uiManager.draw_ui(self.win)
 

@@ -52,6 +52,7 @@ class BobCorpse(Corpse):
 class Gold(O.Item):
     def __init__(self, amount, x=-1, y=-1, id_tag = -1, render_tag = 210, name = "Gold"):
         super().__init__(x,y, id_tag, render_tag, name)
+        self.traits["gold"] = True
         self.amount = amount
 
 class DestroyedDummy(O.Item):
@@ -72,6 +73,11 @@ class Equipment(O.Item):
         self.required_strength = 0
         self.stats = statUpgrades()
         self.traits["equipment"] = True
+        self.slot = "hand_slot"
+        self.slots_taken = 1
+
+    def get_slot(self):
+        return self.slot
 
     def activate(self, entity):
         self.wearer = entity
@@ -140,24 +146,9 @@ class Weapon(Equipment):
         self.attack_cost = attack_cost
         self.diff_action_cost = 0
         self.traits["weapon"] = True
-
+        self.slot = "hand_slot"
     def can_be_equipped(self, entity):
         return super().can_be_equipped(entity) and entity.free_equipment_slots("hand_slot") >= self.slots_taken
-
-    def equip(self, entity):
-        if entity.strength >= self.required_strength and entity.free_equipment_slots("hand_slot") >= self.slots_taken:
-            if entity.equipment_slots["hand_slot"][0] != None:
-                entity.unequip(entity.equipment_slots["hand_slot"][0])
-            entity.add_item_to_equipment_slot(self, "hand_slot", self.slots_taken)
-            if self.attached_skill_exists:
-                entity.add_skill(self.attached_skill(entity.parent))
-            self.activate(entity)
-
-    def unequip(self, entity):
-        entity.remove_item_from_equipment_slot(self, "hand_slot", self.slots_taken)
-        if self.attached_skill_exists:
-            entity.remove_skill(self.attached_skill(entity.parent).name)
-        self.deactivate(entity)
 
     def attack(self):
         damage = random.randint(self.damage_min, self.damage_max)
@@ -518,21 +509,6 @@ class Shield(Armor):
         self.offhand = True
         self.description = "A shield that you can use to block things."
 
-    def equip(self, entity):
-        if entity.strength >= self.required_strength:
-            if entity.equipment_slots["hand_slot"][1] != None:
-                entity.unequip(entity.equipment_slots["hand_slot"][1])
-            entity.equipment_slots["hand_slot"][1] = self
-            self.activate(entity)
-            if self.attached_skill_exists:
-                entity.add_skill(self.attached_skill(entity.parent))
-
-    def unequip(self, entity):
-        entity.equipment_slots["hand_slot"][1] = None
-        self.deactivate(entity)
-        if self.attached_skill_exists:
-            entity.remove_skill(self.attached_skill(entity.parent).name)
-        
 
 class BasicShield(Shield):
     def __init__(self, render_tag):
@@ -639,20 +615,7 @@ class BodyArmor(Armor):
         self.name = name
         self.description = "A piece of armor that covers your chest."
         self.stats = statUpgrades(base_str=1, max_str=1, base_end=1, max_end=4, base_arm=1, max_arm=4)
-
-    def equip(self, entity):
-        if entity.equipment_slots["body_armor_slot"][0] != None:
-            entity.unequip(entity.equipment_slots["body_armor_slot"][0])
-        entity.equipment_slots["body_armor_slot"][0] = self
-        self.activate(entity)
-        if self.attached_skill_exists:
-            entity.add_skill(self.attached_skill(entity.parent).name)
-    
-    def unequip(self, entity):
-        entity.equipment_slots["body_armor_slot"][0] = None
-        self.deactivate(entity)
-        if self.attached_skill_exists:
-            entity.remove_skill(self.attached_skill(entity.parent).name)
+        self.slot = "body_armor_slot"
 
 class Chestarmor(BodyArmor):
     def __init__(self, render_tag):
@@ -909,22 +872,7 @@ class Boots(Armor):
         self.name = "Boots"
         self.description = "Boots that are incredibly comfortable but only offer a little protection"
         self.stats = statUpgrades(base_dex=1, max_dex=2, base_arm=1, max_arm=4)
-
-
-    def equip(self, entity):
-        if entity.equipment_slots["boots_slot"][0] != None:
-            entity.unequip(entity.equipment_slots["boots_slot"][0])
-        entity.equipment_slots["boots_slot"][0] = self
-        self.activate(entity)
-        if self.attached_skill_exists:
-            entity.add_skill(self.attached_skill(entity.parent))
-
-    def unequip(self, entity):
-        entity.equipment_slots["boots_slot"][0] = None
-        self.deactivate(entity)
-        if self.attached_skill_exists:
-            entity.remove_skill(self.attached_skill(entity.parent).name)
-            # print("Remove boot skill")
+        self.slot = "boots_slot"
 
     def level_up(self):
         self.enchant()
@@ -1038,20 +986,7 @@ class Gloves(Armor):
         self.armor = 1
         self.stats = statUpgrades(base_end = 1, max_end = 8,
                                   base_arm = 0, max_arm = 10)
-
-    def equip(self, entity):
-        if entity.equipment_slots["gloves_slot"][0] != None:
-            entity.unequip(entity.equipment_slots["gloves_slot"][0])
-        entity.equipment_slots["gloves_slot"][0] = self
-        self.activate(entity)
-        if self.attached_skill_exists:
-            entity.add_skill(self.attached_skill(entity.parent))
-
-    def unequip(self, entity):
-        entity.equipment_slots["body_armor_slot"][0] = None
-        self.deactivate(entity)
-        if self.attached_skill_exists:
-            entity.remove_skill(self.attached_skill(entity.parent).name)
+        self.slot = "gloves_slot"
 
     def level_up(self):
         self.enchant()
@@ -1229,21 +1164,7 @@ class Helmet(Armor):
         self.stats = statUpgrades(base_str = 0, max_str = 2,
                                   base_end = 1, max_end = 1,
                                   base_arm = 1, max_arm = 3)
-
-
-    def equip(self, entity):
-        if entity.equipment_slots["helmet_slot"][0] != None:
-            entity.unequip(entity.equipment_slots["helmet_slot"][0])
-        entity.equipment_slots["helmet_slot"][0] = self
-        self.activate(entity)
-        if self.attached_skill_exists:
-            entity.add_skill(self.attached_skill(entity.parent))
-
-    def unequip(self, entity):
-        entity.equipment_slots["helmet_slot"][0] = None
-        self.deactivate(entity)
-        if self.attached_skill_exists:
-            entity.remove_skill(self.attached_skill(entity.parent).name)
+        self.slot = "helmet_slot"
 
     def level_up(self):
         self.enchant()
@@ -1412,21 +1333,7 @@ class Pants(Armor):
         self.stats = statUpgrades(base_str = 0, max_str = 2,
                                   base_end = 1, max_end = 1,
                                   base_arm = 1, max_arm = 3)
-
-
-    def equip(self, entity):
-        if entity.equipment_slots["pants_slot"][0] != None:
-            entity.unequip(entity.equipment_slots["pants_slot"][0])
-        entity.equipment_slots["pants_slot"][0] = self
-        self.activate(entity)
-        if self.attached_skill_exists:
-            entity.add_skill(self.attached_skill(entity.parent))
-
-    def unequip(self, entity):
-        entity.equipment_slots["pants_slot"][0] = None
-        self.deactivate(entity)
-        if self.attached_skill_exists:
-            entity.remove_skill(self.attached_skill(entity.parent).name)
+        self.slot = "pants_slot"
 
     def level_up(self):
         self.enchant()
@@ -1451,6 +1358,7 @@ class Ring(Equipment):
         self.action_description = "Power courses through your hands"
         self.traits["ring"] = True
 
+    #Needs to be fixed
     def equip(self, entity):
         if self.equipped:
             return
@@ -1630,18 +1538,7 @@ class Amulet(Equipment):
         self.name = "Amulet"
         self.can_be_levelled = False
         self.description = "A heavy amulet in heavy iron?"
-
-    def equip(self, entity):
-        if entity.equipment_slots["amulet_slot"][0] != None:
-            entity.unequip(entity.equipment_slots["amulet_slot"][0])
-        entity.equipment_slots["amulet_slot"][0] = self
-        self.activate(entity)
-
-    def unequip(self, entity):
-        entity.equipment_slots["amulet_slot"][0] = None
-        self.deactivate(entity)
-        if self.attached_skill_exists:
-            entity.remove_skill(self.attached_skill(entity.parent).name)
+        self.slot = "amulet_slot"
 
 
 
@@ -1919,6 +1816,7 @@ class Book(O.Item):
         super().__init__(-1, -1, 0, render_tag, name = name)
         self.name = "Book"
         self.equipment_type = "Book"
+        self.traits["book"] = True
         self.consumeable = True
         self.stackable = False
         self.equipable = False
@@ -1994,7 +1892,7 @@ class OrbOfYendorb(O.Item):
         self.stackable = False
         self.level = 1
         self.can_be_levelled = False
-        self.equipped = False
+        self.ped = False
         self.wearer = None
         self.rarity = "YENDORB"
         self.required_strength = 0

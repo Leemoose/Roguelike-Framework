@@ -1,8 +1,5 @@
 import random
-from spell_implementation import effect as E
-import items as I
-import loops as L
-import monster as M
+from .body_slot import Body
 
 class Character():
     def __init__(self, parent, endurance = 0, intelligence = 0, dexterity = 0, strength = 0, health = 100, mana = 0, health_regen=0.2, mana_regen=0.2, min_damage = 2, max_damage = 3):
@@ -32,6 +29,8 @@ class Character():
 
         self.alive = True
 
+        self.body = Body(self)
+
         self.inventory = []
         self.gold = 0
 
@@ -39,15 +38,6 @@ class Character():
 
         self.main_weapon = None
 
-        self.equipment_slots = {"body_armor_slot": [None],
-                                "helmet_slot": [None],
-                                "gloves_slot": [None],
-                                "boots_slot": [None],
-                                "ring_slot": [None, None],
-                                "pants_slot": [None],
-                                "amulet_slot": [None],
-                                "hand_slot": [None, None]
-                                }
 
         self.action_costs = {"attack": 80,
                              "move": 100,
@@ -81,60 +71,25 @@ class Character():
         self.action_costs[action] = newcost
 
     def free_equipment_slots(self, slot):
-        if slot not in self.equipment_slots:
-            raise Exception("You are trying to find a {} in {}'s equipment slot".format(slot, self.parent.name))
-        free_slots = 0
-        for item in self.equipment_slots[slot]:
-            if item is None:
-                free_slots += 1
-        return free_slots
+        return self.body.free_equipment_slots(slot)
 
     def add_item_to_equipment_slot(self, item, slot, num_slots):
-        i = 0
-        while i < num_slots:
-            if self.equipment_slots[slot][i] is None:
-                self.equipment_slots[slot][i] = item
-            i += 1
-        if i >= num_slots:
-            return True
-        else:
-            return False
+        return self.body.add_item_to_equipment_slot(item, slot, num_slots)
 
     def remove_item_from_equipment_slot(self, item, slot, num_slots):
-        i = 0
-        while i < num_slots:
-            if self.equipment_slots[slot][i] is item:
-                self.equipment_slots[slot][i] = None
-            i += 1
-        if i >= num_slots:
-            return True
-        else:
-            return False
+        return self.body.remove_item_from_equipment_slot(item, slot, num_slots)
 
     def remove_equipment_slot(self, slot):
-        if slot not in self.equipment_slots:
-            raise Exception("You are trying to find a {} in {}'s equipment slot".format(slot, self.parent.name))
-        try:
-            self.equipment_slots[slot].remove(None)
-        except:
-            Exception("You tried to remove a {} in {}'s equipment slot but there was nothing that could be removed".format(slot, self.parent.name))
-        return False
+        return self.body.remove_equipment_slot(slot)
 
     def add_equipment_slot(self, slot):
-        if slot not in self.equipment_slots:
-            raise Exception("You are trying to find a {} in {}'s equipment slot".format(slot, self.parent.name))
-        self.equipment_slots[slot].append(None)
-        return True
+        return self.body.add_equipment_slot(slot)
 
     def get_items_in_equipment_slot(self, slot):
-        carried = []
-        if slot not in self.equipment_slots:
-            raise Exception("You are trying to find a {} in {}'s equipment slot".format(slot, self.parent.name))
-        else:
-            for item in self.equipment_slots[slot]:
-                if item != None:
-                    carried.append(item)
-        return carried
+        return self.body.get_items_in_equipment_slot(slot)
+
+    def get_nth_item_in_equipment_slot(self, slot, n):
+        return self.body.get_nth_item_in_equipment_slot(slot, n)
 
     def is_alive(self):
         if self.health <= 0 and not self.invincible:
@@ -145,7 +100,7 @@ class Character():
     def take_damage(self, dealer, damage):
         if damage > 0:
             for effect in self.status_effects:
-                if isinstance(effect, E.Asleep):
+                if effect.has_trait("asleep"):
                     effect.duration = 0
         if damage < 0:
             damage = 0
@@ -186,9 +141,9 @@ class Character():
 
     def get_item(self, loop, item):
         if item.yendorb:
-            loop.change_loop(L.LoopType.victory)
+            loop.change_loop("victory")
             return
-        elif isinstance(item, I.Gold):
+        elif item.has_trait("gold"):
             self.gold += item.amount
             loop.change_loop(loop.currentLoop)
         elif item.stackable:
@@ -209,7 +164,7 @@ class Character():
                 return False
             else:
                 self.inventory.append(item)
-                if isinstance(item, I.Book):
+                if item.has_trait("book"):
                     item.mark_owner(self)
         return True
     def drop(self, item, item_dict,  item_map):
@@ -231,18 +186,14 @@ class Character():
 
     def equip(self, item):
         if item.can_be_equipped(self):
-            item.equip(self)
-            item.equipped = True
-            item.dropable = False
+            self.body.equip(item, self.strength)
             self.energy -= self.action_costs["equip"]
 
     def unequip(self, item):
         if item == None:
             return
         if item.can_be_unequipped(self):
-            item.unequip(self)
-            item.dropable = True
-            item.equipped = False
+            self.body.unequip(item)
             self.energy -= self.action_costs["unequip"]
 
     def wait(self):
@@ -293,7 +244,7 @@ class Character():
     def melee(self, defender, loop):
         self.energy -= self.action_costs["attack"]
         effect = None
-        weapon = self.equipment_slots["hand_slot"][0]
+        weapon = self.body.get_weapon()
 
         if weapon is None:
             damage = random.randint(self.base_damage + self.unarmed_damage_min, self.base_damage + self.unarmed_damage_max) #Should make object for unarmed damage
@@ -396,7 +347,7 @@ class Character():
         return messages
     
     def tick_cooldowns(self):
-        if isinstance(self.parent, M.Monster):
+        if self.parent.has_trait("monster"):
             for skill in self.skills: # monsters still use skill system instead of spells
                 skill.tick_cooldown()
         else:
@@ -435,12 +386,12 @@ class Character():
         # print("in_rest")
         if not self.safe_rest:
             loop.add_message("Your ring is draining your health, it is not safe to rest now.")
-            loop.change_loop(L.LoopType.action)
+            loop.change_loop("action")
             return
         
-        if not self.needs_rest(loop.player) and returnLoop == L.LoopType.action:
+        if not self.needs_rest(loop.player): # and returnLoop == L.LoopType.action: <- Don't think we need this?
             loop.add_message("No point in resting right now.")
-            loop.change_loop(L.LoopType.action)
+            loop.change_loop(returnLoop)
             return
 
         tile_map = loop.generator.tile_map
@@ -466,7 +417,7 @@ class Character():
             monster_loc = monster.get_location()
             if tile_map.track_map[monster_loc[0]][monster_loc[1]].visible and monster.stops_autoexplore:
                 loop.add_message("You cannot rest while enemies are nearby.")
-                loop.change_loop(L.LoopType.action)
+                loop.change_loop("action")
                 return
 
         self.wait()

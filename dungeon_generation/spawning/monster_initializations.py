@@ -28,10 +28,11 @@ MonsterSpawns.append(MonsterSpawnParams(M.Stumpy(), minFloor=1, maxFloor=5, bran
 # late floors
 MonsterSpawns.append(MonsterSpawnParams(M.Raptor(-1, -1), minFloor=8, maxFloor=10, group="dinosaur")) # maybe move to forest branch
 MonsterSpawns.append(MonsterSpawnParams(M.Tormentorb(-1, -1), minFloor=8, maxFloor=10))
+MonsterSpawns.append(MonsterSpawnParams(M.Golem(-1, -1), minFloor=8, maxFloor=10, branch="Ocean"))
 MonsterSpawns.append(MonsterSpawnParams(M.Golem(-1, -1), minFloor=8, maxFloor=10))
 
 # TEMPORARY CHANGE TO TEST TILE RESTRICTED MONSTERS
-MonsterSpawns.append(MonsterSpawnParams(M.Golem(-1, -1), minFloor=1, maxFloor=1, branch="Ocean"))
+MonsterSpawns.append(MonsterSpawnParams(M.Squid(), minFloor=1, maxFloor=1, branch="Ocean"))
 
 # boss spawning
 MonsterSpawns.append(BossSpawnParams(M.BossOrb(-1, -1), depth=10))

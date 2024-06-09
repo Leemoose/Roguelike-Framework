@@ -1,6 +1,6 @@
 import ai
 import objects as O
-import character as C
+from character_implementation import character as C
 import items as I
 import skills as S
 
