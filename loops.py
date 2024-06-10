@@ -1,12 +1,12 @@
 
 from loop_workflow import *
 import items
-import mapping as M
+from dungeon_generation import mapping as M
 import player
 import targets as T
 import tiles as TI
 from navigation_utility import shadowcasting
-from classes import Rogue, Warrior, Mage
+from character_implementation.classes import Rogue, Warrior, Mage
 
 from display_generation import *
 
@@ -136,7 +136,8 @@ class Loops():
     # Mostly here to cache UI pieces, which shouldn't be remade every frame.
     def change_loop(self, newLoop):
         loop_type_mapping = {"victory": LoopType.victory,
-                             "action": LoopType.action}
+                             "action": LoopType.action,
+                             "trade": LoopType.trade}
         if newLoop in loop_type_mapping:
             newLoop = loop_type_mapping[newLoop]
         # self.clear_message()

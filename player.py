@@ -1,11 +1,10 @@
 import objects as O
-from character_implementation import character as C
+from character_implementation import character as C, statistics
 import random
 import loops as L
 from navigation_utility import pathfinding
 import tiles as T
 import skills as S
-import statistics
 from spell_implementation import Mage
 from loop_workflow import LoopType
 

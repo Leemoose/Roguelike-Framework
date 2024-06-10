@@ -40,7 +40,7 @@ class statUpgrades():
 
 # not equippable or consumable
 class Corpse(O.Item):
-    def __init__(self, x, y, id_tag = -1, render_tag = 2000, name = "Unknown Corpse"):
+    def __init__(self, x=-1, y=-1, id_tag = -1, render_tag = 2000, name = "Unknown Corpse"):
         super().__init__(x,y, id_tag = id_tag, render_tag = render_tag, name = name)
         self.monster_type = None
         self.traits["corpse"] = True

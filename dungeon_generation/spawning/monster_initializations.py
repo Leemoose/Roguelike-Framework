@@ -33,6 +33,8 @@ MonsterSpawns.append(MonsterSpawnParams(M.Golem(-1, -1), minFloor=8, maxFloor=10
 
 # TEMPORARY CHANGE TO TEST TILE RESTRICTED MONSTERS
 MonsterSpawns.append(MonsterSpawnParams(M.Squid(), minFloor=1, maxFloor=1, branch="Ocean"))
+MonsterSpawns.append(MonsterSpawnParams(M.Leviathon(), minFloor=1, maxFloor=1, branch="Ocean"))
+
 
 # boss spawning
 MonsterSpawns.append(BossSpawnParams(M.BossOrb(-1, -1), depth=10))

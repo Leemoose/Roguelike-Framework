@@ -87,6 +87,20 @@ class Squid(Monster):
         self.traits["squid"] = True
         self.attributes["water"] = True
 
+class Leviathon(Monster):
+    def __init__(self, x=-1, y=-1, render_tag=1510, name="Leviathon"):
+        super().__init__(x=x, y=y, render_tag = render_tag, name = name, experience_given=20,health=100)
+        self.skills = []
+        self.endurance = 0
+        self.strength = 10
+        self.dexterity = 4
+        self.intelligence = 4
+
+        self.description = "A large, squidlike creature lurking in the water."
+
+        self.traits["leviathon"] = True
+        self.attributes["water"] = True
+
 class Slime(Monster):
     def __init__(self, x=-1, y=-1, render_tag=1100, name="Slime"):
         super().__init__(x=x, y=y, render_tag = render_tag, name = name, experience_given=5,brain = ai.Slime_AI,health=5, min_damage=1,max_damage=1)
@@ -123,7 +137,7 @@ class Goblin(Monster):
         self.attributes["humanoid"] = True
 
     def die(self):
-        corpse = I.Corpse(self.x, self.y, -1, 199, self.name + " Monster Corpse")
+        corpse = I.Corpse(self.x, self.y, -1, 2000, self.name + " Monster Corpse")
         corpse.monster_type = self.name #Should be fixed to monster type at some point
         return corpse
 
