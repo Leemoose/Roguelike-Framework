@@ -230,6 +230,8 @@ class TileDict():
         tiles[161] = image.load('assets/monsters/yendorb_deactivated.png')
 
         tiles[1500] = image.load('assets/monsters/squid.png')
+        tiles[1510] = image.load('assets/monsters/abyssal_leviathon.png')
+
 
         tiles[2000] = image.load('assets/monsters/monster_corpse.png')
         tiles[2001] = image.load('assets/items/guard_corpse.png')

@@ -60,6 +60,7 @@ class ItemSpawner():
         items.append(I.BookofHypnosis())
 
 
+
         commonEquipAtDepth = [i for i in self.commonEquip if i.AllowedAtDepth(depth, branch)]
         commonPotiorbsAtDepth = [i for i in self.commonPotiorbs if i.AllowedAtDepth(depth, branch)]
         commonScrorbsAtDepth = [i for i in self.commonScrorbs if i.AllowedAtDepth(depth, branch)]
@@ -132,10 +133,9 @@ class ItemSpawner():
 
         for i in range(distribution.countCorpses(depth)):
             rarity = random.random()
-            if len(commonCorpsesAtDepth) > 0:
-                item_spawn = random.choice(commonCorpsesAtDepth)
-                item = item_spawn.GetFreshCopy()
-                items.append(item)
+            item_spawn = random.choice(commonCorpsesAtDepth)
+            item = item_spawn.GetFreshCopy()
+            items.append(item)
 
 
         return items

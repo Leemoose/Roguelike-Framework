@@ -1,7 +1,6 @@
 import random
 
 import objects as O
-import loops as L
 import quest
 
 class NPC(O.Objects):
@@ -33,7 +32,7 @@ class NPC(O.Objects):
         elif purpose == "Quest":
             self.purpose = purpose
             self.give_quest(loop)
-        loop.change_loop(L.LoopType.trade)
+        loop.change_loop("trade")
 
     def take_gold(self, i, loop):
         if loop.player.character.gold >= self.cost:
@@ -65,7 +64,7 @@ class NPC(O.Objects):
         item = self.items[number]
         if player.character.get_item(loop, item):
             self.items.pop(number)
-            loop.change_loop(L.LoopType.trade)
+            loop.change_loop("trade")
 
     def continue_talking(self, loop):
         loop.add_message(self.talking_queue.pop(0))

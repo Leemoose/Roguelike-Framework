@@ -17,10 +17,9 @@ Dojo spawning on every possible floor (should only spawn on 1)
 
 fix gateways so that there can be a different outgoing and incoming (sort of fixed)
 
-npc not talking (likely to do with switching them from dictionary to map)
-
 attack_move in dungeon branches crashes game with: AttributeError: 'int' object has no attribute 'x'
 seems to have something to do with monster_map in branches being different from dungeon?
 
-monsters spawning in walls in forest
+monsters spawning in walls in general
+
 

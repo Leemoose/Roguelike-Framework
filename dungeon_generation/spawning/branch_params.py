@@ -118,6 +118,9 @@ class BranchParams:
     
     def countScrorbs(self, depth):
         return random.randint(int(2 + 0.1 * (depth)), int(3 + 0.2 * (depth)))
+
+    def countCorpses(self, depth):
+        return 0
     
     def countCorpses(self, depth):
         return 0
@@ -143,8 +146,21 @@ class HubParams(BranchParams):
     def __init__(self):
         super().__init__()
         self.branch_name = "Hub"
-        self.equipment = [(0, 0, 0)]  # floor 1
-        self.potiorbs = [(0, 0)]  # floor 1
+
+    def countEquipment(self, depth):
+        return 0
+
+    def countPotiorbs(self, depth):
+        return 0
+
+    def countExtraCommon(self, depth):
+        return 0
+
+    def countScrorbs(self, depth):
+        return 0
+
+    def countCorpses(self, depth):
+        return 6
 
     def countEquipment(self, depth):
         return 0

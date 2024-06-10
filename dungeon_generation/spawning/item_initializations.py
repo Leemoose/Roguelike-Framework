@@ -6,7 +6,8 @@ ItemSpawns = []
 
 # Can specify min_floor, max_floor, branch allowed - by default can spawn anywhere
 #Corpse
-ItemSpawns.append(ItemSpawnParams(I.GuardCorpse(), branch = "Hub"))
+ItemSpawns.append(ItemSpawnParams(I.GuardCorpse(), minFloor=1, maxFloor=1,branch = "Hub"))
+ItemSpawns.append(ItemSpawnParams(I.Corpse(), minFloor=1, maxFloor=1,branch = "Hub"))
 
 # Weapons
 ItemSpawns.append(ItemSpawnParams( I.Ax(300) ))

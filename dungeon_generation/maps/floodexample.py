@@ -1,4 +1,4 @@
-import mapping
+from dungeon_generation import mapping
 import random
 import tiles as T
 
