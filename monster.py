@@ -96,9 +96,23 @@ class Leviathon(Monster):
         self.dexterity = 4
         self.intelligence = 4
 
-        self.description = "A large, squidlike creature lurking in the water."
+        self.description = "A massive, eel-like creature with bioluminescent patterns along its body. Its eyes glow a menacing red, and its mouth is filled with rows of razor-sharp teeth."
 
         self.traits["leviathon"] = True
+        self.attributes["water"] = True
+
+class ChasmCrawler(Monster):
+    def __init__(self, x=-1, y=-1, render_tag=1520, name="Chasm Crawler"):
+        super().__init__(x=x, y=y, render_tag = render_tag, name = name, experience_given=20,health=100)
+        self.skills = []
+        self.endurance = 0
+        self.strength = 10
+        self.dexterity = 4
+        self.intelligence = 4
+
+        self.description = "Large, crab-like monsters with armored shells and glowing eyes. Their claws are immense and serrated."
+        self.character.armor = 12
+        self.traits["chasm_crawler"] = True
         self.attributes["water"] = True
 
 class Slime(Monster):
