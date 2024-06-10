@@ -95,7 +95,7 @@ class Keyboard():
         if player.get_distance(x_tile, y_tile) == 0:
             if not loop.generator.item_map.get_passable(player.x, player.y):
                return key_action(loop, "g")
-            elif loop.generator.tile_map.track_map[player.x][player.y].has_trait("stairs"):
+            elif loop.generator.tile_map.track_map[player.x][player.y].has_trait("stairs") or loop.generator.tile_map.track_map[player.x][player.y].has_trait("gateway"):
                 return key_action(loop, ">") #Needs to be able to work with upstairs as well
         elif loop.player.get_distance(x_tile, y_tile) < 1.5:
             xdiff = x_tile - player.x

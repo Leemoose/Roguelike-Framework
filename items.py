@@ -171,6 +171,11 @@ class RangedWeapon(Weapon): #Still working
         self.effective.append("wood")
         self.traits["ranged_weapon"] = True
 
+    def level_up(self):
+        self.enchant()
+        self.damage_min += 1
+        self.damage_max += 2
+
 class Ax(Weapon):
     def __init__(self, render_tag = 300):
         super().__init__(-1, -1, 0, render_tag = render_tag, name = "Axe")

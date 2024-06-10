@@ -369,7 +369,7 @@ def key_item_screen(loop, key):
             loop.change_loop(LoopType.inventory)
     elif key == "r":
         player.character.read(item, loop, item_dict, item_map)
-        loop.currentLoop = LoopType.action
+        # loop.currentLoop = LoopType.action
     loop.change_loop(loop.currentLoop)
 
 

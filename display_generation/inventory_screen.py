@@ -1,4 +1,5 @@
 import pygame, pygame_gui
+
 def create_inventory(display, loop):
     player = loop.player
     equipment_type = loop.limit_inventory
