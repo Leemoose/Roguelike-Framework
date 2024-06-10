@@ -16,6 +16,7 @@ class ItemSpawner():
         self.legendaryEquip = [i for i in self.ItemSpawns if i.item.rarity == "Legendary" and i.item.equipable]
         self.legendaryScrorbs = [i for i in self.ItemSpawns if i.item.rarity == "Legendary" and i.item.equipment_type == "Scrorb"]
         self.ExtraCommon = [i for i in self.ItemSpawns if i.item.rarity == "Extra Common"]
+        self.commonCorpse = [i for i in self.ItemSpawns if i.item.has_trait("corpse")]
 
         # useful for debugging specific items, separate from generator
         self.forceSpawn = []

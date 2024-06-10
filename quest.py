@@ -25,10 +25,10 @@ class Quest():
         player.gain_experience(self.experience_given)
 
 class GoblinQuest(Quest):
-    def __init__(self, experience_given = 10, number = 3, name = "Goblin Quest"):
+    def __init__(self, experience_given = 10, number = 5, name = "Goblin Quest"):
         super().__init__(experience_given = experience_given, name = name)
         self.number_goblins = number
-        self.descriptions[1] = "Kill those pesky goblins and show the evidence to the questgiver in order to be rewarded!"
+        self.descriptions[1] = "Kill those pesky goblins and show the evidence to the Archmage in order to be rewarded!"
 
     def check_for_completion(self, loop):
         if self.active:

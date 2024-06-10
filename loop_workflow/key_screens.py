@@ -254,8 +254,6 @@ def key_trade(loop, key):
     if key == "esc":
         loop.change_loop(LoopType.action)
         return
-    elif loop.npc_focus.talking:
-        loop.npc_focus.continue_talking(loop)
     elif key == "1":
         loop.npc_focus.change_purpose(1, loop)
     elif key == '2':
@@ -267,6 +265,8 @@ def key_trade(loop, key):
             if chr(ord("a") + i) == key:
                 loop.npc_focus.take_gold(i, loop)
                 break
+    elif loop.npc_focus.talking:
+        loop.npc_focus.continue_talking(loop)
 
 
 def key_level_up(loop, key):
