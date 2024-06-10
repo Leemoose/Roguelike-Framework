@@ -39,6 +39,8 @@ class DungeonGenerator():
         if (self.depth != 1 or (branch != "Throne" and branch != "Hub")): # prefab first floor of dungeon has no monsters and items
             self.place_monsters(depth)
             self.place_items(depth)
+        if (self.depth != 1 or (branch != "Throne")):
+            self.place_items(depth)
         self.place_npcs(depth)
 
     def get_random_location_basic(self, stairs_block = True):

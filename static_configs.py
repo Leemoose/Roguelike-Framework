@@ -231,7 +231,8 @@ class TileDict():
 
         tiles[1500] = image.load('assets/monsters/squid.png')
 
-        tiles[199] = image.load('assets/monsters/monster_corpse.png')
+        tiles[2000] = image.load('assets/monsters/monster_corpse.png')
+        tiles[2001] = image.load('assets/items/guard_corpse.png')
 
         self.tiles = tiles
 
