@@ -1,10 +1,7 @@
 import random
-
 import objects as O
 from spell_implementation import *
 import skills as S
-import loops as L
-
 
 class statUpgrades():
     def __init__(self, base_str=0, max_str=0, base_dex=0, max_dex = 0, base_int = 0, max_int = 0, base_end = 0, max_end = 0, base_arm=0, max_arm=0):
@@ -1547,8 +1544,6 @@ class Amulet(Equipment):
         self.slot = "amulet_slot"
 
 
-
-
 """
 POTIONS
 """
@@ -1629,7 +1624,7 @@ class TeleportScroll(Scroll):
         self.skill.parent = entity.parent
         self.skill.activate(entity, loop.generator, bypass = True)
         self.consume_scroll(entity)
-        loop.change_loop(L.LoopType.inventory)
+        loop.change_loop("inventory")
 
 class MassTormentScroll(Scroll):
     def __init__(self, render_tag):
@@ -1642,7 +1637,7 @@ class MassTormentScroll(Scroll):
         self.skill.parent = entity
         self.skill.activate(loop, bypass = True)
         self.consume_scroll(entity)
-        loop.change_loop(L.LoopType.inventory)
+        loop.change_loop("inventory")
 
 class InvincibilityScroll(Scroll):
     def __init__(self, render_tag):
@@ -1655,7 +1650,7 @@ class InvincibilityScroll(Scroll):
         self.skill.parent = entity
         self.skill.activate(loop, bypass = True)
         self.consume_scroll(entity)
-        loop.change_loop(L.LoopType.inventory)
+        loop.change_loop("inventory")
 
 class CallingScroll(Scroll):
     def __init__(self, render_tag):
@@ -1667,7 +1662,7 @@ class CallingScroll(Scroll):
     def activate_once(self, entity, loop):
         self.skill.activate(loop, bypass = True)
         self.consume_scroll(entity)
-        loop.change_loop(L.LoopType.inventory)
+        loop.change_loop("inventory")
 
 class SleepScroll(Scroll):
     def __init__(self, render_tag):
@@ -1679,7 +1674,7 @@ class SleepScroll(Scroll):
     def activate_once(self, entity, loop):
         self.skill.activate(loop, bypass = True)
         self.consume_scroll(entity)
-        loop.change_loop(L.LoopType.inventory)
+        loop.change_loop("inventory")
 
 class ExperienceScroll(Scroll):
     def __init__(self, render_tag):
@@ -1692,7 +1687,7 @@ class ExperienceScroll(Scroll):
         entity.parent.experience += entity.parent.experience_to_next_level
         entity.parent.check_for_levelup()
         self.consume_scroll(entity)
-        loop.change_loop(L.LoopType.inventory)
+        loop.change_loop("inventory")
 
 class HealthPotion(Potion):
     def __init__(self, render_tag):
@@ -1778,7 +1773,7 @@ class EnchantScrorb(Scroll):
 
     def activate_once(self, entity, loop):
         loop.limit_inventory = "Enchantable"
-        loop.change_loop(L.LoopType.enchant)
+        loop.change_loop("enchant")
         # print("read enchant")
 
 class BurningAttackScrorb(Scroll):
@@ -1814,7 +1809,7 @@ class MassHealScrorb(Scroll):
         self.skill.parent = entity
         self.skill.activate(loop, bypass = True)
         self.consume_scroll(entity)
-        loop.change_loop(L.LoopType.inventory)
+        loop.change_loop("inventory")
 
 
 class Book(O.Item):
@@ -1851,7 +1846,7 @@ class Book(O.Item):
             entity.add_skill(new_skill)
             self.destroy = True
             entity.inventory.remove(self)
-            loop.change_loop(L.LoopType.inventory)
+            loop.change_loop("inventory")
         else:
             loop.add_message("You do not have enough intelligence to learn this spell.")
 

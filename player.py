@@ -1,4 +1,4 @@
-import objects as O
+from objects import Objects
 from character_implementation import character as C, statistics
 import random
 import loops as L
@@ -12,7 +12,7 @@ import items as I
 
 
 
-class Player(O.Objects):
+class Player(Objects):
     def __init__(self, x, y):
         super().__init__(x, y, 1, 200, "Player")
         self.character = C.Character(self, mana=50)

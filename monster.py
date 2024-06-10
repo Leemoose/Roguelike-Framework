@@ -1,4 +1,4 @@
-import ai
+from monster_implementation import monster_ai
 import objects as O
 from character_implementation import character as C
 import items as I
@@ -6,7 +6,7 @@ import skills as S
 
 
 class Monster(O.Objects):
-    def __init__(self, x=-1, y = -1, render_tag = -1, name="Unknown monster", experience_given = 0, brain = ai.Monster_AI, rarity = "Common", health = 10, min_damage = 2, max_damage=3):
+    def __init__(self, x=-1, y = -1, render_tag = -1, name="Unknown monster", experience_given = 0, brain = ai.Monster_AI, rarity ="Common", health = 10, min_damage = 2, max_damage=3):
         super().__init__(x=x, y=y, render_tag=render_tag, name=name)
         self.character = C.Character(self, health = health, min_damage=min_damage, max_damage = max_damage)
         self.asleep = False
@@ -117,7 +117,7 @@ class ChasmCrawler(Monster):
 
 class Slime(Monster):
     def __init__(self, x=-1, y=-1, render_tag=1100, name="Slime"):
-        super().__init__(x=x, y=y, render_tag = render_tag, name = name, experience_given=5,brain = ai.Slime_AI,health=5, min_damage=1,max_damage=1)
+        super().__init__(x=x, y=y, render_tag = render_tag, name = name, experience_given=5, brain = ai.Slime_AI, health=5, min_damage=1, max_damage=1)
 
         self.description = "A small blob of experienc... I mean ooze."
         self.character.action_costs["grab"] = 0

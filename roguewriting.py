@@ -1,4 +1,4 @@
-from configuration_data import *
+from dungeon_generation.configuration_data import *
 from display_generation import *
 from loop_workflow import keyboard as K
 import loops as L
