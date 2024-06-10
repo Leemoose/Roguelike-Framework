@@ -119,5 +119,5 @@ class Keyboard():
                     loop.screen_focus = (x_tile, y_tile)
                     loop.update_screen = True
             else:
-                key_targeting_screen("return", self)
+                key_targeting_screen(loop, "return")
 

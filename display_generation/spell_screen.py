@@ -218,7 +218,7 @@ def update_quickselect(loop, create=True):
             html_text = entity_text,
             manager=display.uiManager)
 
-    create_skill_bar(display, loop)
+    create_skill_bar(display, loop, display_empty=True)
 
     display.uiManager.draw_ui(display.win)
     
