@@ -447,6 +447,10 @@ class Loops():
             self.memory.generators[branch] = {}
             for level in range(1, dungeon_data.get_depth(branch) + 1):
                 generator = M.DungeonGenerator(level, self.player, branch, gateway_data, dungeon_data)
+                if branch == "Ocean":
+                    monsters = generator.monster_map.all_entities()
+                    for monster in monsters:
+                        print("Ocean monster x is {}, ocean monster y is {}".format(monster.x, monster.y))
                 self.memory.generators[branch][level] = generator
 
         known_gateways = gateway_data.all_gateways()

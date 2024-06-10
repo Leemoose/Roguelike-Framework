@@ -75,7 +75,7 @@ class Player(O.Objects):
             if loop.generator.get_passable((x, y)):
                 self.move(move_x, move_y, loop)
             elif not loop.generator.monster_map.get_passable(x, y):
-                defender = loop.monster_map.locate(x,y)
+                defender = loop.generator.monster_map.locate(x,y)
                 self.attack(defender, loop)
             elif not loop.generator.interact_map.get_passable(x, y):
                 self.talk(loop, input_direction=(move_x, move_y))

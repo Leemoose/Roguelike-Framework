@@ -195,6 +195,8 @@ class DungeonGenerator():
                 return self.spawn_params.check_monster_restrictions(creature, self.tile_map, location, self)
         else:
             monster_restriction = None
+        if self.branch =="Ocean":
+            print(self.get_random_location(condition=monster_restriction))
         x, y = self.get_random_location(condition=monster_restriction)
         self.place_monster_at_location(creature, x, y)
 
