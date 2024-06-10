@@ -252,7 +252,7 @@ class Loops():
 
     def monster_loop(self, energy, stairs = None):
         
-        for monster in self.monster_map.all_entities():
+        for monster in self.generator.monster_map.all_entities():
             if monster.character.alive:
                 # do status effect stuff
                 if self.generator.tile_map.track_map[monster.x][monster.y].seen:
@@ -404,7 +404,6 @@ class Loops():
                 self.floor_level -= 1
             self.player.x, self.player.y = (current_stairs.pair.get_location())
             self.generator = self.memory.generators[self.branch][self.floor_level]
-            self.monster_map = self.generator.monster_map
 
         self.taking_stairs = False
 
@@ -480,7 +479,6 @@ class Loops():
         self.memory.floor_level = 1
         self.memory.explored_levels = 1
         self.generator = self.memory.generators[self.branch][self.floor_level]
-        self.monster_map = self.generator.monster_map
 
         # import pdb; pdb.set_trace()
 
@@ -507,7 +505,7 @@ class Loops():
     def void_target(self):
         if self.target_to_display == None:
             return
-        if self.monster_map.get_passable(self.target_to_display[0], self.target_to_display[
+        if self.generator.monster_map.get_passable(self.target_to_display[0], self.target_to_display[
             1]):  # don't void if its a monster, cuz its a good QOL to keep monster health on screen
             self.target_to_display = None
 
@@ -532,7 +530,6 @@ class Loops():
 
         self.generator = self.memory.generators[self.branch][self.floor_level]
         self.tile_map = self.generator.tile_map
-        self.monster_map = self.generator.monster_map
 
         self.player = self.memory.player
         self.player.character.energy = 0
@@ -549,7 +546,6 @@ class Loops():
         self.floor_level = 0
         self.memory = Memory()
         self.tile_map = None
-        self.monster_map = None
 
         self.generator = None
         self.messages = []
@@ -569,7 +565,7 @@ class Loops():
                 for status_effect in self.generator.tile_map.locate(self.player.x,self.player.y).get_status_effects():
                     self.player.character.add_status_effect(status_effect)
 
-            for monster in self.monster_map.all_entities():
+            for monster in self.generator.monster_map.all_entities():
                 monster.character.tick_all_status_effects(self)
                 # tick skill cooldowns
                 monster.character.tick_cooldowns()
