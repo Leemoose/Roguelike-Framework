@@ -82,3 +82,4 @@ class Item(Objects):
         self.attached_skill_exists = False
         self.equipment_type = None
         self.traits["item"] = True
+        self.rarity = "Common"

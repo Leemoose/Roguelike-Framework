@@ -140,6 +140,8 @@ class HubParams(BranchParams):
     def __init__(self):
         super().__init__()
         self.branch_name = "Hub"
+        self.equipment = [(0, 0, 0)]  # floor 1
+        self.potiorbs = [(0, 0)]  # floor 1
 
 class ForestParams(BranchParams):
     def __init__(self):
