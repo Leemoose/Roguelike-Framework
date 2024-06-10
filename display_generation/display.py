@@ -59,7 +59,7 @@ class Display:
         monsterID = loop.generator.monster_map.dict
         item_ID = loop.generator.item_map.dict
         npc_ID = loop.generator.interact_map.dict
-        monster_map = loop.monster_map
+        monster_map = loop.generator.monster_map
         player = loop.player
         messages = loop.messages
         target_to_display = loop.screen_focus
