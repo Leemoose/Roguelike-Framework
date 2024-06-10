@@ -2,14 +2,14 @@ import copy
 import random
 
 class ItemSpawnParams:
-    def __init__(self, item, minFloor=1, maxFloor=10, branch=None):
+    def __init__(self, item, minFloor=1, maxFloor=10, branch="all"):
         self.item = item
         self.minFloor = minFloor
         self.maxFloor = maxFloor
         self.branch = branch
 
-    def AllowedAtDepth(self, depth, branch=None):
-        return (depth >= self.minFloor and depth <= self.maxFloor and branch == self.branch)
+    def AllowedAtDepth(self, depth, branch="all"):
+        return (depth >= self.minFloor and depth <= self.maxFloor and (self.branch == "all" or self.branch == branch))
 
     def GetFreshCopy(self):
         return copy.deepcopy(self.item)

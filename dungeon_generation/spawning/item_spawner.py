@@ -60,18 +60,18 @@ class ItemSpawner():
         items.append(I.BookofHypnosis())
 
 
-        commonEquipAtDepth = [i for i in self.commonEquip if i.AllowedAtDepth(depth)]
-        commonPotiorbsAtDepth = [i for i in self.commonPotiorbs if i.AllowedAtDepth(depth)]
-        commonScrorbsAtDepth = [i for i in self.commonScrorbs if i.AllowedAtDepth(depth)]
-        commonCorpsesAtDepth = [i for i in self.commonCorpse if i.AllowedAtDepth(depth)]
+        commonEquipAtDepth = [i for i in self.commonEquip if i.AllowedAtDepth(depth, branch)]
+        commonPotiorbsAtDepth = [i for i in self.commonPotiorbs if i.AllowedAtDepth(depth, branch)]
+        commonScrorbsAtDepth = [i for i in self.commonScrorbs if i.AllowedAtDepth(depth, branch)]
+        commonCorpsesAtDepth = [i for i in self.commonCorpse if i.AllowedAtDepth(depth, branch)]
 
-        rareEquipAtDepth = [i for i in self.rareEquip if i.AllowedAtDepth(depth)]
-        rarePotiorbsAtDepth = [i for i in self.rarePotiorbs if i.AllowedAtDepth(depth)]
-        rareScrorbsAtDepth = [i for i in self.rareScrorbs if i.AllowedAtDepth(depth)]
+        rareEquipAtDepth = [i for i in self.rareEquip if i.AllowedAtDepth(depth, branch)]
+        rarePotiorbsAtDepth = [i for i in self.rarePotiorbs if i.AllowedAtDepth(depth, branch)]
+        rareScrorbsAtDepth = [i for i in self.rareScrorbs if i.AllowedAtDepth(depth, branch)]
         if rareEquipAtDepth == []:
             rareEquipAtDepth = commonEquipAtDepth
-        legendaryEquipAtDepth = [i for i in self.legendaryEquip if i.AllowedAtDepth(depth)]
-        legendaryScrorbsAtDepth = [i for i in self.legendaryScrorbs if i.AllowedAtDepth(depth)]
+        legendaryEquipAtDepth = [i for i in self.legendaryEquip if i.AllowedAtDepth(depth, branch)]
+        legendaryScrorbsAtDepth = [i for i in self.legendaryScrorbs if i.AllowedAtDepth(depth, branch)]
         if legendaryEquipAtDepth == []: # downgrade if no legendary items available
             if rareEquipAtDepth == []:
                 legendaryEquipAtDepth = commonEquipAtDepth
@@ -130,7 +130,7 @@ class ItemSpawner():
             item = item_spawn.GetFreshCopy()
             items.append(item)
 
-        for i in range(distribution.countEquipment(depth)):
+        for i in range(distribution.countCorpses(depth)):
             rarity = random.random()
             if len(commonCorpsesAtDepth) > 0:
                 item_spawn = random.choice(commonCorpsesAtDepth)
