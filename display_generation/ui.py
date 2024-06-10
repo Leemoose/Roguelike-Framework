@@ -437,10 +437,12 @@ class DepthDisplay(pygame_gui.elements.UILabel):
         super().__init__(relative_rect=rect, manager=manager, text="Error")
         self.loop = loop
         self.last_depth = -1
+        self.last_branch = ""
 
     def update(self, time_delta: float):
-        if (self.last_depth != self.loop.generator.depth):
-            self.set_text("Depth " + str(self.loop.generator.depth))
+        if (self.last_depth != self.loop.generator.depth) or self.last_branch != self.loop.generator.branch:
+            self.set_text(str(self.loop.generator.branch) + " " + str(self.loop.generator.depth))
             self.last_depth = self.loop.generator.depth
+            self.last_branch = self.loop.generator.branch
 
         return super().update(time_delta)
