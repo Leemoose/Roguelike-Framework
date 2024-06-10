@@ -2,7 +2,7 @@ import pygame_gui, pygame
 
 from .ui import FPSCounter, MessageBox, DepthDisplay, StatBox, SkillButton, HealthBar, ManaBar
 
-def create_skill_bar(display, loop):
+def create_skill_bar(display, loop, display_empty=False):
     player = loop.player
     tileDict = loop.tileDict
 
@@ -37,11 +37,16 @@ def create_skill_bar(display, loop):
                             skill_bar_width, skill_bar_height)
         for i, skill in enumerate(player.mage.quick_cast_spells):
             if skill == None:
-                continue
-            img1 = pygame.transform.scale(tileDict.tiles[skill.render_tag],
-                                          (skill_button_width, skill_button_height))
-            img2 = pygame.transform.scale(tileDict.tiles[-skill.render_tag],
-                                          (skill_button_width, skill_button_height))
+                if display_empty:
+                    img1 = None
+                    img2 = None
+                else:
+                    continue
+            else:
+                img1 = pygame.transform.scale(tileDict.tiles[skill.render_tag],
+                                            (skill_button_width, skill_button_height))
+                img2 = pygame.transform.scale(tileDict.tiles[-skill.render_tag],
+                                            (skill_button_width, skill_button_height))
             button = SkillButton(
                 rect=pygame.Rect((
                     skill_bar_offset_from_left + skill_button_offset_from_each_other_width + (

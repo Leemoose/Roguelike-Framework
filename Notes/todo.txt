@@ -17,7 +17,3 @@ Ocean:
     Targetting does not work over deep water
 
 Split item screen description to description and buttons seperately (so it can be reused)
-
-Skill buttons on quickcast selection screen don't work properly for some reason
-
-make spell screen creation more in line with other functions (to get rid of if statements in loops)

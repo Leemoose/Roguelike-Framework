@@ -77,6 +77,8 @@ class Player(O.Objects):
             elif not loop.generator.monster_map.get_passable(x, y):
                 defender = loop.monster_map.locate(x,y)
                 self.attack(defender, loop)
+            elif not loop.generator.interact_map.get_passable(x, y):
+                self.talk(loop, input_direction=(move_x, move_y))
             else:
                 loop.add_message("You cannot move there")
 
@@ -324,9 +326,12 @@ class Player(O.Objects):
             self.character.energy -= self.character.action_costs["move"]
             loop.add_message("You can't move!")
 
-    def talk(self, loop):
+    def talk(self, loop, input_direction=None):
         spoke = False
-        directions = [(0, 1), (0, -1), (1, 0), (-1, 0), (1, 1), (-1, -1), (1, -1), (-1, 1)]
+        if input_direction == None:
+            directions = [(0, 1), (0, -1), (1, 0), (-1, 0), (1, 1), (-1, -1), (1, -1), (-1, 1)]
+        else:
+            directions = [input_direction]
         location = []
         for x, y in directions:
             location.append((x + self.x, y + self.y))

@@ -83,7 +83,9 @@ class Loops():
                                        LoopType.quest: create_quest_screen,
                                        LoopType.spell: create_spellcasting,
                                        LoopType.binding: create_binding_screen,
-                                       LoopType.classes: create_class_screen
+                                       LoopType.classes: create_class_screen,
+                                       LoopType.spell_individual: create_spell_window,
+                                       LoopType.quickcast: create_quickcast_select
                                        }
         self.update_display_options = {
                                        LoopType.victory: self.display.update_screen,
@@ -101,7 +103,8 @@ class Loops():
                                        LoopType.spell: self.display.update_screen,
                                        LoopType.binding: self.display.update_screen,
                                        LoopType.classes: self.display.update_screen,
-                                       LoopType.quickcast: update_quickselect
+                                       LoopType.spell_individual: update_spell_window,
+                                       LoopType.quickcast: update_quickcast_select
                                        }
         self.action_options =          {LoopType.action: key_action,
                                        LoopType.inventory: key_inventory,
@@ -147,8 +150,6 @@ class Loops():
             self.create_display_options[newLoop](self.display, self)
         elif newLoop == LoopType.items:
             self.display.update_entity(self, item_screen=True, create=True)
-        elif newLoop == LoopType.spell_individual:
-            update_spell_window(self, create=True)
 
     def action_loop(self, keyboard, display):
         """
@@ -299,8 +300,6 @@ class Loops():
                             self.screen_focus = None
             elif self.currentLoop == LoopType.items:
                 display.update_entity(self)
-            elif self.currentLoop == LoopType.spell_individual:
-                update_spell_window(self)
             elif (self.currentLoop == LoopType.resting or self.currentLoop == LoopType.exploring or self.currentLoop == LoopType.stairs):
                 self.clean_up()
                 shadowcasting.compute_fov(self)

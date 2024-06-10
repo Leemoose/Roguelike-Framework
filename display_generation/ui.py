@@ -285,6 +285,8 @@ class SkillButton(pygame_gui.elements.UIButton):
 
     def needs_change(self):
         skill = self.player.mage.quick_cast_spells[self.index]
+        if skill == None:
+            return False
         closest_monster = self.player.character.get_closest_monster(self.loop)
         if closest_monster == self.player and skill.range != -1:
             castable = False  # no monster to caste ranged skill on
@@ -300,13 +302,15 @@ class SkillButton(pygame_gui.elements.UIButton):
     def draw_on_button(self, button, img, letter="", button_size=None, shrink=False, offset_factor = 10, text_offset = (15, 0.8)):
         offset = (0, 0)
         if shrink:# shrink weapon image a bit
-            img = pygame.transform.scale(img, (button_size[0] // 5 * 4, button_size[1] // 5 * 4))
+            if img != None:
+                img = pygame.transform.scale(img, (button_size[0] // 5 * 4, button_size[1] // 5 * 4))
             offset = (button_size[0] // offset_factor, button_size[1] // offset_factor)
-        button.drawable_shape.states['normal'].surface.blit(img, offset)
-        button.drawable_shape.states['hovered'].surface.blit(img, offset)
-        button.drawable_shape.states['disabled'].surface.blit(img, offset)
-        button.drawable_shape.states['selected'].surface.blit(img, offset)
-        button.drawable_shape.states['active'].surface.blit(img, offset)
+        if img != None:
+            button.drawable_shape.states['normal'].surface.blit(img, offset)
+            button.drawable_shape.states['hovered'].surface.blit(img, offset)
+            button.drawable_shape.states['disabled'].surface.blit(img, offset)
+            button.drawable_shape.states['selected'].surface.blit(img, offset)
+            button.drawable_shape.states['active'].surface.blit(img, offset)
         if button_size:
             font_size = 20
             font = pygame.font.Font('freesansbold.ttf', font_size)
@@ -437,10 +441,12 @@ class DepthDisplay(pygame_gui.elements.UILabel):
         super().__init__(relative_rect=rect, manager=manager, text="Error")
         self.loop = loop
         self.last_depth = -1
+        self.last_branch = ""
 
     def update(self, time_delta: float):
-        if (self.last_depth != self.loop.generator.depth):
-            self.set_text("Depth " + str(self.loop.generator.depth))
+        if (self.last_depth != self.loop.generator.depth) or self.last_branch != self.loop.generator.branch:
+            self.set_text(str(self.loop.generator.branch) + " " + str(self.loop.generator.depth))
             self.last_depth = self.loop.generator.depth
+            self.last_branch = self.loop.generator.branch
 
         return super().update(time_delta)

@@ -122,6 +122,9 @@ class BranchParams:
     def countCorpses(self, depth):
         return 0
     
+    def countCorpses(self, depth):
+        return 0
+    
     # specific branches can overwrite this with any restrictions they can check on the monster
     # returns true on tiles that can be spawned on
     # def check_monster_restrictions(self, monster, tileMap, location, generator):
@@ -158,6 +161,21 @@ class HubParams(BranchParams):
 
     def countCorpses(self, depth):
         return 6
+
+    def countEquipment(self, depth):
+        return 0
+    
+    def countPotiorbs(self, depth):
+        return 0
+    
+    def countScrorbs(self, depth):
+        return 0
+    
+    def countExtraCommon(self, depth):
+        return 0
+    
+    def countCorpses(self, depth):
+        return 5
 
 class ForestParams(BranchParams):
     def __init__(self):

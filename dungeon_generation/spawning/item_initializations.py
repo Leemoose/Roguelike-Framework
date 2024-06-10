@@ -9,7 +9,6 @@ ItemSpawns = []
 ItemSpawns.append(ItemSpawnParams(I.GuardCorpse(), minFloor=1, maxFloor=1,branch = "Hub"))
 ItemSpawns.append(ItemSpawnParams(I.Corpse(), minFloor=1, maxFloor=1,branch = "Hub"))
 
-
 # Weapons
 ItemSpawns.append(ItemSpawnParams( I.Ax(300) ))
 ItemSpawns.append(ItemSpawnParams( I.Hammer(301) ))
