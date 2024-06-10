@@ -69,7 +69,7 @@ def dojoify(room, render_map, image, depth):
 
     return render_map
 
-def squarify(startx, starty, render_tile_map, image_map, width, height):
+def hubify(startx, starty, render_tile_map, image_map, width, height):
     height = min(height, len(render_tile_map[0]) - starty)
     width = min(width, len(render_tile_map) - startx)
     print(width, height)
@@ -80,4 +80,12 @@ def squarify(startx, starty, render_tile_map, image_map, width, height):
                 render_tile_map[startx + x][starty + y] = "x"
             else:
                 render_tile_map[startx + x][starty + y] = "."
+
+    right = width - 2
+    top = height - 2
+    for i in range(3):
+        render_tile_map[right][top-i] = "g"
+
+    render_tile_map[1][1] = "g"
+    render_tile_map[1][2] = "A"
     return render_tile_map

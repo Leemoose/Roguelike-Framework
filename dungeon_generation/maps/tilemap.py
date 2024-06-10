@@ -58,7 +58,7 @@ class TileMap(TrackingMap):
             self.track_map_render = throneify(0, 0, self.track_map_render, self.image, self.width, self.height)
         elif branch == "Hub":
             print(self.track_map_render)
-            self.track_map_render = squarify(0, 0, self.track_map_render, self.image, self.width, self.height)
+            self.track_map_render = hubify(0, 0, self.track_map_render, self.image, self.width, self.height)
         elif self.branch == "Ocean":
             self.cellular_caves()
             self.add_water()

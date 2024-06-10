@@ -65,6 +65,11 @@ class NPC(O.Objects):
             self.items.pop(number)
             loop.change_loop(L.LoopType.trade)
 
+    def continue_talking(self, loop):
+        loop.add_message(self.talking_queue.pop(0))
+        if len(self.talking_queue) == 0:
+            self.talking = False
+
 class Bob(NPC):
     def __init__(self, render_tag, x, y, name="Bob"):
         super().__init__(x=x, y=y, render_tag = render_tag, name = name)
@@ -101,7 +106,7 @@ class Bob(NPC):
             self.has_stuff_to_say = False
 
 class King(NPC):
-    def __init__(self, x, y, render_tag= 120, name="King"):
+    def __init__(self, x, y, render_tag= 120, name="King Aldric"):
         super().__init__(x=x, y=y, render_tag = render_tag, name = name)
         self.options = ["Quest"]
         self.has_stuff_to_say = True # separate variable from gave_quest in case we want traders to keep this icon
@@ -121,11 +126,6 @@ class King(NPC):
             self.gave_quest = True
             self.has_stuff_to_say = False
 
-    def continue_talking(self, loop):
-        loop.add_message(self.talking_queue.pop(0))
-        if len(self.talking_queue) == 0:
-            self.talking = False
-
 class Guard(NPC):
     def __init__(self, x, y, render_tag= 121, name="Guard"):
         super().__init__(x=x, y=y, render_tag = render_tag, name = name)
@@ -134,6 +134,24 @@ class Guard(NPC):
     def talk(self, loop):
         # super().talk(loop)
         loop.add_message(self.name + " says: 'Now move along.")
+
+class BobBrother(Guard):
+    def __init__(self, x, y, render_tag= 121, name="Bob's Brother"):
+        super().__init__(x=x, y=y, render_tag = render_tag, name = name)
+        self.options.append("Quest")
+        self.has_stuff_to_say = True
+        self.quest = quest.BrothersQuest()
+
+    def give_quest(self, loop):
+        if self.gave_quest == True:
+            if self.quest.check_for_completion(loop):
+                loop.add_message(self.name + " says: 'Thank you for bringing my brother back.'")
+        else:
+            loop.add_message(
+                self.name + " says: 'Please, I can't find my brother and the king won't let me leave my post. Can you find him for me?")
+            loop.player.add_quest(quest.BrothersQuest())
+            self.has_stuff_to_say = False
+            self.gave_quest = True
 
 class BobBrother(Guard):
     def __init__(self, x, y, render_tag= 121, name="Bob's Brother"):
@@ -175,3 +193,22 @@ class Sensei(NPC):
             loop.player.add_quest(quest.DojoQuest())
             self.gave_quest = True
             self.has_stuff_to_say = False
+
+class Archmage(NPC):
+    def __init__(self, x, y, render_tag= 123, name="Archmage Thalor"):
+        super().__init__(x=x, y=y, render_tag = render_tag, name = name)
+        self.options = ["Talk"]
+        self.has_stuff_to_say = True
+
+    def talk(self, loop):
+        if self.has_stuff_to_say:
+            self.talking = True
+            loop.add_message("'Ah, the latest summon. Listen carefully. Beyond these rifts lies a chaotic realm where monsters originate.'")
+            self.talking_queue.append(
+                "Your task is to stem the tide of creatures and find a way to close the rifts. Each rift you seal will hopefully weaken the others.")
+            self.talking_queue.append("Or strengthen, we don't actually know.")
+            self.talking_queue.append("But be warned, the deeper you go, the more powerful the monsters become.")
+            self.has_stuff_to_say = False
+        else:
+            loop.add_message(
+                "'Now hurry along before more beasts emerge.'")

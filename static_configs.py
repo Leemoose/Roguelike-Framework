@@ -254,6 +254,7 @@ class AscaiiTileDict():
         tiles["BB"] = T.BobBrotherTile
         tiles["S"] = T.SenseiTile
         tiles["D"] = T.DummyTile
+        tiles["A"] = T.ArchmageTile
         self.tiles = tiles
 
         self.image_mapping = {"Forest":
