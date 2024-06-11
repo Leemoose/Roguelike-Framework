@@ -140,7 +140,9 @@ class Loops():
     def change_loop(self, newLoop):
         loop_type_mapping = {"victory": LoopType.victory,
                              "action": LoopType.action,
-                             "trade": LoopType.trade}
+                             "trade": LoopType.trade,
+                             "inventory":LoopType.inventory,
+                             "enchant": LoopType.enchant}
         if newLoop in loop_type_mapping:
             newLoop = loop_type_mapping[newLoop]
         # self.clear_message()
