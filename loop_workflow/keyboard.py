@@ -1,6 +1,8 @@
 import pygame
-from .key_screens import key_targeting_screen, key_action
+from .key_screens import key_targeting_screen, key_action, key_explore
 from .bindings import Bindings
+from navigation_utility import pathfinding
+from loop_workflow import LoopType
 
 class Keyboard():
     """
@@ -109,6 +111,18 @@ class Keyboard():
                        (-1,0): "left",
                        (-1,-1): "y"}
             key_action(loop, options[(xdiff, ydiff)])
+        else:
+            if (not loop.generator.tile_map.in_map(x_tile, y_tile)) or (not loop.generator.tile_map.track_map[x_tile][y_tile].seen):
+                return
+            if not player.path:
+                player.path = []
+            def target_condition(position_tuple):
+                return position_tuple[0] == x_tile and position_tuple[1] == y_tile
+            player.path = pathfinding.conditional_bfs(loop.generator.tile_map.track_map, (player.x, player.y), target_condition, loop.generator.interact_map.dict)
+            loop.change_loop(LoopType.pathing)
+            def end_pathing(loop):
+                loop.change_loop(LoopType.action)
+            loop.after_pathing = end_pathing
 
     def targetting_mouse_to_keyboard(self, loop, x_tile, y_tile):
         if loop.generator.tile_map.in_map(x_tile, y_tile):

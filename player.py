@@ -126,24 +126,23 @@ class Player(Objects):
                 loop.change_loop(LoopType.action)
                 return False
         
-        if not self.path:
-            import pdb; pdb.set_trace()
-        x, y = self.path.pop(0)
-        if (x == self.x and y == self.y):
-            # Pathfinding messed up - pop this just in case
+        if self.path:
             x, y = self.path.pop(0)
-        self.move(x - self.x, y - self.y, loop)
+            if (x == self.x and y == self.y):
+                # Pathfinding messed up - pop this just in case
+                x, y = self.path.pop(0)
+            self.move(x - self.x, y - self.y, loop)
 
-        # auto pickup gold
-        for item in loop.generator.item_map.all_entities():
-                if isinstance(item, I.Gold):
-                    if item.x == self.x and item.y == self.y:
-                        self.character.grab(item, loop)
+            # auto pickup gold
+            for item in loop.generator.item_map.all_entities():
+                    if isinstance(item, I.Gold):
+                        if item.x == self.x and item.y == self.y:
+                            self.character.grab(item, loop)
 
-        self.explore_path.append((x, y))
-        loop.update_screen = True
+            self.explore_path.append((x, y))
+            loop.update_screen = True
 
-        if self.path == []:
+        if not self.path:
             still_pathing = loop.after_pathing(loop) # whatever we set after_pathing to should change away from pathing LoopType if needed
             
         self.character.energy = 0
@@ -201,7 +200,7 @@ class Player(Objects):
             for stairs in loop.generator.tile_map.get_stairs():
                 if stairs.downward and stairs.seen:
                     all_stairs_seen.append(stairs.get_location())
-                    if stairs.get_location() not in self.visited_stairs:
+                    if stairs.get_location() not in self.visited_stairs and stairs.get_location() != start:
                         to_visit_stairs.append(stairs.get_location())
 
             for gateway in loop.generator.tile_map.get_gateway():

@@ -217,7 +217,8 @@ class Loops():
                 # print(f"Explored for {self.pathing_count} turns.")
                 self.pathing_count = 0
 
-                dummy_function = (lambda x: False)
+                # default after pathing behaviour
+                dummy_function = (lambda loop: loop.change_loop(LoopType.action))
                 self.after_pathing = dummy_function
 
                 # clear path if we go back to action
