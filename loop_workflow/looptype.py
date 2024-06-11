@@ -23,8 +23,7 @@ class LoopType(Enum):
     death = 18
     story = 19
     resting = 20
-    exploring = 21
-    stairs = 22
-    binding = 23
-    spell_individual = 24
-    quickcast = 25
+    pathing = 21
+    binding = 22
+    spell_individual = 23
+    quickcast = 24

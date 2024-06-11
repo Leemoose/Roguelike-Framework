@@ -43,7 +43,6 @@ Split player into: body, mage, statistics, warrior character
 More pathing stuff:
     Some kind of way to path to portals
     Update mouse-gameplay by allowing pathing to non-adjacent locations. 
-    Maybe create a new pathing looptype and standardize autoexplore, stairs pathing, portal pathing, mouse click pathing etc.
     Could introduce pathing to specific items (might need ctrl+f for items like dcss to be usable)
 
 More UI:
