@@ -50,7 +50,7 @@ class DungeonGenerator():
         start_x = random.randint(0, self.width - 1)
         start_y = random.randint(0, self.height - 1)
 
-        while (self.get_passable((start_x, start_y))) or (not stairs_block or self.on_stairs(start_x, start_y)):
+        while (not self.get_passable((start_x, start_y))) or (not stairs_block or self.on_stairs(start_x, start_y)):
             start_x = random.randint(0, self.width - 1)
             start_y = random.randint(0, self.height - 1)
 

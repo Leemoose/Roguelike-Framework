@@ -63,8 +63,9 @@ class Loops():
 
         self.rest_count = 0 # how many turns have you been resting for
         self.after_rest = LoopType.action # what loop type to revert to after finishing resting, default action
-        self.explore_count = 0 # how many turns have you been exploring for
-        self.stairs_count = 0 # how many turns have you been searching for stairs
+        self.pathing_count = 0 # how many turns have you been exploring for
+        dummy_function = (lambda x: False)
+        self.after_pathing = dummy_function
 
         self.create_display_options = {LoopType.action: create_display,
                                        LoopType.targeting: create_display,
@@ -124,8 +125,7 @@ class Loops():
                                        LoopType.trade: key_trade,
                                        LoopType.quest: key_quest,
                                        LoopType.resting: key_rest,
-                                       LoopType.exploring: key_explore,
-                                       LoopType.stairs: key_explore,
+                                       LoopType.pathing: key_explore,
                                        LoopType.spell: key_spell,
                                        LoopType.binding: key_binding,
                                        LoopType.classes: key_classes,
@@ -213,27 +213,34 @@ class Loops():
                 # print(f"Rested for {self.rest_count} turns.")
                 self.rest_count = 0
 
-            if self.explore_count != 0:
-                # print(f"Explored for {self.explore_count} turns.")
-                self.explore_count = 0
+            if self.pathing_count != 0:
+                # print(f"Explored for {self.pathing_count} turns.")
+                self.pathing_count = 0
+
+                # default after pathing behaviour
+                dummy_function = (lambda loop: loop.change_loop(LoopType.action))
+                self.after_pathing = dummy_function
+
+                # clear path if we go back to action
+                self.player.path = []
             
-            if self.stairs_count != 0:
-                # print(f"Pathed to stairs for {self.stairs_count} turns")
-                self.stairs_count = 0
+            # if self.stairs_count != 0:
+            #     # print(f"Pathed to stairs for {self.stairs_count} turns")
+            #     self.stairs_count = 0
 
         # check autoexplore and rest
         if self.currentLoop == LoopType.resting:
             self.player.character.rest(self, self.after_rest)
             self.rest_count += 1
-        if self.currentLoop == LoopType.exploring:
-            self.player.autoexplore(self)
-            self.explore_count += 1
+        if self.currentLoop == LoopType.pathing:
+            self.player.autopath(self)
+            self.pathing_count += 1
             # uncomment this to closely follow pathing
             # import time
             # time.sleep(0.2)
-        if self.currentLoop == LoopType.stairs:
-            self.player.find_stairs(self)
-            self.stairs_count += 1
+        # if self.currentLoop == LoopType.stairs:
+        #     self.player.find_stairs(self)
+        #     self.stairs_count += 1
             # uncomment this to closely follow pathing
             # import time
             # time.sleep(0.2)
@@ -302,7 +309,7 @@ class Loops():
                             self.screen_focus = None
             elif self.currentLoop == LoopType.items:
                 display.update_entity(self)
-            elif (self.currentLoop == LoopType.resting or self.currentLoop == LoopType.exploring or self.currentLoop == LoopType.stairs):
+            elif (self.currentLoop == LoopType.resting or self.currentLoop == LoopType.pathing):
                 self.clean_up()
                 shadowcasting.compute_fov(self)
                 if self.render_exploration:
@@ -405,6 +412,7 @@ class Loops():
                                 break
                 self.floor_level -= 1
             self.player.x, self.player.y = (current_stairs.pair.get_location())
+            self.player.visited_stairs = []
             self.generator = self.memory.generators[self.branch][self.floor_level]
 
         self.taking_stairs = False
@@ -425,6 +433,7 @@ class Loops():
         # import pdb; pdb.set_trace()
         print("The gateway you are taking is {}".format(self.generator.tile_map.track_map[playerx][playery]))
         self.player.x, self.player.y = (gate.outgoing.get_location())
+        self.player.visited_stairs = []
         self.branch = branch
         self.generator = self.memory.generators[branch][self.floor_level]
         self.memory.floor_level = depth

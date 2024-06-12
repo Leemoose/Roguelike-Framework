@@ -1,4 +1,4 @@
-from monster_implementation import monster_ai
+from monster_implementation import monster_ai as ai
 import objects as O
 from character_implementation import character as C
 import items as I

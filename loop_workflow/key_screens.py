@@ -159,7 +159,9 @@ def key_action(loop, key):
     #    if loop.player.invincible:
     #        loop.display.uiManager.set_visual_debug_mode(True)
     elif key == "s":
-        loop.change_loop(LoopType.stairs)
+        loop.player.find_stairs(loop)
+        if loop.player.path:
+            loop.change_loop(LoopType.pathing)
     elif key == "p":
         loop.change_loop(LoopType.spell)
     elif key == ">":
@@ -178,7 +180,9 @@ def key_action(loop, key):
     elif key == "o":
         print(loop.generator.tile_map)
         # loop.player.autoexplore(loop)
-        loop.change_loop(LoopType.exploring)
+        loop.player.autoexplore(loop)
+        if loop.player.path:
+            loop.change_loop(LoopType.pathing)
     elif key == "t":
         talk(loop.player, loop)
     elif key == "esc":
@@ -230,6 +234,7 @@ def key_rest(loop, key):
 
 def key_explore(loop, key):
     loop.add_message("Input detected. Ending exploration early.")
+    loop.player.path = []
     loop.change_loop(LoopType.action)
 
 
@@ -370,7 +375,7 @@ def key_item_screen(loop, key):
             loop.change_loop(LoopType.inventory)
     elif key == "r":
         player.character.read(item, loop, item_dict, item_map)
-        loop.currentLoop = LoopType.action
+        # loop.currentLoop = LoopType.action
     loop.change_loop(loop.currentLoop)
 
 

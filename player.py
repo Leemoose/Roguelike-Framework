@@ -28,6 +28,9 @@ class Player(Objects):
         self.experience = 0
         self.experience_to_next_level = 20
 
+        self.visited_stairs = []
+
+
         self.stat_points = 0
         self.stat_decisions = [0, 0, 0, 0]  # used at loop levelling to allocate points
 
@@ -88,7 +91,7 @@ class Player(Objects):
                 "move"]  # / (1.02**(self.character.dexterity + self.character.round_bonus())))
             self.y += move_y
             self.x += move_x
-            if loop.currentLoop != LoopType.exploring and loop.currentLoop != LoopType.stairs:
+            if loop.currentLoop != LoopType.pathing:
                 loop.add_message("The player moved.")
         else:
             loop.add_message("You can't move there")
@@ -106,64 +109,71 @@ class Player(Objects):
         damage = self.character.melee(defender, loop)
         loop.add_message(f"The player attacked for {damage} damage")
 
-    def autoexplore(self, loop):
-        all_seen = False
+    def autopath(self, loop):
         if self.character.needs_rest(self):
-            loop.after_rest = L.LoopType.exploring
-            loop.change_loop(L.LoopType.resting)
-            # self.character.rest(loop)
-            return # rest until ready to explore
-        loop.after_rest = L.LoopType.action # in case we rested need to reset this to default
+            loop.after_rest = LoopType.pathing
+            loop.change_loop(LoopType.resting)
+            return
+        loop.after_rest = LoopType.action # in case we rested need to reset this to default
         tile_map = loop.generator.tile_map
         for monster in loop.generator.monster_map.all_entities():
             monster_loc = monster.get_location()
             if tile_map.track_map[monster_loc[0]][monster_loc[1]].visible and monster.stops_autoexplore:
-                if loop.explore_count == 0:
-                    loop.add_message("You cannot autoexplore while enemies are visible.")
+                if loop.pathing_count == 0:
+                    loop.add_message("You cannot autopath while enemies are visible.")
                 else:
                     loop.add_message(f"A {monster.name} interrupted your exploration.")
-                loop.change_loop(L.LoopType.action)
+                loop.change_loop(LoopType.action)
                 return False
+        
+        if self.path:
+            x, y = self.path.pop(0)
+            if (x == self.x and y == self.y):
+                # Pathfinding messed up - pop this just in case
+                x, y = self.path.pop(0)
+            self.move(x - self.x, y - self.y, loop)
+
+            # auto pickup gold
+            for item in loop.generator.item_map.all_entities():
+                    if isinstance(item, I.Gold):
+                        if item.x == self.x and item.y == self.y:
+                            self.character.grab(item, loop)
+
+            self.explore_path.append((x, y))
+            loop.update_screen = True
+
+        if not self.path:
+            still_pathing = loop.after_pathing(loop) # whatever we set after_pathing to should change away from pathing LoopType if needed
+            
+        self.character.energy = 0
+        #if not all_seen:
+            #shadowcasting.compute_fov(loop)
+            # self.autoexplore(loop)
+        return True
+
+    def autoexplore(self, loop):
+        all_seen = False
         
         # auto pickup gold
         gold_locations = []
         for item in loop.generator.item_map.all_entities():
                 if isinstance(item, I.Gold):
-                    if item.x == self.x and item.y == self.y:
-                        self.character.grab(item, loop)
-                    else:
-                        gold_locations.append((item.x, item.y))
+                    gold_locations.append((item.x, item.y))
         
+        tile_map = loop.generator.tile_map
+
         if len(self.path) <= 1:
             start = (self.x, self.y)
             all_seen, unseen = loop.generator.all_seen()
             if all_seen:
-                loop.change_loop(L.LoopType.action)
+                loop.change_loop(LoopType.action)
+                loop.after_pathing = LoopType.action
                 loop.add_message("Finished exploring this level. Press s to path to stairs")
                 # print(self.explore_path)
                 # print(len(self.explore_path))
                 loop.update_screen = True
                 self.path = []
                 return False
-            # endx = unseen[0]
-            # endy = unseen[1]
-            # while (not tile_map.get_passable(endx, endy)) and not (tile_map.track_map[endx][endy].seen):
-            #     if self.x == endx and self.y == endy:
-            #         loop.change_loop(L.LoopType.action)
-            #         self.path = []
-            #         return
-            #     if endx != tile_map.width - 1:
-            #         endx += 1
-            #     else:
-            #         endx = 0
-            #         if endy == tile_map.height - 1:
-            #             endy = 0
-            #         else:
-            #             endy += 1
-            # end = (endx, endy)
-            # self.path = pathfinding.astar_multi_goal(tile_map.track_map, start, loop.generator.get_all_frontier_tiles(),
-            #                                         loop.generator.monster_map, loop.player)
-            # if all tiles have been seen don't autoexplore
 
             # Attempt to redo autoexplore with simpler BFS
             # in-line end condition so we can use tile_map
@@ -174,78 +184,72 @@ class Player(Objects):
             self.path = pathfinding.conditional_bfs(tile_map.track_map, start, autoexplore_condition, loop.generator.interact_map.dict)
             if not self.path:
                 self.path = []
-                loop.change_loop(L.LoopType.action)
-                return
-        # import pdb; pdb.set_trace()
-        x, y = self.path.pop(0)
-        if (x == self.x and y == self.y):
-            # Pathfinding messed up - pop this just in case
-            x, y = self.path.pop(0)
-        self.move(x - self.x, y - self.y, loop)
-        self.explore_path.append((x, y))
-        loop.update_screen = True
-
-        self.character.energy = 0
-        #if not all_seen:
-            #shadowcasting.compute_fov(loop)
-            # self.autoexplore(loop)
+                loop.change_loop(LoopType.action)
+                return False
+            else:
+                loop.after_pathing = self.autoexplore
+        
         return True
 
     def find_stairs(self, loop):
-        if self.character.needs_rest(self):
-            loop.after_rest = L.LoopType.stairs
-            loop.change_loop(L.LoopType.resting)
-            # self.character.rest(loop)
-            return # rest until ready to explore
         tile_map = loop.generator.tile_map
-        for monster in loop.generator.monster_map.all_entities():
-            monster_loc = monster.get_location()
-            if tile_map.track_map[monster_loc[0]][monster_loc[1]].visible and monster.stops_autoexplore:
-                if loop.stairs_count == 0:
-                    loop.add_message("You cannot autopath while enemies are visible.")
-                else:
-                    loop.add_message(f"A {monster.name} interrupted your journey to the stairs.")
-        
-        #import pdb; pdb.set_trace()
-
         if len(self.path) <= 1:
             start = (self.x, self.y)
-            end = None
-            nearest_stairs = 100000 # abritrary large number much greater than map size, so distance will always be less
-            # on_target = False
-            stairs_list = []
+            all_stairs_seen = []
+            to_visit_stairs = []
             for stairs in loop.generator.tile_map.get_stairs():
                 if stairs.downward and stairs.seen:
-                    stairs_list.append(stairs.get_location())
-                    # manhattan distance so we path to closest pair of stairs
-                    if (abs(stairs.get_location()[0] - start[0]) + \
-                        abs(stairs.get_location()[1] - start[1]) < nearest_stairs):
-                        end = stairs.get_location()
-            if end == None:
-                loop.add_message("You have not found the stairs yet")
-                loop.change_loop(L.LoopType.action)
-                return
-            if (start == end):
-                self.path = []
-                loop.change_loop(L.LoopType.action)
+                    all_stairs_seen.append(stairs.get_location())
+                    if stairs.get_location() not in self.visited_stairs and stairs.get_location() != start:
+                        to_visit_stairs.append(stairs.get_location())
+
+            for gateway in loop.generator.tile_map.get_gateway():
+                if gateway.seen:
+                    all_stairs_seen.append(gateway.get_location())
+                    if gateway.get_location() not in self.visited_stairs:
+                        to_visit_stairs.append(gateway.get_location())
+
+            # import pdb; pdb.set_trace()
+
+            if len(all_stairs_seen) == 0:
+                loop.add_message("You have not found the stairs or a portal yet")
+                loop.change_loop(LoopType.action)
                 return
             
+            # special case to avoid trying to path to current location
+            if len(all_stairs_seen) == 1:
+                if all_stairs_seen[0] == start:
+                    loop.add_message("You have not found a different staircase or portal yet")
+                    loop.change_loop(LoopType.action)
+                    return
+                else:
+                    # if we move away from the only seen staircase, still try to path back to it
+                    to_visit_stairs = all_stairs_seen
+            
+            # if visited all stairs once, allow cycle of pathing to repeat
+            if len(to_visit_stairs) == 0:
+                to_visit_stairs = [self.visited_stairs[0]] # specically return to first pathed staircase to make the pathing more cyclical
+                if start == to_visit_stairs[0]:
+                    to_visit_stairs = [self.visited_stairs[1]] # all_stairs_seen length >= 2 and to_visit_stairs length = 0 => self.visited_stairs >= 2
+                
+                self.visited_stairs = []
+                if start in all_stairs_seen:
+                    self.visited_stairs.append(start)
+            
             def stairs_condition(position_tuple):
-                return position_tuple in stairs_list
+                return position_tuple in to_visit_stairs
+            
             self.path = pathfinding.conditional_bfs(tile_map.track_map, start, stairs_condition, loop.generator.interact_map.dict)
             if not self.path: # checks null and empty
                 self.path = []
-                loop.change_loop(L.LoopType.action)
+                loop.change_loop(LoopType.action)
                 return
-        if self.path == []:
-            import pdb; pdb.set_trace()
-        x, y = self.path.pop(0)
-        if (x == self.x and y == self.y):
-            # Pathfinding messed up - pop this just in case
-            x, y = self.path.pop(0)
-        self.move(x - self.x, y - self.y, loop)
-        loop.update_screen = True
-        self.character.energy = 0
+            
+            def after_stairs(loop):
+                player = loop.player
+                player.visited_stairs.append((player.x, player.y))
+                loop.change_loop(LoopType.action)
+            loop.after_pathing = after_stairs
 
     def check_for_levelup(self):
         while self.level != self.max_level and self.experience >= self.experience_to_next_level:
@@ -325,7 +329,6 @@ class Player(Objects):
         else:
             self.character.energy -= self.character.action_costs["move"]
             loop.add_message("You can't move!")
-
 
     def cast_spell(self, *args):
         self.mage.cast_spell(*args)

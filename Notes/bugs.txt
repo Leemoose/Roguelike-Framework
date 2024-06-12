@@ -20,6 +20,4 @@ fix gateways so that there can be a different outgoing and incoming (sort of fix
 attack_move in dungeon branches crashes game with: AttributeError: 'int' object has no attribute 'x'
 seems to have something to do with monster_map in branches being different from dungeon?
 
-monsters spawning in walls in general
-
 
