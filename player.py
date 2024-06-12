@@ -61,6 +61,7 @@ class Player(Objects):
             ]
             for spell in bug_test_spells:
                 self.mage.add_spell(spell)
+            self.stat_points = 20 # free stat points for debugging
 
     def gain_experience(self, experience):
         self.experience += experience

@@ -41,6 +41,9 @@ class Corpse(O.Item):
         super().__init__(x,y, id_tag = id_tag, render_tag = render_tag, name = name)
         self.monster_type = None
         self.traits["corpse"] = True
+        self.can_be_levelled = False
+        self.equipable = False
+
 
 class BobCorpse(Corpse):
     def __init__(self, x, y, id_tag = -1, render_tag = 2000, name = "Bob's Corpse"):
@@ -150,8 +153,9 @@ class Weapon(Equipment):
         self.diff_action_cost = 0
         self.traits["weapon"] = True
         self.slot = "hand_slot"
+
     def can_be_equipped(self, entity):
-        return super().can_be_equipped(entity) and entity.free_equipment_slots("hand_slot") >= self.slots_taken
+        return super().can_be_equipped(entity)
 
     def attack(self):
         damage = random.randint(self.damage_min, self.damage_max)
@@ -515,6 +519,7 @@ class Shield(Armor):
         self.name = name
         self.shield = True
         self.offhand = True
+        self.traits["shield"] = True
         self.description = "A shield that you can use to block things."
 
 

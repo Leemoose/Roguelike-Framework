@@ -244,8 +244,9 @@ def key_enchant(loop, key):
         loop.change_loop(LoopType.action)
         loop.limit_inventory = None
         player.character.ready_scroll = None
+    enchantable = player.character.get_enchantable()
     for i in range(len(player.character.inventory)):
-        if chr(ord("a") + i) == key:
+        if chr(ord("a") + i) == key and player.character.inventory[i] in enchantable:
             item = player.character.inventory[i]
             player.character.ready_scroll.consume_scroll(player.character)
             item.level_up()
