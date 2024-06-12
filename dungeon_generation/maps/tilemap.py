@@ -41,15 +41,7 @@ class TileMap(TrackingMap):
         # sometimes, rooms can be replaced by prefab rooms, for special quests, events etc.
         # keep track of prefabs, how many more times it can be placed, which floor they can be placed on
         # probability it will be placed and the function called to place it.
-        self.prefabs = [
-            # dojo (sensei quest)
-            {"prefab": dojoify,
-             "min_floor": 2,
-             "max_floor": 5,
-             "spawns_available": 1,
-             # not sure if there will be prefabs we want to spawn multiple times through dungeon but left it as a possibility
-             "spawn_chance": 0.5}
-        ]
+        self.prefabs = random_prefabs_list
         self.ascaii_mapping = diff_tile_dict
 
         self.track_map_render = [x[:] for x in [["x"] * self.height] * self.width]
@@ -72,14 +64,17 @@ class TileMap(TrackingMap):
             # if depth == 2:
             #    import pdb; pdb.set_trace()
 
-            available_prefabs = [x for x in self.prefabs if
+            available_prefabs = [(i, x) for (i, x) in enumerate(self.prefabs) if
                                  x["min_floor"] <= depth and x["max_floor"] >= depth and x["spawns_available"] > 0 and
-                                 x["spawn_chance"] > random.random()]
+                                 x["spawn_chance"] > random.random() and x["branch"] == self.branch]
 
-            for p in available_prefabs:
+            for i, p in available_prefabs:
                 room_to_replace = random.choice(self.rooms)
                 self.track_map_render = p["prefab"](room_to_replace, self.track_map_render, self.image, depth)
                 p["spawns_available"] -= 1
+                self.prefabs[i] = p
+                print(f"Spawns left:" + str(p["spawns_available"]))
+
 
             # Connect Rooms
             for i in range(len(self.rooms) - 1):

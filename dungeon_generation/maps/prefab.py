@@ -89,3 +89,15 @@ def hubify(startx, starty, render_tile_map, image_map, width, height):
     render_tile_map[1][1] = "g"
     render_tile_map[1][2] = "A"
     return render_tile_map
+
+# list of prefabs not tied to specific full floors but overwrite random rooms
+random_prefabs_list = [
+            # dojo (sensei quest)
+            {"prefab": dojoify,
+             "min_floor": 2,
+             "max_floor": 5,
+             "spawns_available": 1,
+             # not sure if there will be prefabs we want to spawn multiple times through dungeon but left it as a possibility
+             "spawn_chance": 0.5, 
+             "branch": "Dungeon"}
+        ]

@@ -13,11 +13,18 @@ fix gateways so that there can be a different outgoing and incoming (sort of fix
 
 Forest images
 
-Dojo spawning on every possible floor (should only spawn on 1)
-
 fix gateways so that there can be a different outgoing and incoming (sort of fixed)
 
-attack_move in dungeon branches crashes game with: AttributeError: 'int' object has no attribute 'x'
-seems to have something to do with monster_map in branches being different from dungeon?
 
-
+monster ai sometimes fails with:
+File "C:\Users\kcdul\OneDrive\Desktop\Roguelike-Framework\roguewriting.py", line 39, in <module>
+    player_turn = loop.action_loop(keyboard, display)
+  File "C:\Users\kcdul\OneDrive\Desktop\Roguelike-Framework\loops.py", line 251, in action_loop
+    self.monster_loop(-self.player.character.energy)
+  File "C:\Users\kcdul\OneDrive\Desktop\Roguelike-Framework\loops.py", line 275, in monster_loop
+    monster.brain.rank_actions(self)
+  File "C:\Users\kcdul\OneDrive\Desktop\Roguelike-Framework\monster_implementation\monster_ai.py", line 68, in rank_actions
+    self.options[called_function][1](self,loop)
+  File "C:\Users\kcdul\OneDrive\Desktop\Roguelike-Framework\monster_implementation\do_actions_utility.py", line 183, in do_move
+    xmove, ymove = moves.pop(1)
+AttributeError: 'tuple' object has no attribute 'pop'
