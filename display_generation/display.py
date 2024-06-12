@@ -42,12 +42,12 @@ class Display:
     def update_main(self, loop):
         # Main Screen
         self.win.fill((0, 0, 0))
+        image_offset_from_left = 0
+        image_offset_from_top = 0
+        self.win.blit(pygame.transform.scale(pygame.image.load('assets/titlescreen1.jpeg'),
+                                             (self.screen_width, self.screen_height)), (image_offset_from_left, image_offset_from_top))
         self.uiManager.draw_ui(self.win)
-        image_size = 100
-        image_offset_from_left = (self.screen_width - image_size) // 2
-        image_offset_from_top = self.screen_height // 2
-        self.win.blit(pygame.transform.scale(pygame.image.load('display_generation/yendorb_deactivated.png'),
-                                             (image_size, image_size)), (image_offset_from_left, image_offset_from_top))
+
         font = pygame.font.Font('freesansbold.ttf', 12)
 
 
@@ -667,5 +667,6 @@ class Display:
 
     def update_screen_without_fill(self, loop):
         self.uiManager.draw_ui(self.win)
+
 
 

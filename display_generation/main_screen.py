@@ -16,6 +16,9 @@ def create_main_screen(display, loop):
 
     display.uiManager.clear_and_reset()
 
+    imp = pygame.image.load('assets/title_screen.jpg')
+    display.win.blit(imp, (0, 0))
+
     button = pygame_gui.elements.UIButton(
         relative_rect=pygame.Rect((button_offset_from_left, button_offset_from_bottom), (button_width, button_height)),
         text='Play',

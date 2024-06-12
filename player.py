@@ -1,5 +1,5 @@
 from objects import Objects
-from character_implementation import character as C, statistics
+from character_implementation import character as C, statistics, talk
 import random
 import loops as L
 from navigation_utility import pathfinding
@@ -78,7 +78,7 @@ class Player(Objects):
                 defender = loop.generator.monster_map.locate(x,y)
                 self.attack(defender, loop)
             elif not loop.generator.interact_map.get_passable(x, y):
-                self.talk(loop, input_direction=(move_x, move_y))
+                talk(self, loop, input_direction=(move_x, move_y))
             else:
                 loop.add_message("You cannot move there")
 
@@ -326,23 +326,6 @@ class Player(Objects):
             self.character.energy -= self.character.action_costs["move"]
             loop.add_message("You can't move!")
 
-    def talk(self, loop, input_direction=None):
-        spoke = False
-        if input_direction == None:
-            directions = [(0, 1), (0, -1), (1, 0), (-1, 0), (1, 1), (-1, -1), (1, -1), (-1, 1)]
-        else:
-            directions = [input_direction]
-        location = []
-        for x, y in directions:
-            location.append((x + self.x, y + self.y))
-            if loop.generator.interact_map.locate(x + self.x, y + self.y) != -1:
-                loop.add_message("You say hello to your friendly neighbor.")
-                loop.generator.interact_map.locate(x + self.x, y + self.y).welcome(loop)
-                spoke = True
-                loop.change_loop(L.LoopType.trade)
-
-        if spoke == False:
-            loop.add_message("You feel lonely.")
 
     def cast_spell(self, *args):
         self.mage.cast_spell(*args)

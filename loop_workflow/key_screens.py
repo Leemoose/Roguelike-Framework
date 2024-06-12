@@ -1,4 +1,5 @@
 from .looptype import LoopType
+from character_implementation import talk
 
 def key_targeting_screen(loop, key):
     loop.update_screen = True
@@ -179,7 +180,7 @@ def key_action(loop, key):
         # loop.player.autoexplore(loop)
         loop.change_loop(LoopType.exploring)
     elif key == "t":
-        loop.player.talk(loop)
+        talk(loop.player, loop)
     elif key == "esc":
         loop.change_loop(LoopType.paused)
     elif key == "z":

@@ -6,7 +6,7 @@ import skills as S
 
 
 class Monster(O.Objects):
-    def __init__(self, x=-1, y = -1, render_tag = -1, name="Unknown monster", experience_given = 0, brain = ai.Monster_AI, rarity ="Common", health = 10, min_damage = 2, max_damage=3):
+    def __init__(self, x=-1, y = -1, render_tag = -1, name="Unknown monster", experience_given = 0, brain = monster_ai.Monster_AI, rarity ="Common", health = 10, min_damage = 2, max_damage=3):
         super().__init__(x=x, y=y, render_tag=render_tag, name=name)
         self.character = C.Character(self, health = health, min_damage=min_damage, max_damage = max_damage)
         self.asleep = False
@@ -33,7 +33,7 @@ class Monster(O.Objects):
         return
 
     def make_friendly(self):
-        self.brain = ai.Friendly_AI(self)
+        self.brain = monster_ai.Friendly_AI(self)
 
     def move(self, move_x, move_y, loop):
         monster_map = loop.generator.monster_map
@@ -117,7 +117,7 @@ class ChasmCrawler(Monster):
 
 class Slime(Monster):
     def __init__(self, x=-1, y=-1, render_tag=1100, name="Slime"):
-        super().__init__(x=x, y=y, render_tag = render_tag, name = name, experience_given=5, brain = ai.Slime_AI, health=5, min_damage=1, max_damage=1)
+        super().__init__(x=x, y=y, render_tag = render_tag, name = name, experience_given=5, brain = monster_ai.Slime_AI, health=5, min_damage=1, max_damage=1)
 
         self.description = "A small blob of experienc... I mean ooze."
         self.character.action_costs["grab"] = 0
@@ -130,7 +130,7 @@ GOBLIN
 - Melee combat
 """
 class Goblin(Monster):
-    def __init__(self, x=-1, y=-1, render_tag=1000, name="Goblin", experience_given=10, health=10, min_damage=3, max_damage=5, rarity = "Common", brain = ai.Goblin_AI):
+    def __init__(self, x=-1, y=-1, render_tag=1000, name="Goblin", experience_given=10, health=10, min_damage=3, max_damage=5, rarity = "Common", brain = monster_ai.Goblin_AI):
         super().__init__(x=x, y=y, render_tag = render_tag, name = name, experience_given=experience_given, health=health, min_damage=min_damage, max_damage=max_damage, rarity = rarity, brain = brain)
         self.character.skills.append(S.Escape(self, cooldown=100, 
                                               cost=0, self_fear=True, 
@@ -321,7 +321,7 @@ class Tormentorb(Monster):
 class Stumpy(Monster):
     def __init__(self, x=-1, y=-1, render_tag=1090, name="Stumpy"):
         super().__init__(x=x, y=y, render_tag = render_tag, name = name)
-        self.brain = ai.Stumpy_AI(self)
+        self.brain = monster_ai.Stumpy_AI(self)
         self.character.experience_given = 20
         self.description = "An evil stump that wants revenge for its dead brethren."
         self.character.health = 10
@@ -336,7 +336,7 @@ class Stumpy(Monster):
 class Dummy(Monster):
     def __init__(self, x=-1, y=-1, render_tag=124, name="Training Dummy"):
         super().__init__(x=x, y=y, render_tag = render_tag, name = name)
-        self.brain = ai.Dummy_AI(self)
+        self.brain = monster_ai.Dummy_AI(self)
         self.character.experience_given = 0
         self.description = "A training dummy that will not move or attack, but seems to repair itself if not one-shot."
         self.character.health = 25
