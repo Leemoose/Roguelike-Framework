@@ -91,6 +91,12 @@ class Character():
     def get_nth_item_in_equipment_slot(self, slot, n):
         return self.body.get_nth_item_in_equipment_slot(slot, n)
 
+    def get_gold(self):
+        return self.gold
+
+    def change_gold_amount(self, value):
+        self.gold += value
+
     def is_alive(self):
         if self.health <= 0 and not self.invincible:
             self.alive = False
@@ -144,7 +150,7 @@ class Character():
             loop.change_loop("victory")
             return
         elif item.has_trait("gold"):
-            self.gold += item.amount
+            self.change_gold_amount(item.amount)
             loop.change_loop(loop.currentLoop)
         elif item.stackable:
             if not item.name in [x.name for x in self.inventory]:

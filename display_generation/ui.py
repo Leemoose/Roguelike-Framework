@@ -101,7 +101,7 @@ class MessageBox(pygame_gui.elements.UITextBox):
         return super().update(time_delta)
     
     def set_message(self):
-        text = "".join([message + "<br>" for message in (self.loop.messages)])
+        text = "".join([message[0] + "<br>" for message in (self.loop.messages)])
         text = text[:-3] #Remove last <br>
         self.set_text(html_text=text)
         self.loop.dirty_messages = False

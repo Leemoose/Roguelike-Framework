@@ -243,7 +243,7 @@ class Display:
     def write_messages(self, messages):
         font = pygame.font.Font('freesansbold.ttf', 12)
         for i, message in enumerate(messages):
-            text = font.render(message, True, (255, 255, 255))
+            text = font.render(message[0], True, message[1])
             self.win.blit(text, (self.screen_width // 100 * 12, self.screen_height // 100 * (85 + i * 3)))
 
     def draw_examine_window(self, target, loop):

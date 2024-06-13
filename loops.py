@@ -7,6 +7,7 @@ import targets as T
 import tiles as TI
 from navigation_utility import shadowcasting
 from character_implementation.classes import Rogue, Warrior, Mage
+from stars import GreenBuck
 
 from display_generation import *
 
@@ -60,6 +61,7 @@ class Loops():
         self.class_selection = None
         self.quest_recieved = False
         self.quest_completed = False
+        self.stars = [GreenBuck()]
 
         self.rest_count = 0 # how many turns have you been resting for
         self.after_rest = LoopType.action # what loop type to revert to after finishing resting, default action
@@ -500,10 +502,10 @@ class Loops():
         self.player.y = y
 
 
-    def add_message(self, message):
+    def add_message(self, message, color = (255,255,255)):
         if len(self.messages) >= 5:
             self.messages.pop(0)
-        self.messages.append(message)
+        self.messages.append((message, color))
         self.dirty_messages = True
 
     def clear_message(self):
@@ -571,6 +573,9 @@ class Loops():
 
             for quest in self.player.quests:
                 quest.check_for_progress(self)
+
+            for star in self.stars:
+                star.take_action(self)
 
             if self.generator.tile_map.locate(self.player.x,self.player.y).check_if_status_applies(self.player):
                 for status_effect in self.generator.tile_map.locate(self.player.x,self.player.y).get_status_effects():
