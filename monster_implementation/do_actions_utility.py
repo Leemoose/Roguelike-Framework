@@ -180,10 +180,13 @@ def do_move(ai, loop):
     else:
         moves = pathfinding.astar(tile_map.track_map, start, end, monster_map, loop.player)
     if len(moves) > 1:
-        xmove, ymove = moves.pop(1)
-        #print(ai.parent.get_location(), "-->", end, "with", xmove - monster.x, ymove - monster.y)
-        if loop.generator.get_passable((xmove, ymove)):
-            monster.move(xmove - monster.x, ymove - monster.y, loop)
+        try:
+            xmove, ymove = moves.pop(1)
+            #print(ai.parent.get_location(), "-->", end, "with", xmove - monster.x, ymove - monster.y)
+            if loop.generator.get_passable((xmove, ymove)):
+                monster.move(xmove - monster.x, ymove - monster.y, loop)
+        except:
+            print("There was an exception thrown due to monster trying to move but there was only 1 move left...")
 
     if update_target:
         loop.add_target((monster.x, monster.y))
