@@ -228,10 +228,11 @@ class Character():
         return self.get_damage()[1]
 
     def get_damage(self):
-        if self.main_weapon == None:
+        weapon = self.body.get_weapon()
+        if not weapon:
             return self.base_damage + self.unarmed_damage_min, self.base_damage + self.unarmed_damage_max
         else:
-            return self.base_damage + self.main_weapon.damage_min, self.base_damage + self.main_weapon.damage_max
+            return self.base_damage + weapon.damage_min, self.base_damage + weapon.damage_max
 
     """
     1. Damage: Calculate how much damage opponent you would deal
@@ -250,9 +251,9 @@ class Character():
             damage = random.randint(self.base_damage + self.unarmed_damage_min, self.base_damage + self.unarmed_damage_max) #Should make object for unarmed damage
         else:
             if weapon.on_hit == None:
-                 damage = weapon.attack()
+                damage = weapon.attack()
             else:
-                 damage, effect = weapon.attack()
+                damage, effect = weapon.attack() 
 
         dodge_damage = defender.character.dodge() - self.strike()
 

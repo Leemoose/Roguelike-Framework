@@ -405,6 +405,8 @@ class Display:
             strength_modifier = "+" + str(player.character.strength)
         else:
             strength_modifier = str(player.character.strength)
+        weapon = player.character.body.get_weapon()
+        
         text_box = pygame_gui.elements.UITextBox(
             relative_rect=pygame.Rect((margin_from_left, margin_from_top), (width, height)),
             

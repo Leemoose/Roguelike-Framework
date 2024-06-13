@@ -22,24 +22,32 @@ class Body():
 
     def add_item_to_equipment_slot(self, item, slot, num_slots):
         i = 0
-        while i < num_slots:
-            if self.equipment_slots[slot][i] is None:
-                self.equipment_slots[slot][i] = item
-            i += 1
+        # import pdb; pdb.set_trace()
+        max_check = len(self.equipment_slots[slot])
+        for item_slot in range(len(self.equipment_slots[slot])):
+            if self.equipment_slots[slot][item_slot] is None:
+                self.equipment_slots[slot][item_slot] = item
+                i += 1
+            if i >= num_slots:
+                break
         if i >= num_slots:
             return True
         else:
+            print("Something has probably gone wrong with equipping if you reached this")
             return False
 
     def remove_item_from_equipment_slot(self, item, slot, num_slots):
         i = 0
-        while i < num_slots:
-            if self.equipment_slots[slot][i] is item:
-                self.equipment_slots[slot][i] = None
-            i += 1
+        for item_slot in range(len(self.equipment_slots[slot])):
+            if self.equipment_slots[slot][item_slot] is item:
+                self.equipment_slots[slot][item_slot] = None
+                i += 1
+            if i >= num_slots:
+                break
         if i >= num_slots:
             return True
         else:
+            print("Something has probably gone wrong with unequipping if you reached this")
             return False
 
     def remove_equipment_slot(self, slot):
@@ -75,7 +83,8 @@ class Body():
 
     def equip(self, item, strength):
         slot = item.get_slot()
-        if strength >= item.required_strength and self.free_equipment_slots(slot) >= item.slots_taken:
+        if strength >= item.required_strength:
+            self.unequip_current(item) # frees slots for current item
             self.add_item_to_equipment_slot(item, slot, item.slots_taken)
             item.equipped = True
             item.dropable = False
@@ -83,7 +92,23 @@ class Body():
                 self.parent.add_skill(item.attached_skill(self.parent.parent))
             item.activate(self.parent)
 
+    def unequip_current(self, item):
+        if item.has_trait("weapon"):
+            self.unequip(self.get_weapon()) # if a weapon is already equipped, unequip it
+            if item.slots_taken > 1: # two handed weapon 
+                self.unequip(self.get_shield()) # if a shield is equipped in offhand, unequip it
+        elif item.has_trait("shield"):
+            self.unequip(self.get_shield())
+            weapon = self.get_weapon()
+            if weapon and weapon.slots_taken > 1: # two handed weapon must be unequipped for a shield
+                self.unequip(weapon)
+        else:
+            self.unequip(self.get_in_slot(item.get_slot()))
+            
+
     def unequip(self, item):
+        if item == None: # lets us call unequip with get_weapon
+            return
         slot = item.get_slot()
         self.remove_item_from_equipment_slot(item, slot, item.slots_taken)
         item.dropable = True
@@ -95,8 +120,21 @@ class Body():
     def get_weapon(self):
         carried_items = self.equipment_slots["hand_slot"]
         for item in carried_items:
-            print(item)
             if item is not None and item.has_trait("weapon"):
+                return item
+        return None
+    
+    def get_shield(self):
+        carried_items = self.equipment_slots["hand_slot"]
+        for item in carried_items:
+            if item is not None and item.has_trait("shield"):
+                return item
+        return None
+    
+    def get_in_slot(self, slot):
+        carried_items = self.equipment_slots[slot]
+        for item in carried_items:
+            if item is not None:
                 return item
         return None
 

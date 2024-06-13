@@ -45,7 +45,24 @@ def create_equipment(display, loop):
         object_id='#title_label')
 
     # equipment_slots = ["shield", "ring", "ring", "helmet", "armor", "boots", "weapon", "gloves"]:
-    if player.character.free_equipment_slots("hand_slot") != 0:
+    shield_equipped = False
+    for item in player.character.get_items_in_equipment_slot("hand_slot"):
+        if item.equipment_type == "Shield" and item.equipped:
+            shield_equipped = True
+            break
+    two_handed_equipped = False
+    for item in player.character.get_items_in_equipment_slot("hand_slot"):
+        if item.equipment_type == "Weapon" and item.slots_taken > 1 and item.equipped:
+            two_handed_equipped = True
+    if shield_equipped:
+        pre_text = "change "
+        img = pygame.transform.scale(tileMap.tiles[player.character.body.get_shield().render_tag],
+                                     (medium_button_width, medium_button_height))
+    elif two_handed_equipped:
+        pre_text = "change "
+        img = pygame.transform.scale(tileMap.tiles[player.character.body.get_weapon().render_tag],
+                                     (medium_button_width, medium_button_height))
+    else:
         available_slot = False
         for item in player.character.inventory:
             if item.equipment_type == "Shield":
@@ -59,10 +76,7 @@ def create_equipment(display, loop):
             pre_text = "no options "
             img = pygame.transform.scale(tileMap.tiles[806], (medium_button_width, medium_button_height))
 
-    else:
-        pre_text = "change "
-        img = pygame.transform.scale(tileMap.tiles[player.character.get_nth_item_in_equipment_slot("hand_slot", 0).render_tag],
-                                     (medium_button_width, medium_button_height))
+        
     button = pygame_gui.elements.UIButton(
         relative_rect=pygame.Rect((first_col_offset_from_left,
                                    outer_cols_offset_from_top),
@@ -245,7 +259,13 @@ def create_equipment(display, loop):
     display.draw_on_button(button, img, "x", (medium_button_width, medium_button_height))
     button.action = 'x'
 
-    if player.character.free_equipment_slots("hand_slot") != 0:
+    # special check for weapon to account for 2 hand slots existing
+    weapon_equipped = False
+    for item in player.character.get_items_in_equipment_slot("hand_slot"):
+        if item.equipment_type == "Weapon" and item.equipped:
+            weapon_equipped = True
+            break
+    if not weapon_equipped:
         available_slot = False
         for item in player.character.inventory:
             if item.equipment_type == "Weapon":
@@ -261,7 +281,7 @@ def create_equipment(display, loop):
 
     else:
         pre_text = "change "
-        img = pygame.transform.scale(tileMap.tiles[player.character.get_nth_item_in_equipment_slot("hand_slot", 1).render_tag],
+        img = pygame.transform.scale(tileMap.tiles[player.character.body.get_weapon().render_tag],
                                      (medium_button_width, medium_button_height))
 
     button = pygame_gui.elements.UIButton(

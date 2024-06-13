@@ -154,24 +154,9 @@ class HubParams(BranchParams):
         return 0
 
     def countExtraCommon(self, depth):
-        return 0
+        return 5
 
     def countScrorbs(self, depth):
-        return 0
-
-    def countCorpses(self, depth):
-        return 6
-
-    def countEquipment(self, depth):
-        return 0
-    
-    def countPotiorbs(self, depth):
-        return 0
-    
-    def countScrorbs(self, depth):
-        return 0
-    
-    def countExtraCommon(self, depth):
         return 0
     
     def countCorpses(self, depth):

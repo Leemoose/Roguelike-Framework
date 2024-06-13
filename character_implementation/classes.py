@@ -1,4 +1,4 @@
-from items import Dagger, Sword
+from items import Dagger, Sword, TwoHandedSword, BasicShield
 from spell_implementation import TeleportOther, BurningAttack, Lullaby
 class PlayerClass():
     def __init__(self, name = "Class", items = [], spells = [], endurance = 0, intelligence = 0, dexterity = 0, strength = 0, description = ""):
@@ -32,7 +32,7 @@ class Rogue(PlayerClass):
 
 class Warrior(PlayerClass):
     def __init__(self):
-        super().__init__(name = "Warrior", items = [Sword()], spells = [], endurance=1, dexterity=1, strength=2, description="Brute power overcomes the day.")
+        super().__init__(name = "Warrior", items = [Sword(), BasicShield(311)], spells = [], endurance=1, dexterity=1, strength=2, description="Brute power overcomes the day.")
 
     def get_spell_names(self):
         return [""]
