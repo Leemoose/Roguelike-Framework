@@ -162,28 +162,9 @@ class BobBrother(Guard):
     def give_quest(self, loop):
         if self.gave_quest == True:
             if self.quest.check_for_completion(loop):
-                loop.add_message(self.name + " says: 'Thank you for bringing my brother back.'")
+                loop.add_message("Thank you... thank you for bringing him back. I feared the worst, but seeing him... it’s heartbreaking. I owe you more than I can ever repay. At least now, he can have a proper farewell. You’ve given us closure, and for that, I am eternally grateful.")
         else:
-            loop.add_message(
-                self.name + " says: 'Please, I can't find my brother and the king won't let me leave my post. Can you find him for me?")
-            loop.player.add_quest(quest.BrothersQuest())
-            self.has_stuff_to_say = False
-            self.gave_quest = True
-
-class BobBrother(Guard):
-    def __init__(self, x, y, render_tag= 121, name="Bob's Brother"):
-        super().__init__(x=x, y=y, render_tag = render_tag, name = name)
-        self.options.append("Quest")
-        self.has_stuff_to_say = True
-        self.quest = quest.BrothersQuest()
-
-    def give_quest(self, loop):
-        if self.gave_quest == True:
-            if self.quest.check_for_completion(loop):
-                loop.add_message(self.name + " says: 'Thank you for bringing my brother back.'")
-        else:
-            loop.add_message(
-                self.name + " says: 'Please, I can't find my brother and the king won't let me leave my post. Can you find him for me?")
+            loop.add_message("Please, you have to help me. My brother got lost in one of those cursed rifts, and I can't leave my post to search for him. I'm begging you, find him and bring him back. I'll owe you everything if you do.")
             loop.player.add_quest(quest.BrothersQuest())
             self.has_stuff_to_say = False
             self.gave_quest = True

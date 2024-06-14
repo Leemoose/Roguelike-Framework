@@ -563,8 +563,6 @@ class Display:
 
 
         entity_text = ""
-        entity_text += entity.description  + "<br><br>"
-
         if entity.has_trait("item"):
             item = entity
             if entity.has_trait("equipment"):
@@ -624,6 +622,9 @@ class Display:
                     entity_text += skill.description()
                     if i < len(entity.character.skills) - 1:
                         entity_text += ", "
+
+        entity_text += "<br>" + entity.description
+
         if create == True:
             text_box = pygame_gui.elements.UITextBox(
                 relative_rect=pygame.Rect((entity_text_offset_from_left, entity_text_offset_from_top), (entity_text_width, entity_text_height)),

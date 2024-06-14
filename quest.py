@@ -78,9 +78,9 @@ class KingdomQuest(Quest):
 class BrothersQuest(Quest):
     def __init__(self, experience_given=20, name="Missing Brother"):
         super().__init__(experience_given=experience_given, name=name)
-        self.descriptions[1] = "Someone's brother is missing in the deep depths of the pit. Find them"
-        self.descriptions[2] = "You sense that the brother is close by."
-        self.descriptions[3] = "The brother is dead. Bring back a relic to provide closure to their relative"
+        self.descriptions[1] = "The desperate guard has asked you to find his brother, who was lost in a rift. Search the area for any signs of his brother."
+        self.descriptions[2] = "You found a piece of the guard’s brother’s armor near the entrance of the rift. Continue deeper into the rift and follow any further signs to locate his brother."
+        self.descriptions[3] = "You have discovered the body of the guard's brother. Carefully bring his remains back to the desperate guard at the palace."
 
     def check_for_completion(self, loop):
         if self.active:

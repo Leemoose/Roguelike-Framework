@@ -66,7 +66,7 @@ class Kobold(Monster):
         self.dexterity = 4
         self.intelligence = 4
 
-        self.description = "A small, scaly creature with a mysterious satchel on its back."
+        self.description = "Covered in reddish-brown scales that radiate heat, Infernal Kobolds possess razor-sharp claws and teeth. They worship a distant star whose fiery essence imbues them with a burning touch, capable of igniting flammable materials. Despite their small size, they are cunning ambushers, using their fiery abilities to deadly effect in battle. Their eyes glow with reverence and cunning, reflecting their devotion to the star's fiery power."
 
         self.traits["kobold"] = True
         self.attributes["humanoid"] = True
@@ -82,7 +82,7 @@ class Squid(Monster):
         self.dexterity = 4
         self.intelligence = 4
 
-        self.description = "A small, squidlike creature lurking in the water."
+        self.description = "A small, frail creature that lacks any mysterious power. Its translucent body shimmers with bioluminescent patterns, emitting a faint glow in the dark rift waters. With delicate, tentacle-like appendages, it navigates the currents with grace but lacks offensive capabilities. Despite its vulnerability, the Rift Squidling possesses keen survival instincts, using camouflage and swift movements to evade predators. It is often preyed upon by larger rift creatures, making it a common sight in the perilous depths of the rifts."
 
         self.traits["squid"] = True
         self.attributes["water"] = True
@@ -110,7 +110,7 @@ class ChasmCrawler(Monster):
         self.dexterity = 4
         self.intelligence = 4
 
-        self.description = "Large, crab-like monsters with armored shells and glowing eyes. Their claws are immense and serrated."
+        self.description = "The Chasm Crawler is a formidable predator of the rocky depths, adorned in thick, chitinous armor that seamlessly blends with its environment. With a segmented body designed for agility and strength, it maneuvers effortlessly through both submerged caverns and dry rocky terrain. Equipped with powerful mandibles capable of crushing solid stone, it tunnels through rock formations with remarkable ease. This semi-aquatic creature patrols its territory with vigilance, defending its hunting grounds against intruders with swift, precise strikes."
         self.character.armor = 12
         self.traits["chasm_crawler"] = True
         self.attributes["water"] = True
@@ -119,7 +119,7 @@ class Slime(Monster):
     def __init__(self, x=-1, y=-1, render_tag=1100, name="Slime"):
         super().__init__(x=x, y=y, render_tag = render_tag, name = name, experience_given=5, brain = monster_ai.Slime_AI, health=5, min_damage=1, max_damage=1)
 
-        self.description = "A small blob of experienc... I mean ooze."
+        self.description = "These amorphous blobs of translucent, gelatinous matter emerge from the depths of the rifts. Their bodies pulse with a sickly green glow, fueled by the chaotic energies of their environment. Rift Slimes mindlessly dissolve anything they touch with acidic secretions, leaving behind only a faint, acrid odor. They show no preference or intelligence, simply drawn to any items they encounter, which they swiftly corrode beyond recognition.."
         self.character.action_costs["grab"] = 0
 
         self.traits["slime"] = True
@@ -140,7 +140,7 @@ class Goblin(Monster):
         self.character.action_costs["move"] = 50
         self.character.action_costs["grab"] = 20
 
-        self.description = "A cowardly creature that some adventurers nicknamed \"Loot Pinata\"."
+        self.description = "These mischievous creatures are smaller and wiry compared to their larger counterparts. Their green skin is mottled and rough, often adorned with patches of scavenged armor and trinkets. With quick, darting eyes that gleam with greed, Goblins are driven by an insatiable desire for shiny objects and valuables. They scurry through the rift-ridden landscapes with nimble steps, their clawed hands eagerly snatching up any glittering loot they come across."
 
         self.strength = 1
         self.dexterity = 1
@@ -177,7 +177,7 @@ class GoblinShaman(Monster):
                                               activation_threshold=activation_threshold,
                                               action_cost=1))
         self.character.experience_given = 25
-        self.description = "What's more cowardly than summoning your pals?"
+        self.description =  "A twisted figure draped in tattered robes adorned with crude bones and fetishes, the Rift Goblin Shaman is a malevolent conduit of dark magic. With hunched posture and gnarled fingers clutching a gnarled staff, its yellowed eyes gleam with a sinister intelligence. The Shaman’s skin is marked with mystical runes that pulse with a sickly green glow, channeling the chaotic energies of the rifts. Surrounded by an aura of foul incense and the echoing chants of ancient rituals, it commands the loyalty of lesser goblins who scurry at its command. With a crooked grin revealing jagged teeth stained with blood, the Shaman unleashes curses and hexes upon its enemies, weakening their resolve and bolstering its minions. In battle, it summons swarms of lesser goblins from the rifts, overwhelming foes with sheer numbers and dark magic. Beware the Shaman’s cunning and its ability to twist the very fabric of reality to serve its malicious whims."
         self.character.health = 20
         self.character.max_health = 20
         self.strength = 1
@@ -220,7 +220,7 @@ class Gargoyle(Monster):
         self.character.skills.append(S.Petrify(self, cooldown=10, cost=0, duration=3, activation_chance=0.3, range=3))
         self.character.experience_given = 20
 
-        self.description = "A stone creature that you feel could petrify you if it was rounder."
+        self.description = "Carved from ancient stone and imbued with dark magic from the depths of the rifts, the Rift Gargoyle is a sentinel of terror and stone-cold fury. Perched high atop jagged spires and crumbling ruins, its chiseled form blends seamlessly with the twisted architecture of the rifts. With wings stretched wide, resembling weathered stone veined with veins of iridescent minerals, the Gargoyle looms over its domain like a silent sentinel. Glowing eyes, a pale azure hue, pierce the darkness with an otherworldly gleam, ever vigilant for intruders. Its clawed hands grip the stone tightly, ready to unleash its wrath upon any who dare to disturb its ancient slumber. When provoked, the Gargoyle descends with a thunderous flap of its wings, striking with swift and precise attacks. Its petrifying gaze and ability to turn ethereal make it a formidable foe, capable of shifting between dimensions to elude attackers."
         self.character.health = 20
         self.character.max_health = 20
         self.strength = 2
@@ -255,7 +255,7 @@ class Orc(Monster):
         self.character.skills = []
         # below 25% health, gains 25 strength
         self.character.skills.append(S.Berserk(self, cooldown=0, cost=0, duration=-100, activation_threshold=0.25, strength_increase=10, action_cost=1))
-        self.description = "A strong humanoid with anger issues."
+        self.description = "Hailing from the brutal and war-torn realms beyond the rifts, the Orc is a towering brute with muscles rippling beneath its coarse, green skin. Adorned in crude armor fashioned from bones and scavenged metal, its bloodshot eyes burn with a fierce determination for battle. The stench of blood and sweat follows this savage warrior, who wields a jagged, rusted blade with deadly proficiency. Covered in tribal tattoos and scars earned in countless skirmishes, the Rift Orc thrives in combat, reveling in the chaos of battle cries and the clash of weapons. Its growls and guttural shouts echo through the rifts, striking fear into the hearts of all who dare to oppose it. Beware its raw strength and relentless aggression, for the Orc knows no mercy on the battlefield.."
         self.strength = 3
         self.dexterity = 0
         self.endurance = 3
@@ -274,7 +274,7 @@ class Golem(Monster):
         super().__init__(x=x, y=y, render_tag = render_tag, name = name)
         self.character.skills = []
         self.character.experience_given = 30
-        self.description = "A large, slow creature made of stone."
+        self.description = "Forged from the very bedrock of the earth and brought to life by ancient, powerful magic, the Stone Golem is a formidable guardian. Towering and imposing, its massive body is composed of jagged boulders and smooth stones, seamlessly held together by an unyielding mystical force. Glowing runes etched into its surface pulse with a dim, ethereal light, a testament to the ancient spell that animates it. The Stone Golem's eyes, deep-set and glowing with a fierce, unearthly light, scan its surroundings for any threat. With strength rivaling that of the mountains themselves, it can crush anything in its path with its colossal, stone fists. Slow but relentless, the Stone Golem is an unstoppable force of nature, driven by an unbreakable duty to protect its domain.."
         self.character.health = 25
         self.character.max_health = 25
         self.character.move_cost = 200
@@ -299,7 +299,7 @@ class Raptor(Monster):
         self.character.armor = 0
 
         self.character.experience_given = 30
-        self.description = "A very fast and very angry dinosaur."
+        self.description = "The Raptor is a terrifying predator from an ancient era. Its sleek, scaly body is covered in iridescent feathers that shimmer with otherworldly hues. With razor-sharp claws and teeth honed to perfection, it moves with lethal grace and speed. The Raptor’s eyes, glowing with a predatory intelligence, lock onto its prey with unerring precision. This cunning hunter uses the shadows and its surroundings to its advantage, striking with blinding speed and ruthless efficiency. Beware its shrill, haunting screech that echoes through the rift, a prelude to the deadly hunt that follows.."
 
 class Tormentorb(Monster):
     def __init__(self, x=-1, y=-1, render_tag=1050, name="Tormentorb"):
@@ -323,7 +323,7 @@ class Stumpy(Monster):
         super().__init__(x=x, y=y, render_tag = render_tag, name = name)
         self.brain = monster_ai.Stumpy_AI(self)
         self.character.experience_given = 20
-        self.description = "An evil stump that wants revenge for its dead brethren."
+        self.description = "An ancient, gnarled tree stump brought to life by dark magic, Stumpy harbors a deep, burning desire for vengeance. Its twisted roots writhe with malicious intent, and its hollow eyes glow with a sinister, green light. With bark as tough as iron and splintered limbs that lash out like whips, this vengeful stump seeks retribution for the countless trees felled by human hands. Beware its crushing roots and poisonous sap, for Stumpy will stop at nothing to avenge its fallen brethren."
         self.character.health = 10
         self.character.max_health = 10
         self.strength = 8
