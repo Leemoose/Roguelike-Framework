@@ -21,6 +21,10 @@ class ItemSpawner():
         # useful for debugging specific items, separate from generator
         self.forceSpawn = []
 
+        # rings = [i for i in self.ItemSpawns if i.item.has_trait("ring")]
+        # for ring in rings:
+        #     self.forceSpawn.append((ring.item.name, 1))
+
         # self.forceSpawn.append(("Boots of Escape", 3))
         # self.forceSpawn.append(("Blood Ring", 3))
         # self.forceSpawn.append(("Wizard Hat", 3))

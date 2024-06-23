@@ -1,7 +1,5 @@
 moving sometimes fails on if self.generator.tile_map.track_map[monster.x][monster.y].on_fire: IndexError: list index out of range
 
-rings might be broken (rings are definitely broken)
-
 need to test what happens if item and skill book give same skill/spell and deal with that
 maybe give each skill/spell a source parameter and check against that for removing/adding
 

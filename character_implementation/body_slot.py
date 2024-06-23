@@ -1,4 +1,6 @@
 
+import copy
+
 class Body():
     def __init__(self, parent):
         self.equipment_slots = {"body_armor_slot": [None],
@@ -11,6 +13,11 @@ class Body():
                                 "hand_slot": [None, None]
                                 }
         self.parent = parent
+
+        # queue to store rings in order they were equipped
+        # keep a backup so we can temporarily move a ring to the front of queue if coming from equip screen
+        self.ring_to_replace = []
+
     def free_equipment_slots(self, slot):
         if slot not in self.equipment_slots:
             raise Exception("You are trying to find a {} in {}'s equipment slot".format(slot, self.parent.name))
@@ -91,6 +98,8 @@ class Body():
             if item.attached_skill_exists:
                 self.parent.add_skill(item.attached_skill(self.parent.parent))
             item.activate(self.parent)
+            if item.has_trait("ring"):
+                self.ring_to_replace.append(item)
 
     def unequip_current(self, item):
         if item.has_trait("weapon"):
@@ -102,6 +111,15 @@ class Body():
             weapon = self.get_weapon()
             if weapon and weapon.slots_taken > 1: # two handed weapon must be unequipped for a shield
                 self.unequip(weapon)
+        elif item.has_trait("ring"):
+            if self.parent.force_ring > 0:
+                next_to_remove = self.equipment_slots["ring_slot"][self.parent.force_ring - 1]
+                self.unequip(next_to_remove)
+                if next_to_remove:
+                    self.ring_to_replace.remove(next_to_remove)
+            if item.slots_taken > self.free_equipment_slots("ring_slot"):
+                next_to_remove = self.ring_to_replace.pop(0)
+                self.unequip(next_to_remove)
         else:
             self.unequip(self.get_in_slot(item.get_slot()))
             

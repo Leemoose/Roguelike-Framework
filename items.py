@@ -1370,44 +1370,7 @@ class Ring(Equipment):
         self.required_strength = -100
         self.action_description = "Power courses through your hands"
         self.traits["ring"] = True
-
-    #Needs to be fixed
-    def equip(self, entity):
-        if self.equipped:
-            return
-        equipped = False
-        for ring, i in enumerate(entity.equipment_slots["ring_slot"]):
-            if ring == None:
-                entity.equipment_slots["ring_slot"][i] = self
-                self.activate(entity)
-                if self.attached_skill_exists:
-                    entity.add_skill(self.attached_skill(entity.parent))
-                self.equipped = True
-                break
-        if equipped == False:
-            entity.unequip(entity.equipment_slots["ring_slot"][0])
-            for ring,i in enumerate(entity.equipment_slots["ring_slot"]):
-                if ring == None:
-                    entity.equipment_slots["ring_slot"][i] = self
-                    self.activate(entity)
-                    if self.attached_skill_exists:
-                        entity.add_skill(self.attached_skill(entity.parent))
-                    self.equipped = True
-
-    def unequip(self, entity):
-        for i, ring in enumerate(entity.equipment_slots["ring_slot"]):
-            if entity.equipment_slots["ring_slot"][ring] == self:
-                entity.equipment_slots["ring_slot"][ring] = None
-                self.deactivate(entity)
-                if self.attached_skill_exists:
-                    skill_still_exists = False
-                    for ring_2 in entity.equipment_slots["ring_slot"]:
-                        if ring_2.name == self.name:
-                            skill_still_exists = True
-                    if not skill_still_exists:
-                        entity.remove_skill(self.attached_skill(entity.parent).name)
-                self.equipped = False
-
+        self.slot = "ring_slot"
 
 class RingOfSwiftness(Ring):
     def __init__(self, render_tag):
@@ -1417,10 +1380,10 @@ class RingOfSwiftness(Ring):
         self.action_description = "You move a fifth faster"
 
     def activate(self, entity):
-        entity.move_cost -= 20
+        entity.dexterity += 5
 
     def deactivate(self, entity):
-        entity.move_cost += 20
+        entity.dexterity -= 5
 
 
 class BloodRing(Ring):
@@ -1448,10 +1411,10 @@ class RingOfMight(Ring):
         self.rarity = "Rare"
 
     def activate(self, entity):
-        entity.strength += 4
+        entity.strength += 5
 
     def deactivate(self, entity):
-        entity.strength -= 4
+        entity.strength -= 5
 
 
 class RingOfMana(Ring):
@@ -1478,20 +1441,20 @@ class BoneRing(Ring):
     def __init__(self, render_tag):
         super().__init__(render_tag, "Bone Ring")
         self.description = "An eerie ring that makes you much stronger and faster while wearing it but rapidly drains your health and mana"
-        self.action_description = "Gain 4 strength and 4 dexterity but lose health and mana over time."
+        self.action_description = "Gain 8 strength and 8 dexterity but lose health and mana over time."
         self.rarity = "Legendary"
 
     def activate(self, entity):
-        self.entity.safe_rest = False
-        entity.strength += 4
-        entity.dexterity += 4
+        entity.safe_rest = False
+        entity.strength += 8
+        entity.dexterity += 8
         entity.mana_regen -= 10
         entity.health_regen -= 10  # intended to kill you if you don't take it off after a few turns
 
     def deactivate(self, entity):
-        self.entity.safe_rest = True
-        entity.strength -= 4
-        entity.dexterity -= 4
+        entity.safe_rest = True
+        entity.strength -= 8
+        entity.dexterity -= 8
         entity.mana_regen += 10
         entity.health_regen += 10
 

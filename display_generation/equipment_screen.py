@@ -87,60 +87,35 @@ def create_equipment(display, loop):
     display.draw_on_button(button, img, "q", (medium_button_width, medium_button_height))
     button.action = 'q'
 
-    if player.character.free_equipment_slots("ring_slot") != 0:
-        available_slot = False
-        for item in player.character.inventory:
-            if item.equipment_type == "Ring" and (not item.equipped):
-                available_slot = True
-                break
-        if available_slot == True:
-            pre_text = "change "
-            img = pygame.transform.scale(tileMap.tiles[817],
-                                         (small_button_width, small_button_height))
-        else:
-            pre_text = "no options "
-            img = pygame.transform.scale(tileMap.tiles[807], (small_button_width, small_button_height))
+    rings = player.character.body.equipment_slots["ring_slot"]
 
-    else:
-        pre_text = "change "
-        img = pygame.transform.scale(tileMap.tiles[player.character.get_nth_item_in_equipment_slot("ring_slot", 0).render_tag],
-                                     (small_button_width, small_button_height))
-    button = pygame_gui.elements.UIButton(
-        relative_rect=pygame.Rect((first_col_offset_from_left,
-                                   outer_cols_offset_from_top + (medium_button_height + margin_between_buttons_height)),
-                                  (small_button_width, small_button_height)),
-        text="ring 1",
-        manager=display.uiManager,
-        object_id='#equipment_button')
-    display.draw_on_button(button, img, "r", (small_button_width, small_button_height))
-    button.action = 'r'
+    # if number of ring slots ever changes, we need to include new keys for those ring slots
+    ring_keys = ["r", "z"]
 
-    if player.character.free_equipment_slots("ring_slot") != 0:
-        available_slot = False
-        for item in player.character.inventory:
-            if item.equipment_type == "Ring" and (not item.equipped):
-                available_slot = True
-                break
-        if available_slot == True:
-            pre_text = "change "
-            img = pygame.transform.scale(tileMap.tiles[817],
-                                         (small_button_width, small_button_height))
-        else:
-            pre_text = "no options "
-            img = pygame.transform.scale(tileMap.tiles[807], (small_button_width, small_button_height))
-    else:
-        pre_text = "change "
-        img = pygame.transform.scale(tileMap.tiles[player.character.get_nth_item_in_equipment_slot("hand_slot", 1).render_tag],
+    for i, ring in enumerate(rings):
+        if ring != None:
+            img = pygame.transform.scale(tileMap.tiles[player.character.get_nth_item_in_equipment_slot("ring_slot", i).render_tag],
                                      (small_button_width, small_button_height))
-    button = pygame_gui.elements.UIButton(
-        relative_rect=pygame.Rect((first_col_offset_from_left + small_button_width + small_margin_between_buttons_width,
-                                   outer_cols_offset_from_top + (medium_button_height + margin_between_buttons_height)),
-                                  (small_button_width, small_button_height)),
-        text="ring 2",
-        manager=display.uiManager,
-        object_id='#equipment_button')
-    display.draw_on_button(button, img, "z", (small_button_width, small_button_height))
-    button.action = 'z'
+        else:
+            available_slot = False
+            for item in player.character.inventory:
+                if item.equipment_type == "Ring" and (not item.equipped):
+                    available_slot = True
+                    break
+            if available_slot == True:
+                img = pygame.transform.scale(tileMap.tiles[817], (small_button_width, small_button_height))
+            else:
+                img = pygame.transform.scale(tileMap.tiles[807], (small_button_width, small_button_height))
+        button = pygame_gui.elements.UIButton(
+                relative_rect=pygame.Rect((first_col_offset_from_left + (small_button_width + small_margin_between_buttons_width) * i,
+                                        outer_cols_offset_from_top + (medium_button_height + margin_between_buttons_height)),
+                                        (small_button_width, small_button_height)),
+                text="ring " + str(i + 1),
+                manager=display.uiManager,
+                object_id='#equipment_button')
+        display.draw_on_button(button, img, ring_keys[i], (small_button_width, small_button_height))
+        button.action = ring_keys[i]
+    
 
     if player.character.free_equipment_slots("amulet_slot") != 0:
         available_slot = False

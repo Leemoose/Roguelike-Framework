@@ -311,7 +311,7 @@ def key_equipment(loop, key):
         loop.change_loop(LoopType.inventory)
     elif key == "z":
         loop.limit_inventory = "Ring"
-        player.character.force_ring_2 = True  # equip to second slot
+        player.character.force_ring = 2  # equip to second slot
         loop.change_loop(LoopType.inventory)
     elif key == "w":
         loop.limit_inventory = "Helmet"
@@ -333,6 +333,7 @@ def key_equipment(loop, key):
         loop.change_loop(LoopType.inventory)
     elif key == "r":
         loop.limit_inventory = "Ring"
+        player.character.force_ring = 1
         loop.change_loop(LoopType.inventory)
 
 
@@ -357,6 +358,7 @@ def key_item_screen(loop, key):
     item = loop.screen_focus
     item_map = loop.generator.item_map
     if key == "esc":
+        player.character.force_ring = -1
         if loop.limit_inventory == None:
             loop.change_loop(LoopType.inventory)
         else:
