@@ -43,6 +43,8 @@ class Corpse(O.Item):
         self.traits["corpse"] = True
         self.can_be_levelled = False
         self.equipable = False
+        self.stackable = True
+        self.stacks = 1
 
 
 class BobCorpse(Corpse):

@@ -24,3 +24,5 @@ File "C:\Users\kcdul\OneDrive\Desktop\Roguelike-Framework\roguewriting.py", line
   File "C:\Users\kcdul\OneDrive\Desktop\Roguelike-Framework\monster_implementation\do_actions_utility.py", line 183, in do_move
     xmove, ymove = moves.pop(1)
 AttributeError: 'tuple' object has no attribute 'pop'
+
+Blink Scrolls are broken

@@ -56,3 +56,7 @@ More NPC interaction:
     Maybe introduce affinity (i.e. whether npc likes, dislikes or neutral to player)
         - can be affected by quests or other actions (maybe sensei dislikes if dummy destroyed before giving quest or something)
         - can affect trade prices
+
+On individual item changes, could show changes in stats that would come from equip (compare to currently equipped)
+
+Need a way to choose what to pick up on tiles with multiple items

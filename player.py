@@ -157,14 +157,23 @@ class Player(Objects):
         
         # auto pickup gold
         gold_locations = []
+        gold_dict = {}
         for item in loop.generator.item_map.all_entities():
                 if isinstance(item, I.Gold):
                     gold_locations.append((item.x, item.y))
+                    gold_dict[(item.x, item.y)] = item
         
         tile_map = loop.generator.tile_map
 
         if len(self.path) <= 1:
             start = (self.x, self.y)
+
+            # special case to make sure we don't path to gold we are standing on
+            if start in gold_locations:
+                self.character.grab(gold_dict[start], loop)
+                gold_locations.remove(start)
+                            
+
             all_seen, unseen = loop.generator.all_seen()
             if all_seen:
                 loop.change_loop(LoopType.action)
