@@ -62,7 +62,7 @@ class SenseiTile(NPCSpawn):
         super().__init__(x, y,  render_tag = render_tag, passable = passable, id_tag = id_tag, entity=entity)
 
 class ArchmageTile(NPCSpawn):
-    def __init__(self, x, y, render_tag = 6, passable = True, id_tag = 0, entity = npc.Archmage):
+    def __init__(self, x, y, render_tag = 2, passable = True, id_tag = 0, entity = npc.Archmage):
         super().__init__(x, y,  render_tag = render_tag, passable = passable, id_tag = id_tag, entity=entity)
 
 

@@ -72,6 +72,7 @@ class TileDict():
         tiles[123] = image.load("assets/npc/sensei.png")
         tiles[124] = image.load("assets/npc/training_dummy.png")
         tiles[125] = image.load("assets/npc/destroyed_dummy.png")
+        tiles[126] = image.load("assets/npc/archmage.png")
 
         # 200-299 player assets
         tiles[200] = image.load("assets/player/Player.png")
@@ -142,7 +143,7 @@ class TileDict():
         tiles[701] = image.load("assets/items/armor/boots_of_escape.png")
         tiles[702] = image.load("assets/items/armor/blackened_boots.png")
         tiles[703] = image.load("assets/items/armor/assassin_boots.png")
-
+ 
         # gloves assets
         # list of gloves: basic, gauntlets
         tiles[750] = image.load("assets/items/armor/gloves.png")

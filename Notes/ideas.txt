@@ -41,8 +41,6 @@ More complicated combat modifiers:
 Split player into: body, mage, statistics, warrior character
 
 More pathing stuff:
-    Some kind of way to path to portals
-    Update mouse-gameplay by allowing pathing to non-adjacent locations. 
     Could introduce pathing to specific items (might need ctrl+f for items like dcss to be usable)
 
 More UI:
@@ -53,3 +51,8 @@ Add more comments to code
 More Spawning:
     need to add more monsters that fit into new rarity/groups scheme, to allow for more varied generation on later floors
     monsters on deep water need to get special brains to move through deep water
+
+More NPC interaction:
+    Maybe introduce affinity (i.e. whether npc likes, dislikes or neutral to player)
+        - can be affected by quests or other actions (maybe sensei dislikes if dummy destroyed before giving quest or something)
+        - can affect trade prices

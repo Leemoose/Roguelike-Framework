@@ -193,7 +193,7 @@ class Sensei(NPC):
             self.has_stuff_to_say = False
 
 class Archmage(NPC):
-    def __init__(self, x, y, render_tag= 123, name="Archmage Thalor"):
+    def __init__(self, x, y, render_tag= 126, name="Archmage Thalor"):
         super().__init__(x=x, y=y, render_tag = render_tag, name = name)
         self.options = ["Talk", "Quest"]
         self.has_stuff_to_say = True
