@@ -15,4 +15,6 @@ Ocean:
     Add flying
     Targetting does not work over deep water
 
-Fix mouse-pathing so you can click on an npc and path to themr
+Fix mouse-pathing so you can click on an npc and path to them
+
+fix mini examine window

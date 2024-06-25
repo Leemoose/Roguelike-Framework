@@ -3,7 +3,6 @@ moving sometimes fails on if self.generator.tile_map.track_map[monster.x][monste
 need to test what happens if item and skill book give same skill/spell and deal with that
 maybe give each skill/spell a source parameter and check against that for removing/adding
 
-
 Dojo art covering stairs?
 
 fix gateways so that there can be a different outgoing and incoming (sort of fixed)

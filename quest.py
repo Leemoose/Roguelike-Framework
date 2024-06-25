@@ -118,10 +118,10 @@ class DojoQuest(Quest):
                 if isinstance(monster, M.Dummy):
                     return False
             print("Quest Complete")
+            self.give_reward(loop)
             return True
         return False 
     
     def give_reward(self, loop):
-        item = I.PermanentStrengthPotion(401)
-        if loop.player.character.get_item(loop, item):
-            self.active = False
+        loop.player.stat_points += 2
+        self.active = False

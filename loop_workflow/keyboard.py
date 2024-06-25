@@ -3,6 +3,7 @@ from .key_screens import key_targeting_screen, key_action, key_explore
 from .bindings import Bindings
 from navigation_utility import pathfinding
 from loop_workflow import LoopType
+import time
 
 class Keyboard():
     """
@@ -91,7 +92,54 @@ class Keyboard():
             except:
                 return -1
         return -1
+    
+    def move_adjacent(self, loop, x_tile, y_tile):
+        player = loop.player
+        xdiff = x_tile - player.x
+        ydiff = y_tile - player.y
+        options = {(1,1): "n",
+                (1,0): "right",
+                (1,-1): "u",
+                (0,1): "down",
+                (0,-1): "up",
+                (-1,1): "b",
+                (-1,0): "left",
+                (-1,-1): "y"}
+        key_action(loop, options[(xdiff, ydiff)])
 
+    def move_nonadjacent(self, loop, x_tile, y_tile):
+        player = loop.player
+        if (not loop.generator.tile_map.in_map(x_tile, y_tile)) or (not loop.generator.tile_map.track_map[x_tile][y_tile].seen):
+                return
+        if not player.path:
+            player.path = []
+        npc_ids = loop.generator.interact_map.dict
+        npc_dict = {}
+        
+        for key in npc_ids.subjects:
+            npc = npc_ids.get_subject(key)
+            npc_dict[(npc.x, npc.y)] = npc
+
+        if not (x_tile, y_tile) in npc_dict.keys():
+            def target_condition(position_tuple):
+                return position_tuple[0] == x_tile and position_tuple[1] == y_tile
+            def end_pathing(loop):
+                loop.change_loop(LoopType.action)
+        else: # special targetting if npc is target, path to adjacent to npc and then interact with npc
+            def target_condition(position_tuple):
+                directions = [(-1, 0), (1, 0), (0, -1), (0, 1), (1, 1), (-1, -1), (1, -1), (-1, 1)]
+                for dir in directions:
+                    if position_tuple[0] + dir[0] == x_tile and position_tuple[1] + dir[1] == y_tile:
+                        return True
+                return False
+            def end_pathing(loop):
+                loop.change_loop(LoopType.action)
+                self.move_adjacent(loop, x_tile, y_tile)
+
+        player.path = pathfinding.conditional_bfs(loop.generator.tile_map.track_map, (player.x, player.y), target_condition, loop.generator.interact_map.dict)
+        loop.change_loop(LoopType.pathing)
+        loop.after_pathing = end_pathing
+        
     def action_mouse_to_keyboard(self, loop, x_tile, y_tile):
         player = loop.player
         if player.get_distance(x_tile, y_tile) == 0:
@@ -100,29 +148,11 @@ class Keyboard():
             elif loop.generator.tile_map.track_map[player.x][player.y].has_trait("stairs") or loop.generator.tile_map.track_map[player.x][player.y].has_trait("gateway"):
                 return key_action(loop, ">") #Needs to be able to work with upstairs as well
         elif loop.player.get_distance(x_tile, y_tile) < 1.5:
-            xdiff = x_tile - player.x
-            ydiff = y_tile - player.y
-            options = {(1,1): "n",
-                       (1,0): "right",
-                       (1,-1): "u",
-                       (0,1): "down",
-                       (0,-1): "up",
-                       (-1,1): "b",
-                       (-1,0): "left",
-                       (-1,-1): "y"}
-            key_action(loop, options[(xdiff, ydiff)])
+            self.move_adjacent(loop, x_tile, y_tile)
         else:
-            if (not loop.generator.tile_map.in_map(x_tile, y_tile)) or (not loop.generator.tile_map.track_map[x_tile][y_tile].seen):
-                return
-            if not player.path:
-                player.path = []
-            def target_condition(position_tuple):
-                return position_tuple[0] == x_tile and position_tuple[1] == y_tile
-            player.path = pathfinding.conditional_bfs(loop.generator.tile_map.track_map, (player.x, player.y), target_condition, loop.generator.interact_map.dict)
-            loop.change_loop(LoopType.pathing)
-            def end_pathing(loop):
-                loop.change_loop(LoopType.action)
-            loop.after_pathing = end_pathing
+            self.move_nonadjacent(loop, x_tile, y_tile)
+
+
 
     def targetting_mouse_to_keyboard(self, loop, x_tile, y_tile):
         if loop.generator.tile_map.in_map(x_tile, y_tile):
