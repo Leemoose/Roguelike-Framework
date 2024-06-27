@@ -60,3 +60,61 @@ More NPC interaction:
 On individual item changes, could show changes in stats that would come from equip (compare to currently equipped)
 
 Need a way to choose what to pick up on tiles with multiple items
+
+Portals have a 5% chance of spluttering out
+
+Potion crafting system (once ocean branch cleared)
+Plant + empty bottle + flameable material = potion
+
+Potions
+Poison, flame, fog, levitation, speed, attraction / marking, divinity, bottled roots
+
+Effects
+Flying
+Confusion
+Berserk
+
+Critical hits
+
+Adding in a village
+
+Tile effects
+Foggy
+Pit: Sucked to next level
+Poison mist
+Snow
+On fire
+Flooded
+Shattered
+Lightened
+Darkened
+Slowed
+Blinded
+Pathway (can go faster)
+Webs
+Rainy
+Tar
+
+Resistance:
+Attribute: Fire, cold, poison, electric, acidic, physical
+Type: Slashing, stabbing, bashing, magical, psyic
+
+Corpses disappear after awhile
+
+A way to make scrolls
+
+Add in testing powers (can see full map, never die, insta kill monsters, etc)
+Combine scrolls to make book
+Ax weapon can chop trees for logs
+Fungus, kelp, plants can be brewed to make potions (fire moss)
+
+Butcher's blade
+Can't run away from monsters, gain buff for each one that dies (temp)
+
+weapons
+Cleaver, scythe, mace, spear, whip, ball and chain
+
+races
+halfling, dwarf, hag witch, sylvan
+
+randomize weapons on rarity and power

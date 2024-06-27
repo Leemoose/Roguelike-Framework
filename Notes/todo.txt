@@ -8,7 +8,6 @@ Range weapons
 
 Autoexplore picks up items
 
-
 Split item screen description to description and buttons seperately (so it can be reused)
 
 Ocean:
@@ -18,3 +17,10 @@ Ocean:
 Fix mouse-pathing so you can click on an npc and path to them
 
 fix mini examine window
+
+Change spell hotkey to show up when you hover over it
+Remove potion, scroll screen. Add buttons to change selection of items
+Remove bunch of action screen hotkeys in bottom right
+Greatly increase statistic tracking
+attack, move, turns, gold, damage taken, damage dealt
+create inventory object

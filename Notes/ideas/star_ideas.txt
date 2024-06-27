@@ -1,0 +1,44 @@
+Star of darkness (void?) (boredom?)
+-Encourages: Not exploring levels completely, not fighting, not equipping items
+-Rewards: Lowers the amount of vision tiles, lowers chance to get hit, pulls monsters away, path to stairs show up on map, automatically collecting quests
+-Drawback: (See encouragement)
+-Theme: Why are we even playing this stupid game? Just win already
+
+Star of battle
+-Encourages: Defeating powerful enemies
+-Rewards: Win ties? Roll two dice for combat and take higher? Increased attack speed, random buggs
+-Drawback: Can't run from monsters, all monsters are alerted to you in a wider radius
+-Theme: BLOOD FOR THE BLOOD GOD
+
+Star of intimacy
+-Encourages: Being next to monsters, not killing monsters
+-Rewards: Lots of armor, can move through monsters?, monsters gradually gain affinity for you, maybe only one?
+-Drawback: Slowly forced to strip off armor
+-Theme: I ship it
+
+Star of friends (maybe not great idea)
+Encourages: Summons, friendly monsters
+Rewards: Buff friendlies, sows discord among other monsters
+
+Star of movement
+Encourages: Not standing still
+Rewards: Extra movement speed, wings, attacks while moving?
+
+Star of forest
+Encourages: being in the forest branch
+Rewards: Poison enemy, slow them, heal you
+
+Star of blood
+Encourages: Going to low health and staying there
+Rewards: Increased attack speed, dodge chance, health regen, enemies explode when killed and deal damage, enemies bleed out over time
+
+Star of roundness
+Encourages: 3,6,8,0 levels. Having balanced stats, eating when full
+
+Star of simplicity
+Encourages: Only one of each item type
+Reward: Replenish potions when used, will give scroll when used, will give items you don't have
+
+Star of chaos
+Encourages: Different actions each time
+Reward: Blink enemies, transform items
