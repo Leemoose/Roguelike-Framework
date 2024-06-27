@@ -1,0 +1,99 @@
+FOREST
+Big spiders
+Characteristic: Can move fast
+Abilities: Create web on tile
+On hit: Poison / stun?
+
+Yellow Jacket Nest
+Characteristic: Hit it and swarms pop out
+Vulnerable: Fire
+Abilities: When hit summons enemies
+On hit:
+
+Treant
+Characteristic: Lots of health
+Vulnerable: Fire
+Abilities: Ground Stomp
+On hit: Root lash (extra damage, immobile)
+
+Snailgoat
+Characteristic: Leaves toxic sludge as it moves
+Vulnerable:
+Abilities: Hide in shell (increased armor, cannot attack)
+On hit:
+
+Vinecrasher
+Characteristic: Appears in packs, low health
+Vulnerable: Fire
+Abilities: Can attack from range with poison jagger
+On hit: Poisoness spikes
+
+Metallic bear
+Characteristic:
+Vulnerable:
+Abilities: Fury (low on health goes beserk)
+On hit:
+
+-------------------
+Cave
+Vampiric bat
+Characteristic: Swarm
+Vulnerable:
+Abilities: Dashs back after dealing damage
+On hit: Drains health a bit, heals itself
+
+Thing (a hand)
+Characteristic: Difficult to hit
+Vulnerable:
+Abilities: Constricts a limb from being used for a few turns
+On hit: see above
+
+
+---------------------
+Dungeon
+NPC Doppleganger
+Characteristic: Looks like a human with a quest, won't attack until person comes close
+Vulnerable:
+Abilities: Camo
+On hit:
+
+Blaarg the Ooze
+Characteristic: Indestructible, moves very slowly
+Vulnerable:
+Abilities: Consumes people, eats items, and spits them out
+On hit: See above, does not deal damage
+
+Large Rodent
+Characteristic: Grows in power when other rats next to it
+Vulnerable: By itself
+Abilities: Can breed by eating corpse
+On hit:
+
+
+--------------------
+Ocean
+King Crab
+Characteristic: Double attack, very meaty body
+Vulnerable:
+Abilities: If blocks attack, can free attack
+On hit: See above, does not deal damage
+
+Waterwind
+Characteristic: Swirling flying whirlpool
+Vulnerable:
+Abilities: Can rotate player around it
+On hit: See above
+
+--------------------
+Mountain
+Scout Hawk
+Characteristic: Flys around, will only attack in flock
+Vulnerable:
+Abilities: Awakens other scout hawks on map
+On hit:
+
+Pika
+Characteristic: Runs away, alerts other pikas, and other monsters in radius
+Vulnerable:
+Abilities: See above
+On hit:
