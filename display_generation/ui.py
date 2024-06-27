@@ -107,17 +107,18 @@ class MessageBox(pygame_gui.elements.UITextBox):
         self.loop.dirty_messages = False
 
 class DialogueButton(pygame_gui.elements.UIButton):
-    def __init__(self, rect, manager, object_id, container, text="...", left=False):
+    def __init__(self, rect, manager, object_id, container, color=(252, 252, 252), text="...", left=False):
         super().__init__(relative_rect=rect, manager=manager, container=container, text=text, object_id=object_id,
                     starting_height=900)
         self.active_state = self.drawable_shape.active_state
         self.loop = None
         self.text = text
         self.left = left
+        self.color = color
 
 
-    def draw_speech_bubble(self, surface, text, bubble_width, bubble_height, left=True):
-        bubble_color = (255, 255, 255)
+    def draw_speech_bubble(self, surface, text, bubble_width, bubble_height, color, left=True):
+        bubble_color = color
         border_radius = 50
         padding = 10
 
@@ -151,15 +152,15 @@ class DialogueButton(pygame_gui.elements.UIButton):
             surface.blit(text_surface, text_rect)
             y_offset += font.get_height()
 
-    def draw_on_all_surfaces(self, text, left):
+    def draw_on_all_surfaces(self, text, left, color):
         button_surface = self.image
         for state in ["normal", "hovered", "disabled", "selected", "active"]:
-            self.draw_speech_bubble(self.drawable_shape.states[state].surface, text, button_surface.get_width(), button_surface.get_height(), left)
+            self.draw_speech_bubble(self.drawable_shape.states[state].surface, text, button_surface.get_width(), button_surface.get_height(), color, left)
             self.drawable_shape.active_state.has_fresh_surface = True
 
     def update(self, time_delta: float):
         if self.active_state != self.drawable_shape.active_state:
-            self.draw_on_all_surfaces(self.text, self.left)
+            self.draw_on_all_surfaces(self.text, self.left, self.color)
 
         return super().update(time_delta)
 
@@ -169,7 +170,7 @@ class DialogueInteraction(pygame_gui.elements.UIPanel):
         self.loop = loop #Store loop to retrieve messages
         self.npc = npc
         # load dialogue queue from npc object
-        self.dialogue_queue = [("Where am I?", True), 
+        self.dialogue_queue = [("Where am I?", "Who are you?", True), 
                                ("What's this? Another failure! I can't believe we spent so much to summon you from another dimension.", False), 
                                ("Guards! Prepare another summoning! We can't fail again else we'll be overrun by the rift monsters. They are nearly at the palace portals!", False),
                                ("What are you talking about?", True),
@@ -180,13 +181,24 @@ class DialogueInteraction(pygame_gui.elements.UIPanel):
         self.dialogue_next = False
         self.max_messages = max_messages
         self.text_boxes = []
-        self.add_dialogue()
+        self.next_dialogue()
 
-    def add_dialogue(self):
+    def next_dialogue(self):
         if not self.dialogue_queue:
             return
 
-        text, left = self.dialogue_queue.pop(0)
+        curr_dialogue = self.dialogue_queue.pop(0)
+        if len(curr_dialogue) >= 2: # == 2
+            text, left = curr_dialogue[0], curr_dialogue[-1] # curr_dialogue
+            self.add_dialogue(text, left)
+#        else:
+#            if curr_dialogue[-1]: # player has multiple options, draw all dialogue boxes
+#                for i, text in enumerate(curr_dialogue[:-1]):
+#                    text = str(i) + ". " + text
+#                    self.add_dialogue(self, text, curr_dialogue[-1], color=(150, 150, 150), action=str(i))
+
+
+    def add_dialogue(self, text, left, color=(255, 255, 255), action="return"):
         max_bubble_width = self.get_relative_rect().width // 5 * 4
         padding = self.image.get_height() // 25
 
@@ -222,11 +234,12 @@ class DialogueInteraction(pygame_gui.elements.UIPanel):
             text=text,
             left=left,
             manager=self.ui_manager,
+            color=color,
             container=self,
             object_id='#speech_bubble'
         )
 
-        bubble_button.draw_on_all_surfaces(text, left)
+        bubble_button.draw_on_all_surfaces(text, left, color)
 
         # # Manually render the text onto the button surface
         # button_surface = bubble_button.image
@@ -252,12 +265,13 @@ class DialogueInteraction(pygame_gui.elements.UIPanel):
                 self.next_y_position += tb.get_relative_rect().height + self.bubble_gap
 
         for box, _ in self.text_boxes:
-            box.action = ""
-        self.text_boxes[-1][0].action = "return"
+            if hasattr(box, "action") and box.action == action:
+                box.action = ""
+        self.text_boxes[-1][0].action = action
 
     def update(self, time_delta: float):
         if self.loop.next_dialogue:
-            self.add_dialogue()
+            self.next_dialogue()
             self.loop.next_dialogue = False
         
         super().update(time_delta)
