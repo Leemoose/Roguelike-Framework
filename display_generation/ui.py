@@ -105,6 +105,163 @@ class MessageBox(pygame_gui.elements.UITextBox):
         text = text[:-3] #Remove last <br>
         self.set_text(html_text=text)
         self.loop.dirty_messages = False
+
+class DialogueButton(pygame_gui.elements.UIButton):
+    def __init__(self, rect, manager, object_id, container, text="...", left=False):
+        super().__init__(relative_rect=rect, manager=manager, container=container, text=text, object_id=object_id,
+                    starting_height=900)
+        self.active_state = self.drawable_shape.active_state
+        self.loop = None
+        self.text = text
+        self.left = left
+
+
+    def draw_speech_bubble(self, surface, text, bubble_width, bubble_height, left=True):
+        bubble_color = (255, 255, 255)
+        border_radius = 50
+        padding = 10
+
+        surface.fill((0, 0, 0, 0))
+
+        # Draw the rounded rectangle
+        pygame.draw.rect(surface, bubble_color, (0, 0, bubble_width, bubble_height), border_top_left_radius=border_radius, 
+                                                                                    border_top_right_radius=border_radius, 
+                                                                                    border_bottom_left_radius=border_radius * (not left),
+                                                                                    border_bottom_right_radius= border_radius * (left))
+
+        # Blit the text onto the bubble
+        font = pygame.font.Font(None, 24)
+        words = text.split(' ')
+        lines = []
+        current_line = words[0]
+
+        for word in words[1:]:
+            test_line = current_line + ' ' + word
+            if font.size(test_line)[0] <= bubble_width - 2 * padding:
+                current_line = test_line
+            else:
+                lines.append(current_line)
+                current_line = word
+        lines.append(current_line)
+
+        y_offset = padding
+        for line in lines:
+            text_surface = font.render(line, True, (0, 0, 0))
+            text_rect = text_surface.get_rect(topleft=(padding, y_offset))
+            surface.blit(text_surface, text_rect)
+            y_offset += font.get_height()
+
+    def draw_on_all_surfaces(self, text, left):
+        button_surface = self.image
+        for state in ["normal", "hovered", "disabled", "selected", "active"]:
+            self.draw_speech_bubble(self.drawable_shape.states[state].surface, text, button_surface.get_width(), button_surface.get_height(), left)
+            self.drawable_shape.active_state.has_fresh_surface = True
+
+    def update(self, time_delta: float):
+        if self.active_state != self.drawable_shape.active_state:
+            self.draw_on_all_surfaces(self.text, self.left)
+
+        return super().update(time_delta)
+
+class DialogueInteraction(pygame_gui.elements.UIPanel):
+    def __init__(self, rect, manager, loop, npc, max_messages, bubble_gap):
+        super().__init__(relative_rect=rect, manager=manager)
+        self.loop = loop #Store loop to retrieve messages
+        self.npc = npc
+        # load dialogue queue from npc object
+        self.dialogue_queue = [("Where am I?", True), 
+                               ("What's this? Another failure! I can't believe we spent so much to summon you from another dimension.", False), 
+                               ("Guards! Prepare another summoning! We can't fail again else we'll be overrun by the rift monsters. They are nearly at the palace portals!", False),
+                               ("What are you talking about?", True),
+                               ("Why are you still here?!? Move along to the portal room and we'll be sorted out. Maybe you'll even manage to kill a goblin or two.", False)]
+        self.next_y_position = bubble_gap
+        self.bubble_gap = bubble_gap
+        self.bubble_padding = bubble_gap // 2
+        self.dialogue_next = False
+        self.max_messages = max_messages
+        self.text_boxes = []
+        self.add_dialogue()
+
+    def add_dialogue(self):
+        if not self.dialogue_queue:
+            return
+
+        text, left = self.dialogue_queue.pop(0)
+        max_bubble_width = self.get_relative_rect().width // 5 * 4
+        padding = self.image.get_height() // 25
+
+        # Create a font and measure the text size
+        font = pygame.font.Font(None, 24)
+        words = text.split(' ')
+        lines = []
+        current_line = words[0]
+
+        for word in words[1:]:
+            test_line = current_line + ' ' + word
+            if font.size(test_line)[0] <= max_bubble_width - 2 * padding:
+                current_line = test_line
+            else:
+                lines.append(current_line)
+                current_line = word
+        lines.append(current_line)
+
+        text_height = font.get_height()
+        bubble_width = min(max_bubble_width, max(font.size(line)[0] for line in lines) + 2 * padding)
+        bubble_height = len(lines) * text_height + 2 * padding
+
+        # # Create a surface for the speech bubble
+        # bubble_surface = pygame.Surface((bubble_width, bubble_height), pygame.SRCALPHA)
+        # draw_speech_bubble(bubble_surface, text, left)
+        
+        # Determine x position based on alignment
+        x_position = self.bubble_padding if left else self.get_relative_rect().width - bubble_width - (self.bubble_padding)
+
+        # Create UIButton to display the speech bubble
+        bubble_button = DialogueButton(
+            rect=pygame.Rect((x_position, self.next_y_position), (bubble_width, bubble_height)),
+            text=text,
+            left=left,
+            manager=self.ui_manager,
+            container=self,
+            object_id='#speech_bubble'
+        )
+
+        bubble_button.draw_on_all_surfaces(text, left)
+
+        # # Manually render the text onto the button surface
+        # button_surface = bubble_button.image
+        # for state in ["normal", "hovered", "disabled", "selected", "active"]:
+        #     draw_speech_bubble(bubble_button.drawable_shape.states[state].surface, text, button_surface.get_width(), button_surface.get_height(), left)
+        # bubble_button.drawable_shape.active_state.has_fresh_surface = True
+        # # import pdb; pdb.set_trace()
+
+        self.text_boxes.append((bubble_button, left))
+        self.next_y_position += bubble_height + self.bubble_gap
+
+        # Remove oldest message if exceeding limit
+        if len(self.text_boxes) > self.max_messages:
+            self.text_boxes[0][0].kill()
+            self.text_boxes.pop(0)
+            # Update positions
+            self.next_y_position = self.bubble_gap
+            for i, (tb, old_left) in enumerate(self.text_boxes):
+                tb_width = tb.get_relative_rect().width
+                tb_height = tb.get_relative_rect().height
+                x_position = self.bubble_padding if old_left else self.get_relative_rect().width - tb_width - (self.bubble_padding)
+                tb.set_relative_position((x_position, self.next_y_position))
+                self.next_y_position += tb.get_relative_rect().height + self.bubble_gap
+
+        for box, _ in self.text_boxes:
+            box.action = ""
+        self.text_boxes[-1][0].action = "return"
+
+    def update(self, time_delta: float):
+        if self.loop.next_dialogue:
+            self.add_dialogue()
+            self.loop.next_dialogue = False
+        
+        super().update(time_delta)
+        
     
 class LevelUpHeader(pygame_gui.elements.UILabel):
     def __init__(self, rect, manager, player):

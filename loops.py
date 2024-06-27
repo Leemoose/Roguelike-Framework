@@ -58,6 +58,7 @@ class Loops():
         self.timer = 0
         self.taking_stairs = False
         self.npc_focus = None
+        self.next_dialogue = False
         self.class_selection = None
         self.quest_recieved = False
         self.quest_completed = False

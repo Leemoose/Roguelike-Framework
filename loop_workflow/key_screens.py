@@ -260,7 +260,10 @@ def key_trade(loop, key):
     player = loop.player
     if key == "esc":
         loop.change_loop(LoopType.action)
+        loop.next_dialogue = False
         return
+    elif key == "return":
+        loop.next_dialogue = True
     elif key == "1":
         loop.npc_focus.change_purpose(1, loop)
     elif key == '2':

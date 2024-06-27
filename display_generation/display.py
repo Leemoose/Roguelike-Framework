@@ -50,6 +50,27 @@ class Display:
 
         font = pygame.font.Font('freesansbold.ttf', 12)
 
+    def draw_player(self, loop, loc_x=None, loc_y=None, playerSize=32):
+        if loc_x == None:
+            loc_x = self.r_x * self.textSize
+        if loc_y == None:
+            loc_y = self.r_y * self.textSize
+        tileDict = loop.tileDict
+        player = loop.player
+        #Draw base character depending on armor state
+        if (player.character.free_equipment_slots("body_armor_slot") == 0):
+            self.win.blit(pygame.transform.scale(tileDict.tile_string(200), (playerSize, playerSize)), (loc_x, loc_y)) # DONG MODE ENGAGED
+        else:
+            self.win.blit(pygame.transform.scale(tileDict.tile_string(-200), (playerSize, playerSize)), (loc_x, loc_y))
+
+        #Draw items on top
+        if player.character.free_equipment_slots("boots_slot") == 0:
+            self.win.blit(pygame.transform.scale(tileDict.tile_string(201), (playerSize, playerSize)), (loc_x, loc_y))
+        if player.character.free_equipment_slots("gloves_slot") == 0:
+            self.win.blit(pygame.transform.scale(tileDict.tile_string(202), (playerSize, playerSize)), (loc_x, loc_y))
+        if player.character.free_equipment_slots("helmet_slot") == 0:
+            self.win.blit(pygame.transform.scale(tileDict.tile_string(203), (playerSize, playerSize)), (loc_x, loc_y))
+        
 
     def update_display(self, loop):
         self.win.fill((0,0,0))
@@ -159,19 +180,8 @@ class Display:
                     monster_tile = tileDict.tile_string(monster.render_tag)
                     self.win.blit(monster_tile, (self.textSize*(monster.x - self.x_start), self.textSize*(monster.y - self.y_start)))
 
-        #Draw base character depending on armor state
-        if (player.character.free_equipment_slots("body_armor_slot") == 0):
-            self.win.blit(tileDict.tile_string(200), (self.r_x * self.textSize, self.r_y * self.textSize)) # DONG MODE ENGAGED
-        else:
-            self.win.blit(tileDict.tile_string(-200), (self.r_x * self.textSize, self.r_y * self.textSize))
+        self.draw_player(loop)
 
-        #Draw items on top
-        if player.character.free_equipment_slots("boots_slot") == 0:
-            self.win.blit(tileDict.tile_string(201), (self.r_x * self.textSize, self.r_y * self.textSize))
-        if player.character.free_equipment_slots("gloves_slot") == 0:
-            self.win.blit(tileDict.tile_string(202), (self.r_x * self.textSize, self.r_y * self.textSize))
-        if player.character.free_equipment_slots("helmet_slot") == 0:
-            self.win.blit(tileDict.tile_string(203), (self.r_x * self.textSize, self.r_y * self.textSize))
         self.uiManager.draw_ui(self.win)
 
         #Making all map tiles

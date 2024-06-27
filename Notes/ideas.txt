@@ -60,3 +60,31 @@ More NPC interaction:
 On individual item changes, could show changes in stats that would come from equip (compare to currently equipped)
 
 Need a way to choose what to pick up on tiles with multiple items
+
+Potentially change npc conversations <- in progress
+
+Tutorial: 
+    - maybe throne room shows basic movement and stairs commands
+    - maybe extra room in hub that acts as tutorial for basic mechanics
+        - how to pick up items
+        - how to equip
+        - how to use spells/skills
+        - how to attack
+        - how to quaff
+        - how to read
+
+Star mechanics:
+Maybe rework star interest to be based on set thresholds and different actions increase interest 
+(ex for green buck picking up money increases interest, which has thresholds for reward rather than thresholds being tied to money)
+Could introduce "star quest", special quests once you gain enough interest that give highest tier of rewards, and only allow 1 star quest per run
+
+Star ideas:
+    - Green Buck (reward finding money, with more money, monsters drop extra money and discounts at shops)
+    - Northern Fist (reward for unarmed combat)
+    - Crystal Eye (reward exploration, maybe with increase LOS)
+    - Great Forge (reward using rare equipment, maybe with enchantment scrolls)
+    - Unbreakable (reward high endurance, reward with damage reduction)
+    - Peace Wish (reward exploration without killing, gives experience even without killing)
+    - Undying Light (reward being at low health, gives increased stats when low health)
+
+NPC who explains stars to you and gives you a quest to gain a stars interest

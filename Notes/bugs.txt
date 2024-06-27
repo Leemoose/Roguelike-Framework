@@ -25,3 +25,5 @@ File "C:\Users\kcdul\OneDrive\Desktop\Roguelike-Framework\roguewriting.py", line
 AttributeError: 'tuple' object has no attribute 'pop'
 
 Blink Scrolls are broken
+
+might potiorbs are broken
