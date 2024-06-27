@@ -567,6 +567,7 @@ class Loops():
     def time_passes(self, time):
         self.timer += time
         for i in range(int(self.timer // 100)):
+            self.player.statistics.add_turn_details()
             # do status effect stuff
             self.player.character.tick_all_status_effects(self)
             self.player.mage.tick_cooldowns()

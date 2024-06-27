@@ -1,6 +1,3 @@
-
-import copy
-
 class Body():
     def __init__(self, parent):
         self.equipment_slots = {"body_armor_slot": [None],

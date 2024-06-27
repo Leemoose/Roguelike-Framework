@@ -92,6 +92,7 @@ class Player(Objects):
                 "move"]  # / (1.02**(self.character.dexterity + self.character.round_bonus())))
             self.y += move_y
             self.x += move_x
+            self.statistics.add_move_details()
             if loop.currentLoop != LoopType.pathing:
                 loop.add_message("The player moved.")
         else:
@@ -108,6 +109,7 @@ class Player(Objects):
             "attack"]  # / (1.05**(self.character.dexterity + self.character.round_bonus())))
         loop.screen_focus = (defender.x, defender.y)
         damage = self.character.melee(defender, loop)
+        self.statistics.add_attack_details(damage)
         loop.add_message(f"The player attacked for {damage} damage")
 
     def autopath(self, loop):
@@ -136,7 +138,7 @@ class Player(Objects):
 
             # auto pickup gold
             for item in loop.generator.item_map.all_entities():
-                    if isinstance(item, I.Gold):
+                    if item.has_trait("gold"):
                         if item.x == self.x and item.y == self.y:
                             self.character.grab(item, loop)
 
@@ -156,12 +158,12 @@ class Player(Objects):
         all_seen = False
         
         # auto pickup gold
-        gold_locations = []
-        gold_dict = {}
+        good_item_locations = []
+        good_item_dict = {}
         for item in loop.generator.item_map.all_entities():
-                if isinstance(item, I.Gold):
-                    gold_locations.append((item.x, item.y))
-                    gold_dict[(item.x, item.y)] = item
+                if item.has_trait("gold") or item.has_trait("potion") or item.has_trait("scroll"):
+                    good_item_locations.append((item.x, item.y))
+                    good_item_dict[(item.x, item.y)] = item
         
         tile_map = loop.generator.tile_map
 
@@ -169,9 +171,9 @@ class Player(Objects):
             start = (self.x, self.y)
 
             # special case to make sure we don't path to gold we are standing on
-            if start in gold_locations:
-                self.character.grab(gold_dict[start], loop)
-                gold_locations.remove(start)
+            if start in good_item_locations:
+                self.character.grab(good_item_dict[start], loop)
+                good_item_locations.remove(start)
                             
 
             all_seen, unseen = loop.generator.all_seen()
@@ -188,7 +190,7 @@ class Player(Objects):
             # Attempt to redo autoexplore with simpler BFS
             # in-line end condition so we can use tile_map
             def autoexplore_condition(position_tuple):
-                return position_tuple in gold_locations or \
+                return position_tuple in good_item_locations or \
                        (tile_map.get_passable(position_tuple[0], position_tuple[1]) and \
                         not (tile_map.track_map[position_tuple[0]][position_tuple[1]].seen))
             self.path = pathfinding.conditional_bfs(tile_map.track_map, start, autoexplore_condition, loop.generator.interact_map.dict)

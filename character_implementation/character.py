@@ -148,6 +148,8 @@ class Character():
             self.energy -= self.action_costs["grab"]
 
     def get_item(self, loop, item):
+        if self.parent.has_trait("player"):
+            self.parent.statistics.add_item_pickup_details(item)
         if item.yendorb:
             loop.change_loop("victory")
             return

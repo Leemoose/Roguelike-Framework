@@ -1566,6 +1566,7 @@ class Scroll(O.Item):
         self.attached_skill_exists = False
         self.description = "A scrorb that does something."
         self.yendorb = False
+        self.traits["scroll"] = True
 
         self.rarity = "Common"
 

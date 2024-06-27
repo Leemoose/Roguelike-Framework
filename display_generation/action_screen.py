@@ -108,7 +108,7 @@ def create_display(display, loop):
     map_offset_from_top = stats_height
     map_width = display.screen_width - action_screen_width
     map_message_width = 80
-    map_height = display.screen_height // 4
+    map_height = display.screen_height // 3
     map_message_height = 30
     num_map_tiles_wide = map_width // map_tile_size
     num_map_tiles_height = map_height // map_tile_size
@@ -120,7 +120,7 @@ def create_display(display, loop):
     message_width = action_screen_width * 5 // 12 - 2 * message_offset_from_left
     message_height = display.screen_height - action_screen_height
 
-    views_num_buttons_height = 3
+    views_num_buttons_height = 2
     views_num_buttons_width = 3
     views_offset_from_left = action_screen_width
     views_offset_from_top = map_offset_from_top + map_height
@@ -187,7 +187,8 @@ def create_display(display, loop):
         starting_height=800)
     button.action = "e"
 
-    button_num_height += 1
+    button_num_height = 0
+    button_num_width += 1
     button = pygame_gui.elements.UIButton(
         relative_rect=pygame.Rect((
             views_offset_from_left + views_button_offset_from_each_other_width + (
@@ -200,34 +201,8 @@ def create_display(display, loop):
         starting_height=800)
     button.action = "z"
 
-    button_num_height = 0
-    button_num_width += 1
-    button = pygame_gui.elements.UIButton(
-        relative_rect=pygame.Rect((
-            views_offset_from_left + views_button_offset_from_each_other_width + (
-                        views_button_offset_from_each_other_width + views_button_width) * button_num_width,
-            views_offset_from_top + views_button_offset_from_each_other_height + (
-                        views_button_offset_from_each_other_height + views_button_height) * button_num_height),
-            (views_button_width, views_button_height)),
-        text="(Q)uaff",
-        manager=display.uiManager,
-        starting_height=800)
-    button.action = "q"
-
     button_num_height += 1
-    button = pygame_gui.elements.UIButton(
-        relative_rect=pygame.Rect((
-            views_offset_from_left + views_button_offset_from_each_other_width + (
-                        views_button_offset_from_each_other_width + views_button_width) * button_num_width,
-            views_offset_from_top + views_button_offset_from_each_other_height + (
-                        views_button_offset_from_each_other_height + views_button_height) * button_num_height),
-            (views_button_width, views_button_height)),
-        text="(R)ead",
-        manager=display.uiManager,
-        starting_height=800)
-    button.action = "r"
 
-    button_num_height += 1
     button = pygame_gui.elements.UIButton(
         relative_rect=pygame.Rect((
             views_offset_from_left + views_button_offset_from_each_other_width + (
@@ -254,31 +229,7 @@ def create_display(display, loop):
         starting_height=800)
     button.action = "esc"
 
-    button_num_height += 1
-    button = pygame_gui.elements.UIButton(
-        relative_rect=pygame.Rect((
-            views_offset_from_left + views_button_offset_from_each_other_width + (
-                        views_button_offset_from_each_other_width + views_button_width) * button_num_width,
-            views_offset_from_top + views_button_offset_from_each_other_height + (
-                        views_button_offset_from_each_other_height + views_button_height) * button_num_height),
-            (views_button_width, views_button_height)),
-        text="(S)tairs",
-        manager=display.uiManager,
-        starting_height=800)
-    button.action = "s"
 
-    button_num_height += 1
-    button = pygame_gui.elements.UIButton(
-        relative_rect=pygame.Rect((
-            views_offset_from_left + views_button_offset_from_each_other_width + (
-                        views_button_offset_from_each_other_width + views_button_width) * button_num_width,
-            views_offset_from_top + views_button_offset_from_each_other_height + (
-                        views_button_offset_from_each_other_height + views_button_height) * button_num_height),
-            (views_button_width, views_button_height)),
-        text="(G)rab",
-        manager=display.uiManager,
-        starting_height=800)
-    button.action = "g"
 
     # if target_to_display != None:
     #    clear_target = display.draw_examine_window(target_to_display, tileDict, floormap, monster_map, monsterID, item_ID, player)

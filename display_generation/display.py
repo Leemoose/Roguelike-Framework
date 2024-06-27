@@ -110,7 +110,7 @@ class Display:
         map_offset_from_top = stats_height
         map_width = self.screen_width - action_screen_width
         map_message_width = 30
-        map_height = self.screen_height // 4
+        map_height = self.screen_height // 3
         map_message_height = 15
         num_map_tiles_wide = map_width // map_tile_size
         num_map_tiles_height = map_height // map_tile_size
