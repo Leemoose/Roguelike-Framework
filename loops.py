@@ -56,6 +56,8 @@ class Loops():
         self.screen_focus = None
         self.current_stat = 0  # index of stat for levelling up
         self.timer = 0
+        self.total_time = 0
+        self.day = "Daytime"
         self.taking_stairs = False
         self.npc_focus = None
         self.next_dialogue = False
@@ -418,6 +420,14 @@ class Loops():
             self.player.visited_stairs = []
             self.generator = self.memory.generators[self.branch][self.floor_level]
 
+        if self.branch == "Forest":
+            if self.day == "Nighttime":
+                for monster in self.generator.monster_map.all_entities():
+                    monster.nightify()
+            elif self.day == "Daytime":
+                for monster in self.generator.monster_map.all_entities():
+                    monster.dayify()
+
         self.taking_stairs = False
 
     def change_branch(self):
@@ -441,6 +451,15 @@ class Loops():
         self.generator = self.memory.generators[branch][self.floor_level]
         self.memory.floor_level = depth
         self.memory.branch = branch
+
+        if self.branch == "Forest":
+            if self.day == "Nighttime":
+                for monster in self.generator.monster_map.all_entities():
+                    monster.nightify()
+            elif self.day == "Daytime":
+                for monster in self.generator.monster_map.all_entities():
+                    monster.dayify()
+
         self.taking_stairs = False
 
     def init_game(self, display):
@@ -568,6 +587,9 @@ class Loops():
         self.timer += time
         for i in range(int(self.timer // 100)):
             self.player.statistics.add_turn_details()
+            self.total_time += 1
+            if self.total_time % 100 == 99:
+                self.change_daytime()
             # do status effect stuff
             self.player.character.tick_all_status_effects(self)
             self.player.mage.tick_cooldowns()
@@ -596,6 +618,18 @@ class Loops():
                         monster.character.add_status_effect(status_effect)
 
         self.timer = self.timer % 100
+
+    def change_daytime(self):
+        if self.day == "Daytime":
+            self.day = "Nighttime"
+            if self.branch == "Forest":
+                for monster in self.generator.monster_map.all_entities():
+                    monster.nightify()
+        elif self.day == "Nighttime":
+            self.day = "Daytime"
+            if self.branch == "Forest":
+                for monster in self.generator.monster_map.all_entities():
+                    monster.dayify()
 
     def get_available_classes(self):
         return [Rogue(), Warrior(), Mage()]

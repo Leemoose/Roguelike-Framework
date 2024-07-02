@@ -154,7 +154,7 @@ class Display:
        #Making all the tiles
         for x in range(self.x_start, self.x_end):
             for y in range(self.y_start, self.y_end):
-                self.draw_single_tile(x, y, floormap, tileDict)
+                self.draw_single_tile(x, y, floormap, tileDict, loop)
 
         for key in item_ID.subjects:
             item = item_ID.get_subject(key)
@@ -651,7 +651,7 @@ class Display:
         text = font.render(message, True, (255, 255, 255))
         self.win.blit(text, (25, 25))
 
-    def draw_single_tile(self, x, y, floormap, tileDict):
+    def draw_single_tile(self, x, y, floormap, tileDict, loop):
         if (x < 0 or x >= floormap.width or y < 0 or y >= floormap.height):
             pass
         elif floormap.track_map[x][y].seen == False:
@@ -661,6 +661,8 @@ class Display:
             self.win.blit(tag, (self.textSize * (x - self.x_start), self.textSize * (y - self.y_start)))
             if floormap.track_map[x][y].on_fire:
                 self.win.blit(tileDict.tile_string(20), (self.textSize * (x - self.x_start), self.textSize * (y - self.y_start)))
+        elif loop.branch != "Forest" or loop.day == "Daytime":
+            pass
         else:
             tag = tileDict.tile_string(floormap.track_map[x][y].shaded_render_tag)
             self.win.blit(tag, (self.textSize * (x - self.x_start), self.textSize * (y - self.y_start)))

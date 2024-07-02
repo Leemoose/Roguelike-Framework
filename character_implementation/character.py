@@ -69,6 +69,18 @@ class Character():
         self.unarmed_damage_min = min_damage
         self.unarmed_damage_max = max_damage
 
+    def get_health(self):
+        return self.health
+
+    def get_max_health(self):
+        return self.max_health
+
+    def change_health(self, change):
+        self.health += change
+
+    def change_max_health(self, change):
+        self.max_health += change
+
     def change_action_cost(self, action, newcost):
         self.action_costs[action] = newcost
 

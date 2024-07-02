@@ -107,7 +107,7 @@ def create_display(display, loop):
     map_offset_from_left = action_screen_width
     map_offset_from_top = stats_height
     map_width = display.screen_width - action_screen_width
-    map_message_width = 80
+    map_message_width = stats_width
     map_height = display.screen_height // 3
     map_message_height = 30
     num_map_tiles_wide = map_width // map_tile_size
@@ -146,7 +146,7 @@ def create_display(display, loop):
                         map_width, map_height)
 
     # Depth
-    depth_label = DepthDisplay(pygame.Rect((map_offset_from_left, map_offset_from_top),
+    display.depth_label = DepthDisplay(pygame.Rect((map_offset_from_left, map_offset_from_top),
                                            (map_message_width, map_message_height)),
                                manager=display.uiManager,
                                loop=loop)

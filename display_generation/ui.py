@@ -615,8 +615,11 @@ class DepthDisplay(pygame_gui.elements.UILabel):
         self.last_branch = ""
 
     def update(self, time_delta: float):
-        if (self.last_depth != self.loop.generator.depth) or self.last_branch != self.loop.generator.branch:
-            self.set_text(str(self.loop.generator.branch) + " " + str(self.loop.generator.depth))
+        if (self.last_depth != self.loop.generator.depth) or self.last_branch != self.loop.generator.branch or self.last_branch == "Forest":
+            if self.loop.branch == "Forest":
+                self.set_text(str(self.loop.generator.branch) + " " + str(self.loop.generator.depth) + " " + str(self.loop.day) + " " + str(self.loop.total_time // 100))
+            else:
+                self.set_text(str(self.loop.generator.branch) + " " + str(self.loop.generator.depth))
             self.last_depth = self.loop.generator.depth
             self.last_branch = self.loop.generator.branch
 

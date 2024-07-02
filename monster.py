@@ -11,6 +11,7 @@ class Monster(O.Objects):
         self.character = C.Character(self, health = health, min_damage=min_damage, max_damage = max_damage)
         self.asleep = False
         self.flee = False
+        self.nightified = False
 
         self.traits["monster"] = True
         self.attributes = {}
@@ -23,6 +24,8 @@ class Monster(O.Objects):
         self.skills = []
         self.orb = False
         self.rarity = rarity
+
+        self.stored_day_powers = []
 
         # parameter that is checked according to specific branch distributions, specific branches will write functions describing what a particular restriction does
         self.restriction = ""
@@ -49,7 +52,24 @@ class Monster(O.Objects):
             self.y += move_y
             self.x += move_x
             monster_map.track_map[self.x][self.y] = self.id_tag
-    
+
+    def nightify(self):
+        if not self.nightified:
+            self.nightified = True
+            max_health_change = self.character.get_max_health()
+            health_change = self.character.get_health()
+            self.asleep = False
+            self.character.change_max_health(max_health_change)
+            self.character.change_health(health_change)
+            self.stored_day_powers = [max_health_change, health_change]
+
+    def dayify(self):
+        if self.nightified:
+            self.nightified = False
+            max_health_change, health_change = self.stored_day_powers
+            self.character.change_max_health(-max_health_change)
+            self.character.change_health(-health_change)
+            self.stored_day_powers = []
 
     def __str__(self):
         return self.name

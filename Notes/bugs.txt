@@ -7,8 +7,6 @@ Dojo art covering stairs?
 
 fix gateways so that there can be a different outgoing and incoming (sort of fixed)
 
-Forest images
-
 fix gateways so that there can be a different outgoing and incoming (sort of fixed)
 
 monster ai sometimes fails with:
@@ -27,3 +25,5 @@ AttributeError: 'tuple' object has no attribute 'pop'
 Blink Scrolls are broken
 
 might potiorbs are broken
+
+fix some of the new night attributes going on in the forest
