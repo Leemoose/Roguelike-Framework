@@ -7,6 +7,7 @@ class TileDict():
     def __init__(self, textSize):
         tiles = {}
         # 1-99 are tile
+        tiles[0] = image.load("assets/placeholder.png")
         tiles[1] = pygame.transform.scale(image.load("assets/tiles/colorful_wall.png"), (32, 32))
         tiles[-1] = pygame.transform.scale(image.load("assets/tiles/colorful_wall_shaded.png"), (32, 32))
         tiles[2] = pygame.transform.scale(image.load("assets/tiles/colorful_floor.png"), (32, 32))

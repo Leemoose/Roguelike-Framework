@@ -5,6 +5,8 @@ from dungeon_generation import *
 from .spawning import branch_params, item_spawner, monster_spawner
 from .maps import TileMap, TrackingMap
 
+from interactables import Campfire
+
 
 """
 Theme: Mapping is responsible for creating all maps at the start of the level, placing monsters, placing items,
@@ -45,6 +47,7 @@ class DungeonGenerator():
         if (self.depth != 1 or (branch != "Throne")):
             self.place_items(depth)
         self.place_npcs(depth)
+        self.place_interactables(branch, depth)
 
     def get_random_location_basic(self, stairs_block = True):
         start_x = random.randint(0, self.width - 1)
@@ -240,6 +243,11 @@ class DungeonGenerator():
                     self.interact_map.place_thing(self.tile_map.locate(x,y).spawn_entity())
                 if self.tile_map.locate(x,y).has_trait("monster_spawn"): # this is used for static monster spawns
                     self.place_monster_at_location(self.tile_map.locate(x,y).spawn_entity(), x, y)
+
+    def place_interactables(self, branch, depth):
+        if branch == "Forest":
+            x,y = self.get_random_location(stairs_block = True)
+            self.interact_map.place_thing(Campfire())
 
     def place_items(self, depth):
         itemSpawns = item_spawner.spawnItems(depth, self.branch)

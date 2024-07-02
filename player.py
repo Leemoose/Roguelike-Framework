@@ -113,6 +113,10 @@ class Player(Objects):
         loop.add_message(f"The player attacked for {damage} damage")
 
     def autopath(self, loop):
+        if loop.branch == "Forest":
+            loop.add_message("You cannot autopath in the forest (otherwise we'd have to figure out time).")
+            loop.change_loop(LoopType.action)
+            return False
         if self.character.needs_rest(self):
             loop.after_rest = LoopType.pathing
             loop.change_loop(LoopType.resting)

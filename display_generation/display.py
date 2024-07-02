@@ -27,6 +27,7 @@ class Display:
         self.windows = []
         self.clock = pygame.time.Clock()
         self.colorDict = None
+        self.depth_label = None
 
         self.quest_number = -1
         
@@ -239,6 +240,7 @@ class Display:
                          pygame.Rect(map_offset_from_left + (num_map_tiles_wide - num_tiles_wide)* map_tile_size // 2,
                                      map_offset_from_top + (num_map_tiles_height - num_tiles_height)* map_tile_size //2,
                                      num_tiles_wide * map_tile_size, num_tiles_height* map_tile_size), 1)
+        self.depth_label.update(1)
 
     #HORRIBLE HACK - THIS IS ALSO DEFINED IN UI.PY - KEEP THEM SYNCED!
     def get_status_text(self, entity):
@@ -657,11 +659,14 @@ class Display:
         elif floormap.track_map[x][y].seen == False:
             pass
         elif floormap.track_map[x][y].visible == True:
-            tag = tileDict.tile_string(floormap.get_tag(x, y))
+            if loop.branch == "Forest" and loop.day == "Nighttime":
+                tag = tileDict.tile_string(-floormap.get_tag(x, y))
+            else:
+                tag = tileDict.tile_string(floormap.get_tag(x, y))
             self.win.blit(tag, (self.textSize * (x - self.x_start), self.textSize * (y - self.y_start)))
             if floormap.track_map[x][y].on_fire:
                 self.win.blit(tileDict.tile_string(20), (self.textSize * (x - self.x_start), self.textSize * (y - self.y_start)))
-        elif loop.branch != "Forest" or loop.day == "Daytime":
+        elif loop.branch == "Forest" and loop.day == "Nighttime":
             pass
         else:
             tag = tileDict.tile_string(floormap.track_map[x][y].shaded_render_tag)

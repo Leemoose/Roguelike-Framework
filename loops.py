@@ -264,6 +264,8 @@ class Loops():
         display.update_ui()
         return True
 
+    def get_daytime(self):
+        return self.daytime
     def monster_loop(self, energy, stairs = None):
         
         for monster in self.generator.monster_map.all_entities():
@@ -588,7 +590,7 @@ class Loops():
         for i in range(int(self.timer // 100)):
             self.player.statistics.add_turn_details()
             self.total_time += 1
-            if self.total_time % 100 == 99:
+            if self.total_time % 50 == 49:
                 self.change_daytime()
             # do status effect stuff
             self.player.character.tick_all_status_effects(self)
@@ -620,6 +622,8 @@ class Loops():
         self.timer = self.timer % 100
 
     def change_daytime(self):
+        while self.total_time % 50 != 49:
+            self.total_time += 1
         if self.day == "Daytime":
             self.day = "Nighttime"
             if self.branch == "Forest":
