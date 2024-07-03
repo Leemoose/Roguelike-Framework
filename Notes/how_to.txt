@@ -25,3 +25,20 @@ Adding spawns to new branches
         c. (Optionally) specify branch = "all" to spawn across all branches
         d. (Optionally) specify group to allow monster to appear in packs (with other monsters in same group)
         e. (Optionally) specify rarity to make monster more rare, and unique within its packs 
+
+Add new NPCs
+    1. Add subclass inheriting from NPC class in NPC.py
+    2. Write dialogue interaction with NPC in npc_dialogue/___.txt and set self.dialogue_file to the path and call self.init_dialogue_queue()
+        a. In dialogues, every line is an integer representing order of dialogue
+        b. Dialogue with "-" before any text means the player says it
+        c. Multiple dialogue options at same index for player gives player choice of which option to pick
+        d. Multiple dialogue options at same index for npc chooses a random one from options
+        e. Adding !trait flag means that the dialogue adds the trait to the npc when that dialogue is shown
+                eg: Add !quest_given flag to call self.give_quest(loop) when that dialogue is passed
+        f. Adding ?trait flag means that the dialogue appears only if the npc has trait
+                Can be used with !trait to make dialogue respond to player choices
+                To be used properly, whenever a trait is assigned to npc, make sure to call:
+                    self.check_dialogues_to_add()
+                    self.check_focus(loop)
+    3. Add render tag to static_configs.py
+    4. Define spawning of npc - currently all npcs exist as part of prefabs (see dungeon_generation/maps/prefab.py) and NPCSpawnTiles (see tiles.py)

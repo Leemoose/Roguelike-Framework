@@ -175,6 +175,8 @@ class Bob(NPC):
         if self.gave_quest == True:
             if self.quest.check_for_completion(loop):
                 self.traits["quest_completed"] = True
+                self.check_dialogues_to_add()
+                self.check_focus(loop)
                 # loop.add_message(self.name + " says: 'Thanks to you those goblins have not been bothering me lately.'")
         else:
             loop.add_message(loop.player.name + " says: 'Anything I can help out with?'")
@@ -196,6 +198,8 @@ class King(NPC):
         if self.gave_quest == True:
             if self.quest.check_for_completion(loop):
                 self.traits["quest_completed"] = True
+                self.check_dialogues_to_add()
+                self.check_focus(loop)
                 # loop.add_message(self.name + " says: 'The Kingdom is now safe.'")
         else:
             self.talking = True
@@ -234,6 +238,7 @@ class BobBrother(Guard):
             if self.quest.check_for_completion(loop):
                 self.traits["quest_completed"] = True
                 self.check_dialogues_to_add()
+                self.check_focus(loop)
                 # loop.add_message("Thank you... thank you for bringing him back. I feared the worst, but seeing him... it’s heartbreaking. I owe you more than I can ever repay. At least now, he can have a proper farewell. You’ve given us closure, and for that, I am eternally grateful.")
         else:
             # loop.add_message("Please, you have to help me. My brother got lost in one of those cursed rifts, and I can't leave my post to search for him. I'm begging you, find him and bring him back. I'll owe you everything if you do.")
@@ -260,6 +265,8 @@ class Sensei(NPC):
         if self.gave_quest == True:
             if self.quest.check_for_completion(loop):
                 self.traits["quest_completed"] = True
+                self.check_dialogues_to_add()
+                self.check_focus(loop)
                 # loop.add_message(self.name + " nods in acknolwedgement of your strength.")
         else:
             # loop.add_message(self.name + " says: 'Think yourself a master of combat? Prove your training here by destroying this training dummy.'")
@@ -292,6 +299,8 @@ class Archmage(NPC):
         if self.gave_quest == True:
             if self.quest.check_for_completion(loop):
                 self.traits["quest_completed"] = True
+                self.check_dialogues_to_add()
+                self.check_focus(loop)
                 # loop.add_message("'Keep up the good work.'")
         else:
             self.talking = True
