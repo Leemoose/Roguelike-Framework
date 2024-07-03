@@ -1,0 +1,15 @@
+1 Ah, the latest summon. Listen carefully. Beyond these rifts lies a chaotic realm where monsters originate.
+2 Your task is to stem the tide of creatures and find a way to close the rifts. Each rift you seal will hopefully weaken the others.
+3 Or strengthen, we don't actually know.
+4 But be warned, the deeper you go, the more powerful the monsters become.
+5 - !branch_check What's the deal with the rifts?
+5 - !quest_given Can you help me on this quest?
+6 - ?branch_check !dungeon Tell me more about the dungeon
+6 - ?branch_check !forest Tell me more about the forest
+6 - ?branch_check !ocean Tell me more about the ocean
+7 ?dungeon The dungeon is the deepest of the branches, with rumours of a strange orb at the end
+8 ?forest The forest is filled with wooden monsters and gets more dangerous at night
+9 ?ocean The ocean has varying tides that extend the parts of the water that can't be crossed easily
+10 ?quest_given These beasts just keep coming through the rifts, don't they? I've managed to take care of this wave, but I can't be everywhere at once.
+11 ?quest_given Listen, I know you might just be an unfortunate soul pulled from another world. I wish I could offer more assistance, but our resources are stretched thin.
+12 ?quest_given Prove your worth to me, and I can provide you with better support. Bring me back five goblin corpses, and we'll see what we can do for you.

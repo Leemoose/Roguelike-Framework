@@ -197,7 +197,6 @@ class Character():
             while (self.inventory[i] != item) and i < len(self.inventory):
                 i += 1
             if i < len(self.inventory):
-                # import pdb; pdb.set_trace()
                 self.inventory.pop(i)
                 item.x = self.parent.x
                 item.y = self.parent.y

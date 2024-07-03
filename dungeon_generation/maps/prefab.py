@@ -28,6 +28,8 @@ def throneify(startx, starty, render_tile_map, image_map, width, height):
                         placed_brother = True
                     else:
                         render_tile_map[x][y] = "G"
+                # elif (x == 4 or x == width - 5) and y > 3 and render_tile_map[x][y] != "x":
+                #     render_tile_map[x][y] = "G"
                 elif (x == 4 or x == width - 5) and (y <= 3 or y >= height - 3) and render_tile_map[x][y] != "x":
                     render_tile_map[x][y] = "d"
     render_tile_map[midpoint][top] = "g"

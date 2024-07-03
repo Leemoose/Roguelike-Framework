@@ -6,18 +6,24 @@ class Star():
         self.name = name
         self.interested = False
         self.invested = False
+        self.interest = 0 # star interest goes from 0 - 100, at higher interested, negative actions have bigger impact on interest
+        self.interest_thresholds = [10, 25, 45, 70, 100] # gain a benefit at 10, 25, 45, 70, 100 
 
     def take_action(self, loop):
+        self.check_interesting_action(loop)
         if not self.invested:
             self.check_interest(loop)
         elif random.random() > .8:
             self.grant_boon(loop)
 
-    def grant_boon(self, loop):
+    def grant_boon(self, loop, level):
         pass
 
     def check_interest(self, loop):
         self.interested = True
+
+    def check_interesting_action(self, loop):
+        self.interest += 1 
 
 class GreenBuck(Star):
     def __init__(self):

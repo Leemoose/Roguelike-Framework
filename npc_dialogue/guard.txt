@@ -1,0 +1,13 @@
+# Encouraging dialogues
+1 Another summoning, huh? Honestly, I don't know how much longer we can hold out. These rift monsters are relentless. We could really use some help out there.
+1 Stay alert and be ready for anything. Those rifts can spit out all sorts of nasty creatures. If you survive out there, you might just be the hero we need.
+1 Don't let the king's frustration get to you. He's under a lot of pressure. If you can make a difference, even a small one, it'll be worth it.
+1 It's chaos out there. Every day, more of our comrades fall. If you’ve got any fighting skills, now's the time to show them. We're counting on you.
+1 Archmage Thalor believes in you, and that's good enough for me. Just remember to watch your back and take down as many of those rift monsters as you can. Good luck.
+
+# Cynical dialogues
+1 Another one from the rift? Great, just what we need. Don’t get your hopes up, we've seen dozens of you come and go. None of them made much of a difference.
+1 Honestly, I wouldn't expect too much. These rift monsters are brutal, and we've been losing ground every day. Just try not to get yourself killed.
+1 The king's desperate, that's why he keeps summoning people like you. If you think you can survive out there, good luck. But don’t expect any miracles.
+1 Look, it's a mess out there. We've lost too many good soldiers already. If you can fight, fine, but I wouldn’t count on making it back in one piece.
+1 Thalor might have faith in you, but I'm not so sure. These rift beasts are something else. Do what you can, but don’t expect any hero’s welcome.

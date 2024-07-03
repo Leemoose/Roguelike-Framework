@@ -60,12 +60,17 @@ class Loops():
         self.day = "Daytime"
         self.taking_stairs = False
         self.npc_focus = None
-        self.next_dialogue = False
         self.class_selection = None
         self.quest_recieved = False
         self.quest_completed = False
         self.stars = [GreenBuck()]
 
+        # variables for npc interaction
+        self.next_dialogue = False # if true, give next dialogue box
+        self.dialogue_options = 0 # number of dialogue options currently presented to player
+        self.player_choice = -1 # if > 0, represents the dialogue option chosen by the player
+
+        # variables for pathing
         self.rest_count = 0 # how many turns have you been resting for
         self.after_rest = LoopType.action # what loop type to revert to after finishing resting, default action
         self.pathing_count = 0 # how many turns have you been exploring for
@@ -276,7 +281,6 @@ class Loops():
 
                 # do action stuff
                 if monster.brain.is_awake and not monster.asleep:
-                    # import pdb; pdb.set_trace()
                     monster.character.energy += energy
                     while monster.character.energy > 0:
                         monster.brain.rank_actions(self)
@@ -398,7 +402,6 @@ class Loops():
             self.monster_loop(-self.player.character.energy)
             self.player.character.energy = 0
 
-        # import pdb; pdb.set_trace()
         print("The stairs you are taking is {}".format(self.generator.tile_map.track_map[playerx][playery]))
         current_stairs = self.generator.tile_map.locate(playerx, playery)
         if isinstance(current_stairs, TI.Stairs):
@@ -445,7 +448,6 @@ class Loops():
         depth = gate.outgoing.get_depth()
 
         self.floor_level = depth
-        # import pdb; pdb.set_trace()
         print("The gateway you are taking is {}".format(self.generator.tile_map.track_map[playerx][playery]))
         self.player.x, self.player.y = (gate.outgoing.get_location())
         self.player.visited_stairs = []
@@ -514,8 +516,6 @@ class Loops():
         self.memory.floor_level = 1
         self.memory.explored_levels = 1
         self.generator = self.memory.generators[self.branch][self.floor_level]
-
-        # import pdb; pdb.set_trace()
 
         for stairs in (self.generator.tile_map.get_stairs()):
             if not stairs.downward:

@@ -26,7 +26,6 @@ class Body():
 
     def add_item_to_equipment_slot(self, item, slot, num_slots):
         i = 0
-        # import pdb; pdb.set_trace()
         max_check = len(self.equipment_slots[slot])
         for item_slot in range(len(self.equipment_slots[slot])):
             if self.equipment_slots[slot][item_slot] is None:

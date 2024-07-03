@@ -1,0 +1,6 @@
+1 No better place to train than surrounded by monsters.
+2 - Who are you?
+3 (He doesn't seem to hear you)
+4 - !quest_given Look, I don't need any training
+5 !quest_given Think yourself a master of combat? Prove your training here by destroying this training dummy.
+6 !quest_completed (He nods in acknolwedgement of your strength)

@@ -1,4 +1,7 @@
 import pygame, pygame_gui
+import random
+from npc import BobBrother
+from copy import deepcopy
 
 class HealthBar(pygame_gui.elements.UIProgressBar):
     def __init__(self, rect, manager, player):
@@ -170,35 +173,86 @@ class DialogueInteraction(pygame_gui.elements.UIPanel):
         self.loop = loop #Store loop to retrieve messages
         self.npc = npc
         # load dialogue queue from npc object
-        self.dialogue_queue = [("Where am I?", "Who are you?", True), 
-                               ("What's this? Another failure! I can't believe we spent so much to summon you from another dimension.", False), 
-                               ("Guards! Prepare another summoning! We can't fail again else we'll be overrun by the rift monsters. They are nearly at the palace portals!", False),
-                               ("What are you talking about?", True),
-                               ("Why are you still here?!? Move along to the portal room and we'll be sorted out. Maybe you'll even manage to kill a goblin or two.", False)]
+        self.dialogue_queue = npc.dialogue_queue
         self.next_y_position = bubble_gap
         self.bubble_gap = bubble_gap
         self.bubble_padding = bubble_gap // 2
         self.dialogue_next = False
         self.max_messages = max_messages
         self.text_boxes = []
-        self.next_dialogue()
+        self.prev_text_boxes = None
+        if self.npc.dialogue_memory == []:
+            self.next_dialogue()
+        else:
+            curr_memory = deepcopy(self.npc.dialogue_memory)
+            for mem in curr_memory:
+                self.npc.dialogue_memory.pop(0) # need to pop original memory so we don't store duplicates
+                self.add_dialogue(*mem) # unpack stored tuple into arguments for function with *
+        
+        label_width = rect.width * 0.9
+        label_height = rect.height * 0.15
+        label_x = (rect.width - label_width) / 2
+        label_y = rect.height - label_height
+        self.continue_label = pygame_gui.elements.UILabel(
+            relative_rect=pygame.Rect((label_x, label_y), (label_width, label_height)),
+            text="(Press Enter or Click to continue)",
+            manager=manager,
+            container=self
+        )
+
+    def clear_last_player_dialogue(self):
+        prev_options = [] # keep track of all removed player dialogue so we can readd the selected option
+        for _ in range(len(self.text_boxes)):
+            tbox, left = self.text_boxes[-1] # don't iterate cuz that will mess stuff up, just keep popping 0th elem
+            if not left:
+                break
+            prev_options.append(tbox.text)
+            tbox.kill()
+            self.text_boxes.pop(-1)
+            self.npc.dialogue_memory.pop(-1)
+        self.update_textbox_positions()
+        prev_options.reverse() # because we remove them from end, we build prev options list in reverse order and need to flip it
+        return prev_options
+
+
+    def update_textbox_positions(self):
+        self.next_y_position = self.bubble_gap
+        for i, (tb, old_left) in enumerate(self.text_boxes):
+            tb_width = tb.get_relative_rect().width
+            tb_height = tb.get_relative_rect().height
+            x_position = self.bubble_padding if old_left else self.get_relative_rect().width - tb_width - (self.bubble_padding)
+            tb.set_relative_position((x_position, self.next_y_position))
+            self.next_y_position += tb.get_relative_rect().height + self.bubble_gap
 
     def next_dialogue(self):
         if not self.dialogue_queue:
+            self.continue_label.text = "(Seems like they have nothing else to say to you)"
             return
-
         curr_dialogue = self.dialogue_queue.pop(0)
-        if len(curr_dialogue) >= 2: # == 2
-            text, left = curr_dialogue[0], curr_dialogue[-1] # curr_dialogue
+        if len(curr_dialogue) == 2:
+            text, left = curr_dialogue
             self.add_dialogue(text, left)
-#        else:
-#            if curr_dialogue[-1]: # player has multiple options, draw all dialogue boxes
-#                for i, text in enumerate(curr_dialogue[:-1]):
-#                    text = str(i) + ". " + text
-#                    self.add_dialogue(self, text, curr_dialogue[-1], color=(150, 150, 150), action=str(i))
+        else:
+            if curr_dialogue[-1]: # player has multiple options, draw all dialogue boxes
+                for i, text in enumerate(curr_dialogue[:-1]):
+                    text = str(i + 1) + ". " + text
+                    self.add_dialogue(text, curr_dialogue[-1], choice=True, action=str(i + 1))
+                self.loop.dialogue_options = len(curr_dialogue) - 1 # to account for the left flag
+            else:
+                left = curr_dialogue[-1]
+                text = random.choice(curr_dialogue[:-1]) # if npc has multiple options, choose a random one
+                self.add_dialogue(text, left)
 
 
-    def add_dialogue(self, text, left, color=(255, 255, 255), action="return"):
+    def add_dialogue(self, text, left, choice=False, action="return"):
+        # self.npc.dialogue_memory.append((text, left, choice, action))
+        self.npc.add_to_memory(text, left, choice, action, self.loop)
+
+        if choice:
+            color = (185, 185, 185)
+        else:
+            color = (255, 255, 255)
+
         max_bubble_width = self.get_relative_rect().width // 5 * 4
         padding = self.image.get_height() // 25
 
@@ -246,7 +300,6 @@ class DialogueInteraction(pygame_gui.elements.UIPanel):
         # for state in ["normal", "hovered", "disabled", "selected", "active"]:
         #     draw_speech_bubble(bubble_button.drawable_shape.states[state].surface, text, button_surface.get_width(), button_surface.get_height(), left)
         # bubble_button.drawable_shape.active_state.has_fresh_surface = True
-        # # import pdb; pdb.set_trace()
 
         self.text_boxes.append((bubble_button, left))
         self.next_y_position += bubble_height + self.bubble_gap
@@ -256,13 +309,7 @@ class DialogueInteraction(pygame_gui.elements.UIPanel):
             self.text_boxes[0][0].kill()
             self.text_boxes.pop(0)
             # Update positions
-            self.next_y_position = self.bubble_gap
-            for i, (tb, old_left) in enumerate(self.text_boxes):
-                tb_width = tb.get_relative_rect().width
-                tb_height = tb.get_relative_rect().height
-                x_position = self.bubble_padding if old_left else self.get_relative_rect().width - tb_width - (self.bubble_padding)
-                tb.set_relative_position((x_position, self.next_y_position))
-                self.next_y_position += tb.get_relative_rect().height + self.bubble_gap
+            self.update_textbox_positions()
 
         for box, _ in self.text_boxes:
             if hasattr(box, "action") and box.action == action:
@@ -270,6 +317,14 @@ class DialogueInteraction(pygame_gui.elements.UIPanel):
         self.text_boxes[-1][0].action = action
 
     def update(self, time_delta: float):
+        if self.loop.player_choice != -1:
+            prev_options = self.clear_last_player_dialogue()
+            chosen_dialogue = prev_options[self.loop.player_choice - 1]
+            chosen_dialogue = chosen_dialogue.split(" ", 1)[1] # removes number from option
+            self.add_dialogue(chosen_dialogue, True)
+            self.loop.player_choice = -1
+            self.loop.dialogue_options = 0
+            self.next_dialogue()
         if self.loop.next_dialogue:
             self.next_dialogue()
             self.loop.next_dialogue = False

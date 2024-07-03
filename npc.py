@@ -16,6 +16,49 @@ class NPC(O.Objects):
         self.has_stuff_to_say = False
         self.talking = False #In the midst of talking
         self.talking_queue = []
+        self.dialogue_memory = []
+        self.dialogue_file = "npc_dialogue/default.txt"
+        self.init_dialogue_queue()
+
+    def init_dialogue_queue(self):
+        self.dialogue_queue = [] # stores dialogue in easy to track order
+        self.dialogue_dict = {} # stores indices of each dialogue, keyed by dialogues
+        self.trait_dict = {}
+        with open(self.dialogue_file) as df:
+            lines = df.readlines()
+            for line in lines:
+                if line[0] == "#" or line.strip() == "":
+                    continue
+                dialogue_index, dialogue = line.split(" ", 1) # split only on first space
+                dialogue = dialogue.strip() # remove trailing whitespace
+                player = False
+                # special markers: "-" -> player dialogue
+                #                  "!" -> set trait 
+                #                  "?" -> conditional on trait
+                to_add = []
+                special_markers = ["-", "!", "?"] 
+                while dialogue[0] in special_markers:
+                    if dialogue[0] == "-":
+                        player = True
+                        dialogue = dialogue.split(" ", 1)[1].strip() # split on first space again to remove the "-"
+                    if dialogue[0] == "!": 
+                        trait, dialogue = dialogue.split(" ", 1)
+                        trait = trait[1:] # trait is in format !trait, strip leading !
+                        dialogue = dialogue.strip()
+                        to_add.append((trait, True)) # second param is whether setting or checking trait
+                    if dialogue[0] == "?":
+                        trait, dialogue = dialogue.split(" ", 1)
+                        trait = trait[1:] # trait is in format ?trait, strip leading ?
+                        dialogue = dialogue.strip()
+                        to_add.append((trait, False)) # second param is whether setting or checking trait
+                add_to_queue = True
+                for trait, set_or_check in to_add:
+                    self.trait_dict[dialogue] = (trait, player, set_or_check)
+                    if not set_or_check and not self.has_trait(trait):
+                        add_to_queue = False
+                self.dialogue_dict[dialogue] = int(dialogue_index)
+                if add_to_queue:
+                    self.insert_into_dialogue_queue(dialogue, player)
 
     def change_purpose(self, purpose, loop):
         if isinstance(purpose, int):
@@ -32,7 +75,40 @@ class NPC(O.Objects):
         elif purpose == "Quest":
             self.purpose = purpose
             self.give_quest(loop)
-        loop.change_loop("trade")
+
+    def add_to_memory(self, text, left, choice, action, loop):
+        self.dialogue_memory.append((text, left, choice, action))
+        if not choice and text in self.trait_dict.keys():
+            trait, _, set_or_check = self.trait_dict[text]
+            if set_or_check:
+                self.traits[trait] = True
+                self.check_dialogues_to_add()
+                self.check_focus(loop)
+
+    # subclasses can overwrite this to determine which dialogue traits affect npc_focus
+    def check_focus(self, loop):
+        if self.has_trait("quest_given"):
+            self.change_purpose("Quest", loop)
+
+    def check_dialogues_to_add(self):
+        for text, (trait, player, set_or_check) in self.trait_dict.items():
+            if not set_or_check and self.has_trait(trait):
+                self.insert_into_dialogue_queue(text, player)
+
+
+    def insert_into_dialogue_queue(self, dialogue, player):
+        idx = self.dialogue_dict[dialogue]
+        idx_to_insert = len(self.dialogue_queue)
+        for i, d in enumerate(self.dialogue_queue):
+            conv_idx = self.dialogue_dict[d[0]]
+            if conv_idx == idx:
+                self.dialogue_queue[i].insert(-1, dialogue)
+                return
+            if idx < conv_idx:
+                idx_to_insert = i
+                break
+        self.dialogue_queue.insert(idx_to_insert, [dialogue, player])
+        
 
     def take_gold(self, i, loop):
         if loop.player.character.gold >= self.cost:
@@ -98,7 +174,8 @@ class Bob(NPC):
     def give_quest(self, loop):
         if self.gave_quest == True:
             if self.quest.check_for_completion(loop):
-                loop.add_message(self.name + " says: 'Thanks to you those goblins have not been bothering me lately.'")
+                self.traits["quest_completed"] = True
+                # loop.add_message(self.name + " says: 'Thanks to you those goblins have not been bothering me lately.'")
         else:
             loop.add_message(loop.player.name + " says: 'Anything I can help out with?'")
             loop.add_message(self.name + " says: 'Goblins. I hate those nasty buggers. They keep stealing all my stuff! If you kill 3 of them and bring me back proof, I can reward you handsomely' ;)")
@@ -112,17 +189,20 @@ class King(NPC):
         self.options = ["Quest"]
         self.has_stuff_to_say = True # separate variable from gave_quest in case we want traders to keep this icon
         self.quest = quest.KingdomQuest()
+        self.dialogue_file = "npc_dialogue/king.txt"
+        self.init_dialogue_queue()
 
     def give_quest(self, loop):
         if self.gave_quest == True:
             if self.quest.check_for_completion(loop):
-                loop.add_message(self.name + " says: 'The Kingdom is now safe.'")
+                self.traits["quest_completed"] = True
+                # loop.add_message(self.name + " says: 'The Kingdom is now safe.'")
         else:
             self.talking = True
-            loop.add_message(self.name + "'What's this? Another failure! I can't believe we spent so much to summon you from another dimension.'")
-            self.talking_queue.append("Guards! Prepare another summoning! We can't fail again else we'll be overrun by the rift monsters. They are nearly at the palace portals!")
-            self.talking_queue.append(
-                "Why are you still here?!? Move along to the portal room and we'll be sorted out. Maybe you'll even manage to kill a goblin or two.")
+            # loop.add_message(self.name + "'What's this? Another failure! I can't believe we spent so much to summon you from another dimension.'")
+            # self.talking_queue.append("Guards! Prepare another summoning! We can't fail again else we'll be overrun by the rift monsters. They are nearly at the palace portals!")
+            # self.talking_queue.append(
+            #     "Why are you still here?!? Move along to the portal room and we'll be sorted out. Maybe you'll even manage to kill a goblin or two.")
             loop.player.add_quest(quest.KingdomQuest())
             self.gave_quest = True
             self.has_stuff_to_say = False
@@ -131,40 +211,32 @@ class Guard(NPC):
     def __init__(self, x, y, render_tag= 121, name="Guard"):
         super().__init__(x=x, y=y, render_tag = render_tag, name = name)
         self.options = ["Talk"]
-
-        guard_dialogue_options = [
-            # Encouraging dialogues
-            "Another summoning, huh? Honestly, I don't know how much longer we can hold out. These rift monsters are relentless. We could really use some help out there.",
-            "Stay alert and be ready for anything. Those rifts can spit out all sorts of nasty creatures. If you survive out there, you might just be the hero we need.",
-            "Don't let the king's frustration get to you. He's under a lot of pressure. If you can make a difference, even a small one, it'll be worth it.",
-            "It's chaos out there. Every day, more of our comrades fall. If you’ve got any fighting skills, now's the time to show them. We're counting on you.",
-            "Archmage Thalor believes in you, and that's good enough for me. Just remember to watch your back and take down as many of those rift monsters as you can. Good luck.",
-
-            # Cynical dialogues
-            "Another one from the rift? Great, just what we need. Don’t get your hopes up, we've seen dozens of you come and go. None of them made much of a difference.",
-            "Honestly, I wouldn't expect too much. These rift monsters are brutal, and we've been losing ground every day. Just try not to get yourself killed.",
-            "The king's desperate, that's why he keeps summoning people like you. If you think you can survive out there, good luck. But don’t expect any miracles.",
-            "Look, it's a mess out there. We've lost too many good soldiers already. If you can fight, fine, but I wouldn’t count on making it back in one piece.",
-            "Thalor might have faith in you, but I'm not so sure. These rift beasts are something else. Do what you can, but don’t expect any hero’s welcome."
-        ]
-        self.dialogue = guard_dialogue_options[random.randint(0,len(guard_dialogue_options) - 1)]
-
-
+        self.dialogue_file = "npc_dialogue/guard.txt"
+        self.init_dialogue_queue()
     def talk(self, loop):
         loop.add_message(self.dialogue)
+
 class BobBrother(Guard):
     def __init__(self, x, y, render_tag= 121, name="Bob's Brother"):
         super().__init__(x=x, y=y, render_tag = render_tag, name = name)
         self.options.append("Quest")
         self.has_stuff_to_say = True
         self.quest = quest.BrothersQuest()
+        self.dialogue_file = "npc_dialogue/bobbrother.txt"
+        self.init_dialogue_queue()
+
+    def check_focus(self, loop):
+        if self.has_trait("quest_given"):
+            self.change_purpose("Quest", loop)
 
     def give_quest(self, loop):
         if self.gave_quest == True:
             if self.quest.check_for_completion(loop):
-                loop.add_message("Thank you... thank you for bringing him back. I feared the worst, but seeing him... it’s heartbreaking. I owe you more than I can ever repay. At least now, he can have a proper farewell. You’ve given us closure, and for that, I am eternally grateful.")
+                self.traits["quest_completed"] = True
+                self.check_dialogues_to_add()
+                # loop.add_message("Thank you... thank you for bringing him back. I feared the worst, but seeing him... it’s heartbreaking. I owe you more than I can ever repay. At least now, he can have a proper farewell. You’ve given us closure, and for that, I am eternally grateful.")
         else:
-            loop.add_message("Please, you have to help me. My brother got lost in one of those cursed rifts, and I can't leave my post to search for him. I'm begging you, find him and bring him back. I'll owe you everything if you do.")
+            # loop.add_message("Please, you have to help me. My brother got lost in one of those cursed rifts, and I can't leave my post to search for him. I'm begging you, find him and bring him back. I'll owe you everything if you do.")
             loop.player.add_quest(quest.BrothersQuest())
             self.has_stuff_to_say = False
             self.gave_quest = True
@@ -175,19 +247,22 @@ class Sensei(NPC):
         self.options = ["Talk", "Quest"]
         self.has_stuff_to_say = True
         self.quest = quest.DojoQuest()
+        self.dialogue_file = "npc_dialogue/sensei.txt"
+        self.init_dialogue_queue()
 
     def talk(self, loop):
-        # super().talk(loop)
-        loop.add_message(self.name + " says: 'No better place to train than surrounded by monsters.")
-        loop.add_message(loop.player.name + " says: 'Who are you?'")
-        loop.add_message(self.name + " doesn't seem to hear you.")
+        super().talk(loop)
+        # loop.add_message(self.name + " says: 'No better place to train than surrounded by monsters.")
+        # loop.add_message(loop.player.name + " says: 'Who are you?'")
+        # loop.add_message(self.name + " doesn't seem to hear you.")
 
     def give_quest(self, loop):
         if self.gave_quest == True:
             if self.quest.check_for_completion(loop):
-                loop.add_message(self.name + " nods in acknolwedgement of your strength.")
+                self.traits["quest_completed"] = True
+                # loop.add_message(self.name + " nods in acknolwedgement of your strength.")
         else:
-            loop.add_message(self.name + " says: 'Think yourself a master of combat? Prove your training here by destroying this training dummy.'")
+            # loop.add_message(self.name + " says: 'Think yourself a master of combat? Prove your training here by destroying this training dummy.'")
             loop.player.add_quest(quest.DojoQuest())
             self.gave_quest = True
             self.has_stuff_to_say = False
@@ -198,29 +273,32 @@ class Archmage(NPC):
         self.options = ["Talk", "Quest"]
         self.has_stuff_to_say = True
         self.quest = quest.GoblinQuest()
+        self.dialogue_file = "npc_dialogue/archmage.txt"
+        self.init_dialogue_queue()
 
     def talk(self, loop):
         if self.has_stuff_to_say:
             self.talking = True
-            loop.add_message("'Ah, the latest summon. Listen carefully. Beyond these rifts lies a chaotic realm where monsters originate.'")
-            self.talking_queue.append(
-                "Your task is to stem the tide of creatures and find a way to close the rifts. Each rift you seal will hopefully weaken the others.")
-            self.talking_queue.append("Or strengthen, we don't actually know.")
-            self.talking_queue.append("But be warned, the deeper you go, the more powerful the monsters become.")
-        else:
-            loop.add_message(
-                "'Now hurry along before more beasts emerge.'")
+        #     loop.add_message("'Ah, the latest summon. Listen carefully. Beyond these rifts lies a chaotic realm where monsters originate.'")
+        #     self.talking_queue.append(
+        #         "Your task is to stem the tide of creatures and find a way to close the rifts. Each rift you seal will hopefully weaken the others.")
+        #     self.talking_queue.append("Or strengthen, we don't actually know.")
+        #     self.talking_queue.append("But be warned, the deeper you go, the more powerful the monsters become.")
+        # else:
+        #     loop.add_message(
+        #         "'Now hurry along before more beasts emerge.'")
 
     def give_quest(self, loop):
         if self.gave_quest == True:
             if self.quest.check_for_completion(loop):
-                loop.add_message("'Keep up the good work.'")
+                self.traits["quest_completed"] = True
+                # loop.add_message("'Keep up the good work.'")
         else:
             self.talking = True
-            loop.add_message("'These beasts just keep coming through the rifts, don't they? I've managed to take care of this wave, but I can't be everywhere at once.'")
-            self.talking_queue.append(
-                "'Listen, I know you might just be an unfortunate soul pulled from another world. I wish I could offer more assistance, but our resources are stretched thin.'")
-            self.talking_queue.append("'Prove your worth to me, and I can provide you with better support. Bring me back five goblin corpses, and we'll see what we can do for you.'")
+            # loop.add_message("'These beasts just keep coming through the rifts, don't they? I've managed to take care of this wave, but I can't be everywhere at once.'")
+            # self.talking_queue.append(
+            #     "'Listen, I know you might just be an unfortunate soul pulled from another world. I wish I could offer more assistance, but our resources are stretched thin.'")
+            # self.talking_queue.append("'Prove your worth to me, and I can provide you with better support. Bring me back five goblin corpses, and we'll see what we can do for you.'")
             loop.player.add_quest(quest.GoblinQuest())
             self.gave_quest = True
             self.has_stuff_to_say = False

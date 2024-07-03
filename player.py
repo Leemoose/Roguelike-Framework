@@ -225,8 +225,6 @@ class Player(Objects):
                     if gateway.get_location() not in self.visited_stairs:
                         to_visit_stairs.append(gateway.get_location())
 
-            # import pdb; pdb.set_trace()
-
             if len(all_stairs_seen) == 0:
                 loop.add_message("You have not found the stairs or a portal yet")
                 loop.change_loop(LoopType.action)

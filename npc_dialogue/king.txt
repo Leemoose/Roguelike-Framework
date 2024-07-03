@@ -1,0 +1,7 @@
+1 What's this? Another failure! I can't believe we spent so much to summon you from another dimension.
+2 !quest_given Guards! Prepare another summoning! We can't fail again else we'll be overrun by the rift monsters. They are nearly at the palace portals!
+3 - What's going on?
+3 - !king_id Who are you?
+4 ?king_id Are you such a fool you can't recognize royalty?
+6 Why are you still here?!? Move along to the portal room and we'll be sorted out. Maybe you'll even manage to kill a goblin or two.
+6 Go find Thalor. Failures like you are his fault and his responsibility to deal with.

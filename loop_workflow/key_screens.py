@@ -261,22 +261,22 @@ def key_trade(loop, key):
     if key == "esc":
         loop.change_loop(LoopType.action)
         loop.next_dialogue = False
+        loop.dialogue_options = 0
+        loop.player_choice = -1
         return
-    elif key == "return":
+    elif key == "return" and loop.dialogue_options == 0:
         loop.next_dialogue = True
-    elif key == "1":
-        loop.npc_focus.change_purpose(1, loop)
-    elif key == '2':
-        loop.npc_focus.change_purpose(2, loop)
-    elif key == '3':
-        loop.npc_focus.change_purpose(3, loop)
+    elif loop.dialogue_options > 0 and key in "123456789": # almost definitely don't have this many dialogue options but jic
+        loop.npc_focus.change_purpose(int(key), loop)
+        loop.player_choice = int(key)
+        loop.next_dialogue = False
     elif loop.npc_focus.purpose == "trade":
         for i in range(len(loop.npc_focus.items)):
             if chr(ord("a") + i) == key:
                 loop.npc_focus.take_gold(i, loop)
                 break
-    elif loop.npc_focus.talking:
-        loop.npc_focus.continue_talking(loop)
+    elif loop.npc_focus.talking and loop.dialogue_options == 0:
+        loop.next_dialogue = True
 
 
 def key_level_up(loop, key):
