@@ -221,7 +221,7 @@ def key_inventory(loop, key):
 
     for i in range(len(player.get_inventory())):
         if chr(ord("a") + i) == key:
-            if loop.limit_inventory == None or player.inventory[i].equipment_type == loop.limit_inventory:
+            if loop.limit_inventory == None or player.inventory.inventory[i].equipment_type == loop.limit_inventory:
                 loop.screen_focus = player.get_inventory()[i]
                 loop.change_loop(LoopType.items)
 
@@ -372,9 +372,9 @@ def key_item_screen(loop, key):
         if player.do_drop(item, item_map):
             loop.change_loop(LoopType.inventory)
     elif key == "e":
-        player.character.equip(item)
+        player.do_equip(item)
     elif key == "u":
-        player.character.unequip(item)
+        player.do_unequip(item)
     elif key == 'q':
         if player.character.quaff(item, item_dict, item_map):
             loop.change_loop(LoopType.inventory)

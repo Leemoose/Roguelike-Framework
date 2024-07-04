@@ -102,31 +102,31 @@ class Equipment(O.Item):
 
     def add_stats(self, entity):
         (str, dex, intl, end, arm) = self.stats.GetStatsForLevel(self.level)
-        entity.strength += str
-        entity.dexterity += dex
-        entity.intelligence += intl
-        entity.endurance += end
-        entity.armor += arm
+        entity.character.change_attribute("Strength", str)
+        entity.character.change_attribute("Intelligence", intl)
+        entity.character.change_attribute("Endurance", end)
+        entity.character.change_attribute("Dexterity", dex)
+        entity.character.change_attribute("Armor", arm)
 
     #Called after level up has completed to get stats to match!
     def update_stats_level_up(self, entity):
         (str, dex, intl, end, arm) = self.stats.GetStatsForLevelUp(self.level)
-        entity.strength += str
-        entity.dexterity += dex
-        entity.intelligence += intl
-        entity.endurance += end
-        entity.armor += arm
+        entity.character.change_attribute("Strength", str)
+        entity.character.change_attribute("Intelligence", intl)
+        entity.character.change_attribute("Endurance", end)
+        entity.character.change_attribute("Dexterity", dex)
+        entity.character.change_attribute("Armor", arm)
 
     def remove_stats(self, entity):
         (str, dex, intl, end, arm) = self.stats.GetStatsForLevel(self.level)
-        entity.strength -= str
-        entity.dexterity -= dex
-        entity.intelligence -= intl
-        entity.endurance -= end
-        entity.armor -= arm
+        entity.character.change_attribute("Strength", str)
+        entity.character.change_attribute("Intelligence", intl)
+        entity.character.change_attribute("Endurance", end)
+        entity.character.change_attribute("Dexterity", dex)
+        entity.character.change_attribute("Armor", arm)
 
     def can_be_equipped(self, entity):
-        return self.equipable and entity.strength >= self.required_strength
+        return self.equipable and entity.get_attribute("Strength") >= self.required_strength
 
     def can_be_unequipped(self, entity):
         return (self.equipped and not self.cursed)
@@ -253,12 +253,12 @@ class Dagger(Weapon):
 
     def activate(self, entity):
         self.wearer = entity
-        self.diff_action_cost = max(entity.action_costs["attack"] - self.attack_cost, (entity.action_costs["attack"]) / 2)
-        entity.change_action_cost("attack", entity.action_costs["attack"] - self.diff_action_cost)
+        self.diff_action_cost = max(entity.get_action_cost("attack") - self.attack_cost, (entity.get_action_cost("attack")) / 2)
+        entity.character.change_action_cost("attack", entity.get_action_cost("attack") - self.diff_action_cost)
 
     def deactivate(self, entity):
         self.wearer = None
-        entity.change_action_cost("attack", entity.action_costs["attack"] + self.diff_action_cost)
+        entity.character.change_action_cost("attack", entity.get_action_cost("attack") + self.diff_action_cost)
         self.diff_action_cost = 0
 
     def level_up(self):
@@ -512,7 +512,7 @@ class Armor(Equipment):
         self.name = "Armor"
 
     def can_be_equipped(self, entity):
-        return (entity.strength) >= self.required_strength and self.equipable
+        return (entity.get_attribute("Strength")) >= self.required_strength and self.equipable
 
 class Shield(Armor):
     def __init__(self, render_tag, name):
@@ -1382,10 +1382,10 @@ class RingOfSwiftness(Ring):
         self.action_description = "You move a fifth faster"
 
     def activate(self, entity):
-        entity.dexterity += 5
+        entity.character.change_attribute("Dexterity", 5)
 
     def deactivate(self, entity):
-        entity.dexterity -= 5
+        entity.character.change_attribute("Dexterity", -5)
 
 
 class BloodRing(Ring):
@@ -1413,10 +1413,10 @@ class RingOfMight(Ring):
         self.rarity = "Rare"
 
     def activate(self, entity):
-        entity.strength += 5
+        entity.character.change_attribute("Strength", 5)
 
     def deactivate(self, entity):
-        entity.strength -= 5
+        entity.character.change_attribute("Strength", -5)
 
 
 class RingOfMana(Ring):
@@ -1448,15 +1448,15 @@ class BoneRing(Ring):
 
     def activate(self, entity):
         entity.safe_rest = False
-        entity.strength += 8
-        entity.dexterity += 8
+        entity.character.change_attribute("Strength", 8)
+        entity.character.change_attribute("Dexterity", 8)
         entity.mana_regen -= 10
         entity.health_regen -= 10  # intended to kill you if you don't take it off after a few turns
 
     def deactivate(self, entity):
         entity.safe_rest = True
-        entity.strength -= 8
-        entity.dexterity -= 8
+        entity.character.change_attribute("Strength", -8)
+        entity.character.change_attribute("Dexterity", -8)
         entity.mana_regen += 10
         entity.health_regen += 10
 
@@ -1706,7 +1706,7 @@ class PermanentDexterityPotion(Potion):
         self.dexterity_addition = dexterity
 
     def activate_once(self, entity):
-        entity.dexterity += self.dexterity_addition
+        entity.character.change_attribute("Dexterity", self.dexterity_addition)
 
 class PermanentStrengthPotion(Potion):
     def __init__(self, render_tag):
@@ -1716,7 +1716,7 @@ class PermanentStrengthPotion(Potion):
         self.rarity = "Rare"
 
     def activate_once(self, entity):
-        entity.strength += 1
+        entity.character.change_attribute("Strength", 1)
 
 class CurePotion(Potion):
     def __init__(self, render_tag):
@@ -1821,7 +1821,7 @@ class Book(O.Item):
             new_skill = self.skill(entity.parent)
             entity.add_skill(new_skill)
             self.destroy = True
-            entity.inventory.remove(self)
+            entity.parent.inventory.remove_item(self)
             loop.change_loop("inventory")
         else:
             loop.add_message("You do not have enough intelligence to learn this spell.")

@@ -1,7 +1,7 @@
 from monster_implementation import monster_ai
 import objects as O
 from character_implementation import character as C
-from character_implementation import Inventory
+from character_implementation import Inventory, Body
 import items as I
 import skills as S
 
@@ -23,6 +23,7 @@ class Monster(O.Objects):
         self.character.experience_given = experience_given
         self.brain = brain(self)
         self.inventory = Inventory(self)
+        self.body = Body(self)
         self.skills = []
         self.orb = False
         self.rarity = rarity

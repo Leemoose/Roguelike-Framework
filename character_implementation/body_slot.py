@@ -15,6 +15,12 @@ class Body():
         # keep a backup so we can temporarily move a ring to the front of queue if coming from equip screen
         self.ring_to_replace = []
 
+    def can_equip(self, item):
+        return True
+
+    def can_unequip(self, item):
+        return True
+
     def free_equipment_slots(self, slot):
         if slot not in self.equipment_slots:
             raise Exception("You are trying to find a {} in {}'s equipment slot".format(slot, self.parent.name))
@@ -92,7 +98,7 @@ class Body():
             item.equipped = True
             item.dropable = False
             if item.attached_skill_exists:
-                self.parent.add_skill(item.attached_skill(self.parent.parent))
+                self.parent.character.add_skill(item.attached_skill(self.parent.parent))
             item.activate(self.parent)
             if item.has_trait("ring"):
                 self.ring_to_replace.append(item)

@@ -103,6 +103,7 @@ def rank_pickup(ai, loop):
         return -1
 
 def rank_equip_item(ai, loop):  # Needs to be fixed
+    return -1
     monster = ai.parent
     if monster.inventory.get_inventory_size() != 0:
         utility = -1

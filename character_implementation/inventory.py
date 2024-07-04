@@ -61,13 +61,15 @@ class Inventory():
         if len(self.inventory) != 0: #Seems unnecessary? Good to be safe...
             if item.equipable and item.equipped:
                 self.parent.unequip(item)
-            i = 0
-            while (self.inventory[i] != item) and i < len(self.inventory):
-                i += 1
-            if i < len(self.inventory):
-                self.inventory.pop(i)
-                item.x = self.parent.x
-                item.y = self.parent.y
-                item_map.place_thing(item)
-                return True
+            self.remove_item(item)
+            return True
+        return False
+
+    def remove_item(self, item):
+        i = 0
+        while (self.inventory[i] != item) and i < len(self.inventory):
+            i += 1
+        if i < len(self.inventory):
+            self.inventory.pop(i)
+            return True
         return False

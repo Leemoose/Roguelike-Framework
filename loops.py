@@ -649,6 +649,6 @@ class Loops():
             player.mage.add_spell(spell(player))
         for item in chosen_class.get_items():
             player.inventory.get_item(item, self)
-            player.character.equip(item)
+            player.do_equip(item)
 
 

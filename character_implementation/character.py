@@ -29,7 +29,7 @@ class Character():
 
         self.alive = True
 
-        self.body = Body(self)
+    #    self.body = Body(self)
 
 
         self.gold = 0
@@ -73,6 +73,32 @@ class Character():
     def get_max_health(self):
         return self.max_health
 
+    def get_action_cost(self, action):
+        return self.action_costs[action]
+
+    def get_attribute(self, attribute):
+        if attribute == "Strength":
+            return self.strength
+        elif attribute == "Intelligence":
+            return self.intelligence
+        elif attribute == "Endurance":
+            return self.endurance
+        elif attribute == "Dexterity":
+            return self.dexterity
+
+    def change_attribute(self, attribute, change):
+        if attribute == "Strength":
+            self.strength += change
+        elif attribute == "Intelligence":
+            self.intelligence += change
+        elif attribute == "Endurance":
+            self.endurance += change
+        elif attribute == "Dexterity":
+            self.dexterity += change
+        elif attribute == "Armor":
+            self.armor += change
+        else:
+            raise Exception("You tried to change an attribute but it doesn't exist")
     def change_health(self, change):
         self.health += change
 
@@ -87,27 +113,6 @@ class Character():
 
     def can_drop(self, item):
         return True
-
-    def free_equipment_slots(self, slot):
-        return self.body.free_equipment_slots(slot)
-
-    def add_item_to_equipment_slot(self, item, slot, num_slots):
-        return self.body.add_item_to_equipment_slot(item, slot, num_slots)
-
-    def remove_item_from_equipment_slot(self, item, slot, num_slots):
-        return self.body.remove_item_from_equipment_slot(item, slot, num_slots)
-
-    def remove_equipment_slot(self, slot):
-        return self.body.remove_equipment_slot(slot)
-
-    def add_equipment_slot(self, slot):
-        return self.body.add_equipment_slot(slot)
-
-    def get_items_in_equipment_slot(self, slot):
-        return self.body.get_items_in_equipment_slot(slot)
-
-    def get_nth_item_in_equipment_slot(self, slot, n):
-        return self.body.get_nth_item_in_equipment_slot(slot, n)
 
     def get_gold(self):
         return self.gold
@@ -156,18 +161,6 @@ class Character():
     def skill_duration_increase(self):
         return (self.intelligence // 3)
 
-    def equip(self, item):
-        if item.can_be_equipped(self):
-            self.body.equip(item, self.strength)
-            self.energy -= self.action_costs["equip"]
-
-    def unequip(self, item):
-        if item == None:
-            return
-        if item.can_be_unequipped(self):
-            self.body.unequip(item)
-            self.energy -= self.action_costs["unequip"]
-
     def wait(self):
         self.energy -=  self.action_costs["move"]
 
@@ -200,7 +193,7 @@ class Character():
         return self.get_damage()[1]
 
     def get_damage(self):
-        weapon = self.body.get_weapon()
+        weapon = self.parent.body.get_weapon()
         if not weapon:
             return self.base_damage + self.unarmed_damage_min, self.base_damage + self.unarmed_damage_max
         else:
@@ -217,7 +210,7 @@ class Character():
     def melee(self, defender, loop):
         self.energy -= self.action_costs["attack"]
         effect = None
-        weapon = self.body.get_weapon()
+        weapon = self.parent.body.get_weapon()
 
         if weapon is None:
             damage = random.randint(self.base_damage + self.unarmed_damage_min, self.base_damage + self.unarmed_damage_max) #Should make object for unarmed damage

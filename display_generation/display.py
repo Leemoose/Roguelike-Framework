@@ -59,17 +59,17 @@ class Display:
         tileDict = loop.tileDict
         player = loop.player
         #Draw base character depending on armor state
-        if (player.character.free_equipment_slots("body_armor_slot") == 0):
+        if (player.body.free_equipment_slots("body_armor_slot") == 0):
             self.win.blit(pygame.transform.scale(tileDict.tile_string(200), (playerSize, playerSize)), (loc_x, loc_y)) # DONG MODE ENGAGED
         else:
             self.win.blit(pygame.transform.scale(tileDict.tile_string(-200), (playerSize, playerSize)), (loc_x, loc_y))
 
         #Draw items on top
-        if player.character.free_equipment_slots("boots_slot") == 0:
+        if player.body.free_equipment_slots("boots_slot") == 0:
             self.win.blit(pygame.transform.scale(tileDict.tile_string(201), (playerSize, playerSize)), (loc_x, loc_y))
-        if player.character.free_equipment_slots("gloves_slot") == 0:
+        if player.body.free_equipment_slots("gloves_slot") == 0:
             self.win.blit(pygame.transform.scale(tileDict.tile_string(202), (playerSize, playerSize)), (loc_x, loc_y))
-        if player.character.free_equipment_slots("helmet_slot") == 0:
+        if player.body.free_equipment_slots("helmet_slot") == 0:
             self.win.blit(pygame.transform.scale(tileDict.tile_string(203), (playerSize, playerSize)), (loc_x, loc_y))
         
 
@@ -417,7 +417,7 @@ class Display:
             strength_modifier = "+" + str(player.character.strength)
         else:
             strength_modifier = str(player.character.strength)
-        weapon = player.character.body.get_weapon()
+        weapon = player.body.get_weapon()
         
         text_box = pygame_gui.elements.UITextBox(
             relative_rect=pygame.Rect((margin_from_left, margin_from_top), (width, height)),

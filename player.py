@@ -1,5 +1,5 @@
 from objects import Objects
-from character_implementation import character as C, statistics, talk
+from character_implementation import character as C, statistics, talk, Body
 import random
 import loops as L
 from navigation_utility import pathfinding
@@ -18,6 +18,7 @@ class Player(Objects):
         self.character = C.Character(self, mana=50)
         self.mage = Mage(self)
         self.inventory = Inventory(self)
+        self.body = Body(self)
 
         self.statistics = statistics.StatTracker()
 
@@ -65,6 +66,13 @@ class Player(Objects):
 
     def get_inventory(self):
         return self.inventory.get_inventory()
+
+    def get_attribute(self, attribute):
+        return self.character.get_attribute(attribute)
+
+    def get_action_cost(self, action):
+        return self.character.get_action_cost(action)
+
     def gain_experience(self, experience):
         self.experience += experience
         self.check_for_levelup()
@@ -366,6 +374,18 @@ class Player(Objects):
             return True
         else:
             return False
+
+    def do_equip(self, item):
+        if self.body.can_equip(item) and item.can_be_equipped(self):
+            self.body.equip(item, self.character.get_attribute("Strength"))
+            # self.energy -= self.action_costs["equip"]
+
+    def do_unequip(self, item):
+        if item == None:
+            return
+        if self.body.can_unequip(item) and item.can_be_unequipped(self):
+            self.body.unequip(item)
+            #self.energy -= self.action_costs["unequip"]
 
 
 
