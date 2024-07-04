@@ -104,9 +104,9 @@ def rank_pickup(ai, loop):
 
 def rank_equip_item(ai, loop):  # Needs to be fixed
     monster = ai.parent
-    if len(monster.character.inventory) != 0:
+    if monster.inventory.get_inventory_size() != 0:
         utility = -1
-        stuff = monster.character.inventory
+        stuff = monster.get_inventory()
         for i, item in enumerate(stuff):
             if item.equipable:
                 if item.equipment_type == "Weapon" and monster.character.free_equipment_slots("hand_slot") > 0:
@@ -134,8 +134,8 @@ def rank_equip_item(ai, loop):  # Needs to be fixed
 
 def rank_use_consumeable(ai, loop):
     monster = ai.parent
-    if len(monster.character.inventory) != 0:
-        stuff = monster.character.inventory
+    if monster.inventory.get_inventory_size() != 0:
+        stuff = monster.get_inventory()
         for i, item in enumerate(stuff):
             if item.consumeable and item.equipment_type == "Potiorb":  # monsters can't read so no scrolls
                 return -1

@@ -34,7 +34,7 @@ class GoblinQuest(Quest):
         if self.active:
             player = loop.player
             count = 0
-            for item in player.character.inventory:
+            for item in player.get_inventory():
                 if isinstance(item, I.Corpse) and item.monster_type == "Goblin":
                     count += 1
             if count >= self.number_goblins:
@@ -85,7 +85,7 @@ class BrothersQuest(Quest):
     def check_for_completion(self, loop):
         if self.active:
             player = loop.player
-            for item in player.character.inventory:
+            for item in player.get_inventory():
                 if isinstance(item, I.BobCorpse):
                     self.level += 1
                     self.give_reward(loop)

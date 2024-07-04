@@ -7,6 +7,7 @@ class StatTracker():
         self.moves = 0
         self.turns = 0
         self.gold_grabbed = 0
+        self.items_grabbed = 0
         self.damage_dealt = 0
         self.damage_taken = 0
 
@@ -36,3 +37,5 @@ class StatTracker():
     def add_item_pickup_details(self, item):
         if item.has_trait("gold"):
             self.gold_grabbed += item.amount
+        else:
+            self.items_grabbed += 1

@@ -7,7 +7,7 @@ import tiles as T
 import skills as S
 from spell_implementation import Mage
 from loop_workflow import LoopType
-
+from character_implementation import Inventory
 import items as I
 
 
@@ -16,9 +16,9 @@ class Player(Objects):
     def __init__(self, x, y):
         super().__init__(x, y, 1, 200, "Player")
         self.character = C.Character(self, mana=50)
-        self.character.inventory = []
-
         self.mage = Mage(self)
+        self.inventory = Inventory(self)
+
         self.statistics = statistics.StatTracker()
 
         self.type = "Player"
@@ -63,6 +63,8 @@ class Player(Objects):
                 self.mage.add_spell(spell)
             self.stat_points = 20 # free stat points for debugging
 
+    def get_inventory(self):
+        return self.inventory.get_inventory()
     def gain_experience(self, experience):
         self.experience += experience
         self.check_for_levelup()
@@ -144,7 +146,7 @@ class Player(Objects):
             for item in loop.generator.item_map.all_entities():
                     if item.has_trait("gold"):
                         if item.x == self.x and item.y == self.y:
-                            self.character.grab(item, loop)
+                            self.do_grab(item, loop)
 
             self.explore_path.append((x, y))
             loop.update_screen = True
@@ -176,7 +178,7 @@ class Player(Objects):
 
             # special case to make sure we don't path to gold we are standing on
             if start in good_item_locations:
-                self.character.grab(good_item_dict[start], loop)
+                self.do_grab(good_item_dict[start], loop)
                 good_item_locations.remove(start)
                             
 
@@ -350,6 +352,20 @@ class Player(Objects):
     def add_quest(self, quest):
         self.quests.append(quest)
         self.quest_recieved = True
+
+    def do_grab(self, item, loop):
+        if self.inventory.can_grab(item) and self.character.can_grab(item):
+            self.statistics.add_item_pickup_details(item)
+            # add time
+            self.inventory.do_grab(item, loop)
+
+    def do_drop(self, item, item_map):
+        if self.inventory.can_drop(item) and self.character.can_drop(item):
+            #add stats, time
+            self.inventory.do_drop(item, item_map)
+            return True
+        else:
+            return False
 
 
 

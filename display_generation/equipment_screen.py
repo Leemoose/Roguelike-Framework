@@ -64,7 +64,7 @@ def create_equipment(display, loop):
                                      (medium_button_width, medium_button_height))
     else:
         available_slot = False
-        for item in player.character.inventory:
+        for item in player.get_inventory():
             if item.equipment_type == "Shield":
                 available_slot = True
                 break
@@ -98,7 +98,7 @@ def create_equipment(display, loop):
                                      (small_button_width, small_button_height))
         else:
             available_slot = False
-            for item in player.character.inventory:
+            for item in player.get_inventory():
                 if item.equipment_type == "Ring" and (not item.equipped):
                     available_slot = True
                     break
@@ -119,7 +119,7 @@ def create_equipment(display, loop):
 
     if player.character.free_equipment_slots("amulet_slot") != 0:
         available_slot = False
-        for item in player.character.inventory:
+        for item in player.get_inventory():
             if item.equipment_type == "Amulet":
                 available_slot = True
                 break
@@ -148,7 +148,7 @@ def create_equipment(display, loop):
 
     if player.character.free_equipment_slots("helmet_slot") != 0:
         available_slot = False
-        for item in player.character.inventory:
+        for item in player.get_inventory():
             if item.equipment_type == "Helmet":
                 available_slot = True
                 break
@@ -176,7 +176,7 @@ def create_equipment(display, loop):
 
     if player.character.free_equipment_slots("body_armor_slot") != 0:
         available_slot = False
-        for item in player.character.inventory:
+        for item in player.get_inventory():
             if item.equipment_type == "Body Armor":
                 available_slot = True
                 break
@@ -205,7 +205,7 @@ def create_equipment(display, loop):
 
     if player.character.free_equipment_slots("boots_slot") != 0:
         available_slot = False
-        for item in player.character.inventory:
+        for item in player.get_inventory():
             if item.equipment_type == "Boots":
                 available_slot = True
                 break
@@ -242,7 +242,7 @@ def create_equipment(display, loop):
             break
     if not weapon_equipped:
         available_slot = False
-        for item in player.character.inventory:
+        for item in player.get_inventory():
             if item.equipment_type == "Weapon":
                 available_slot = True
                 break
@@ -273,7 +273,7 @@ def create_equipment(display, loop):
 
     if player.character.free_equipment_slots("gloves_slot") != 0:
         available_slot = False
-        for item in player.character.inventory:
+        for item in player.get_inventory():
             if item.equipment_type == "Gloves":
                 available_slot = True
                 break
@@ -304,7 +304,7 @@ def create_equipment(display, loop):
 
     if player.character.free_equipment_slots("pants_slot") != 0:
         available_slot = False
-        for item in player.character.inventory:
+        for item in player.get_inventory():
             if item.equipment_type == "Pants":
                 available_slot = True
                 break

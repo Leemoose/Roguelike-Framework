@@ -46,9 +46,9 @@ def do_item_pickup(ai, loop):
     item_map = loop.generator.item_map
     monster = ai.parent
     item = item_map.locate(monster.x, monster.y)
-    monster.character.grab(item, loop)
-    item.destroy = True
-    loop.add_message("The slime gobbled up the {}.".format(item.name))
+    if monster.do_grab(item, loop):
+        item.destroy = True
+        loop.add_message("The slime gobbled up the {}.".format(item.name))
 
 def do_ungroup(ai, loop):
     tile_map = loop.generator.tile_map
@@ -81,7 +81,7 @@ def do_item_pickup(ai, loop):
     item_map = loop.generator.item_map
     monster = ai.parent
     item = item_map.locate(monster.x, monster.y)
-    monster.character.grab(item, loop)
+    monster.inventory.do_grab(item, loop)
 
 def do_combat(ai, loop):
     # print("Attacking player")
@@ -110,11 +110,11 @@ def do_skill(ai, loop):
             # print(f"{monster} used {skill.name}")
             break
 
-def do_equip(ai, loop):
+def do_equip(ai, loop): #ALL THESEN EQUIPMENT SLOT CALLS NEED TO BE FIXED
     # print("Equipping item")
     monster = ai.parent
-    if len(monster.character.inventory) != 0:
-        stuff = monster.character.inventory
+    if monster.inventory.get_inventory_size() != 0:
+        stuff = monster.get_inventory()
         for i, item in enumerate(stuff):
             if item.equipable:
                 if item.equipment_type == "Weapon" and monster.character.equipment_slots["hand_slot"][0] == None:
@@ -148,8 +148,8 @@ def do_equip(ai, loop):
 def do_use_consumeable(ai, loop):
     # print("Using consumeable")
     monster = ai.parent
-    if len(monster.character.inventory) != 0:
-        stuff = monster.character.inventory
+    if monster.inventory.get_inventory_size() != 0:
+        stuff = monster.get_inventory()
         for i, item in enumerate(stuff):
             if item.consumeable and item.equipment_type == "Potiorb":  # monster's can't read so no scrolls
                 item.activate(monster.character)

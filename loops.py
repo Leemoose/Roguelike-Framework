@@ -377,14 +377,14 @@ class Loops():
             if not monster.character.is_alive():
                 if monster.get_location() == self.screen_focus:  # on kill stop observing a space
                     self.screen_focus = None
-                items_copy = [item for item in monster.character.inventory]
+                items_copy = [item for item in monster.get_inventory()]
                 for item in items_copy:
                     if item.yendorb:
-                        monster.character.drop(item, item_dict, self.generator.item_map)
+                        monster.do_drop(item, self.generator.item_map)
                         break  # only drop yendorb if monster had it
                     if item.equipped:
                         monster.character.unequip(item)
-                    monster.character.drop(item, item_dict, self.generator.item_map)
+                    monster.do_drop(item, self.generator.item_map)
                 monster_corpse = monster.die()
                 self.generator.monster_map.remove_thing(monster)
                 if isinstance(monster_corpse, items.Corpse):
@@ -468,7 +468,6 @@ class Loops():
 
     def init_game(self, display):
         self.player = player.Player(0, 0)
-        self.player.character.get_item(self, items.RangedWeapon())
         self.memory.player = self.player
         self.branch = "Throne"
         self.floor_level = 1
@@ -649,7 +648,7 @@ class Loops():
         for spell in chosen_class.get_spells():
             player.mage.add_spell(spell(player))
         for item in chosen_class.get_items():
-            player.character.get_item(self, item)
+            player.inventory.get_item(item, self)
             player.character.equip(item)
 
 

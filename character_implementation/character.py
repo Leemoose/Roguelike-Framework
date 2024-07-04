@@ -25,15 +25,13 @@ class Character():
         
         self.force_ring = 1 # by default rings are equipped to slot 1
 
-        self.inventory_limit = 18
-
         self.energy = 0
 
         self.alive = True
 
         self.body = Body(self)
 
-        self.inventory = []
+
         self.gold = 0
 
         self.ready_scroll = None # index of actively used scroll
@@ -83,6 +81,12 @@ class Character():
 
     def change_action_cost(self, action, newcost):
         self.action_costs[action] = newcost
+
+    def can_grab(self, item):
+        return True #Should check if any conditions would apply (like effects)
+
+    def can_drop(self, item):
+        return True
 
     def free_equipment_slots(self, slot):
         return self.body.free_equipment_slots(slot)
@@ -151,59 +155,6 @@ class Character():
 
     def skill_duration_increase(self):
         return (self.intelligence // 3)
-
-
-    def grab(self, item, loop):
-        if self.get_item(loop, item):
-            loop.generator.item_map.remove_thing(item)
-            loop.add_message("The " + str(self.parent.name) + " picked up a " + str(item.name))
-            self.energy -= self.action_costs["grab"]
-
-    def get_item(self, loop, item):
-        if self.parent.has_trait("player"):
-            self.parent.statistics.add_item_pickup_details(item)
-        if item.yendorb:
-            loop.change_loop("victory")
-            return
-        elif item.has_trait("gold"):
-            self.change_gold_amount(item.amount)
-            loop.change_loop(loop.currentLoop)
-        elif item.stackable:
-            if not item.name in [x.name for x in self.inventory]:
-                if len(self.inventory) > self.inventory_limit:
-                    loop.add_message("You need to drop something first")
-                    return False
-                else:
-                    self.inventory.append(item)
-
-            else:
-                for i in range(len(self.inventory)):
-                    if self.inventory[i].name == item.name:
-                        self.inventory[i].stacks += 1
-        else:
-            if len(self.inventory) > self.inventory_limit:
-                loop.add_message("You need to drop something first")
-                return False
-            else:
-                self.inventory.append(item)
-                if item.has_trait("book"):
-                    item.mark_owner(self)
-        return True
-    def drop(self, item, item_dict,  item_map):
-        if len(self.inventory) != 0 and item.dropable:
-            if item.equipable and item.equipped:
-                self.unequip(item)
-            i = 0
-            while (self.inventory[i] != item) and i < len(self.inventory):
-                i += 1
-            if i < len(self.inventory):
-                self.inventory.pop(i)
-                item.x = self.parent.x
-                item.y = self.parent.y
-                item_map.place_thing(item)
-                self.energy -= self.action_costs["drop"]
-                return True
-        return False
 
     def equip(self, item):
         if item.can_be_equipped(self):

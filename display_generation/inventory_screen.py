@@ -40,7 +40,7 @@ def create_inventory(display, loop):
         enchantable = player.character.get_enchantable()
 
     # This needs to be fixed
-    for i, item in enumerate(player.character.inventory):
+    for i, item in enumerate(player.get_inventory()):
         item_name = item.name
         if (equipment_type == None 
             or (equipment_type == "Enchantable" and item in enchantable) 

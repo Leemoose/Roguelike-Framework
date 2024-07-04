@@ -129,11 +129,10 @@ def key_action(loop, key):
         player.attack_move(-1, 1, loop)
     elif key == "n":
         player.attack_move(1, 1, loop)
-    elif key == "g": #This could be so much simpler to grab
+    elif key == "g": #This could be so much simpler to grab, should change to just checking if item at location
         for item in loop.generator.item_map.all_entities():
-            print(item)
             if item.x == player.x and item.y == player.y:
-                player.character.grab(item, loop)
+                player.do_grab(item, loop)
                 break
     elif key == "f":
         for weapon in player.character.get_items_in_equipment_slot("hand_slot"):
@@ -220,10 +219,10 @@ def key_inventory(loop, key):
             loop.change_loop(LoopType.equipment)
         loop.limit_inventory = None
 
-    for i in range(len(player.character.inventory)):
+    for i in range(len(player.get_inventory())):
         if chr(ord("a") + i) == key:
-            if loop.limit_inventory == None or player.character.inventory[i].equipment_type == loop.limit_inventory:
-                loop.screen_focus = player.character.inventory[i]
+            if loop.limit_inventory == None or player.inventory[i].equipment_type == loop.limit_inventory:
+                loop.screen_focus = player.get_inventory()[i]
                 loop.change_loop(LoopType.items)
 
 
@@ -245,9 +244,9 @@ def key_enchant(loop, key):
         loop.limit_inventory = None
         player.character.ready_scroll = None
     enchantable = player.character.get_enchantable()
-    for i in range(len(player.character.inventory)):
-        if chr(ord("a") + i) == key and player.character.inventory[i] in enchantable:
-            item = player.character.inventory[i]
+    for i in range(len(player.get_inventory())):
+        if chr(ord("a") + i) == key and player.get_inventory()[i] in enchantable:
+            item = player.get_inventory()[i]
             player.character.ready_scroll.consume_scroll(player.character)
             item.level_up()
 
@@ -356,10 +355,10 @@ def key_main_screen(loop, key):
 
 
 def key_item_screen(loop, key):
-    item_dict = loop.generator.item_map.dict
     player = loop.player
     item = loop.screen_focus
     item_map = loop.generator.item_map
+    item_dict = None #Should not be used
     if key == "esc":
         player.character.force_ring = -1
         if loop.limit_inventory == None:
@@ -370,7 +369,7 @@ def key_item_screen(loop, key):
             else:
                 loop.change_loop(LoopType.inventory)
     elif key == "d":
-        if player.character.drop(item, item_dict, item_map):
+        if player.do_drop(item, item_map):
             loop.change_loop(LoopType.inventory)
     elif key == "e":
         player.character.equip(item)

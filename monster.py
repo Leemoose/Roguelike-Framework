@@ -1,6 +1,7 @@
 from monster_implementation import monster_ai
 import objects as O
 from character_implementation import character as C
+from character_implementation import Inventory
 import items as I
 import skills as S
 
@@ -21,6 +22,7 @@ class Monster(O.Objects):
 
         self.character.experience_given = experience_given
         self.brain = brain(self)
+        self.inventory = Inventory(self)
         self.skills = []
         self.orb = False
         self.rarity = rarity
@@ -31,6 +33,25 @@ class Monster(O.Objects):
         self.restriction = ""
 
         self.description = f"This is a {self.name}. It wants to eat you."
+
+    def get_inventory(self):
+        return self.inventory.get_inventory()
+
+    def do_grab(self, item, loop):
+        if self.inventory.can_grab(item) and self.character.can_grab(item):
+            # add time
+            self.inventory.do_grab(item, loop)
+            return True
+        else:
+            return False
+
+    def do_drop(self, item, item_map):
+        if self.inventory.can_drop(item) and self.character.can_drop(item):
+            #add time
+            self.inventory.do_drop(item, item_map)
+            return True
+        else:
+            return False
 
     def die(self):
         return
@@ -371,7 +392,7 @@ class Dummy(Monster):
         self.character.health_regen = 50
         self.stops_autoexplore = False
         remnants = I.DestroyedDummy()
-        self.character.inventory.append(remnants)
+        self.inventory.inventory.append(remnants)
         self.gold_value = 0
 
 class BossOrb(Monster):
@@ -379,7 +400,7 @@ class BossOrb(Monster):
         super().__init__(x=x, y=y, render_tag = render_tag, name = name)
         self.character = C.Character(self)
         self.character.skills = []
-        self.character.inventory.append(I.OrbOfYendorb())
+        self.inventory.inventory.append(I.OrbOfYendorb())
         self.orb = True
         # self, parent, cooldown, cost, slow_duration, damage_percent, slow_amount, range, action_cost
         self.character.skills.append(S.Torment(self, cooldown=10, cost=0, slow_duration=3, damage_percent=0.5, slow_amount=5, range=4, action_cost=100))
