@@ -40,5 +40,11 @@ Add new NPCs
                 To be used properly, whenever a trait is assigned to npc, make sure to call:
                     self.check_dialogues_to_add()
                     self.check_focus(loop)
+        g. Adding @idx flag means that the dialogue will repeat if not chosen as player option
+                idx is the index at which it will appear again (probably after all other npc lines have appeared)
+                ensures player is not locked out of information/quests by choosing wrong dialogue option
+                should only be on player dialogue (maybe can change it so works with npc dialogue too but don't see a reason to do so)
+                must be the last flag before actual dialogue text (i.e. don't do 0 - !trait1 @4 ?trait2 hello world instead do 0 - !trait1 ?trait2 @4 hello world)
+                    this is because of what dialogue is checked against stored list, might change this to work in any order down the line
     3. Add render tag to static_configs.py
     4. Define spawning of npc - currently all npcs exist as part of prefabs (see dungeon_generation/maps/prefab.py) and NPCSpawnTiles (see tiles.py)

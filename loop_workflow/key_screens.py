@@ -266,6 +266,8 @@ def key_trade(loop, key):
     elif key == "return" and loop.dialogue_options == 0:
         loop.next_dialogue = True
     elif loop.dialogue_options > 0 and key in "123456789": # almost definitely don't have this many dialogue options but jic
+        if int(key) > loop.dialogue_options:
+            return
         loop.npc_focus.change_purpose(int(key), loop)
         loop.player_choice = int(key)
         loop.next_dialogue = False

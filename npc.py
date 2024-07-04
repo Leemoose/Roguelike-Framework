@@ -21,9 +21,12 @@ class NPC(O.Objects):
         self.init_dialogue_queue()
 
     def init_dialogue_queue(self):
+        # a series of data structures that different dialogue flags need to efficiently manipulate dialogue flow
         self.dialogue_queue = [] # stores dialogue in easy to track order
         self.dialogue_dict = {} # stores indices of each dialogue, keyed by dialogues
-        self.trait_dict = {}
+        self.repeat_dict = {} # store dialogues that if not selected by player should be appended to end of dialoque queue at index stored in value
+        self.trait_dict = {} # stores dialogues tied to ! and ? flags
+
         with open(self.dialogue_file) as df:
             lines = df.readlines()
             for line in lines:
@@ -36,7 +39,7 @@ class NPC(O.Objects):
                 #                  "!" -> set trait 
                 #                  "?" -> conditional on trait
                 to_add = []
-                special_markers = ["-", "!", "?"] 
+                special_markers = ["-", "!", "?", "@"] 
                 while dialogue[0] in special_markers:
                     if dialogue[0] == "-":
                         player = True
@@ -51,6 +54,14 @@ class NPC(O.Objects):
                         trait = trait[1:] # trait is in format ?trait, strip leading ?
                         dialogue = dialogue.strip()
                         to_add.append((trait, False)) # second param is whether setting (True) or checking (False) trait
+                    if dialogue[0] == "@":
+                        idx, dialogue = dialogue.split(" ", 1)
+                        if len(idx) == 1:
+                            idx = 1000 # default to high number if idx is not specified with @
+                        else:
+                            idx = int(idx[1:])
+                        dialogue = dialogue.strip()
+                        self.repeat_dict[dialogue] = idx
                 add_to_queue = True
                 for trait, set_or_check in to_add:
                     if not dialogue in self.trait_dict.keys():

@@ -226,10 +226,10 @@ class DialogueInteraction(pygame_gui.elements.UIPanel):
             self.next_y_position += tb.get_relative_rect().height + self.bubble_gap
 
     def next_dialogue(self):
-        if not self.dialogue_queue:
+        if not self.npc.dialogue_queue:
             self.continue_label.text = "(Seems like they have nothing else to say to you)"
             return
-        curr_dialogue = self.dialogue_queue.pop(0)
+        curr_dialogue = self.npc.dialogue_queue.pop(0)
         if len(curr_dialogue) == 2:
             text, left = curr_dialogue
             self.add_dialogue(text, left)
@@ -317,6 +317,16 @@ class DialogueInteraction(pygame_gui.elements.UIPanel):
                 box.action = ""
         self.text_boxes[-1][0].action = action
 
+    def repeat_important_options(self, prev_options, chosen_dialogue):
+        # import pdb; pdb.set_trace()
+        for option in prev_options:
+            option = option.split(" ", 1)[1] # strip option numbers
+            if option != chosen_dialogue:
+                if option in self.npc.repeat_dict.keys():
+                    # import pdb; pdb.set_trace()
+                    self.npc.dialogue_dict[option] = self.npc.repeat_dict[option]
+                    self.npc.insert_into_dialogue_queue(option, True) # only player options should be allowed to repeat, something has gone wrong if player should be False here
+
     def update(self, time_delta: float):
         if self.loop.player_choice != -1:
             prev_options = self.clear_last_player_dialogue()
@@ -324,6 +334,7 @@ class DialogueInteraction(pygame_gui.elements.UIPanel):
             chosen_dialogue = prev_options[self.loop.player_choice - 1]
             chosen_dialogue = chosen_dialogue.split(" ", 1)[1] # removes number from option
             self.add_dialogue(chosen_dialogue, True)
+            self.repeat_important_options(prev_options, chosen_dialogue)
             self.loop.player_choice = -1
             self.loop.dialogue_options = 0
             self.next_dialogue()

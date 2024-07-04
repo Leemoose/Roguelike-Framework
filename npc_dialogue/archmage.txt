@@ -2,11 +2,11 @@
 2 Your task is to stem the tide of creatures and find a way to close the rifts. Each rift you seal will hopefully weaken the others.
 3 Or strengthen, we don't actually know.
 4 But be warned, the deeper you go, the more powerful the monsters become.
-5 - !branch_check What's the deal with the rifts?
-5 - !quest_given Can you help me on this quest?
-6 - ?branch_check !dungeon Tell me more about the dungeon
-6 - ?branch_check !forest Tell me more about the forest
-6 - ?branch_check !ocean Tell me more about the ocean
+5 - !branch_check @13 What's the deal with the rifts?
+5 - !quest_given @13 Can you help me on this quest?
+6 - ?branch_check !dungeon @13 Tell me more about the dungeon
+6 - ?branch_check !forest @13 Tell me more about the forest
+6 - ?branch_check !ocean @13 Tell me more about the ocean
 7 ?dungeon The dungeon is the deepest of the branches, with rumours of a strange orb at the end
 8 ?forest The forest is filled with wooden monsters and gets more dangerous at night
 9 ?ocean The ocean has varying tides that extend the parts of the water that can't be crossed easily

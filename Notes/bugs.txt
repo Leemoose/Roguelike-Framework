@@ -29,3 +29,7 @@ might potiorbs are broken
 fix some of the new night attributes going on in the forest
 
 loading into hub puts me in throne room for some reason, if i had to guess loading doesn't handle branches correctly
+
+font in dialogue interactions messes up apostrophes, if no fix found easily can modify dialogue to only use basic characters
+
+maybe make dialogue box limit based on number of lines instead of current system of number of messages
