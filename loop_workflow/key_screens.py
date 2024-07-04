@@ -141,15 +141,15 @@ def key_action(loop, key):
                # player.character.melee(loop.targets.target_current, loop)
                 pass #change to targeting screen
     elif key == "i":
-        #  loop.limit_inventory = None
+        #  loop.player.inventory.change_limit_inventory(None)
         loop.change_loop(LoopType.inventory)
     elif key == "e":
         loop.change_loop(LoopType.equipment)
     elif key == "q":
-        loop.limit_inventory = "Potiorb"
+        loop.player.inventory.change_limit_inventory("potion")
         loop.change_loop(LoopType.inventory)
     elif key == "r":
-        loop.limit_inventory = "Scrorb"
+        loop.player.inventory.change_limit_inventory("scroll")
         loop.change_loop(LoopType.inventory)
     elif key == "l":
         if loop.player.stat_points > 0:
@@ -213,17 +213,16 @@ def key_action(loop, key):
 def key_inventory(loop, key):
     player = loop.player
     if key == "esc":
-        if loop.limit_inventory == None or loop.limit_inventory == "Potiorb" or loop.limit_inventory == "Scrorb":
+        if loop.player.inventory.limit_inventory == "item":
             loop.change_loop(LoopType.action)
         else:
             loop.change_loop(LoopType.equipment)
-        loop.limit_inventory = None
+        loop.player.inventory.change_limit_inventory("item")
 
-    for i in range(len(player.get_inventory())):
+    for i in range(len(player.inventory.get_limit_inventory())):
         if chr(ord("a") + i) == key:
-            if loop.limit_inventory == None or player.inventory.inventory[i].equipment_type == loop.limit_inventory:
-                loop.screen_focus = player.get_inventory()[i]
-                loop.change_loop(LoopType.items)
+            loop.screen_focus = player.inventory.get_limit_inventory()[i]
+            loop.change_loop(LoopType.items)
 
 
 def key_rest(loop, key):
@@ -241,7 +240,7 @@ def key_enchant(loop, key):
     player = loop.player
     if key == "esc":
         loop.change_loop(LoopType.action)
-        loop.limit_inventory = None
+        loop.player.inventory.change_limit_inventory("item")
         player.inventory.ready_scroll = None
     enchantable = player.inventory.get_enchantable()
     for i in range(len(player.get_inventory())):
@@ -251,7 +250,7 @@ def key_enchant(loop, key):
             item.level_up()
 
             loop.change_loop(LoopType.action)
-            loop.limit_inventory = None
+            loop.player.inventory.change_limit_inventory("item")
             loop.update_screen = True
 
 
@@ -305,39 +304,39 @@ def key_level_up(loop, key):
 def key_equipment(loop, key):
     player = loop.player
     if key == "esc":
-        loop.limit_inventory = None
+        loop.player.inventory.change_limit_inventory("item")
         loop.change_loop(LoopType.action)
     elif key == "q":
-        loop.limit_inventory = "Shield"
+        loop.player.inventory.change_limit_inventory("shield")
         loop.change_loop(LoopType.inventory)
     elif key == "a":
-        loop.limit_inventory = "Amulet"
+        loop.player.inventory.change_limit_inventory("amulet")
         loop.change_loop(LoopType.inventory)
     elif key == "z":
-        loop.limit_inventory = "Ring"
-        player.character.force_ring = 2  # equip to second slot
+        loop.player.inventory.change_limit_inventory("ring")
+        player.inventory.force_ring = 2  # equip to second slot
         loop.change_loop(LoopType.inventory)
     elif key == "w":
-        loop.limit_inventory = "Helmet"
+        loop.player.inventory.change_limit_inventory("helmet")
         loop.change_loop(LoopType.inventory)
     elif key == "s":
-        loop.limit_inventory = "Body Armor"
+        loop.player.inventory.change_limit_inventory("body_armor")
         loop.change_loop(LoopType.inventory)
     elif key == "x":
-        loop.limit_inventory = "Boots"
+        loop.player.inventory.change_limit_inventory("boots")
         loop.change_loop(LoopType.inventory)
     elif key == "d":
-        loop.limit_inventory = "Weapon"
+        loop.player.inventory.change_limit_inventory("weapon")
         loop.change_loop(LoopType.inventory)
     elif key == "c":
-        loop.limit_inventory = "Gloves"
+        loop.player.inventory.change_limit_inventory("gloves")
         loop.change_loop(LoopType.inventory)
     elif key == "p":
-        loop.limit_inventory = "Pants"
+        loop.player.inventory.change_limit_inventory("pants")
         loop.change_loop(LoopType.inventory)
     elif key == "r":
-        loop.limit_inventory = "Ring"
-        player.character.force_ring = 1
+        loop.player.inventory.change_limit_inventory("ring")
+        player.inventory.force_ring = 1
         loop.change_loop(LoopType.inventory)
 
 
@@ -362,8 +361,8 @@ def key_item_screen(loop, key):
     item_map = loop.generator.item_map
     item_dict = None #Should not be used
     if key == "esc":
-        player.character.force_ring = -1
-        if loop.limit_inventory == None:
+        player.inventory.force_ring = -1
+        if loop.player.inventory.limit_inventory == "item":
             loop.change_loop(LoopType.inventory)
         else:
             if item.equipable and item.equipped:

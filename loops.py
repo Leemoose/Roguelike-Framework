@@ -29,8 +29,6 @@ class Loops():
     def __init__(self, width, height, textSize, tileDict, display, keyboard, ascaii_data, dungeon_data):
         self.display = display
         self.update_screen = True
-        self.limit_inventory = None
-
         self.currentLoop = LoopType.none
 
         self.width = width

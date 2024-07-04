@@ -631,6 +631,7 @@ class BodyArmor(Armor):
         self.description = "A piece of armor that covers your chest."
         self.stats = statUpgrades(base_str=1, max_str=1, base_end=1, max_end=4, base_arm=1, max_arm=4)
         self.slot = "body_armor_slot"
+        self.traits["body_armor"] = True
 
 class Chestarmor(BodyArmor):
     def __init__(self, render_tag):
@@ -888,6 +889,7 @@ class Boots(Armor):
         self.description = "Boots that are incredibly comfortable but only offer a little protection"
         self.stats = statUpgrades(base_dex=1, max_dex=2, base_arm=1, max_arm=4)
         self.slot = "boots_slot"
+        self.traits["boots"] = True
 
     def level_up(self):
         self.enchant()
@@ -1002,6 +1004,7 @@ class Gloves(Armor):
         self.stats = statUpgrades(base_end = 1, max_end = 8,
                                   base_arm = 0, max_arm = 10)
         self.slot = "gloves_slot"
+        self.traits["gloves"] = True
 
     def level_up(self):
         self.enchant()
@@ -1180,6 +1183,7 @@ class Helmet(Armor):
                                   base_end = 1, max_end = 1,
                                   base_arm = 1, max_arm = 3)
         self.slot = "helmet_slot"
+        self.traits["helmet"] = True
 
     def level_up(self):
         self.enchant()
@@ -1349,6 +1353,7 @@ class Pants(Armor):
                                   base_end = 1, max_end = 1,
                                   base_arm = 1, max_arm = 3)
         self.slot = "pants_slot"
+        self.traits["pants"] = True
 
     def level_up(self):
         self.enchant()
@@ -1517,6 +1522,7 @@ class Amulet(Equipment):
         self.can_be_levelled = False
         self.description = "A heavy amulet in heavy iron?"
         self.slot = "amulet_slot"
+        self.traits["amulet"] = True
 
 
 """

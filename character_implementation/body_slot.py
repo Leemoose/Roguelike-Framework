@@ -10,6 +10,8 @@ class Body():
                                 "hand_slot": [None, None]
                                 }
         self.parent = parent
+        self.force_ring = 1 # by default rings are equipped to slot 1
+
 
         # queue to store rings in order they were equipped
         # keep a backup so we can temporarily move a ring to the front of queue if coming from equip screen
@@ -114,8 +116,8 @@ class Body():
             if weapon and weapon.slots_taken > 1: # two handed weapon must be unequipped for a shield
                 self.unequip(weapon)
         elif item.has_trait("ring"):
-            if self.parent.force_ring > 0:
-                next_to_remove = self.equipment_slots["ring_slot"][self.parent.force_ring - 1]
+            if self.force_ring > 0:
+                next_to_remove = self.equipment_slots["ring_slot"][self.force_ring - 1]
                 self.unequip(next_to_remove)
                 if next_to_remove:
                     self.ring_to_replace.remove(next_to_remove)

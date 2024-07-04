@@ -22,8 +22,6 @@ class Character():
         self.flee = False
         self.can_teleport = True
         self.safe_rest = True
-        
-        self.force_ring = 1 # by default rings are equipped to slot 1
 
         self.energy = 0
 

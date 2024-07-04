@@ -5,10 +5,20 @@ class Inventory():
         self.inventory = []
         self.gold = 0
         self.ready_scroll = None # index of actively used scroll
-
+        self.limit_inventory = "item"
 
     def get_inventory(self):
         return self.inventory
+
+    def get_limit_inventory(self, limit = None):
+        if limit == None:
+            limit = self.limit_inventory
+        allowable = []
+        for item in self.inventory:
+            if item.has_trait(limit):
+                allowable.append(item)
+        return allowable
+
 
     def get_inventory_size(self):
         return len(self.inventory)
@@ -40,6 +50,9 @@ class Inventory():
 
     def change_gold_amount(self, amount):
         self.gold += amount
+
+    def change_limit_inventory(self, change):
+        self.limit_inventory = change
 
     """
     Grab should be called when it is being picked off the floor
