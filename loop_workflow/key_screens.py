@@ -218,6 +218,10 @@ def key_inventory(loop, key):
         else:
             loop.change_loop(LoopType.equipment)
         loop.player.inventory.change_limit_inventory("item")
+    elif key in ["1","2","3","4","5"]:
+        options = ["item", "potion","scroll","equipment","weapon"]
+        loop.player.inventory.change_limit_inventory(options[int(key) - 1])
+        loop.change_loop("inventory")
 
     for i in range(len(player.inventory.get_limit_inventory())):
         if chr(ord("a") + i) == key:
