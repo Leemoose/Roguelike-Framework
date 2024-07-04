@@ -98,7 +98,7 @@ class Body():
             item.equipped = True
             item.dropable = False
             if item.attached_skill_exists:
-                self.parent.character.add_skill(item.attached_skill(self.parent.parent))
+                self.parent.character.add_skill(item.attached_skill(self.parent))
             item.activate(self.parent)
             if item.has_trait("ring"):
                 self.ring_to_replace.append(item)

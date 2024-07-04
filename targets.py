@@ -30,7 +30,7 @@ class Target:
 
     def void_skill(self):
         if self.temp_cast:
-            self.caster.character.ready_scroll = None
+            self.caster.inventory.ready_scroll = None
         self.index_to_cast = None
         self.skill_to_cast = None
         self.caster = None
@@ -52,7 +52,7 @@ class Target:
             if self.skill_to_cast.castable(monster):
                 if self.temp_cast:
                     self.skill_to_cast.try_to_activate(monster, loop)
-                    self.caster.character.ready_scroll.consume_scroll(self.caster.character)
+                    self.caster.inventory.ready_scroll.consume_scroll(self.caster)
                     loop.add_message("You cast " + str(self.skill_to_cast.name) + " on " + monster.name)
                     self.void_skill()
                 else:
@@ -66,7 +66,7 @@ class Target:
             if not self.skill_to_cast.targets_monster:
                 if self.temp_cast:
                     self.skill_to_cast.try_to_activate((x, y), loop)
-                    self.caster.character.ready_scroll.consume_scroll(self.caster.character)
+                    self.caster.inventory.ready_scroll.consume_scroll(self.caster)
                     loop.add_message("You cast " + str(self.skill_to_cast.name))
                     self.void_skill()
                 else:

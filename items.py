@@ -855,13 +855,13 @@ class KarateGi(BodyArmor):
                                   base_arm = 1, max_arm = 3)
 
     def activate(self, entity):
-        entity.unarmed_damage_min += self.damage_boost_min
-        entity.unarmed_damage_max += self.damage_boost_max
+        entity.character.unarmed_damage_min += self.damage_boost_min
+        entity.character.unarmed_damage_max += self.damage_boost_max
         return super().activate(entity)
 
     def deactivate(self, entity):
-        entity.unarmed_damage_min -= self.damage_boost_min
-        entity.unarmed_damage_max -= self.damage_boost_max
+        entity.character.unarmed_damage_min -= self.damage_boost_min
+        entity.character.unarmed_damage_max -= self.damage_boost_max
         return super().deactivate(entity)
 
     def level_up(self):
@@ -1581,7 +1581,7 @@ class Scroll(O.Item):
 
     def activate(self, entity, loop):
         self.activate_once(entity, loop)
-        entity.ready_scroll = self
+        entity.parent.inventory.ready_scroll = self
 
     def consume_scroll(self, entity):
         self.stacks -= 1

@@ -502,7 +502,7 @@ class StatBox(pygame_gui.elements.UITextBox):
                             "Intelligence: " + self.stat_text(self.player, self.player.character.intelligence) + "<br>" + \
                             "Armor: " + self.stat_text(self.player, self.player.character.armor, False) + "<br>" + \
                             self.round_text(self.player) + \
-                            "Gold: " + self.stat_text(self.player, self.player.character.gold, False) + "<br>" + \
+                            "Gold: " + self.stat_text(self.player, self.player.inventory.get_gold(), False) + "<br>" + \
                             "Status: " + self.get_status_text(self.player) + "<br>" + \
                             self.get_level_text(self.player) + "<br>")
 

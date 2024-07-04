@@ -4,12 +4,25 @@ class Inventory():
         self.inventory_limit = 18
         self.inventory = []
         self.gold = 0
+        self.ready_scroll = None # index of actively used scroll
+
 
     def get_inventory(self):
         return self.inventory
 
     def get_inventory_size(self):
         return len(self.inventory)
+
+    def get_gold(self):
+        return self.gold
+
+    def get_enchantable(self):
+        enchantable = []
+        for item in self.inventory:
+            if item.can_be_levelled:
+                if item.level < 6: # items can be levelled upto +5
+                    enchantable.append(item)
+        return enchantable
 
     def can_grab(self, item):
         if len(self.inventory) < self.inventory_limit:

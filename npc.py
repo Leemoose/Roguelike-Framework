@@ -128,9 +128,9 @@ class NPC(O.Objects):
         
 
     def take_gold(self, i, loop):
-        if loop.player.character.gold >= self.cost:
+        if loop.player.inventory.get_gold() >= self.cost:
             self.give_item(loop, i)
-            loop.player.character.gold -= self.cost
+            loop.player.inventory.change_gold_amount(-self.cost)
             loop.add_message(
                 self.name + " says: 'Ahhh yes, precious gold. You can take that item.'")
         else:

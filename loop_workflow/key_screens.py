@@ -31,7 +31,7 @@ def key_targeting_screen(loop, key):
     elif key == "esc":
         targets.void_skill()
         loop.void_target()
-        loop.player.character.ready_scroll = None
+        loop.player.inventory.ready_scroll = None
         loop.change_loop(LoopType.action)
     elif key == "return":
         targets.cast_on_target(loop)
@@ -242,12 +242,12 @@ def key_enchant(loop, key):
     if key == "esc":
         loop.change_loop(LoopType.action)
         loop.limit_inventory = None
-        player.character.ready_scroll = None
-    enchantable = player.character.get_enchantable()
+        player.inventory.ready_scroll = None
+    enchantable = player.inventory.get_enchantable()
     for i in range(len(player.get_inventory())):
         if chr(ord("a") + i) == key and player.get_inventory()[i] in enchantable:
             item = player.get_inventory()[i]
-            player.character.ready_scroll.consume_scroll(player.character)
+            player.inventory.ready_scroll.consume_scroll(player)
             item.level_up()
 
             loop.change_loop(LoopType.action)

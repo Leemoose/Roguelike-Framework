@@ -37,7 +37,7 @@ def create_inventory(display, loop):
         object_id='#title_label')
 
     if equipment_type == "Enchantable":
-        enchantable = player.character.get_enchantable()
+        enchantable = player.inventory.get_enchantable()
 
     # This needs to be fixed
     for i, item in enumerate(player.get_inventory()):

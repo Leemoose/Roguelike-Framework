@@ -31,11 +31,6 @@ class Character():
 
     #    self.body = Body(self)
 
-
-        self.gold = 0
-
-        self.ready_scroll = None # index of actively used scroll
-
         self.main_weapon = None
 
 
@@ -113,12 +108,6 @@ class Character():
 
     def can_drop(self, item):
         return True
-
-    def get_gold(self):
-        return self.gold
-
-    def change_gold_amount(self, value):
-        self.gold += value
 
     def is_alive(self):
         if self.health <= 0 and not self.invincible:
@@ -408,14 +397,7 @@ class Character():
                     idx = self.parent.mage.quick_cast_spells.index(skill)
                     self.parent.mage.quick_cast_spells[idx] = None
                 break
-    
-    def get_enchantable(self):
-        enchantable = []
-        for item in self.inventory:
-            if item.can_be_levelled:
-                if item.level < 6: # items can be levelled upto +5
-                    enchantable.append(item)
-        return enchantable
+
 
     def get_closest_monster(self, loop):
         player = loop.player
