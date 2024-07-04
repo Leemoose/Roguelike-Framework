@@ -12,8 +12,6 @@ Ocean:
     Add flying
     Targetting does not work over deep water
 
-Fix mouse-pathing so you can click on an npc and path to them
-
 fix mini examine window
 
 Change spell hotkey to show up when you hover over it

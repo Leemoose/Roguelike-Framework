@@ -50,10 +50,12 @@ class NPC(O.Objects):
                         trait, dialogue = dialogue.split(" ", 1)
                         trait = trait[1:] # trait is in format ?trait, strip leading ?
                         dialogue = dialogue.strip()
-                        to_add.append((trait, False)) # second param is whether setting or checking trait
+                        to_add.append((trait, False)) # second param is whether setting (True) or checking (False) trait
                 add_to_queue = True
                 for trait, set_or_check in to_add:
-                    self.trait_dict[dialogue] = (trait, player, set_or_check)
+                    if not dialogue in self.trait_dict.keys():
+                        self.trait_dict[dialogue] = []
+                    self.trait_dict[dialogue].append((trait, player, set_or_check))
                     if not set_or_check and not self.has_trait(trait):
                         add_to_queue = False
                 self.dialogue_dict[dialogue] = int(dialogue_index)
@@ -79,11 +81,11 @@ class NPC(O.Objects):
     def add_to_memory(self, text, left, choice, action, loop):
         self.dialogue_memory.append((text, left, choice, action))
         if not choice and text in self.trait_dict.keys():
-            trait, _, set_or_check = self.trait_dict[text]
-            if set_or_check:
-                self.traits[trait] = True
-                self.check_dialogues_to_add()
-                self.check_focus(loop)
+            for trait, _, set_or_check in self.trait_dict[text]:
+                if set_or_check:
+                    self.traits[trait] = True
+                    self.check_dialogues_to_add()
+                    self.check_focus(loop)
 
     # subclasses can overwrite this to determine which dialogue traits affect npc_focus
     def check_focus(self, loop):
@@ -91,9 +93,13 @@ class NPC(O.Objects):
             self.change_purpose("Quest", loop)
 
     def check_dialogues_to_add(self):
-        for text, (trait, player, set_or_check) in self.trait_dict.items():
-            if not set_or_check and self.has_trait(trait):
-                self.insert_into_dialogue_queue(text, player)
+        # import pdb; pdb.set_trace()
+        for text, trait_list in self.trait_dict.items():
+            added = False
+            for (trait, player, set_or_check) in trait_list:
+                if not set_or_check and self.has_trait(trait):
+                    self.insert_into_dialogue_queue(text, player)
+                    self.trait_dict[text].remove((trait, player, set_or_check)) # remove dialogue from trait list so we don't keep adding it to queue
 
 
     def insert_into_dialogue_queue(self, dialogue, player):

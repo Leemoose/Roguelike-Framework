@@ -27,3 +27,5 @@ Blink Scrolls are broken
 might potiorbs are broken
 
 fix some of the new night attributes going on in the forest
+
+loading into hub puts me in throne room for some reason, if i had to guess loading doesn't handle branches correctly

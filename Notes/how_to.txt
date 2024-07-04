@@ -29,7 +29,7 @@ Adding spawns to new branches
 Add new NPCs
     1. Add subclass inheriting from NPC class in NPC.py
     2. Write dialogue interaction with NPC in npc_dialogue/___.txt and set self.dialogue_file to the path and call self.init_dialogue_queue()
-        a. In dialogues, every line is an integer representing order of dialogue
+        a. In dialogues, every line starts with an integer representing order of dialogue
         b. Dialogue with "-" before any text means the player says it
         c. Multiple dialogue options at same index for player gives player choice of which option to pick
         d. Multiple dialogue options at same index for npc chooses a random one from options

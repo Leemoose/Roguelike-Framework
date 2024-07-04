@@ -202,9 +202,10 @@ class DialogueInteraction(pygame_gui.elements.UIPanel):
 
     def clear_last_player_dialogue(self):
         prev_options = [] # keep track of all removed player dialogue so we can readd the selected option
-        for _ in range(len(self.text_boxes)):
+        num_to_delete = self.loop.dialogue_options
+        for i in range(len(self.text_boxes)):
             tbox, left = self.text_boxes[-1] # don't iterate cuz that will mess stuff up, just keep popping 0th elem
-            if not left:
+            if i >= num_to_delete or not left:
                 break
             prev_options.append(tbox.text)
             tbox.kill()
@@ -319,12 +320,14 @@ class DialogueInteraction(pygame_gui.elements.UIPanel):
     def update(self, time_delta: float):
         if self.loop.player_choice != -1:
             prev_options = self.clear_last_player_dialogue()
+            # import pdb; pdb.set_trace()
             chosen_dialogue = prev_options[self.loop.player_choice - 1]
             chosen_dialogue = chosen_dialogue.split(" ", 1)[1] # removes number from option
             self.add_dialogue(chosen_dialogue, True)
             self.loop.player_choice = -1
             self.loop.dialogue_options = 0
             self.next_dialogue()
+            
         if self.loop.next_dialogue:
             self.next_dialogue()
             self.loop.next_dialogue = False
