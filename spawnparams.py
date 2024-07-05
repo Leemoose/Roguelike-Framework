@@ -353,6 +353,7 @@ MonsterSpawns.append(MonsterSpawnParams(M.Looter(), 1, 3, 0, 1))
 
 MonsterSpawns.append(MonsterSpawnParams(M.Kobold(-1, -1), 2, 3, 0, 0))
 #MonsterSpawns.append(MonsterSpawnParams(M.GoblinShaman(-1, -1), 3, 5, 0, 0))
+
 MonsterSpawns.append(MonsterSpawnParams(M.Stumpy(), 2, 5, 1, 1))
 
 

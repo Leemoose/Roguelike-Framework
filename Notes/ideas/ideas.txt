@@ -37,9 +37,7 @@ More complicated combat modifiers:
     Accuracy <=> Dodge
     True damage
     On hit modifiers
-
-Split player into: body, mage, statistics, warrior character
-
+    
 More pathing stuff:
     Could introduce pathing to specific items (might need ctrl+f for items like dcss to be usable)
 

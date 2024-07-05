@@ -19,7 +19,6 @@ class Inventory():
                 allowable.append(item)
         return allowable
 
-
     def get_inventory_size(self):
         return len(self.inventory)
 

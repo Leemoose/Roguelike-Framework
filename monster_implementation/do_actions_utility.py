@@ -93,7 +93,7 @@ def do_combat(ai, loop):
         return
     monster.character.energy -= ai.parent.character.action_costs["attack"]
     if ai.target != None:
-        damage = monster.character.melee(ai.target, loop)
+        damage = monster.do_attack(ai.target, loop)
         loop.add_message(f"{monster} attacked {ai.target.name} for {damage} damage")
     else:
         loop.add_message(f"{monster.name} can find no suitable target to attack.")

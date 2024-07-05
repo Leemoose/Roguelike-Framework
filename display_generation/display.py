@@ -431,8 +431,8 @@ class Display:
                         "Health: " + str(player.character.health) + " / " + str(player.character.max_health) + "<br>"
                         "Mana: " + str(player.character.mana) + " / " + str(player.character.max_mana) + "<br>"
                         "<br>"
-                        "Damage: " + str(player.character.get_damage_min()) + " - " + str(player.character.get_damage_max()) + " (" + strength_modifier + ") <br>"
-                        "Defense: " + str(player.character.armor) + " (+" + str(player.character.endurance // 3) + ") <br>"
+                        "Damage: " + str(player.fighter.get_damage_min()) + " - " + str(player.fighter.get_damage_max()) + " (" + strength_modifier + ") <br>"
+                        "Defense: " + str(player.fighter.get_armor()) + " (+" + str(player.character.endurance // 3) + ") <br>"
                         "Movement Delay: " + str(player.character.action_costs["move"]) + "<br>"
                         "Skill Damage Bonus: " + str(player.character.skill_damage_increase()) + "<br>"
                         "Effect Duration Bonus: " + str(player.character.skill_duration_increase()) + "<br>"
@@ -590,7 +590,7 @@ class Display:
                         req_str_text = "Required Strength: " + str(item.required_strength) + "<br>"
                     entity_text += req_str_text
                 if item.has_trait("weapon"):
-                    entity_text += "Damage: " + str(item.damage_min + player.character.base_damage) + " - " + str(item.damage_max + player.character.base_damage) + "<br>"
+                    entity_text += "Damage: " + str(item.damage_min + player.fighter.get_base_damage()) + " - " + str(item.damage_max + player.fighter.get_base_damage()) + "<br>"
                     if item.on_hit:
                         entity_text += "On hit: " + item.on_hit_description + "<br>"
 
@@ -623,7 +623,7 @@ class Display:
         if entity.has_trait("monster"):
             entity_text += "Health: " + str(entity.character.health) + " / " + str(entity.character.max_health) + "<br>"
             entity_text += "Attack: " + str(entity.character.get_damage_min()) + " - " + str(entity.character.get_damage_max()) + "<br>"
-            entity_text += "Armor: " + str(entity.character.armor) + "<br>"
+            entity_text += "Armor: " + str(entity.fighter.get_armor()) + "<br>"
             for skill in entity.character.skills:
                 entity_text += "Has skill: " + str(skill.name)+ "<br>"
             if entity.orb:

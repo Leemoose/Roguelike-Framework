@@ -1,7 +1,7 @@
 from monster_implementation import monster_ai
 import objects as O
 from character_implementation import character as C
-from character_implementation import Inventory, Body
+from character_implementation import Inventory, Body, Fighter
 import items as I
 import skills as S
 
@@ -9,7 +9,12 @@ import skills as S
 class Monster(O.Objects):
     def __init__(self, x=-1, y = -1, render_tag = -1, name="Unknown monster", experience_given = 0, brain = monster_ai.Monster_AI, rarity ="Common", health = 10, min_damage = 2, max_damage=3):
         super().__init__(x=x, y=y, render_tag=render_tag, name=name)
-        self.character = C.Character(self, health = health, min_damage=min_damage, max_damage = max_damage)
+        self.character = C.Character(self, health = health)
+        self.brain = brain(self)
+        self.inventory = Inventory(self)
+        self.body = Body(self)
+        self.fighter = Fighter(self, min_damage=min_damage, max_damage = max_damage)
+
         self.asleep = False
         self.flee = False
         self.nightified = False
@@ -21,9 +26,6 @@ class Monster(O.Objects):
         self.gold_value = 1
 
         self.character.experience_given = experience_given
-        self.brain = brain(self)
-        self.inventory = Inventory(self)
-        self.body = Body(self)
         self.skills = []
         self.orb = False
         self.rarity = rarity
@@ -37,6 +39,10 @@ class Monster(O.Objects):
 
     def get_inventory(self):
         return self.inventory.get_inventory()
+
+    def do_attack(self, target, loop):
+        #Make sure to add energy cost here
+        self.fighter.do_attack(target, loop)
 
     def do_grab(self, item, loop):
         if self.inventory.can_grab(item) and self.character.can_grab(item):
@@ -159,7 +165,7 @@ class ChasmCrawler(Monster):
 
 class Slime(Monster):
     def __init__(self, x=-1, y=-1, render_tag=1100, name="Slime"):
-        super().__init__(x=x, y=y, render_tag = render_tag, name = name, experience_given=5, brain = monster_ai.Slime_AI, health=5, min_damage=1, max_damage=1)
+        super().__init__(x=x, y=y, render_tag = render_tag, name = name, experience_given=5, brain = monster_ai.Slime_AI, health=5)
 
         self.description = "These amorphous blobs of translucent, gelatinous matter emerge from the depths of the rifts. Their bodies pulse with a sickly green glow, fueled by the chaotic energies of their environment. Rift Slimes mindlessly dissolve anything they touch with acidic secretions, leaving behind only a faint, acrid odor. They show no preference or intelligence, simply drawn to any items they encounter, which they swiftly corrode beyond recognition.."
         self.character.action_costs["grab"] = 0
@@ -360,20 +366,6 @@ class Tormentorb(Monster):
         self.intelligence = 8
         self.character.armor = 6
 
-class Stumpy(Monster):
-    def __init__(self, x=-1, y=-1, render_tag=1090, name="Stumpy"):
-        super().__init__(x=x, y=y, render_tag = render_tag, name = name)
-        self.brain = monster_ai.Stumpy_AI(self)
-        self.character.experience_given = 20
-        self.description = "An ancient, gnarled tree stump brought to life by dark magic, Stumpy harbors a deep, burning desire for vengeance. Its twisted roots writhe with malicious intent, and its hollow eyes glow with a sinister, green light. With bark as tough as iron and splintered limbs that lash out like whips, this vengeful stump seeks retribution for the countless trees felled by human hands. Beware its crushing roots and poisonous sap, for Stumpy will stop at nothing to avenge its fallen brethren."
-        self.character.health = 10
-        self.character.max_health = 10
-        self.strength = 8
-        self.dexterity = 8
-        self.endurance = 8
-        self.intelligence = 8
-        self.character.armor = 10
-        self.attributes["wood"] = True
 
 class Dummy(Monster):
     def __init__(self, x=-1, y=-1, render_tag=124, name="Training Dummy"):
@@ -421,3 +413,113 @@ class BossOrb(Monster):
         self.intelligence = 18
         self.character.armor = 10
 
+"""
+Forest Monsters: Generally wood or animal like. Grow stronger at night. Uses poison
+"""
+
+class Stumpy(Monster):
+    def __init__(self, x=-1, y=-1, render_tag=1090, name="Stumpy"):
+        super().__init__(x=x, y=y, render_tag = render_tag, name = name)
+        self.brain = monster_ai.Stumpy_AI(self)
+        self.character.experience_given = 20
+        self.description = "An ancient, gnarled tree stump brought to life by dark magic, Stumpy harbors a deep, burning desire for vengeance. Its twisted roots writhe with malicious intent, and its hollow eyes glow with a sinister, green light. With bark as tough as iron and splintered limbs that lash out like whips, this vengeful stump seeks retribution for the countless trees felled by human hands. Beware its crushing roots and poisonous sap, for Stumpy will stop at nothing to avenge its fallen brethren."
+        self.character.health = 10
+        self.character.max_health = 10
+        self.strength = 8
+        self.dexterity = 8
+        self.endurance = 8
+        self.intelligence = 8
+        self.character.armor = 10
+        self.attributes["wood"] = True
+        self.traits["stumpy"] = True
+
+class Treant(Monster):
+    def __init__(self, x=-1, y=-1, render_tag=0, name="Treant"):
+        super().__init__(x=x, y=y, render_tag = render_tag, name = name)
+        self.brain = monster_ai.Monster_AI(self)
+        self.character.experience_given = 40
+        self.description = "Towering over the forest canopy, the Treant is a massive and malevolent guardian with bark-covered armor tough as iron. Its glowing green eyes and deep, rumbling growl instill fear in all who hear it. Driven by an ancient grudge, it uses a devastating root lash attack to ensnare and immobilize foes, protecting its sacred domain with relentless strength. The Treant’s presence warps the forest, darkening and twisting the environment as it exacts vengeance on any who defile its home."
+        self.character.health = 50
+        self.character.max_health = 50
+        self.strength = 8
+        self.dexterity = 8
+        self.endurance = 8
+        self.intelligence = 8
+        self.character.armor = 15
+        self.attributes["wood"] = True
+        self.traits["treant"] = True
+        #Remember to add on hit effect for ensnaring
+        """
+        Treant
+Characteristic: Lots of health
+Vulnerable: Fire
+Abilities: Ground Stomp
+On hit: Root lash (extra damage, immobile)
+        """
+
+class Spider(Monster):
+    def __init__(self, x=-1, y=-1, render_tag=0, name="Spider"):
+        super().__init__(x=x, y=y, render_tag=render_tag, name=name)
+        self.brain = monster_ai.Monster_AI(self)
+        self.character.experience_given = 10
+        self.description = "These black and white spiders, each the size of a small dog, are swift and deadly predators of the forest. With their distinctive striped patterns, they move with alarming speed, darting through the underbrush and leaping onto unsuspecting prey. Their agile legs and sharp mandibles allow them to navigate any terrain, while their ability to weave intricate webs on tiles makes them formidable hunters and trappers. A single bite from a Rift Spider delivers potent poison, weakening and paralyzing its victims. Beware their sudden, silent approach and the venomous sting that follows, for these spiders are relentless and deadly in their pursuit."
+        self.character.health = 10
+        self.character.max_health = 10
+        self.strength = 2
+        self.dexterity = 8
+        self.endurance = 2
+        self.intelligence = 1
+        self.character.armor = 0
+        self.traits["spider"] = True
+        """
+        Big spiders
+Characteristic: Can move fast
+Abilities: Create web on tile
+On hit: Poison / stun?
+        """
+
+class MetallicBear(Monster):
+    def __init__(self, x=-1, y=-1, render_tag=0, name="Metallic Bear"):
+        super().__init__(x=x, y=y, render_tag=render_tag, name=name)
+        self.brain = monster_ai.Monster_AI(self)
+        self.character.experience_given = 40
+        self.description = "This imposing creature, with fur interwoven with metallic threads, gleams ominously as it prowls through the forest. Its powerful, ironclad muscles and razor-sharp claws make it a fearsome opponent. When the Metallic Bear’s health drops low, it enters a terrifying fury mode, its eyes glowing with an intense, fiery light. In this state, it becomes even more dangerous, dealing increased damage and attacking with blinding speed. The sound of clashing metal and its ferocious roars echo through the trees, warning all who dare to challenge it of the deadly rage that lies within."
+        self.character.health = 30
+        self.character.max_health = 30
+        self.strength = 20
+        self.dexterity = 8
+        self.endurance = 20
+        self.intelligence = 1
+        self.character.armor = 20
+        self.traits["metallic_bear"] = True
+
+        """
+        Metallic bear
+Characteristic:
+Vulnerable:
+Abilities: Fury (low on health goes beserk)
+On hit:
+        """
+
+class InsectNest(Monster):
+    def __init__(self, x=-1, y=-1, render_tag=0, name="Insect Nest"):
+        super().__init__(x=x, y=y, render_tag=render_tag, name=name)
+        self.brain = monster_ai.Monster_AI(self)
+        self.character.experience_given = 40
+        self.description = "Nestled within the forest, this immobile structure is a pulsating hive of malevolent activity. Each strike against the Insect Nest provokes a swarm of flying, poisonous insects that emerge in a frenzied cloud to defend their home. Though these insects are fragile and have low health, their venomous bites can quickly overwhelm and debilitate their attackers. The nest itself is otherwise powerless, relying entirely on the relentless defense of its swarming guardians to deter any who would seek to destroy it. Approach with caution, for disturbing the nest unleashes a torrent of venomous fury."
+        self.character.health = 10
+        self.character.max_health = 10
+        self.strength = 0
+        self.dexterity = 0
+        self.endurance = 0
+        self.intelligence = 0
+        self.character.armor = 0
+        self.traits["insect_nest"] = True
+
+"""
+Yellow Jacket Nest
+Characteristic: Hit it and swarms pop out
+Vulnerable: Fire
+Abilities: When hit summons enemies
+On hit:
+"""

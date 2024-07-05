@@ -15,6 +15,3 @@ Ocean:
 fix mini examine window
 
 Change spell hotkey to show up when you hover over it
-Add buttons in inventory to change selection of items (restrict by potions, scrolls, etc)
-
-create inventory object

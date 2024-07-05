@@ -1,20 +1,4 @@
 FOREST
-Big spiders
-Characteristic: Can move fast
-Abilities: Create web on tile
-On hit: Poison / stun?
-
-Yellow Jacket Nest
-Characteristic: Hit it and swarms pop out
-Vulnerable: Fire
-Abilities: When hit summons enemies
-On hit:
-
-Treant
-Characteristic: Lots of health
-Vulnerable: Fire
-Abilities: Ground Stomp
-On hit: Root lash (extra damage, immobile)
 
 Snailgoat
 Characteristic: Leaves toxic sludge as it moves
@@ -28,11 +12,6 @@ Vulnerable: Fire
 Abilities: Can attack from range with poison jagger
 On hit: Poisoness spikes
 
-Metallic bear
-Characteristic:
-Vulnerable:
-Abilities: Fury (low on health goes beserk)
-On hit:
 
 -------------------
 Cave

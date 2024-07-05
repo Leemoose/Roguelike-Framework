@@ -1,5 +1,5 @@
 from objects import Objects
-from character_implementation import character as C, statistics, talk, Body
+from character_implementation import character as C, statistics, talk, Body, Fighter
 import random
 import loops as L
 from navigation_utility import pathfinding
@@ -19,6 +19,7 @@ class Player(Objects):
         self.mage = Mage(self)
         self.inventory = Inventory(self)
         self.body = Body(self)
+        self.fighter = Fighter(self)
 
         self.statistics = statistics.StatTracker()
 
@@ -64,11 +65,22 @@ class Player(Objects):
                 self.mage.add_spell(spell)
             self.stat_points = 20 # free stat points for debugging
 
+    def get_attribute(self, attribute):
+        attribute = attribute.lower()
+        if attribute in ["strength", 'intelligence','endurance',"dexterity"]:
+            return self.character.get_attribute(attribute)
+        elif attribute in ['armor']:
+            return self.fighter.get_attribute(attribute)
+
+    def change_attribute(self, attribute, change):
+        attribute = attribute.lower()
+        if attribute in ["strength", 'intelligence','endurance',"dexterity"]:
+            return self.character.change_attribute(attribute, change)
+        elif attribute in ['armor']:
+            return self.fighter.change_attribute(attribute, change)
+
     def get_inventory(self):
         return self.inventory.get_inventory()
-
-    def get_attribute(self, attribute):
-        return self.character.get_attribute(attribute)
 
     def get_action_cost(self, action):
         return self.character.get_action_cost(action)
@@ -118,7 +130,7 @@ class Player(Objects):
         self.character.energy -= self.character.action_costs[
             "attack"]  # / (1.05**(self.character.dexterity + self.character.round_bonus())))
         loop.screen_focus = (defender.x, defender.y)
-        damage = self.character.melee(defender, loop)
+        damage = self.fighter.do_attack(defender, loop)
         self.statistics.add_attack_details(damage)
         loop.add_message(f"The player attacked for {damage} damage")
 

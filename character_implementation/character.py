@@ -2,7 +2,7 @@ import random
 from .body_slot import Body
 
 class Character():
-    def __init__(self, parent, endurance = 0, intelligence = 0, dexterity = 0, strength = 0, health = 100, mana = 0, health_regen=0.2, mana_regen=0.2, min_damage = 2, max_damage = 3):
+    def __init__(self, parent, endurance = 0, intelligence = 0, dexterity = 0, strength = 0, health = 100, mana = 0, health_regen=0.2, mana_regen=0.2):
         self.endurance = endurance
         self.intelligence = intelligence
         self.dexterity = dexterity
@@ -27,8 +27,6 @@ class Character():
 
         self.alive = True
 
-    #    self.body = Body(self)
-
         self.main_weapon = None
 
 
@@ -42,8 +40,7 @@ class Character():
                              "drop": 10
                             }
 
-        self.base_damage = 0
-        self.armor = 0
+
 
         self.parent = parent
         self.status_effects = []
@@ -57,9 +54,6 @@ class Character():
         self.health_partial = 0.0
         self.mana_partial = 0.0
 
-        self.unarmed_damage_min = min_damage
-        self.unarmed_damage_max = max_damage
-
     def get_health(self):
         return self.health
 
@@ -70,26 +64,26 @@ class Character():
         return self.action_costs[action]
 
     def get_attribute(self, attribute):
-        if attribute == "Strength":
+        attribute = attribute.lower()
+        if attribute == "strength":
             return self.strength
-        elif attribute == "Intelligence":
+        elif attribute == "intelligence":
             return self.intelligence
-        elif attribute == "Endurance":
+        elif attribute == "endurance":
             return self.endurance
-        elif attribute == "Dexterity":
+        elif attribute == "dexterity":
             return self.dexterity
 
     def change_attribute(self, attribute, change):
-        if attribute == "Strength":
+        attribute = attribute.lower()
+        if attribute == "strength":
             self.strength += change
-        elif attribute == "Intelligence":
+        elif attribute == "intelligence":
             self.intelligence += change
-        elif attribute == "Endurance":
+        elif attribute == "endurance":
             self.endurance += change
-        elif attribute == "Dexterity":
+        elif attribute == "dexterity":
             self.dexterity += change
-        elif attribute == "Armor":
-            self.armor += change
         else:
             raise Exception("You tried to change an attribute but it doesn't exist")
     def change_health(self, change):
@@ -138,9 +132,6 @@ class Character():
         if self.mana > self.max_mana:
             self.mana = self.max_mana
 
-    def defend(self):
-        defense = self.armor + (self.endurance // 3)
-        return defense
 
     def skill_damage_increase(self):
         return int(((self.intelligence) * 1.5 ) // 2)
@@ -161,7 +152,7 @@ class Character():
      #   self.health = self.max_health
         self.max_mana += 3
       #  self.mana = self.max_mana
-        self.base_damage += 1
+        #self.base_damage += 1
 
     def level_up_stats(self, strength_up=1, dexterity_up=1, endurance_up=1, intelligence_up=1):
         self.endurance += endurance_up
@@ -173,71 +164,6 @@ class Character():
         self.max_health += (endurance_up * 10)
         self.max_mana += (intelligence_up * 2)
 
-    def get_damage_min(self):
-        return self.get_damage()[0]
-    
-    def get_damage_max(self):
-        return self.get_damage()[1]
-
-    def get_damage(self):
-        weapon = self.parent.body.get_weapon()
-        if not weapon:
-            return self.base_damage + self.unarmed_damage_min, self.base_damage + self.unarmed_damage_max
-        else:
-            return self.base_damage + weapon.damage_min, self.base_damage + weapon.damage_max
-
-    """
-    1. Damage: Calculate how much damage opponent you would deal
-    2. Chance to hit: dexterity vs dexterity affected by how heavy the armor is for both sides (% shave off damage?)
-    2. On hit effects
-    3. Armor: Armor flat damage decrease vs armor piercing 
-    4. Take damage
-    
-    """
-    def melee(self, defender, loop):
-        self.energy -= self.action_costs["attack"]
-        effect = None
-        weapon = self.parent.body.get_weapon()
-
-        if weapon is None:
-            damage = random.randint(self.base_damage + self.unarmed_damage_min, self.base_damage + self.unarmed_damage_max) #Should make object for unarmed damage
-        else:
-            if weapon.on_hit == None:
-                damage = weapon.attack()
-            else:
-                damage, effect = weapon.attack() 
-
-        dodge_damage = defender.character.dodge() - self.strike()
-
-        damage_shave = 1 - ((min(dodge_damage, 0) // 10) / 10)
-
-        if effect is not None and damage_shave == 0:
-            effect = effect(self.parent) # some effects need an inflictor
-            defender.character.add_status_effect(effect)
-
-        effectiveness = 0
-        if weapon is not None:
-            defense = defender.character.defend() - weapon.armor_piercing
-            for types in weapon.effective:
-                if types in defender.attributes:
-                    if defender.attributes[types] == True:
-                        effectiveness += 1
-                        loop.add_message("The attack is effective against {} as it is a {} type.".format(defender.name, types))
-        else:
-            defense = defender.character.defend()
-
-        finalDamage = max(0, int((damage + self.base_damage) * damage_shave * (max(1,1.5 * effectiveness)) - defense))
-        defender.character.take_damage(self.parent, finalDamage)
-        return finalDamage
-
-    def strike(self):
-        strike_chance = random.randint(1,100) + self.dexterity * 2
-        return min(100, strike_chance)
-
-
-    def dodge(self):
-        dodge_chance = random.randint(1,100) + self.dexterity * 2
-        return (min(100, dodge_chance))
 
     def quaff(self, potion, item_dict, item_map):
         if potion.consumeable and potion.equipment_type == "Potiorb":

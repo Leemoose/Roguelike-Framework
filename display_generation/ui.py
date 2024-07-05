@@ -431,7 +431,7 @@ class StatBox(pygame_gui.elements.UITextBox):
                 self.dexterity ==entity.character.dexterity and
                 self.endurance == entity.character.endurance and
                 self.intelligence == entity.character.intelligence and
-                self.armor == entity.character.armor)
+                self.armor == entity.fighter.get_armor())
 
     def SetCompareStats(self, entity):
         self.status = self.get_health_status(entity)
@@ -447,7 +447,7 @@ class StatBox(pygame_gui.elements.UITextBox):
         self.dexterity = entity.character.dexterity
         self.endurance = entity.character.endurance
         self.intelligence = entity.character.intelligence
-        self.armor = entity.character.armor
+        self.armor = entity.fighter.get_armor()
 
     def get_health_status(self, entity):
         if entity.character.health < entity.character.max_health // 3 * 2:
@@ -500,7 +500,7 @@ class StatBox(pygame_gui.elements.UITextBox):
                             "Dexterity: " + self.stat_text(self.player, self.player.character.dexterity) + "<br>"
                             "Endurance: " + self.stat_text(self.player, self.player.character.endurance) + " "
                             "Intelligence: " + self.stat_text(self.player, self.player.character.intelligence) + "<br>" + \
-                            "Armor: " + self.stat_text(self.player, self.player.character.armor, False) + "<br>" + \
+                            "Armor: " + self.stat_text(self.player, self.player.fighter.get_armor(), False) + "<br>" + \
                             self.round_text(self.player) + \
                             "Gold: " + self.stat_text(self.player, self.player.inventory.get_gold(), False) + "<br>" + \
                             "Status: " + self.get_status_text(self.player) + "<br>" + \

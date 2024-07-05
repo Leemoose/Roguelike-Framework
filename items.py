@@ -106,7 +106,7 @@ class Equipment(O.Item):
         entity.character.change_attribute("Intelligence", intl)
         entity.character.change_attribute("Endurance", end)
         entity.character.change_attribute("Dexterity", dex)
-        entity.character.change_attribute("Armor", arm)
+        entity.change_attribute("armor", arm)
 
     #Called after level up has completed to get stats to match!
     def update_stats_level_up(self, entity):
@@ -115,7 +115,7 @@ class Equipment(O.Item):
         entity.character.change_attribute("Intelligence", intl)
         entity.character.change_attribute("Endurance", end)
         entity.character.change_attribute("Dexterity", dex)
-        entity.character.change_attribute("Armor", arm)
+        entity.change_attribute("armor", arm)
 
     def remove_stats(self, entity):
         (str, dex, intl, end, arm) = self.stats.GetStatsForLevel(self.level)
