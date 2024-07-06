@@ -38,10 +38,59 @@ class Fighter():
     3. Armor: Armor flat damage decrease vs armor piercing 
     4. Take damage
 
+    Armor piercing <=> Armor
+    Magic penetration <=> MR
+    Mental power <=> Will power
+    Attribute (either suceptible or resistent)
+    Accuracy <=> Dodge
+    True damage
+    On hit modifiers
+    
     """
 
     def do_attack(self, defender, loop):
         #self.energy -= self.action_costs["attack"] move to player
+
+        damage, effect = self.get_damage()
+
+        dodge_damage = defender.fighter.get_dodge_chance() - self.get_accuracy()
+        damage_shave = 1 - ((min(dodge_damage, 0) // 10) / 10)
+
+        if effect is not None and damage_shave == 0:
+            effect = effect(self.parent)  # some effects need an inflictor
+            defender.character.add_status_effect(effect)
+
+        defense = defender.fighter.do_defend() - self.get_armor_piercing()
+
+        effectiveness = 0
+        weapon = self.parent.body.get_weapon()
+        if weapon is not None:
+            for types in weapon.effective:
+                if types in defender.attributes:
+                    if defender.attributes[types] == True:
+                        effectiveness += 1
+                        loop.add_message(
+                            "The attack is effective against {} as it is a {} type.".format(defender.name, types))
+
+        finalDamage = max(0, int((damage + self.base_damage) * damage_shave * (max(1, 1.5 * effectiveness)) - defense))
+        defender.character.take_damage(self.parent, finalDamage)
+        return finalDamage
+
+    def get_accuracy(self):
+        strike_chance = random.randint(1,100) + self.parent.character.get_attribute("Dexterity") * 2
+        return min(100, strike_chance)
+
+    def get_damage_min(self):
+        return self.get_damage()[0]
+
+    def get_damage_max(self):
+        return self.get_damage()[1]
+
+    def get_dodge_chance(self):
+        dodge_chance = random.randint(1, 100) + self.parent.character.get_attribute("Dexterity") * 2
+        return (min(100, dodge_chance))
+
+    def get_damage(self):
         effect = None
         weapon = self.parent.body.get_weapon()
 
@@ -54,48 +103,15 @@ class Fighter():
             else:
                 damage, effect = weapon.attack()
 
-        dodge_damage = defender.fighter.do_dodge() - self.strike()
+        return damage, effect
 
-        damage_shave = 1 - ((min(dodge_damage, 0) // 10) / 10)
 
-        if effect is not None and damage_shave == 0:
-            effect = effect(self.parent)  # some effects need an inflictor
-            defender.character.add_status_effect(effect)
-
-        effectiveness = 0
-        if weapon is not None:
-            defense = defender.fighter.do_defend() - weapon.armor_piercing
-            for types in weapon.effective:
-                if types in defender.attributes:
-                    if defender.attributes[types] == True:
-                        effectiveness += 1
-                        loop.add_message(
-                            "The attack is effective against {} as it is a {} type.".format(defender.name, types))
-        else:
-            defense = defender.fighter.do_defend()
-
-        finalDamage = max(0, int((damage + self.base_damage) * damage_shave * (max(1, 1.5 * effectiveness)) - defense))
-        defender.character.take_damage(self.parent, finalDamage)
-        return finalDamage
-
-    def strike(self):
-        strike_chance = random.randint(1,100) + self.parent.character.get_attribute("Dexterity") * 2
-        return min(100, strike_chance)
-
-    def get_damage_min(self):
-        return self.get_damage()[0]
-
-    def get_damage_max(self):
-        return self.get_damage()[1]
-
-    def get_damage(self):
+    def get_armor_piercing(self):
         weapon = self.parent.body.get_weapon()
-        if not weapon:
-            return self.base_damage + self.unarmed_damage_min, self.base_damage + self.unarmed_damage_max
+        if weapon is None:
+            ap = 0
         else:
-            return self.base_damage + weapon.damage_min, self.base_damage + weapon.damage_max
+            ap = weapon.get_armor_piercing()
+        return ap
 
-    def do_dodge(self):
-        dodge_chance = random.randint(1, 100) + self.parent.character.get_attribute("Dexterity") * 2
-        return (min(100, dodge_chance))
 

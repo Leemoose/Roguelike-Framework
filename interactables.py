@@ -13,7 +13,9 @@ class Campfire(Interactable):
         super().__init__(render_tag, x, y, name=name)
         self.used = False
 
-    def interact(self, loop):
+    def interact(self, entity, loop):
         if not self.used and loop.get_daytime() == "Nighttime":
             loop.change_daytime()
             self.used = True
+            loop.add_message("You rested at the campfire")
+            entity.character.change_health(entity.character.get_max_health()-entity.character.get_health())

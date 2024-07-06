@@ -1,7 +1,6 @@
 import random
 from .branch_params import branch_params
 from .monster_initializations import MonsterSpawns
-import items as I
 
 class MonsterSpawner():
     def __init__(self, MonsterSpawns):

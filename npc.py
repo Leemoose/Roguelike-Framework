@@ -19,6 +19,7 @@ class NPC(O.Objects):
         self.dialogue_memory = []
         self.dialogue_file = "npc_dialogue/default.txt"
         self.init_dialogue_queue()
+        self.traits["npc"] = True
 
     def init_dialogue_queue(self):
         # a series of data structures that different dialogue flags need to efficiently manipulate dialogue flow
@@ -145,9 +146,10 @@ class NPC(O.Objects):
         loop.add_message(
             self.name + " says: 'Move along now.'")
 
-    def welcome(self, loop):
+    def interact(self, loop):
         loop.messages = []
         loop.npc_focus = self
+        loop.change_loop("trade")
 
     def give_quest(self, loop):
         pass
@@ -290,6 +292,18 @@ class Sensei(NPC):
             loop.player.add_quest(quest.DojoQuest())
             self.gave_quest = True
             self.has_stuff_to_say = False
+
+class Mage(NPC):
+    def __init__(self, x, y, render_tag= 126, name="Mage"):
+        super().__init__(x=x, y=y, render_tag = render_tag, name = name)
+        self.options = ["Talk"]
+        self.has_stuff_to_say = False
+        self.dialogue_file = "npc_dialogue/mage.txt"
+        self.init_dialogue_queue()
+
+    def talk(self, loop):
+        if self.has_stuff_to_say:
+            self.talking = True
 
 class Archmage(NPC):
     def __init__(self, x, y, render_tag= 126, name="Archmage Thalor"):

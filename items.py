@@ -159,6 +159,9 @@ class Weapon(Equipment):
     def can_be_equipped(self, entity):
         return super().can_be_equipped(entity)
 
+    def get_armor_piercing(self):
+        return self.armor_piercing
+
     def attack(self):
         damage = random.randint(self.damage_min, self.damage_max)
         return damage

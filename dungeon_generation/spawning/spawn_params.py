@@ -1,6 +1,23 @@
 import copy
 import random
 
+class SpawnParams():
+    def __init__(self, entity, minFloor=1, maxFloor=10, branch="all"):
+        self.entity = entity
+        self.minFloor = minFloor
+        self.maxFloor = maxFloor
+        self.branch = branch
+
+    def AllowedAtDepth(self, depth, branch="all"):
+        return (depth >= self.minFloor and depth <= self.maxFloor and (self.branch == "all" or self.branch == branch))
+
+    def GetFreshCopy(self):
+        return copy.deepcopy(self.entity)
+
+class InteractableSpawnParams(SpawnParams):
+    def __init__(self, entity, minFloor=1, maxFloor=10, branch="all"):
+        super().__init__(entity, minFloor, maxFloor, branch)
+
 class ItemSpawnParams:
     def __init__(self, item, minFloor=1, maxFloor=10, branch="all"):
         self.item = item

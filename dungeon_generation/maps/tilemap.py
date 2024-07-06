@@ -47,7 +47,8 @@ class TileMap(TrackingMap):
         self.track_map_render = [x[:] for x in [["x"] * self.height] * self.width]
         self.image = [x[:] for x in [[-1] * self.height] * self.width]
         if depth == 1 and self.branch == "Throne":
-            self.track_map_render = throneify(0, 0, self.track_map_render, self.image, self.width, self.height)
+            throneheight = self.height // 3
+            self.track_map_render = throneify(0, 0, self.track_map_render, self.image, self.width, throneheight)
         elif branch == "Hub":
             print(self.track_map_render)
             self.track_map_render = hubify(0, 0, self.track_map_render, self.image, self.width, self.height)

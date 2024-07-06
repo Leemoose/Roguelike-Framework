@@ -273,6 +273,11 @@ class Character():
             loop.change_loop(returnLoop)
             return
 
+        if loop.branch == "Forest":
+            loop.add_message("No resting with these predators lurking nearby")
+            loop.change_loop(returnLoop)
+            return
+
         tile_map = loop.generator.tile_map
         no_monster_active = True
         for monster in loop.generator.monster_map.all_entities():

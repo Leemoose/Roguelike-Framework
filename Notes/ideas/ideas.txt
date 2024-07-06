@@ -30,14 +30,11 @@ Can create portal to first floor?
 Combining potions with equipment to create status effects
 
 More complicated combat modifiers:
-    Armor piercing <=> Armor
     Magic penetration <=> MR
     Mental power <=> Will power
     Attribute (either suceptible or resistent)
-    Accuracy <=> Dodge
     True damage
-    On hit modifiers
-    
+
 More pathing stuff:
     Could introduce pathing to specific items (might need ctrl+f for items like dcss to be usable)
 

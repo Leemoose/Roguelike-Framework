@@ -2,7 +2,7 @@ import random
 
 import static_configs
 from dungeon_generation import *
-from .spawning import branch_params, item_spawner, monster_spawner
+from .spawning import branch_params, item_spawner, monster_spawner, interactable_spawner
 from .maps import TileMap, TrackingMap
 
 from interactables import Campfire
@@ -245,9 +245,38 @@ class DungeonGenerator():
                     self.place_monster_at_location(self.tile_map.locate(x,y).spawn_entity(), x, y)
 
     def place_interactables(self, branch, depth):
-        if branch == "Forest":
-            x,y = self.get_random_location(stairs_block = True)
-            self.interact_map.place_thing(Campfire())
+        interactable_spawns = interactable_spawner.spawn_interactables(depth, branch)
+        first = True
+        force_near_stairs = False
+        for interactable in interactable_spawns:
+            self.place_interactable(interactable)
+
+    def place_interactable(self, interactable, force_near_stairs=False):
+        startx = random.randint(0, self.width - 1)
+        starty = random.randint(0, self.height - 1)
+        map = self.interact_map
+
+        # make sure the item is placed on a passable tile that does not already have an item and is not stairs
+        check_on_stairs = self.on_stairs(startx, starty)
+        if force_near_stairs:
+            directions = [(0, 1), (1, 0), (-1, 0), (0, -1), (1, 1), (-1, 1), (1, -1), (-1, -1)]
+            while ((self.tile_map.get_passable(startx, starty) == False) or
+                   (map.get_passable(startx, starty) == False)):
+                random_direction = random.choice(directions)
+                startx = self.tile_map.stairs[1].x + random_direction[0]
+                starty = self.tile_map.stairs[1].y + random_direction[1]
+        else:
+            while ((not self.tile_map.get_passable(startx, starty)) or
+                   (not map.get_passable(startx, starty)) or
+                   check_on_stairs):
+                startx = random.randint(0, self.width - 1)
+                starty = random.randint(0, self.height - 1)
+                check_on_stairs = self.on_stairs(startx, starty)
+
+        interactable.x = startx
+        interactable.y = starty
+
+        map.place_thing(interactable)
 
     def place_items(self, depth):
         itemSpawns = item_spawner.spawnItems(depth, self.branch)

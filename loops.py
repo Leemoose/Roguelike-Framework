@@ -268,7 +268,7 @@ class Loops():
         return True
 
     def get_daytime(self):
-        return self.daytime
+        return self.day
     def monster_loop(self, energy, stairs = None):
         
         for monster in self.generator.monster_map.all_entities():
@@ -592,7 +592,9 @@ class Loops():
             # do status effect stuff
             self.player.character.tick_all_status_effects(self)
             self.player.mage.tick_cooldowns()
-            self.player.character.tick_regen()
+
+            if self.branch != "Forest":
+                self.player.character.tick_regen()
 
             for quest in self.player.quests:
                 quest.check_for_progress(self)

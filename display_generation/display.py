@@ -80,7 +80,7 @@ class Display:
         tileDict = loop.tileDict
         monsterID = loop.generator.monster_map.dict
         item_ID = loop.generator.item_map.dict
-        npc_ID = loop.generator.interact_map.dict
+        interact_map = loop.generator.interact_map.dict
         monster_map = loop.generator.monster_map
         player = loop.player
         messages = loop.messages
@@ -164,15 +164,14 @@ class Display:
                     item_tile = tileDict.tile_string(item.render_tag)
                     self.win.blit(item_tile, (self.textSize * (item.x - self.x_start), self.textSize * (item.y - self.y_start)))
 
-        for key in npc_ID.subjects:
-            npc = npc_ID.get_subject(key)
-            if (npc.x >= self.x_start and npc.x < self.x_end and npc.y >= self.y_start and npc.y < self.y_end):
-                if floormap.track_map[npc.x][npc.y].visible:
-                    npc_tile = tileDict.tile_string(npc.render_tag)
-                    self.win.blit(npc_tile, (self.textSize * (npc.x - self.x_start), self.textSize * (npc.y - self.y_start)))
-                    if npc.has_stuff_to_say:
+        for interactable in interact_map.all_entities():
+            if (interactable.x >= self.x_start and interactable.x < self.x_end and interactable.y >= self.y_start and interactable.y < self.y_end):
+                if floormap.track_map[interactable.x][interactable.y].visible:
+                    interactable_tile = tileDict.tile_string(interactable.render_tag)
+                    self.win.blit(interactable_tile, (self.textSize * (interactable.x - self.x_start), self.textSize * (interactable.y - self.y_start)))
+                    if interactable.has_trait("npc") and interactable.has_stuff_to_say:
                         speech_tile = tileDict.tile_string(122) # render tag of speech bubble, check mapping.py if you need to change
-                        self.win.blit(speech_tile, (self.textSize * (npc.x - self.x_start), self.textSize * (npc.y - self.y_start)))
+                        self.win.blit(speech_tile, (self.textSize * (interactable.x - self.x_start), self.textSize * (interactable.y - self.y_start)))
 
         for key in monsterID.subjects:
             monster = monsterID.get_subject(key)
@@ -220,12 +219,11 @@ class Display:
                                              pygame.Rect(map_offset_from_left + map_tile_size * (x - x_map_start),
                                                          map_offset_from_top + map_tile_size * (y - y_map_start),
                                                          map_tile_size, map_tile_size))
-                            for key in npc_ID.subjects:
-                                npc = npc_ID.get_subject(key)
-                                if floormap.track_map[npc.x][npc.y].seen:
+                            for interact in interact_map.all_entities():
+                                if floormap.track_map[interact.x][interact.y].seen:
                                     pygame.draw.rect(self.win, (200, 100, 0),
-                                                     pygame.Rect(map_offset_from_left + map_tile_size * (npc.x - x_map_start),
-                                                                 map_offset_from_top + map_tile_size * (npc.y - y_map_start),
+                                                     pygame.Rect(map_offset_from_left + map_tile_size * (interact.x - x_map_start),
+                                                                 map_offset_from_top + map_tile_size * (interact.y - y_map_start),
                                                                  map_tile_size, map_tile_size))
                     else:
                         pygame.draw.rect(self.win, (100, 100, 100),
@@ -622,7 +620,7 @@ class Display:
 
         if entity.has_trait("monster"):
             entity_text += "Health: " + str(entity.character.health) + " / " + str(entity.character.max_health) + "<br>"
-            entity_text += "Attack: " + str(entity.character.get_damage_min()) + " - " + str(entity.character.get_damage_max()) + "<br>"
+            entity_text += "Attack: " + str(entity.fighter.get_damage_min()) + " - " + str(entity.fighter.get_damage_max()) + "<br>"
             entity_text += "Armor: " + str(entity.fighter.get_armor()) + "<br>"
             for skill in entity.character.skills:
                 entity_text += "Has skill: " + str(skill.name)+ "<br>"

@@ -4,9 +4,9 @@ def throneify(startx, starty, render_tile_map, image_map, width, height):
     height = min(height, len(render_tile_map[0]) - starty)
     width = min(width, len(render_tile_map) - startx)
     print(width, height)
-    midpoint = width // 2
-    top = height // 6
-    bottom = height * 5 // 6
+    midpoint = startx + width // 2
+    top = starty + height // 6
+    bottom = starty + height * 5 // 6
 
     for x in range(width):
         for y in range(height):
@@ -20,21 +20,25 @@ def throneify(startx, starty, render_tile_map, image_map, width, height):
         for x in range(width):
             for y in range(height):
                 if ((x == 3 or x == width - 5) and y % 4 == 2):
-                    pillerify(render_tile_map, x, y)
+                    pillerify(render_tile_map, startx+x, starty+y)
             for y in range(height):
-                if (x == 4 or x == width - 5) and y > 3 and y < height - 3 and render_tile_map[x][y] != "x":
+                if (x == 4 or x  == width - 5) and y > 3 and y < height - 3 and render_tile_map[startx+x][starty+ y] != "x":
                     if placed_brother == False and random.random() > .9:
-                        render_tile_map[x][y] = "BB"
+                        render_tile_map[startx+x][starty+ y] = "BB"
                         placed_brother = True
                     else:
-                        render_tile_map[x][y] = "G"
-                # elif (x == 4 or x == width - 5) and y > 3 and render_tile_map[x][y] != "x":
-                #     render_tile_map[x][y] = "G"
-                elif (x == 4 or x == width - 5) and (y <= 3 or y >= height - 3) and render_tile_map[x][y] != "x":
-                    render_tile_map[x][y] = "d"
+                        render_tile_map[startx+x][starty+ y]  = "G"
+                elif (x == 4 or x == width - 5) and (y <= 3 or y >= height - 3) and render_tile_map[startx+x][starty+ y] != "x":
+                    render_tile_map[startx+x][starty+ y] = "d"
     render_tile_map[midpoint][top] = "g"
     render_tile_map[midpoint][top + 1] = "K"
+    render_tile_map[midpoint-1][top] = "M"
+    render_tile_map[midpoint+1][top] = "M"
     render_tile_map[midpoint][bottom] = "<"
+
+    render_tile_map[midpoint][starty+height-1] = "d"
+    render_tile_map[midpoint][starty + height] = "."
+
 
     for y in range(height):
         if y > top and y < bottom and render_tile_map[x][y] == ".":

@@ -1,5 +1,5 @@
 from objects import Objects
-from character_implementation import character as C, statistics, talk, Body, Fighter
+from character_implementation import character as C, statistics, Body, Fighter
 import random
 import loops as L
 from navigation_utility import pathfinding
@@ -104,7 +104,7 @@ class Player(Objects):
                 defender = loop.generator.monster_map.locate(x,y)
                 self.attack(defender, loop)
             elif not loop.generator.interact_map.get_passable(x, y):
-                talk(self, loop, input_direction=(move_x, move_y))
+                self.do_interact(loop, input_direction=(move_x, move_y))
             else:
                 loop.add_message("You cannot move there")
 
@@ -398,6 +398,23 @@ class Player(Objects):
         if self.body.can_unequip(item) and item.can_be_unequipped(self):
             self.body.unequip(item)
             #self.energy -= self.action_costs["unequip"]
+
+    def do_interact(self, loop, input_direction=None):
+        interact = False
+        if input_direction == None:
+            directions = [(0, 1), (0, -1), (1, 0), (-1, 0), (1, 1), (-1, -1), (1, -1), (-1, 1)]
+        else:
+            directions = [input_direction]
+        location = []
+        for x, y in directions:
+            location.append((x + self.x, y + self.y))
+            if loop.generator.interact_map.locate(x + self.x, y + self.y) != -1:
+                loop.generator.interact_map.locate(x + self.x, y + self.y).interact(self, loop)
+                spoke = True
+
+
+        # if spoke == False:
+        #    loop.add_message("You feel lonely.")
 
 
 
