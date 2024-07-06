@@ -28,6 +28,7 @@ MonsterSpawns.append(MonsterSpawnParams(M.Treant(), minFloor=3, maxFloor=5, bran
 MonsterSpawns.append(MonsterSpawnParams(M.MetallicBear(), minFloor=3, maxFloor=5, branch="Forest")) # maybe move to forest branch
 MonsterSpawns.append(MonsterSpawnParams(M.Spider(), minFloor=1, maxFloor=5, branch="Forest")) # maybe move to forest branch
 MonsterSpawns.append(MonsterSpawnParams(M.InsectNest(), minFloor=1, maxFloor=5, branch="Forest")) # maybe move to forest branch
+MonsterSpawns.append(MonsterSpawnParams(M.Vinecrasher(), minFloor=1, maxFloor=5, branch="Forest")) # maybe move to forest branch
 
 
 # late floors

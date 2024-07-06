@@ -231,6 +231,11 @@ class TileDict():
         tiles[1100] = image.load('assets/monsters/slime.png')
         tiles[161] = image.load('assets/monsters/yendorb_deactivated.png')
 
+        tiles[1200] = image.load('assets/monsters/treant.png')
+        tiles[1210] = image.load('assets/monsters/spider.png')
+        tiles[1220] = image.load('assets/monsters/insect_nest.png')
+        tiles[1230] = image.load('assets/monsters/vinecrasher.png')
+
         tiles[1500] = image.load('assets/monsters/squid.png')
         tiles[1510] = image.load('assets/monsters/abyssal_leviathon.png')
         tiles[1520] = image.load('assets/monsters/chasm_crawler.png')
@@ -238,6 +243,8 @@ class TileDict():
 
         tiles[2000] = image.load('assets/monsters/monster_corpse.png')
         tiles[2001] = image.load('assets/items/guard_corpse.png')
+
+        tiles[3000] = image.load('assets/npc/campfire.png')
 
         self.tiles = tiles
 

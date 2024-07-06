@@ -135,10 +135,6 @@ class Player(Objects):
         loop.add_message(f"The player attacked for {damage} damage")
 
     def autopath(self, loop):
-        if loop.branch == "Forest":
-            loop.add_message("You cannot autopath in the forest (otherwise we'd have to figure out time).")
-            loop.change_loop(LoopType.action)
-            return False
         if self.character.needs_rest(self):
             loop.after_rest = LoopType.pathing
             loop.change_loop(LoopType.resting)
@@ -161,6 +157,8 @@ class Player(Objects):
                 # Pathfinding messed up - pop this just in case
                 x, y = self.path.pop(0)
             self.move(x - self.x, y - self.y, loop)
+            #loop.time_passes(self.character.energy)
+            #self.character.energy = 0 #need to find a way to make time pass as autoexplore happens
 
             # auto pickup gold
             for item in loop.generator.item_map.all_entities():

@@ -9,7 +9,7 @@ class Interactable(Objects):
         pass
 
 class Campfire(Interactable):
-    def __init__(self, render_tag = 0,x=-1, y = -1, name="Campfire"):
+    def __init__(self, render_tag = 3000,x=-1, y = -1, name="Campfire"):
         super().__init__(render_tag, x, y, name=name)
         self.used = False
 

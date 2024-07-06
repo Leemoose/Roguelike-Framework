@@ -434,7 +434,7 @@ class Stumpy(Monster):
         self.traits["stumpy"] = True
 
 class Treant(Monster):
-    def __init__(self, x=-1, y=-1, render_tag=0, name="Treant"):
+    def __init__(self, x=-1, y=-1, render_tag=1200, name="Treant"):
         super().__init__(x=x, y=y, render_tag = render_tag, name = name)
         self.brain = monster_ai.Monster_AI(self)
         self.character.experience_given = 40
@@ -458,7 +458,7 @@ On hit: Root lash (extra damage, immobile)
         """
 
 class Spider(Monster):
-    def __init__(self, x=-1, y=-1, render_tag=0, name="Spider"):
+    def __init__(self, x=-1, y=-1, render_tag=1210, name="Spider"):
         super().__init__(x=x, y=y, render_tag=render_tag, name=name)
         self.brain = monster_ai.Monster_AI(self)
         self.character.experience_given = 10
@@ -502,9 +502,9 @@ On hit:
         """
 
 class InsectNest(Monster):
-    def __init__(self, x=-1, y=-1, render_tag=0, name="Insect Nest"):
+    def __init__(self, x=-1, y=-1, render_tag=1220, name="Insect Nest"):
         super().__init__(x=x, y=y, render_tag=render_tag, name=name)
-        self.brain = monster_ai.Monster_AI(self)
+        self.brain = monster_ai.Insect_Nest_AI(self)
         self.character.experience_given = 40
         self.description = "Nestled within the forest, this immobile structure is a pulsating hive of malevolent activity. Each strike against the Insect Nest provokes a swarm of flying, poisonous insects that emerge in a frenzied cloud to defend their home. Though these insects are fragile and have low health, their venomous bites can quickly overwhelm and debilitate their attackers. The nest itself is otherwise powerless, relying entirely on the relentless defense of its swarming guardians to deter any who would seek to destroy it. Approach with caution, for disturbing the nest unleashes a torrent of venomous fury."
         self.character.health = 10
@@ -521,5 +521,50 @@ Yellow Jacket Nest
 Characteristic: Hit it and swarms pop out
 Vulnerable: Fire
 Abilities: When hit summons enemies
+On hit:
+"""
+class Vinecrasher(Monster):
+    def __init__(self, x=-1, y=-1, render_tag=1230, name="Vinecrasher"):
+        super().__init__(x=x, y=y, render_tag=render_tag, name=name)
+        self.brain = monster_ai.Monster_AI(self)
+        self.character.experience_given = 40
+        self.description = "The Vinecrasher is a tangled mass of brambles and thorns, lurking in the forest in packs. These creatures are capable of launching poisonous jaggers from a distance, making them deadly even from afar. Though they are fragile with low health, their venomous attacks can quickly incapacitate their foes. Vulnerable to fire, a well-placed flame can easily reduce them to ash. Their twisted forms blend seamlessly with the forest undergrowth, making them difficult to spot until it’s too late. Beware the Vinecrasher's ranged poison assault and their pack tactics, for they strike swiftly and without mercy."
+        self.character.health = 10
+        self.character.max_health = 10
+        self.strength = 0
+        self.dexterity = 0
+        self.endurance = 0
+        self.intelligence = 0
+        self.character.armor = 0
+        self.traits["vinecrasher"] = True
+
+"""
+Vinecrasher
+Characteristic: Appears in packs, low health
+Vulnerable: Fire
+Abilities: Can attack from range with poison jagger
+On hit: Poisoness spikes
+"""
+
+
+class Snailgoat(Monster):
+    def __init__(self, x=-1, y=-1, render_tag=0, name="Snailgoat"):
+        super().__init__(x=x, y=y, render_tag=render_tag, name=name)
+        self.brain = monster_ai.Monster_AI(self)
+        self.character.experience_given = 40
+        self.description = "The Snailgoat is a peculiar creature with the body of a goat and the protective shell of a snail. As it grazes on forest plants, it leaves a trail of toxic sludge in its wake, making the ground hazardous for any who follow. Though it does not attack, the Snailgoat's defensive nature makes it a challenge for would-be predators. When threatened, it retreats into its sturdy shell, significantly reducing the damage it takes. Despite its passive demeanor, the Snailgoat's toxic trail and fortified defense make it a noteworthy presence in the forest ecosystem."
+        self.character.health = 30
+        self.character.max_health = 30
+        self.strength = 2
+        self.dexterity = 0
+        self.endurance = 20
+        self.intelligence = 0
+        self.character.armor = 5
+        self.traits["snailgoat"] = True
+"""
+Snailgoat
+Characteristic: Leaves toxic sludge as it moves
+Vulnerable:
+Abilities: Hide in shell (increased armor, cannot attack)
 On hit:
 """
