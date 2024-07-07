@@ -5,7 +5,7 @@ class Fighter():
         self.parent = parent
         self.min_unarmed = 3
         self.max_unarmed = 6
-        self.on_hit = None
+        self.on_hit = []
 
         self.base_damage = 0
         self.armor = 0
@@ -26,6 +26,9 @@ class Fighter():
     def change_attribute(self, attribute, change):
         if attribute == "armor":
             self.armor += change
+
+    def add_on_hit_effect(self, effect):
+        self.on_hit.append(effect)
 
     def do_defend(self):
         defense = self.armor + (self.parent.character.get_attribute("Endurance") // 3)
@@ -51,15 +54,19 @@ class Fighter():
     def do_attack(self, defender, loop):
         #self.energy -= self.action_costs["attack"] move to player
 
-        damage, effect = self.get_damage()
-
         dodge_damage = defender.fighter.get_dodge_chance() - self.get_accuracy()
-        damage_shave = 1 - ((min(dodge_damage, 0) // 10) / 10)
+        damage_shave = 1 - (max(min(dodge_damage,100), 0) / 100)
 
-        if effect is not None and damage_shave == 0:
+        if damage_shave == 0: #Missed the attack
+            return 0
+
+        effects = self.get_on_hit_effect()
+
+        for effect in effects:
             effect = effect(self.parent)  # some effects need an inflictor
             defender.character.add_status_effect(effect)
 
+        damage, effect = self.get_damage()
         defense = defender.fighter.do_defend() - self.get_armor_piercing()
 
         effectiveness = 0
@@ -72,7 +79,7 @@ class Fighter():
                         loop.add_message(
                             "The attack is effective against {} as it is a {} type.".format(defender.name, types))
 
-        finalDamage = max(0, int((damage + self.base_damage) * damage_shave * (max(1, 1.5 * effectiveness)) - defense))
+        finalDamage = max(0, (int((damage + self.base_damage) * damage_shave) - defense) * (max(1, 1.5 * effectiveness)))
         defender.character.take_damage(self.parent, finalDamage)
         return finalDamage
 
@@ -104,6 +111,18 @@ class Fighter():
                 damage, effect = weapon.attack()
 
         return damage, effect
+
+    def get_on_hit_effect(self):
+        effect = None
+        weapon = self.parent.body.get_weapon()
+        if weapon is None:
+            return self.on_hit
+        else:
+            if weapon.on_hit == None:
+                return []
+            else:
+                damage, effect = weapon.attack()
+        return effect
 
 
     def get_armor_piercing(self):

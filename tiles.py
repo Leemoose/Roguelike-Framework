@@ -125,7 +125,7 @@ class Gateway(O.Tile):
 class Water(Floor):
     def __init__(self, x, y, render_tag = 8, passable = True, blocks_vision = False, id_tag = 0, type = "Floor"):
         super().__init__(x, y,  render_tag = render_tag, passable = passable, id_tag = id_tag, blocks_vision=blocks_vision, type = type)
-        self.effect = [Slow(duration = 1)]
+        self.effect = [Slow(self, duration = 1)]
 
     def check_if_status_applies(self, entity):
         #If entity can fly, do not let it happen
@@ -134,7 +134,7 @@ class Water(Floor):
 class DeepWater(Floor):
     def __init__(self, x, y, render_tag = 10, passable = False, blocks_vision = False, id_tag = 0, type = "Floor"):
         super().__init__(x, y,  render_tag = render_tag, passable = passable, id_tag = id_tag, blocks_vision=blocks_vision, type = type)
-        self.effect = [Slow(duration = 1)]
+        self.effect = [Slow(self, duration = 1)]
         #Make it so it is passable with flying
 
     def check_if_status_applies(self, entity):

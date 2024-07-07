@@ -3,6 +3,7 @@ class Inventory():
         self.parent = parent
         self.inventory_limit = 18
         self.inventory = []
+        self.orb_inventory = []
         self.gold = 0
         self.ready_scroll = None # index of actively used scroll
         self.limit_inventory = "item"
@@ -67,6 +68,8 @@ class Inventory():
     def get_item(self, item, loop):
         if item.yendorb:
             loop.change_loop("victory")
+        elif item.has_trait("orb"):
+            self.orb_inventory.append(item)
         elif item.has_trait("gold"):
             self.change_gold_amount(item.amount)
             loop.change_loop(loop.currentLoop)

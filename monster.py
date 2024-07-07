@@ -5,6 +5,7 @@ from character_implementation import Inventory, Body, Fighter
 import items as I
 import skills as S
 
+from spell_implementation import Poison, Rooted, Slow
 
 class Monster(O.Objects):
     def __init__(self, x=-1, y = -1, render_tag = -1, name="Unknown monster", experience_given = 0, brain = monster_ai.Monster_AI, rarity ="Common", health = 10, min_damage = 2, max_damage=3):
@@ -69,7 +70,7 @@ class Monster(O.Objects):
     def move(self, move_x, move_y, loop):
         monster_map = loop.generator.monster_map
         generator = loop.generator
-        if not self.character.movable:
+        if not self.character.can_take_actions:
             self.character.energy -= self.character.action_costs["move"]#(self.character.move_cost - self.character.dexterity)
             return
 
@@ -425,10 +426,6 @@ class Stumpy(Monster):
         self.description = "An ancient, gnarled tree stump brought to life by dark magic, Stumpy harbors a deep, burning desire for vengeance. Its twisted roots writhe with malicious intent, and its hollow eyes glow with a sinister, green light. With bark as tough as iron and splintered limbs that lash out like whips, this vengeful stump seeks retribution for the countless trees felled by human hands. Beware its crushing roots and poisonous sap, for Stumpy will stop at nothing to avenge its fallen brethren."
         self.character.health = 10
         self.character.max_health = 10
-        self.strength = 8
-        self.dexterity = 8
-        self.endurance = 8
-        self.intelligence = 8
         self.character.armor = 10
         self.attributes["wood"] = True
         self.traits["stumpy"] = True
@@ -441,20 +438,14 @@ class Treant(Monster):
         self.description = "Towering over the forest canopy, the Treant is a massive and malevolent guardian with bark-covered armor tough as iron. Its glowing green eyes and deep, rumbling growl instill fear in all who hear it. Driven by an ancient grudge, it uses a devastating root lash attack to ensnare and immobilize foes, protecting its sacred domain with relentless strength. The Treant’s presence warps the forest, darkening and twisting the environment as it exacts vengeance on any who defile its home."
         self.character.health = 50
         self.character.max_health = 50
-        self.strength = 8
-        self.dexterity = 8
-        self.endurance = 8
-        self.intelligence = 8
         self.character.armor = 15
         self.attributes["wood"] = True
         self.traits["treant"] = True
+        self.fighter.add_on_hit_effect(Rooted)
         #Remember to add on hit effect for ensnaring
         """
         Treant
-Characteristic: Lots of health
-Vulnerable: Fire
 Abilities: Ground Stomp
-On hit: Root lash (extra damage, immobile)
         """
 
 class Spider(Monster):
@@ -465,17 +456,11 @@ class Spider(Monster):
         self.description = "These black and white spiders, each the size of a small dog, are swift and deadly predators of the forest. With their distinctive striped patterns, they move with alarming speed, darting through the underbrush and leaping onto unsuspecting prey. Their agile legs and sharp mandibles allow them to navigate any terrain, while their ability to weave intricate webs on tiles makes them formidable hunters and trappers. A single bite from a Rift Spider delivers potent poison, weakening and paralyzing its victims. Beware their sudden, silent approach and the venomous sting that follows, for these spiders are relentless and deadly in their pursuit."
         self.character.health = 10
         self.character.max_health = 10
-        self.strength = 2
-        self.dexterity = 8
-        self.endurance = 2
-        self.intelligence = 1
-        self.character.armor = 0
         self.traits["spider"] = True
+        self.character.change_action_cost("move", 30)
+        self.fighter.add_on_hit_effect(Slow)
         """
-        Big spiders
-Characteristic: Can move fast
 Abilities: Create web on tile
-On hit: Poison / stun?
         """
 
 class MetallicBear(Monster):
@@ -531,19 +516,15 @@ class Vinecrasher(Monster):
         self.description = "The Vinecrasher is a tangled mass of brambles and thorns, lurking in the forest in packs. These creatures are capable of launching poisonous jaggers from a distance, making them deadly even from afar. Though they are fragile with low health, their venomous attacks can quickly incapacitate their foes. Vulnerable to fire, a well-placed flame can easily reduce them to ash. Their twisted forms blend seamlessly with the forest undergrowth, making them difficult to spot until it’s too late. Beware the Vinecrasher's ranged poison assault and their pack tactics, for they strike swiftly and without mercy."
         self.character.health = 10
         self.character.max_health = 10
-        self.strength = 0
-        self.dexterity = 0
-        self.endurance = 0
-        self.intelligence = 0
         self.character.armor = 0
+        self.fighter.add_on_hit_effect(Poison) #Poisonous spikes
         self.traits["vinecrasher"] = True
+        self.attributes["wood"] = True
 
 """
 Vinecrasher
 Characteristic: Appears in packs, low health
-Vulnerable: Fire
 Abilities: Can attack from range with poison jagger
-On hit: Poisoness spikes
 """
 
 

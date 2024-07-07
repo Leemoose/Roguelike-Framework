@@ -212,7 +212,7 @@ class TileDict():
         tiles[915] = image.load("assets/skills/invincible_skill_icon.png")
         tiles[-915] = image.load("assets/skills/invincible_skill_icon_dark.png")
 
-        # 100-199 monster assets
+        # 1000-1999 monster assets
         tiles[1000] = image.load('assets/monsters/goblin.png')
         tiles[1001] = image.load('assets/monsters/gorblin_shaman.png')
         tiles[1002] = image.load('assets/monsters/hobgoblin.png')
@@ -244,7 +244,15 @@ class TileDict():
         tiles[2000] = image.load('assets/monsters/monster_corpse.png')
         tiles[2001] = image.load('assets/items/guard_corpse.png')
 
+        #3000 -3999 all interactable objects
         tiles[3000] = image.load('assets/npc/campfire.png')
+        tiles[3001] = image.load('assets/npc/deactivated_campfire.png')
+
+        tiles[3900] = image.load('assets/interactables.forest_orb_pedastool')
+        tiles[3901] = image.load('assets/interactables.forest_orb_pedastool_deactivated')
+
+        tiles[4000] = image.load("assets/items/orbs/forest_orb.png")
+
 
         self.tiles = tiles
 

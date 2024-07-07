@@ -1,8 +1,8 @@
 from objects import Objects
 
 class Interactable(Objects):
-    def __init__(self, render_tag, x, y, name="Interactable"):
-        super().__init__(x, y, 0, render_tag= render_tag, name = name)
+    def __init__(self, render_tag = 0, x=-1, y=-1, name="Interactable"):
+        super().__init__(x=x, y=y,id_tag=-1, render_tag= render_tag, name = name)
         self.name = name
 
     def interact(self, loop):
@@ -19,3 +19,20 @@ class Campfire(Interactable):
             self.used = True
             loop.add_message("You rested at the campfire")
             entity.character.change_health(entity.character.get_max_health()-entity.character.get_health())
+            self.render_tag = 3001
+
+class OrbPedastool(Interactable):
+    def __init__(self, render_tag=0, x=-1, y=-1, name="Orb Pedastool"):
+        super().__init__(x=x, y=y, render_tag= render_tag, name = name)
+        self.name = name
+
+    def interact(self, loop):
+        pass
+
+class ForestOrbPedastool(OrbPedastool):
+    def __init__(self, render_tag = 3900, x=-1, y=-1, name="Forest Orb Pedastool"):
+        super().__init__(x, y, 0, render_tag= render_tag, name = name)
+        self.name = name
+
+    def interact(self, loop):
+        self.render_tag = 3901
