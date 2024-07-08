@@ -146,7 +146,7 @@ class NPC(O.Objects):
         loop.add_message(
             self.name + " says: 'Move along now.'")
 
-    def interact(self, entity, loop):
+    def interact(self, loop):
         loop.messages = []
         loop.npc_focus = self
         loop.change_loop("trade")
