@@ -243,6 +243,7 @@ class Loops():
         if self.currentLoop == LoopType.pathing:
             self.player.autopath(self)
             self.pathing_count += 1
+            self.time_passes(100)
             # uncomment this to closely follow pathing
             # import time
             # time.sleep(0.2)

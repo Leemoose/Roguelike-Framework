@@ -198,8 +198,6 @@ class DungeonGenerator():
                 return self.spawn_params.check_monster_restrictions(creature, self.tile_map, location, self)
         else:
             monster_restriction = None
-        if self.branch =="Ocean":
-            print(self.get_random_location(condition=monster_restriction))
         x, y = self.get_random_location(condition=monster_restriction)
         self.place_monster_at_location(creature, x, y)
 
@@ -256,22 +254,17 @@ class DungeonGenerator():
         starty = random.randint(0, self.height - 1)
         map = self.interact_map
 
-        # make sure the item is placed on a passable tile that does not already have an item and is not stairs
+        # make sure the item is placed on a passable tile that is not stairs or in a corridor
         check_on_stairs = self.on_stairs(startx, starty)
-        if force_near_stairs:
-            directions = [(0, 1), (1, 0), (-1, 0), (0, -1), (1, 1), (-1, 1), (1, -1), (-1, -1)]
-            while ((self.tile_map.get_passable(startx, starty) == False) or
-                   (map.get_passable(startx, starty) == False)):
-                random_direction = random.choice(directions)
-                startx = self.tile_map.stairs[1].x + random_direction[0]
-                starty = self.tile_map.stairs[1].y + random_direction[1]
-        else:
-            while ((not self.tile_map.get_passable(startx, starty)) or
+        check_in_corridor = self.in_corridor(startx, starty)
+        while ((not self.tile_map.get_passable(startx, starty)) or
                    (not map.get_passable(startx, starty)) or
-                   check_on_stairs):
+                   check_on_stairs or check_in_corridor):
                 startx = random.randint(0, self.width - 1)
                 starty = random.randint(0, self.height - 1)
                 check_on_stairs = self.on_stairs(startx, starty)
+                check_in_corridor = self.in_corridor(startx, starty)
+
 
         interactable.x = startx
         interactable.y = starty
@@ -295,6 +288,30 @@ class DungeonGenerator():
             if stair.x == x and stair.y == y:
                 return True
         return False
+    
+    def in_corridor(self, x, y):
+        directions = [(0, 1), (1, 0), (-1, 0), (0, -1), (1, 1), (-1, 1), (1, -1), (-1, -1)]
+        count_passable = 0 # count number of adjacent passable tiles
+        count_adjacent_passable = 0 # count number of adjacent tiles that have > 2 passable neighbours (this is for case where x, y is end of corridor)
+        for dx, dy in directions:
+            adj_x = x + dx
+            adj_y = y + dy
+            if self.tile_map.get_passable(adj_x, adj_y):
+                count_passable += 1
+                if count_passable > 4: # no way for this to be in a corridor
+                    return False
+                temp_count = 0
+                for dx2, dy2 in directions:
+                    if self.tile_map.get_passable(adj_x + dx2, adj_y + dy2):
+                        temp_count += 1
+                    if temp_count > 2:
+                        break
+                if temp_count > 2:
+                    count_adjacent_passable += 1
+                if count_adjacent_passable > 4:
+                    return False
+        return True
+
 
     def place_item(self, item, force_near_stairs=False):
         startx = random.randint(0, self.width-1)

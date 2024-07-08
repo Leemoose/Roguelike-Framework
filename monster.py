@@ -418,7 +418,7 @@ Forest Monsters: Generally wood or animal like. Grow stronger at night. Uses poi
 """
 
 class Stumpy(Monster):
-    def __init__(self, x=-1, y=-1, render_tag=1090, name="Stumpy"):
+    def __init__(self, x=-1, y=-1, render_tag=1100, name="Stumpy"):
         super().__init__(x=x, y=y, render_tag = render_tag, name = name)
         self.brain = monster_ai.Stumpy_AI(self)
         self.character.experience_given = 20
@@ -434,7 +434,7 @@ class Stumpy(Monster):
         self.traits["stumpy"] = True
 
 class Treant(Monster):
-    def __init__(self, x=-1, y=-1, render_tag=0, name="Treant"):
+    def __init__(self, x=-1, y=-1, render_tag=1120, name="Treant"):
         super().__init__(x=x, y=y, render_tag = render_tag, name = name)
         self.brain = monster_ai.Monster_AI(self)
         self.character.experience_given = 40
@@ -458,7 +458,7 @@ On hit: Root lash (extra damage, immobile)
         """
 
 class Spider(Monster):
-    def __init__(self, x=-1, y=-1, render_tag=0, name="Spider"):
+    def __init__(self, x=-1, y=-1, render_tag=1110, name="Spider"):
         super().__init__(x=x, y=y, render_tag=render_tag, name=name)
         self.brain = monster_ai.Monster_AI(self)
         self.character.experience_given = 10

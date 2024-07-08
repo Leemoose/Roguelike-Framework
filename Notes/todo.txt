@@ -15,3 +15,5 @@ Ocean:
 fix mini examine window
 
 Change spell hotkey to show up when you hover over it
+
+remove stairs from end of forest

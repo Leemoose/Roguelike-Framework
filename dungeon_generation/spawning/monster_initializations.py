@@ -23,17 +23,16 @@ MonsterSpawns.append(MonsterSpawnParams(M.Orc(-1, -1), group="orc", minFloor=5, 
 MonsterSpawns.append(MonsterSpawnParams(M.Bobby(), group="orc", rarity="rare", minFloor=5, maxFloor=7))
 
 # forest branch
-MonsterSpawns.append(MonsterSpawnParams(M.Stumpy(), minFloor=1, maxFloor=3, branch="Forest")) # maybe move to forest branch
-MonsterSpawns.append(MonsterSpawnParams(M.Treant(), minFloor=3, maxFloor=5, branch="Forest")) # maybe move to forest branch
-MonsterSpawns.append(MonsterSpawnParams(M.MetallicBear(), minFloor=3, maxFloor=5, branch="Forest")) # maybe move to forest branch
-MonsterSpawns.append(MonsterSpawnParams(M.Spider(), minFloor=1, maxFloor=5, branch="Forest")) # maybe move to forest branch
-MonsterSpawns.append(MonsterSpawnParams(M.InsectNest(), minFloor=1, maxFloor=5, branch="Forest")) # maybe move to forest branch
+MonsterSpawns.append(MonsterSpawnParams(M.Stumpy(), minFloor=1, maxFloor=3, branch="Forest")) 
+MonsterSpawns.append(MonsterSpawnParams(M.Treant(), minFloor=3, maxFloor=5, branch="Forest")) 
+MonsterSpawns.append(MonsterSpawnParams(M.MetallicBear(), minFloor=3, maxFloor=5, branch="Forest")) 
+MonsterSpawns.append(MonsterSpawnParams(M.Spider(), minFloor=1, maxFloor=5, branch="Forest")) 
+MonsterSpawns.append(MonsterSpawnParams(M.InsectNest(), minFloor=1, maxFloor=5, branch="Forest")) 
 
 
 # late floors
 MonsterSpawns.append(MonsterSpawnParams(M.Raptor(-1, -1), minFloor=8, maxFloor=10, group="dinosaur")) # maybe move to forest branch
 MonsterSpawns.append(MonsterSpawnParams(M.Tormentorb(-1, -1), minFloor=8, maxFloor=10))
-MonsterSpawns.append(MonsterSpawnParams(M.Golem(-1, -1), minFloor=8, maxFloor=10, branch="Ocean"))
 MonsterSpawns.append(MonsterSpawnParams(M.Golem(-1, -1), minFloor=8, maxFloor=10))
 
 # TEMPORARY CHANGE TO TEST TILE RESTRICTED MONSTERS

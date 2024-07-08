@@ -212,7 +212,8 @@ class TileDict():
         tiles[915] = image.load("assets/skills/invincible_skill_icon.png")
         tiles[-915] = image.load("assets/skills/invincible_skill_icon_dark.png")
 
-        # 100-199 monster assets
+        # monster assets 
+        # dungeon monsters (10xx)
         tiles[1000] = image.load('assets/monsters/goblin.png')
         tiles[1001] = image.load('assets/monsters/gorblin_shaman.png')
         tiles[1002] = image.load('assets/monsters/hobgoblin.png')
@@ -227,17 +228,25 @@ class TileDict():
         tiles[1070] = image.load("assets/monsters/orc.png")
         tiles[1079] = image.load("assets/monsters/Bobby.png")
         tiles[1080] = image.load('assets/monsters/golem.png')
-        tiles[1090] = image.load('assets/monsters/stumpy.png')
         tiles[1100] = image.load('assets/monsters/slime.png')
         tiles[161] = image.load('assets/monsters/yendorb_deactivated.png')
 
+        # forest monsters (11xx)
+        tiles[1100] = image.load('assets/monsters/stumpy.png')
+        tiles[1110] = image.load('assets/monsters/spider.png')
+        tiles[1120] = image.load('assets/monsters/treant.png')
+
+        # ocean monsters (15xx)
         tiles[1500] = image.load('assets/monsters/squid.png')
         tiles[1510] = image.load('assets/monsters/abyssal_leviathon.png')
         tiles[1520] = image.load('assets/monsters/chasm_crawler.png')
 
-
+        # corpse assets
         tiles[2000] = image.load('assets/monsters/monster_corpse.png')
         tiles[2001] = image.load('assets/items/guard_corpse.png')
+
+        # interactable assets
+        tiles[2100] = image.load('assets/interactable/campfire.png')
 
         self.tiles = tiles
 
