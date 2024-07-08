@@ -27,6 +27,8 @@ def create_inventory(display, loop):
     selection_button_width = display.screen_width // 8
     selection_offset_from_each_other = selection_button_height / (num_buttons+1)
 
+    type_offset_from_left = 13 * display.screen_width // 16
+
 
     display.uiManager.clear_and_reset()
     pygame.draw.rect(display.win, (0, 0, 0),
@@ -121,5 +123,17 @@ def create_inventory(display, loop):
         manager=display.uiManager,
         starting_height=1)
     weapons.action = '5'
+
+    button_num = 0
+    weapons = pygame_gui.elements.UIButton(
+        relative_rect=pygame.Rect(
+            (type_offset_from_left,
+             selection_offset_from_top + selection_offset_from_each_other +
+             (selection_button_height + selection_offset_from_each_other) * button_num,
+             selection_button_width, selection_button_height)),
+        text="6. Orb Inventory",
+        manager=display.uiManager,
+        starting_height=1)
+    weapons.action = '6'
 
     display.uiManager.draw_ui(display.win)

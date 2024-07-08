@@ -147,6 +147,13 @@ class Slime_AI(Monster_AI):
                            "flee": (-1, 0),
                            "stairs": (-1, 0)
                            }
+class Insect_Nest_AI(Monster_AI):
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.tendencies = {"nothing":(100,0)
+                           }
+        # what it can actually do
+        self.options = {"nothing":(rank_nothing, do_nothing)}
 
 
 class Friendly_AI(Monster_AI):

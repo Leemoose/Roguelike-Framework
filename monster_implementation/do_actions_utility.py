@@ -11,7 +11,7 @@ def do_flee(ai, loop):
     monster_map = loop.generator.monster_map
     player = loop.player
 
-    if not monster.character.movable:
+    if not monster.character.can_take_actions:
         monster.character.energy -= ai.parent.character.action_costs[
             "move"]  # (monster.character.move_cost - monster.character.dexterity)
         loop.add_message(f"{monster} is petrified and cannot move.")
@@ -57,7 +57,7 @@ def do_ungroup(ai, loop):
     player = loop.player
     x, y = ai.parent.x, ai.parent.y
 
-    if not monster.character.movable:
+    if not monster.character.can_take_actions:
         monster.character.energy -= ai.parent.character.action_costs[
             "move"]  # (monster.character.move_cost - monster.character.dexterity)
         loop.add_message(f"{monster} is petrified and cannot move.")
@@ -86,7 +86,7 @@ def do_item_pickup(ai, loop):
 def do_combat(ai, loop):
     # print("Attacking player")
     monster = ai.parent
-    if not monster.character.movable:
+    if not monster.character.can_take_actions:
         monster.character.energy -= ai.parent.character.action_costs[
             "move"]  # (monster.character.move_cost - monster.character.dexterity)
         loop.add_message(f"{monster} is petrified and cannot attack.")
@@ -161,7 +161,7 @@ def do_move(ai, loop):
     monster_map = loop.generator.monster_map
     player = loop.player
 
-    if not monster.character.movable:
+    if not monster.character.can_take_actions:
         monster.character.energy -= ai.parent.character.action_costs[
             "move"]  # (monster.character.move_cost - monster.character.dexterity)
         loop.add_message(f"{monster} is petrified and cannot move.")

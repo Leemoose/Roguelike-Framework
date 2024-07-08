@@ -90,7 +90,7 @@ class Player(Objects):
         self.check_for_levelup()
 
     def attack_move(self, move_x, move_y, loop):
-        if not self.character.movable:
+        if not self.character.can_take_actions:
             self.character.energy -= self.character.action_costs[
                 "move"]  # (self.character.move_cost - int(self.character.dexterity + self.character.round_bonus()))
             loop.add_message("The player is petrified and cannot move.")
@@ -98,18 +98,20 @@ class Player(Objects):
         x = self.x + move_x
         y = self.y + move_y
         if (x >= 0) & (y >= 0) & (x < loop.generator.tile_map.width) & (y < loop.generator.tile_map.height):
-            if loop.generator.get_passable((x, y)):
+            if loop.generator.get_passable((x, y)) and self.character.can_move:
                 self.move(move_x, move_y, loop)
             elif not loop.generator.monster_map.get_passable(x, y):
                 defender = loop.generator.monster_map.locate(x,y)
                 self.attack(defender, loop)
             elif not loop.generator.interact_map.get_passable(x, y):
                 self.do_interact(loop, input_direction=(move_x, move_y))
+            elif not self.character.can_move:
+                loop.add_message("You are currently restricted!")
             else:
                 loop.add_message("You cannot move there")
 
     def move(self, move_x, move_y, loop):
-        if loop.generator.get_passable((self.x + move_x, self.y + move_y)):
+        if loop.generator.get_passable((self.x + move_x, self.y + move_y)) and self.character.can_move and self.character.can_take_actions:
             self.character.energy -= self.character.action_costs[
                 "move"]  # / (1.02**(self.character.dexterity + self.character.round_bonus())))
             self.y += move_y
@@ -127,14 +129,18 @@ class Player(Objects):
         self.move(move_x, move_y, loop)
 
     def attack(self, defender, loop):
-        self.character.energy -= self.character.action_costs[
-            "attack"]  # / (1.05**(self.character.dexterity + self.character.round_bonus())))
-        loop.screen_focus = (defender.x, defender.y)
-        damage = self.fighter.do_attack(defender, loop)
-        self.statistics.add_attack_details(damage)
-        loop.add_message(f"The player attacked for {damage} damage")
+        if self.character.can_take_actions:
+            self.character.energy -= self.character.action_costs[
+                "attack"]  # / (1.05**(self.character.dexterity + self.character.round_bonus())))
+            loop.screen_focus = (defender.x, defender.y)
+            damage = self.fighter.do_attack(defender, loop)
+            self.statistics.add_attack_details(damage)
+            loop.add_message(f"The player attacked for {damage} damage")
+        else:
+            loop.add_message("You cannot currently take actions")
 
     def autopath(self, loop):
+
         # if loop.branch == "Forest":
         #     loop.add_message("You cannot autopath in the forest (otherwise we'd have to figure out time).")
         #     loop.change_loop(LoopType.action)
@@ -161,6 +167,8 @@ class Player(Objects):
                 # Pathfinding messed up - pop this just in case
                 x, y = self.path.pop(0)
             self.move(x - self.x, y - self.y, loop)
+            #loop.time_passes(self.character.energy)
+            #self.character.energy = 0 #need to find a way to make time pass as autoexplore happens
 
             # auto pickup gold
             for item in loop.generator.item_map.all_entities():
@@ -343,13 +351,13 @@ class Player(Objects):
 
     def down_stairs(self, loop):
         if (isinstance(loop.generator.tile_map.track_map[self.x][self.y], T.Stairs)
-                and loop.generator.tile_map.track_map[self.x][self.y].downward and self.character.movable):
+                and loop.generator.tile_map.track_map[self.x][self.y].downward and self.character.can_take_actions):
             self.character.energy -= self.character.action_costs["move"]
             loop.change_floor(downward = True)
-        elif (isinstance(loop.generator.tile_map.track_map[self.x][self.y], T.Gateway) and self.character.movable):
+        elif (isinstance(loop.generator.tile_map.track_map[self.x][self.y], T.Gateway) and self.character.can_take_actions):
             self.character.energy -= self.character.action_costs["move"]
             loop.change_branch()
-        elif self.character.movable:
+        elif self.character.can_take_actions:
             loop.add_message("There are no stairs here!")
         else:
             self.character.energy -= self.character.action_costs["move"]
@@ -357,10 +365,10 @@ class Player(Objects):
 
     def up_stairs(self, loop):
         if (isinstance(loop.generator.tile_map.track_map[self.x][self.y], T.Stairs)
-                and not loop.generator.tile_map.track_map[self.x][self.y].downward and self.character.movable):
+                and not loop.generator.tile_map.track_map[self.x][self.y].downward and self.character.can_take_actions):
             self.character.energy -= self.character.action_costs["move"]
             loop.change_floor(downward = False)
-        elif self.character.movable:
+        elif self.character.can_take_actions:
             loop.add_message("There are no stairs here!")
         else:
             self.character.energy -= self.character.action_costs["move"]
@@ -409,7 +417,7 @@ class Player(Objects):
         for x, y in directions:
             location.append((x + self.x, y + self.y))
             if loop.generator.interact_map.locate(x + self.x, y + self.y) != -1:
-                loop.generator.interact_map.locate(x + self.x, y + self.y).interact(self, loop)
+                loop.generator.interact_map.locate(x + self.x, y + self.y).interact(loop)
                 spoke = True
 
 

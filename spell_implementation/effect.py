@@ -1,5 +1,5 @@
 class StatusEffect():
-    def __init__(self, id_tag, name, message, duration):
+    def __init__(self, id_tag, name, message, duration, cumulative = False):
         self.id_tag = id_tag
         self.name = name
         self.duration = duration
@@ -7,23 +7,39 @@ class StatusEffect():
         self.message = message
         self.positive = False
         self.traits = {"status_effect": True}
+        self.cumulative = cumulative
+
+    def get_duration(self):
+        return self.duration
+
+    def is_cumulative(self):
+        return self.cumulative
     def apply_effect(self, target):
         pass
+
     def description(self):
         if self.duration == -100:
             return self.name + " (permanent)"
         return self.name + " (" + str(self.duration) + ")"
+
     def tick(self, target):
         if self.duration == -100: # -100 is a special value that means the effect lasts forever, -1 probably works too but made it larger just in case
             return
         self.duration -= 1
         if self.duration <= 0:
             self.active = False
+
     def has_trait(self, trait):
         if trait in self.traits:
             return self.traits[trait]
         else:
             return False
+
+    def remove(self, target):
+        pass
+
+    def change_duration(self, change):
+        self.duration += change
 
 
 class Burn(StatusEffect):
@@ -52,10 +68,10 @@ class Petrify(StatusEffect):
         super().__init__(802, "Petrify", "is Petrified", duration)
 
     def apply_effect(self, target):
-        target.movable = False
+        target.can_take_actions = False
     
     def remove(self, target):
-        target.movable = True
+        target.can_take_actions = True
 
 class Might(StatusEffect):
     def __init__(self, duration, strength):
@@ -106,8 +122,8 @@ class Haste(StatusEffect):
         target.dexterity -= self.dexterity
 
 class Slow(StatusEffect):
-    def __init__(self, duration = 5, dexterity = 5):
-        super().__init__(805, "Slow", "feels slow", duration)
+    def __init__(self, inflictor, duration = 5, dexterity = 5, cumulative = False):
+        super().__init__(805, "Slow", "feels slow", duration, cumulative = cumulative)
         self.dexterity = dexterity
 
     def apply_effect(self, target):
@@ -247,3 +263,36 @@ class Bleed(StatusEffect):
     def remove(self, target):
         pass
 
+class Poison(StatusEffect):
+    def __init__(self, inflictor, duration = 2, damage = 3):
+        super().__init__(801, "Poison", "is being poisoned for " + str(damage) + "damage", duration)
+        self.damage = damage
+        self.inflictor = inflictor
+        self.cumulative = True
+
+    def tick(self, target):
+        if self.duration == -100: # -100 is a special value that means the effect lasts forever, -1 probably works too but made it larger just in case
+            return
+        self.duration -= 1
+        if self.duration <= 0:
+            self.active = False
+        else:
+            target.take_damage(self.inflictor, self.damage)
+
+class Rooted(StatusEffect):
+    def __init__(self, inflictor, duration = 5):
+        super().__init__(801, "Root", "is rooted for ", duration)
+        self.inflictor = inflictor
+
+    def apply_effect(self, target):
+        target.can_move = False
+
+    def tick(self, target):
+        if self.duration == -100: # -100 is a special value that means the effect lasts forever, -1 probably works too but made it larger just in case
+            return
+        self.duration -= 1
+        if self.duration <= 0:
+            self.active = False
+
+    def remove(self, target):
+        target.moveable = True

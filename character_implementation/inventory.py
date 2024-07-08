@@ -3,24 +3,30 @@ class Inventory():
         self.parent = parent
         self.inventory_limit = 18
         self.inventory = []
+        self.orb_inventory = []
         self.gold = 0
         self.ready_scroll = None # index of actively used scroll
         self.limit_inventory = "item"
 
+        self.active_inventory = self.inventory
+
+    def get_orb_inventory(self):
+        return self.orb_inventory
+
     def get_inventory(self):
-        return self.inventory
+        return self.active_inventory
 
     def get_limit_inventory(self, limit = None):
         if limit == None:
             limit = self.limit_inventory
         allowable = []
-        for item in self.inventory:
+        for item in self.active_inventory:
             if item.has_trait(limit):
                 allowable.append(item)
         return allowable
 
     def get_inventory_size(self):
-        return len(self.inventory)
+        return len(self.active_inventory)
 
     def get_gold(self):
         return self.gold
@@ -53,6 +59,13 @@ class Inventory():
     def change_limit_inventory(self, change):
         self.limit_inventory = change
 
+    def change_active_inventory(self, change):
+        if change == "orb":
+            self.active_inventory=self.orb_inventory
+            self.limit_inventory = "item"
+        elif change == "main":
+            self.active_inventory = self.inventory
+
     """
     Grab should be called when it is being picked off the floor
     """
@@ -67,6 +80,8 @@ class Inventory():
     def get_item(self, item, loop):
         if item.yendorb:
             loop.change_loop("victory")
+        elif item.has_trait("orb"):
+            self.orb_inventory.append(item)
         elif item.has_trait("gold"):
             self.change_gold_amount(item.amount)
             loop.change_loop(loop.currentLoop)
@@ -91,10 +106,18 @@ class Inventory():
         return False
 
     def remove_item(self, item):
-        i = 0
-        while (self.inventory[i] != item) and i < len(self.inventory):
-            i += 1
-        if i < len(self.inventory):
-            self.inventory.pop(i)
-            return True
+        if item.has_trait("orb") and len(self.orb_inventory) > 0 :
+            i = 0
+            while (self.orb_inventory[i] != item) and i < len(self.orb_inventory):
+                i += 1
+            if i < len(self.orb_inventory):
+                self.orb_inventory.pop(i)
+                return True
+        elif len(self.inventory) > 0:
+            i = 0
+            while (self.inventory[i] != item) and i < len(self.inventory):
+                i += 1
+            if i < len(self.inventory):
+                self.inventory.pop(i)
+                return True
         return False

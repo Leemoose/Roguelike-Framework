@@ -214,6 +214,8 @@ class TileDict():
 
         # monster assets 
         # dungeon monsters (10xx)
+        # 1000-1999 monster assets
+
         tiles[1000] = image.load('assets/monsters/goblin.png')
         tiles[1001] = image.load('assets/monsters/gorblin_shaman.png')
         tiles[1002] = image.load('assets/monsters/hobgoblin.png')
@@ -228,7 +230,7 @@ class TileDict():
         tiles[1070] = image.load("assets/monsters/orc.png")
         tiles[1079] = image.load("assets/monsters/Bobby.png")
         tiles[1080] = image.load('assets/monsters/golem.png')
-        tiles[1100] = image.load('assets/monsters/slime.png')
+        tiles[1090] = image.load('assets/monsters/slime.png')
         tiles[161] = image.load('assets/monsters/yendorb_deactivated.png')
 
         # forest monsters (11xx)
@@ -236,7 +238,14 @@ class TileDict():
         tiles[1110] = image.load('assets/monsters/spider.png')
         tiles[1120] = image.load('assets/monsters/treant.png')
 
+        tiles[1200] = image.load('assets/monsters/treant.png')
+        tiles[1210] = image.load('assets/monsters/spider.png')
+        tiles[1220] = image.load('assets/monsters/insect_nest.png')
+        tiles[1230] = image.load('assets/monsters/vinecrasher.png')
+
         # ocean monsters (15xx)
+
+
         tiles[1500] = image.load('assets/monsters/squid.png')
         tiles[1510] = image.load('assets/monsters/abyssal_leviathon.png')
         tiles[1520] = image.load('assets/monsters/chasm_crawler.png')
@@ -247,6 +256,18 @@ class TileDict():
 
         # interactable assets
         tiles[2100] = image.load('assets/interactable/campfire.png')
+
+        #3000 -3999 all interactable objects
+
+        tiles[3001] = image.load('assets/npc/deactivated_campfire.png')
+
+        tiles[3900] = image.load('assets/interactables/forest_orb_pedastool.png')
+        tiles[3901] = image.load('assets/interactables/forest_orb_pedastool_deactivated.png')
+        tiles[3910] = image.load('assets/interactables/ocean_orb_pedastool.png')
+        tiles[3911] = image.load('assets/interactables/ocean_orb_pedastool_deactivated.png')
+
+        tiles[4000] = image.load("assets/items/orbs/forest_orb.png")
+        tiles[4010] = image.load("assets/items/orbs/ocean_orb.png")
 
         self.tiles = tiles
 

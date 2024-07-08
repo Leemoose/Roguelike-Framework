@@ -5,6 +5,7 @@ from character_implementation import Inventory, Body, Fighter
 import items as I
 import skills as S
 
+from spell_implementation import Poison, Rooted, Slow
 
 class Monster(O.Objects):
     def __init__(self, x=-1, y = -1, render_tag = -1, name="Unknown monster", experience_given = 0, brain = monster_ai.Monster_AI, rarity ="Common", health = 10, min_damage = 2, max_damage=3):
@@ -69,7 +70,7 @@ class Monster(O.Objects):
     def move(self, move_x, move_y, loop):
         monster_map = loop.generator.monster_map
         generator = loop.generator
-        if not self.character.movable:
+        if not self.character.can_take_actions:
             self.character.energy -= self.character.action_costs["move"]#(self.character.move_cost - self.character.dexterity)
             return
 
@@ -164,7 +165,7 @@ class ChasmCrawler(Monster):
         self.attributes["water"] = True
 
 class Slime(Monster):
-    def __init__(self, x=-1, y=-1, render_tag=1100, name="Slime"):
+    def __init__(self, x=-1, y=-1, render_tag=1090, name="Slime"):
         super().__init__(x=x, y=y, render_tag = render_tag, name = name, experience_given=5, brain = monster_ai.Slime_AI, health=5)
 
         self.description = "These amorphous blobs of translucent, gelatinous matter emerge from the depths of the rifts. Their bodies pulse with a sickly green glow, fueled by the chaotic energies of their environment. Rift Slimes mindlessly dissolve anything they touch with acidic secretions, leaving behind only a faint, acrid odor. They show no preference or intelligence, simply drawn to any items they encounter, which they swiftly corrode beyond recognition.."
@@ -425,57 +426,41 @@ class Stumpy(Monster):
         self.description = "An ancient, gnarled tree stump brought to life by dark magic, Stumpy harbors a deep, burning desire for vengeance. Its twisted roots writhe with malicious intent, and its hollow eyes glow with a sinister, green light. With bark as tough as iron and splintered limbs that lash out like whips, this vengeful stump seeks retribution for the countless trees felled by human hands. Beware its crushing roots and poisonous sap, for Stumpy will stop at nothing to avenge its fallen brethren."
         self.character.health = 10
         self.character.max_health = 10
-        self.strength = 8
-        self.dexterity = 8
-        self.endurance = 8
-        self.intelligence = 8
         self.character.armor = 10
         self.attributes["wood"] = True
         self.traits["stumpy"] = True
 
 class Treant(Monster):
-    def __init__(self, x=-1, y=-1, render_tag=1120, name="Treant"):
+    def __init__(self, x=-1, y=-1, render_tag=1120, name="Treant"): #1200 is also working render tag
         super().__init__(x=x, y=y, render_tag = render_tag, name = name)
         self.brain = monster_ai.Monster_AI(self)
         self.character.experience_given = 40
         self.description = "Towering over the forest canopy, the Treant is a massive and malevolent guardian with bark-covered armor tough as iron. Its glowing green eyes and deep, rumbling growl instill fear in all who hear it. Driven by an ancient grudge, it uses a devastating root lash attack to ensnare and immobilize foes, protecting its sacred domain with relentless strength. The Treant’s presence warps the forest, darkening and twisting the environment as it exacts vengeance on any who defile its home."
         self.character.health = 50
         self.character.max_health = 50
-        self.strength = 8
-        self.dexterity = 8
-        self.endurance = 8
-        self.intelligence = 8
         self.character.armor = 15
         self.attributes["wood"] = True
         self.traits["treant"] = True
+        self.fighter.add_on_hit_effect(Rooted)
         #Remember to add on hit effect for ensnaring
         """
         Treant
-Characteristic: Lots of health
-Vulnerable: Fire
 Abilities: Ground Stomp
-On hit: Root lash (extra damage, immobile)
         """
 
 class Spider(Monster):
-    def __init__(self, x=-1, y=-1, render_tag=1110, name="Spider"):
+    def __init__(self, x=-1, y=-1, render_tag=1110, name="Spider"): #1210 is also working render tag
         super().__init__(x=x, y=y, render_tag=render_tag, name=name)
         self.brain = monster_ai.Monster_AI(self)
         self.character.experience_given = 10
         self.description = "These black and white spiders, each the size of a small dog, are swift and deadly predators of the forest. With their distinctive striped patterns, they move with alarming speed, darting through the underbrush and leaping onto unsuspecting prey. Their agile legs and sharp mandibles allow them to navigate any terrain, while their ability to weave intricate webs on tiles makes them formidable hunters and trappers. A single bite from a Rift Spider delivers potent poison, weakening and paralyzing its victims. Beware their sudden, silent approach and the venomous sting that follows, for these spiders are relentless and deadly in their pursuit."
         self.character.health = 10
         self.character.max_health = 10
-        self.strength = 2
-        self.dexterity = 8
-        self.endurance = 2
-        self.intelligence = 1
-        self.character.armor = 0
         self.traits["spider"] = True
+        self.character.change_action_cost("move", 30)
+        self.fighter.add_on_hit_effect(Slow)
         """
-        Big spiders
-Characteristic: Can move fast
 Abilities: Create web on tile
-On hit: Poison / stun?
         """
 
 class MetallicBear(Monster):
@@ -502,9 +487,9 @@ On hit:
         """
 
 class InsectNest(Monster):
-    def __init__(self, x=-1, y=-1, render_tag=0, name="Insect Nest"):
+    def __init__(self, x=-1, y=-1, render_tag=1220, name="Insect Nest"):
         super().__init__(x=x, y=y, render_tag=render_tag, name=name)
-        self.brain = monster_ai.Monster_AI(self)
+        self.brain = monster_ai.Insect_Nest_AI(self)
         self.character.experience_given = 40
         self.description = "Nestled within the forest, this immobile structure is a pulsating hive of malevolent activity. Each strike against the Insect Nest provokes a swarm of flying, poisonous insects that emerge in a frenzied cloud to defend their home. Though these insects are fragile and have low health, their venomous bites can quickly overwhelm and debilitate their attackers. The nest itself is otherwise powerless, relying entirely on the relentless defense of its swarming guardians to deter any who would seek to destroy it. Approach with caution, for disturbing the nest unleashes a torrent of venomous fury."
         self.character.health = 10
@@ -521,5 +506,46 @@ Yellow Jacket Nest
 Characteristic: Hit it and swarms pop out
 Vulnerable: Fire
 Abilities: When hit summons enemies
+On hit:
+"""
+class Vinecrasher(Monster):
+    def __init__(self, x=-1, y=-1, render_tag=1230, name="Vinecrasher"):
+        super().__init__(x=x, y=y, render_tag=render_tag, name=name)
+        self.brain = monster_ai.Monster_AI(self)
+        self.character.experience_given = 40
+        self.description = "The Vinecrasher is a tangled mass of brambles and thorns, lurking in the forest in packs. These creatures are capable of launching poisonous jaggers from a distance, making them deadly even from afar. Though they are fragile with low health, their venomous attacks can quickly incapacitate their foes. Vulnerable to fire, a well-placed flame can easily reduce them to ash. Their twisted forms blend seamlessly with the forest undergrowth, making them difficult to spot until it’s too late. Beware the Vinecrasher's ranged poison assault and their pack tactics, for they strike swiftly and without mercy."
+        self.character.health = 10
+        self.character.max_health = 10
+        self.character.armor = 0
+        self.fighter.add_on_hit_effect(Poison) #Poisonous spikes
+        self.traits["vinecrasher"] = True
+        self.attributes["wood"] = True
+
+"""
+Vinecrasher
+Characteristic: Appears in packs, low health
+Abilities: Can attack from range with poison jagger
+"""
+
+
+class Snailgoat(Monster):
+    def __init__(self, x=-1, y=-1, render_tag=0, name="Snailgoat"):
+        super().__init__(x=x, y=y, render_tag=render_tag, name=name)
+        self.brain = monster_ai.Monster_AI(self)
+        self.character.experience_given = 40
+        self.description = "The Snailgoat is a peculiar creature with the body of a goat and the protective shell of a snail. As it grazes on forest plants, it leaves a trail of toxic sludge in its wake, making the ground hazardous for any who follow. Though it does not attack, the Snailgoat's defensive nature makes it a challenge for would-be predators. When threatened, it retreats into its sturdy shell, significantly reducing the damage it takes. Despite its passive demeanor, the Snailgoat's toxic trail and fortified defense make it a noteworthy presence in the forest ecosystem."
+        self.character.health = 30
+        self.character.max_health = 30
+        self.strength = 2
+        self.dexterity = 0
+        self.endurance = 20
+        self.intelligence = 0
+        self.character.armor = 5
+        self.traits["snailgoat"] = True
+"""
+Snailgoat
+Characteristic: Leaves toxic sludge as it moves
+Vulnerable:
+Abilities: Hide in shell (increased armor, cannot attack)
 On hit:
 """

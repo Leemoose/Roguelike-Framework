@@ -18,7 +18,8 @@ class Character():
         self.level = 1
 
         # flags altered by status conditions
-        self.movable = True
+        self.can_move = True
+        self.can_take_actions = True
         self.flee = False
         self.can_teleport = True
         self.safe_rest = True
@@ -218,7 +219,10 @@ class Character():
             # refresh duration of existing status effect
             for x in self.status_effects:
                 if x.id_tag == effect.id_tag:
-                    x.duration = effect.duration
+                    if x.is_cumulative():
+                        x.change_duration(effect.get_duration()) #add more duration
+                    else:
+                        x.change_duration(effect.get_duration() - x.get_duration()) #reset duration
     def status_messages(self):
         messages = []
         for effect in self.status_effects:
@@ -272,12 +276,12 @@ class Character():
             loop.add_message("No point in resting right now.")
             loop.change_loop(returnLoop)
             return
-
+        """
         if loop.branch == "Forest":
             loop.add_message("No resting with these predators lurking nearby")
             loop.change_loop(returnLoop)
             return
-
+        """
         tile_map = loop.generator.tile_map
         no_monster_active = True
         for monster in loop.generator.monster_map.all_entities():

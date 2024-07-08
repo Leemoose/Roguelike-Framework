@@ -143,7 +143,7 @@ def rank_use_consumeable(ai, loop):
     return -1
 
 def rank_move(ai, loop):
-    return random.randint(20, 40)
+    return ai.randomize_action("move")
 
 def rank_stairs(ai, loop):
     if loop.taking_stairs == True:
@@ -166,3 +166,6 @@ def rank_find_item(ai, loop):
     if loop.generator.item_map.num_entities() > 0:
         return ai.randomize_action("find_item")
     return -1
+
+def rank_nothing(ai, loop):
+    return ai.randomize_action("nothing")
