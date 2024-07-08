@@ -140,7 +140,7 @@ def key_action(loop, key):
                # player.character.melee(loop.targets.target_current, loop)
                 pass #change to targeting screen
     elif key == "i":
-        #  loop.player.inventory.change_limit_inventory(None)
+        loop.player.inventory.change_active_inventory("main")
         loop.change_loop(LoopType.inventory)
     elif key == "e":
         loop.change_loop(LoopType.equipment)
@@ -218,8 +218,12 @@ def key_inventory(loop, key):
             loop.change_loop(LoopType.equipment)
         loop.player.inventory.change_limit_inventory("item")
     elif key in ["1","2","3","4","5"]:
+        loop.player.inventory.change_active_inventory("main")
         options = ["item", "potion","scroll","equipment","weapon"]
         loop.player.inventory.change_limit_inventory(options[int(key) - 1])
+        loop.change_loop("inventory")
+    elif key in["6"]:
+        loop.player.inventory.change_active_inventory("orb")
         loop.change_loop("inventory")
 
     for i in range(len(player.inventory.get_limit_inventory())):

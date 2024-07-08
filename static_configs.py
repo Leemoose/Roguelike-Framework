@@ -248,10 +248,13 @@ class TileDict():
         tiles[3000] = image.load('assets/npc/campfire.png')
         tiles[3001] = image.load('assets/npc/deactivated_campfire.png')
 
-        tiles[3900] = image.load('assets/interactables.forest_orb_pedastool')
-        tiles[3901] = image.load('assets/interactables.forest_orb_pedastool_deactivated')
+        tiles[3900] = image.load('assets/interactables/forest_orb_pedastool.png')
+        tiles[3901] = image.load('assets/interactables/forest_orb_pedastool_deactivated.png')
+        tiles[3910] = image.load('assets/interactables/ocean_orb_pedastool.png')
+        tiles[3911] = image.load('assets/interactables/ocean_orb_pedastool_deactivated.png')
 
         tiles[4000] = image.load("assets/items/orbs/forest_orb.png")
+        tiles[4010] = image.load("assets/items/orbs/ocean_orb.png")
 
 
         self.tiles = tiles

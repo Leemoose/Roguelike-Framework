@@ -412,7 +412,7 @@ class Player(Objects):
         for x, y in directions:
             location.append((x + self.x, y + self.y))
             if loop.generator.interact_map.locate(x + self.x, y + self.y) != -1:
-                loop.generator.interact_map.locate(x + self.x, y + self.y).interact(self, loop)
+                loop.generator.interact_map.locate(x + self.x, y + self.y).interact(loop)
                 spoke = True
 
 
