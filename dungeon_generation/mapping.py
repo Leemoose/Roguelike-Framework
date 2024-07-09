@@ -156,7 +156,10 @@ class DungeonGenerator():
             print("You are trying to parse a non tuple")
         if location == None:
             return None
-        elif self.monster_map.get_passable(location[0], location[1]) and self.not_on_player(location[0], location[1]) and self.tile_map.get_passable(location[0], location[1]) and self.interact_map.get_passable(location[0], location[1]):
+        elif (self.monster_map.get_passable(location[0], location[1])
+              and self.not_on_player(location[0], location[1])
+              and self.tile_map.get_passable(location[0], location[1])
+              and self.interact_map.get_passable(location[0], location[1])):
             return True
         return False
 
@@ -259,7 +262,7 @@ class DungeonGenerator():
         check_in_corridor = self.in_corridor(startx, starty)
         while ((not self.tile_map.get_passable(startx, starty)) or
                    (not map.get_passable(startx, starty)) or
-                   check_on_stairs or check_in_corridor):
+                   check_on_stairs or check_in_corridor) or (self.tile_map.is_important_tile(startx, starty)):
                 startx = random.randint(0, self.width - 1)
                 starty = random.randint(0, self.height - 1)
                 check_on_stairs = self.on_stairs(startx, starty)
@@ -321,7 +324,7 @@ class DungeonGenerator():
         check_on_stairs = self.on_stairs(startx, starty)
         if force_near_stairs:
             directions = [(0, 1), (1, 0), (-1, 0), (0, -1), (1, 1), (-1, 1), (1, -1), (-1, -1)]
-            while ((self.tile_map.get_passable(startx, starty) == False) or
+            while ((self.get_passable((startx, starty)) == False) or
                    (self.item_map.get_passable(startx, starty) == False)):
                 random_direction = random.choice(directions)
                 startx = self.tile_map.stairs[1].x + random_direction[0]

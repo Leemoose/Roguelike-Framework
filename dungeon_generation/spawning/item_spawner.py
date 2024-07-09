@@ -61,9 +61,6 @@ class ItemSpawner():
                 item = item_spawn.GetFreshCopy()
                 items.append(item)
 
-        items.append(I.BookofHypnosis())
-
-
 
         commonEquipAtDepth = [i for i in self.commonEquip if i.AllowedAtDepth(depth, branch)]
         commonPotiorbsAtDepth = [i for i in self.commonPotiorbs if i.AllowedAtDepth(depth, branch)]

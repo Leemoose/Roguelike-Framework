@@ -35,3 +35,5 @@ maybe make dialogue box limit based on number of lines instead of current system
 interactable spawning over portal (no bueno)
 
 enchant scroll limit inventory needs to be slightly more specific
+
+get rid of stairs on final level of forest

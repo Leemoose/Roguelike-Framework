@@ -99,6 +99,9 @@ class TileMap(TrackingMap):
             map += "\n"
         return map
 
+    def is_important_tile(self, x, y):
+        return self.track_map[x][y].has_trait("gateway")
+
     def get_gateway(self):
         return self.gateway
 
@@ -223,32 +226,19 @@ class TileMap(TrackingMap):
         return count
 
     def place_stairs(self, depth):
+        if depth > 1 : # special case because of prefab
+            startx, starty = self.get_random_location_ascaii()
+            self.track_map_render[startx][starty] = "<"
 
-        # print(self.branch)
-        # if self.branch == "Forest":
-        #     import pdb; pdb.set_trace()
-        if depth > 2 and self.branch == "Dungeon": # special case because of prefab
-            startx, starty = self.get_random_location_ascaii()
-            # while track_map_ren
-            # tile = T.Stairs(startx, starty, 90, True, downward=False)
-            self.track_map_render[startx][starty] = "<"
-            # self.stairs.append(tile)
-        if depth > 1 and self.branch != "Dungeon":
-            startx, starty = self.get_random_location_ascaii()
-            self.track_map_render[startx][starty] = "<"
         elif depth > 1:
             for i in range(2):
                 startx, starty = self.get_random_location_ascaii()
-                # while track_map_ren
-                # tile = T.Stairs(startx, starty, 90, True, downward=False)
                 self.track_map_render[startx][starty] = "<"
-                # self.stairs.append(tile)
-        if (depth < 10): #Should be number of stairs from previous tilemap
+
+        if (self.branch == "Dungeon" and self.depth < 10) or (self.branch == "Forest" and self.depth < 5): #Should be number of stairs from previous tilemap
             for i in range(2):
                 startx, starty = self.get_random_location_ascaii()
-                # tile = T.Stairs(startx, starty, 91, True, downward=True)
                 self.track_map_render[startx][starty] = ">"
-                # self.stairs.append(tile)
 
         if depth != 1:
             startx, starty = self.get_random_location_ascaii()
