@@ -376,7 +376,7 @@ class Loops():
             if not monster.character.is_alive():
                 if monster.get_location() == self.screen_focus:  # on kill stop observing a space
                     self.screen_focus = None
-                items_copy = [item for item in monster.get_inventory()]
+                items_copy = monster.get_inventory()
                 for item in items_copy:
                     if item.yendorb:
                         monster.do_drop(item, self.generator.item_map)

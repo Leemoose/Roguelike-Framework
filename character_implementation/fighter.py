@@ -1,15 +1,12 @@
 import random
 
 class Fighter():
-    def __init__(self, parent, min_damage = 2, max_damage = 3):
+    def __init__(self, parent, min_damage = 2, max_damage = 3, armor = 0, on_hit = []):
         self.parent = parent
-        self.min_unarmed = 3
-        self.max_unarmed = 6
-        self.on_hit = []
 
+        self.on_hit = on_hit
         self.base_damage = 0
-        self.armor = 0
-
+        self.armor = armor
         self.unarmed_damage_min = min_damage
         self.unarmed_damage_max = max_damage
 
@@ -26,6 +23,10 @@ class Fighter():
     def change_attribute(self, attribute, change):
         if attribute == "armor":
             self.armor += change
+
+    def change_unarmed_attack(self, min_change, max_change):
+        self.unarmed_damage_max += max_change
+        self.unarmed_damage_min += min_change
 
     def add_on_hit_effect(self, effect):
         self.on_hit.append(effect)
@@ -88,10 +89,20 @@ class Fighter():
         return min(100, strike_chance)
 
     def get_damage_min(self):
-        return self.get_damage()[0]
+        weapon = self.parent.body.get_weapon()
+        if weapon is None:
+            damage_min = self.base_damage + self.unarmed_damage_min
+        else:
+            damage_min =  weapon.get_damage_min()
+        return damage_min
 
     def get_damage_max(self):
-        return self.get_damage()[1]
+        weapon = self.parent.body.get_weapon()
+        if weapon is None:
+            damage_max = self.base_damage + self.unarmed_damage_max
+        else:
+            damage_max = weapon.get_damage_max()
+        return damage_max
 
     def get_dodge_chance(self):
         dodge_chance = random.randint(1, 100) + self.parent.character.get_attribute("Dexterity") * 2
@@ -102,8 +113,8 @@ class Fighter():
         weapon = self.parent.body.get_weapon()
 
         if weapon is None:
-            damage = random.randint(self.base_damage + self.unarmed_damage_min,
-                                    self.base_damage + self.unarmed_damage_max)  # Should make object for unarmed damage
+            damage = random.randint(self.get_damage_min(),
+                                    self.get_damage_max())  # Should make object for unarmed damage
         else:
             if weapon.on_hit == None:
                 damage = weapon.attack()
@@ -122,7 +133,7 @@ class Fighter():
                 return []
             else:
                 damage, effect = weapon.attack()
-        return effect
+        return [effect]
 
 
     def get_armor_piercing(self):

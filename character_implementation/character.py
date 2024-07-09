@@ -168,20 +168,17 @@ class Character():
 
     def quaff(self, potion, item_dict, item_map):
         if potion.consumeable and potion.equipment_type == "Potiorb":
-            potion.activate(self)
-            if potion.stacks < 1:
-                self.drop(potion, item_dict, item_map)
-                potion.destroy = True
+            potion.activate(self.parent)
             self.energy -= self.action_costs["quaff"]
             return True
     
     def read(self, scroll, loop, item_dict, item_map):
         if scroll.consumeable and scroll.equipment_type == "Scrorb":
-            scroll.activate(self, loop)
+            scroll.activate(self.parent, loop)
             self.energy -= self.action_costs["read"]
             return True
         elif scroll.equipment_type == "Book":
-            scroll.activate(self, loop)
+            scroll.activate(self.parent, loop)
             self.energy -= self.action_costs["read"]
 
     def tick_all_status_effects(self, loop):

@@ -22,9 +22,7 @@ File "C:\Users\kcdul\OneDrive\Desktop\Roguelike-Framework\roguewriting.py", line
     xmove, ymove = moves.pop(1)
 AttributeError: 'tuple' object has no attribute 'pop'
 
-Blink Scrolls are broken
-
-might potiorbs are broken
+Blink Scrolls will be used up even if you can't blink due to range
 
 fix some of the new night attributes going on in the forest
 
@@ -34,4 +32,6 @@ font in dialogue interactions messes up apostrophes, if no fix found easily can 
 
 maybe make dialogue box limit based on number of lines instead of current system of number of messages
 
-campfires can spawn in hallways in forest, blocking progress
+interactable spawning over portal (no bueno)
+
+enchant scroll limit inventory needs to be slightly more specific

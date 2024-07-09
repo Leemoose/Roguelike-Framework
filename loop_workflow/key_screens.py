@@ -134,7 +134,7 @@ def key_action(loop, key):
                 player.do_grab(item, loop)
                 break
     elif key == "f":
-        for weapon in player.character.get_items_in_equipment_slot("hand_slot"):
+        for weapon in player.body.get_items_in_equipment_slot("hand_slot"):
             if weapon.has_trait("ranged_weapon"):
                # loop.start_targetting(start_on_player=True)
                # player.character.melee(loop.targets.target_current, loop)

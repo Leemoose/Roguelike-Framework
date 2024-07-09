@@ -56,5 +56,5 @@ class Spell():
     def full_description(self):
         return self.description()
 
-    def can_learn(self):
-        return self.parent.character.intelligence >= self.required_intelligence
+    def can_learn(self, entity):
+        return entity.get_attribute("intelligence") >= self.required_intelligence

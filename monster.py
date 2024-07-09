@@ -205,8 +205,8 @@ class Goblin(Monster):
         return corpse
 
 class Looter(Goblin):
-    def __init__(self, x=-1, y=-1, render_tag=1009, name="Looter", experience_given=25, health=100, min_damage=3,
-                 max_damage=8, rarity="Rare"):
+    def __init__(self, x=-1, y=-1, render_tag=1009, name="Looter", experience_given=25, health=25, min_damage=3,
+                 max_damage=5, rarity="Rare"):
         super().__init__(x=x, y=y, render_tag=render_tag, name=name, experience_given=experience_given, health=health,
                          min_damage=min_damage, max_damage=max_damage, rarity=rarity)
         self.character.action_costs["move"] = 25
@@ -426,7 +426,7 @@ class Stumpy(Monster):
         self.description = "An ancient, gnarled tree stump brought to life by dark magic, Stumpy harbors a deep, burning desire for vengeance. Its twisted roots writhe with malicious intent, and its hollow eyes glow with a sinister, green light. With bark as tough as iron and splintered limbs that lash out like whips, this vengeful stump seeks retribution for the countless trees felled by human hands. Beware its crushing roots and poisonous sap, for Stumpy will stop at nothing to avenge its fallen brethren."
         self.character.health = 10
         self.character.max_health = 10
-        self.character.armor = 10
+        self.fighter = Fighter(self, min_damage=3, max_damage=10, armor = 10)
         self.attributes["wood"] = True
         self.traits["stumpy"] = True
 
@@ -438,10 +438,10 @@ class Treant(Monster):
         self.description = "Towering over the forest canopy, the Treant is a massive and malevolent guardian with bark-covered armor tough as iron. Its glowing green eyes and deep, rumbling growl instill fear in all who hear it. Driven by an ancient grudge, it uses a devastating root lash attack to ensnare and immobilize foes, protecting its sacred domain with relentless strength. The Treant’s presence warps the forest, darkening and twisting the environment as it exacts vengeance on any who defile its home."
         self.character.health = 50
         self.character.max_health = 50
-        self.character.armor = 15
         self.attributes["wood"] = True
         self.traits["treant"] = True
-        self.fighter.add_on_hit_effect(Rooted)
+
+        self.fighter = Fighter(self, min_damage=5, max_damage=40, armor = 10, on_hit = [Rooted])
         #Remember to add on hit effect for ensnaring
         """
         Treant
@@ -458,7 +458,8 @@ class Spider(Monster):
         self.character.max_health = 10
         self.traits["spider"] = True
         self.character.change_action_cost("move", 30)
-        self.fighter.add_on_hit_effect(Slow)
+
+        self.fighter = Fighter(self, min_damage=3, max_damage=5, on_hit=[Slow])
         """
 Abilities: Create web on tile
         """
@@ -471,10 +472,6 @@ class MetallicBear(Monster):
         self.description = "This imposing creature, with fur interwoven with metallic threads, gleams ominously as it prowls through the forest. Its powerful, ironclad muscles and razor-sharp claws make it a fearsome opponent. When the Metallic Bear’s health drops low, it enters a terrifying fury mode, its eyes glowing with an intense, fiery light. In this state, it becomes even more dangerous, dealing increased damage and attacking with blinding speed. The sound of clashing metal and its ferocious roars echo through the trees, warning all who dare to challenge it of the deadly rage that lies within."
         self.character.health = 30
         self.character.max_health = 30
-        self.strength = 20
-        self.dexterity = 8
-        self.endurance = 20
-        self.intelligence = 1
         self.character.armor = 20
         self.traits["metallic_bear"] = True
 
@@ -516,8 +513,8 @@ class Vinecrasher(Monster):
         self.description = "The Vinecrasher is a tangled mass of brambles and thorns, lurking in the forest in packs. These creatures are capable of launching poisonous jaggers from a distance, making them deadly even from afar. Though they are fragile with low health, their venomous attacks can quickly incapacitate their foes. Vulnerable to fire, a well-placed flame can easily reduce them to ash. Their twisted forms blend seamlessly with the forest undergrowth, making them difficult to spot until it’s too late. Beware the Vinecrasher's ranged poison assault and their pack tactics, for they strike swiftly and without mercy."
         self.character.health = 10
         self.character.max_health = 10
-        self.character.armor = 0
-        self.fighter.add_on_hit_effect(Poison) #Poisonous spikes
+
+        self.fighter = Fighter(self, min_damage=1, max_damage=5, on_hit = [Poison]) #Poisonous spikes
         self.traits["vinecrasher"] = True
         self.attributes["wood"] = True
 
@@ -536,10 +533,6 @@ class Snailgoat(Monster):
         self.description = "The Snailgoat is a peculiar creature with the body of a goat and the protective shell of a snail. As it grazes on forest plants, it leaves a trail of toxic sludge in its wake, making the ground hazardous for any who follow. Though it does not attack, the Snailgoat's defensive nature makes it a challenge for would-be predators. When threatened, it retreats into its sturdy shell, significantly reducing the damage it takes. Despite its passive demeanor, the Snailgoat's toxic trail and fortified defense make it a noteworthy presence in the forest ecosystem."
         self.character.health = 30
         self.character.max_health = 30
-        self.strength = 2
-        self.dexterity = 0
-        self.endurance = 20
-        self.intelligence = 0
         self.character.armor = 5
         self.traits["snailgoat"] = True
 """

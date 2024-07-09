@@ -34,12 +34,12 @@ class TeleportOther(Spell):
             startx = random.randint(0, width - 1)
             starty = random.randint(0, height - 1)
 
-        if target.type == "Player":
+        if target.has_trait("player"):
             target.x = startx
             target.y = starty
             loop.add_message("You teleported somewhere randomly!")
-            return
-        elif target.type == "Monster":
+
+        elif target.has_trait("monster"):
             monster_map = loop.generator.monster_map
             x, y = target.x, target.y
             monster_map.clear_location(x, y)

@@ -8,7 +8,7 @@ import skills as S
 from spell_implementation import Mage
 from loop_workflow import LoopType
 from character_implementation import Inventory
-import items as I
+from items import MightPotion, BlinkScrorb
 
 
 
@@ -64,6 +64,8 @@ class Player(Objects):
             for spell in bug_test_spells:
                 self.mage.add_spell(spell)
             self.stat_points = 20 # free stat points for debugging
+            self.inventory.get_item(MightPotion())
+            self.inventory.get_item(BlinkScrorb())
 
     def get_attribute(self, attribute):
         attribute = attribute.lower()

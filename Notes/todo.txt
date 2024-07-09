@@ -1,6 +1,8 @@
 Utilize central file with configs better
 
 Fully migrate some skills to spells (maybe decide how to decide difference between the two)
+    Idea: Skills have cooldown, no mana cost, can be passsive and are chosen from leveling up
+    Spells: Have mana cost but no cooldown, are always active and associated with spell schools
 
 Update monster behaviour to fight if it can't escape because of allies in hallway
 

@@ -77,7 +77,7 @@ class Inventory():
     """
     Get item should be called when it is not being picked off the floor
     """
-    def get_item(self, item, loop):
+    def get_item(self, item, loop = None):
         if item.yendorb:
             loop.change_loop("victory")
         elif item.has_trait("orb"):
@@ -101,6 +101,9 @@ class Inventory():
         if len(self.inventory) != 0: #Seems unnecessary? Good to be safe...
             if item.equipable and item.equipped:
                 self.parent.unequip(item)
+            item.x = self.parent.x
+            item.y = self.parent.y
+            item_map.place_thing(item)
             self.remove_item(item)
             return True
         return False

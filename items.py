@@ -3,6 +3,7 @@ import objects as O
 from spell_implementation import *
 import skills as S
 
+
 class statUpgrades():
     def __init__(self, base_str=0, max_str=0, base_dex=0, max_dex = 0, base_int = 0, max_int = 0, base_end = 0, max_end = 0, base_arm=0, max_arm=0):
         self.base_str = base_str
@@ -102,28 +103,28 @@ class Equipment(O.Item):
 
     def add_stats(self, entity):
         (str, dex, intl, end, arm) = self.stats.GetStatsForLevel(self.level)
-        entity.character.change_attribute("Strength", str)
-        entity.character.change_attribute("Intelligence", intl)
-        entity.character.change_attribute("Endurance", end)
-        entity.character.change_attribute("Dexterity", dex)
+        entity.change_attribute("Strength", str)
+        entity.change_attribute("Intelligence", intl)
+        entity.change_attribute("Endurance", end)
+        entity.change_attribute("Dexterity", dex)
         entity.change_attribute("armor", arm)
 
     #Called after level up has completed to get stats to match!
     def update_stats_level_up(self, entity):
         (str, dex, intl, end, arm) = self.stats.GetStatsForLevelUp(self.level)
-        entity.character.change_attribute("Strength", str)
-        entity.character.change_attribute("Intelligence", intl)
-        entity.character.change_attribute("Endurance", end)
-        entity.character.change_attribute("Dexterity", dex)
+        entity.change_attribute("Strength", str)
+        entity.change_attribute("Intelligence", intl)
+        entity.change_attribute("Endurance", end)
+        entity.change_attribute("Dexterity", dex)
         entity.change_attribute("armor", arm)
 
     def remove_stats(self, entity):
         (str, dex, intl, end, arm) = self.stats.GetStatsForLevel(self.level)
-        entity.character.change_attribute("Strength", str)
-        entity.character.change_attribute("Intelligence", intl)
-        entity.character.change_attribute("Endurance", end)
-        entity.character.change_attribute("Dexterity", dex)
-        entity.character.change_attribute("Armor", arm)
+        entity.change_attribute("Strength", str)
+        entity.change_attribute("Intelligence", intl)
+        entity.change_attribute("Endurance", end)
+        entity.change_attribute("Dexterity", dex)
+        entity.fighter.change_attribute("Armor", arm)
 
     def can_be_equipped(self, entity):
         return self.equipable and entity.get_attribute("Strength") >= self.required_strength
@@ -161,6 +162,12 @@ class Weapon(Equipment):
 
     def get_armor_piercing(self):
         return self.armor_piercing
+
+    def get_damage_min(self):
+        return self.damage_min
+
+    def get_damage_max(self):
+        return self.damage_max
 
     def attack(self):
         damage = random.randint(self.damage_min, self.damage_max)
@@ -818,13 +825,13 @@ class WizardRobe(BodyArmor):
                                   base_int = 2, max_int = 5)
 
     def activate(self, entity):
-        entity.max_mana += self.mana_buff
-        entity.mana_regen += self.mana_regen_buff
+        entity.character.max_mana += self.mana_buff
+        entity.character.mana_regen += self.mana_regen_buff
         return super().activate(entity)
 
     def deactivate(self, entity):
-        entity.max_mana -= self.mana_buff
-        entity.mana_regen -= self.mana_regen_buff
+        entity.character.max_mana -= self.mana_buff
+        entity.character.mana_regen -= self.mana_regen_buff
         return super().deactivate(entity)
 
     def level_up(self):
@@ -1046,13 +1053,11 @@ class BoxingGloves(Gloves):
                                   base_arm = 0, max_arm = 2)
 
     def activate(self, entity):
-        entity.unarmed_damage_min += self.damage_boost_min
-        entity.unarmed_damage_max += self.damage_boost_max
+        entity.fighter.change_unarmed_attack(self.damage_boost_min, self.damage_boost_max)
 
 
     def deactivate(self, entity):
-        entity.unarmed_damage_min -= self.damage_boost_min
-        entity.unarmed_damage_max -= self.damage_boost_max
+        entity.fighter.change_unarmed_attack(-self.damage_boost_min, -self.damage_boost_max)
 
     def level_up(self):
         self.enchant()
@@ -1145,13 +1150,13 @@ class LichHand(Gloves):
         return S.Invinciblity(owner, self.skill_cost, self.skill_cooldown, self.skill_duration, activation_threshold=1.1, by_scroll=False)
 
     def activate(self, entity):
-        self.health_removed = entity.max_health // self.health_cost
-        entity.max_health -= self.health_removed
-        if entity.health > entity.max_health:
-            entity.health = entity.max_health
+        self.health_removed = entity.character.get_max_health() // self.health_cost
+        entity.character.change_max_health(-self.health_removed)
+        if entity.character.get_health() > entity.character.get_max_health():
+            entity.character.change_health(entity.character.get_max_health() - entity.character.get_health())
 
     def deactivate(self, entity):
-        entity.max_health += self.health_removed
+        entity.character.change_max_health(self.health_removed)
 
     def level_up(self):
         self.enchant()
@@ -1322,12 +1327,12 @@ class WizardHat(Helmet):
         self.stats = statUpgrades(base_int = 3, max_int = 6)
 
     def activate(self, entity):
-        entity.max_mana += self.mana_buff
+        entity.character.max_mana += self.mana_buff
 
     def deactivate(self, entity):
-        entity.max_mana -= self.mana_buff
-        if entity.mana >= entity.max_mana:
-            entity.mana = entity.max_mana
+        entity.character.max_mana -= self.mana_buff
+        if entity.mana >= entity.character.max_mana:
+            entity.mana = entity.character.max_mana
 
     def level_up(self):
         self.enchant()
@@ -1436,14 +1441,14 @@ class RingOfMana(Ring):
 
     def activate(self, entity):
         entity.mana += 20
-        entity.max_mana += 20
-        entity.mana_regen += 4
+        entity.character.max_mana += 20
+        entity.character.mana_regen += 4
         entity.intelligence += 3
 
     def deactivate(self, entity):
         entity.mana -= 20
-        entity.max_mana -= 20
-        entity.mana_regen -= 4
+        entity.character.max_mana -= 20
+        entity.character.mana_regen -= 4
         entity.intelligence -= 3
 
 
@@ -1458,14 +1463,14 @@ class BoneRing(Ring):
         entity.safe_rest = False
         entity.character.change_attribute("Strength", 8)
         entity.character.change_attribute("Dexterity", 8)
-        entity.mana_regen -= 10
+        entity.character.mana_regen -= 10
         entity.health_regen -= 10  # intended to kill you if you don't take it off after a few turns
 
     def deactivate(self, entity):
         entity.safe_rest = True
         entity.character.change_attribute("Strength", -8)
         entity.character.change_attribute("Dexterity", -8)
-        entity.mana_regen += 10
+        entity.character.mana_regen += 10
         entity.health_regen += 10
 
 
@@ -1560,8 +1565,9 @@ class Potion(O.Item):
     def activate(self, entity):
         self.activate_once(entity)
         self.stacks -= 1
-        if self.stacks <= 0:
+        if self.stacks == 0:
             self.destroy = True
+            entity.inventory.remove_item(self)
 
 class Scroll(O.Item):
     def __init__(self, render_tag, name):
@@ -1590,13 +1596,13 @@ class Scroll(O.Item):
 
     def activate(self, entity, loop):
         self.activate_once(entity, loop)
-        entity.parent.inventory.ready_scroll = self
+        entity.inventory.ready_scroll = self
 
     def consume_scroll(self, entity):
         self.stacks -= 1
         if self.stacks == 0:
             self.destroy = True
-            entity.inventory.remove(self)
+            entity.inventory.remove_item(self)
 
 class TeleportScroll(Scroll):
     def __init__(self, render_tag):
@@ -1606,7 +1612,7 @@ class TeleportScroll(Scroll):
         self.skill = S.Teleport(None, None, None)
 
     def activate_once(self, entity, loop):
-        self.skill.parent = entity.parent
+        self.skill.parent = entity
         self.skill.activate(entity, loop.generator, bypass = True)
         self.consume_scroll(entity)
         loop.change_loop("inventory")
@@ -1669,8 +1675,8 @@ class ExperienceScroll(Scroll):
         self.experience = 50
 
     def activate_once(self, entity, loop):
-        entity.parent.experience += entity.parent.experience_to_next_level
-        entity.parent.check_for_levelup()
+        entity.experience += entity.experience_to_next_level
+        entity.check_for_levelup()
         self.consume_scroll(entity)
         loop.change_loop("inventory")
 
@@ -1682,18 +1688,18 @@ class HealthPotion(Potion):
         self.rarity = "Common"
 
     def activate_once(self, entity):
-        entity.gain_health(20 + (entity.max_health // 10))
+        entity.character.gain_health(20 + (entity.character.get_max_health() // 10))
 
 class MightPotion(Potion):
-    def __init__(self, render_tag):
+    def __init__(self, render_tag = 404):
         super().__init__(render_tag, "Might Potiorb")
         self.description = "A potiorb that makes you stronger for a few turns."
         self.rarity = "Rare"
         self.action_description = "Gain 5 strength temporarily."
 
     def activate_once(self, entity):
-        effect = E.Might(5, 5)
-        entity.add_status_effect(effect)
+        effect = Might(5, 5)
+        entity.character.add_status_effect(effect)
 
 class DexterityPotion(Potion):
     def __init__(self, render_tag):
@@ -1704,7 +1710,7 @@ class DexterityPotion(Potion):
 
     def activate_once(self, entity):
         effect = E.Haste(5, 5)
-        entity.add_status_effect(effect)
+        entity.character.add_status_effect(effect)
 
 class PermanentDexterityPotion(Potion):
     def __init__(self, render_tag, dexterity = 1):
@@ -1735,7 +1741,7 @@ class CurePotion(Potion):
         self.rarity = "Rare"
 
     def activate_once(self, entity):
-        for effect in entity.status_effects:
+        for effect in entity.character.status_effects:
             if not effect.positive:
                 effect.remove(entity)
         entity.status_effects = []
@@ -1748,7 +1754,7 @@ class ManaPotion(Potion):
         self.rarity = "Common"
 
     def activate_once(self, entity):
-        entity.gain_mana(20 + (entity.max_mana // 10))
+        entity.character.gain_mana(20 + (entity.character.max_mana // 10))
 
 class EnchantScrorb(Scroll):
     def __init__(self, render_tag):
@@ -1757,7 +1763,7 @@ class EnchantScrorb(Scroll):
         self.rarity = "Extra Common"
 
     def activate_once(self, entity, loop):
-        loop.limit_inventory = "Enchantable"
+        loop.limit_inventory = "equipment"
         loop.change_loop("enchant")
         # print("read enchant")
 
@@ -1768,20 +1774,20 @@ class BurningAttackScrorb(Scroll):
         self.rarity = "Common"
 
     def activate_once(self, entity, loop):
-        entity.ready_skill = S.BurningAttack(entity.parent, 0, 0, 5, 4, 6, 7)
+        entity.character.ready_skill = S.BurningAttack(entity, 0, 0, 5, 4, 6, 7)
         loop.start_targetting()
-        loop.targets.store_skill(0, entity.ready_skill, entity.parent, temp_cast=True)
+        loop.targets.store_skill(0, entity.character.ready_skill, entity, temp_cast=True)
 
 class BlinkScrorb(Scroll):
-    def __init__(self, render_tag):
+    def __init__(self, render_tag=450):
         super().__init__(render_tag, "Blink Scrorb")
         self.description = "A scrorb that lets you cast blink once."
         self.rarity = "Rare"
 
     def activate_once(self, entity, loop):
-        entity.ready_skill = S.BlinkToEmpty(entity.parent, 0, 0, 10, 1)
+        entity.character.ready_skill = Blink(entity)
         loop.start_targetting(start_on_player=True)
-        loop.targets.store_skill(0, entity.ready_skill, entity.parent, temp_cast=True)
+        loop.targets.store_skill(0, entity.character.ready_skill, entity, temp_cast=True)
 
 class MassHealScrorb(Scroll):
     def __init__(self, render_tag):
@@ -1823,14 +1829,14 @@ class Book(O.Item):
         return False
 
     def mark_owner(self, entity):
-        self.attached_skill = self.skill(entity.parent)
+        self.attached_skill = self.skill(entity)
 
     def activate(self, entity, loop):
-        if self.attached_skill.can_learn():
-            new_skill = self.skill(entity.parent)
-            entity.add_skill(new_skill)
+        if self.attached_skill.can_learn(entity):
+            new_skill = self.skill(entity)
+            entity.character.add_skill(new_skill)
             self.destroy = True
-            entity.parent.inventory.remove_item(self)
+            entity.inventory.remove_item(self)
             loop.change_loop("inventory")
         else:
             loop.add_message("You do not have enough intelligence to learn this spell.")
