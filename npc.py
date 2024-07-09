@@ -150,17 +150,14 @@ class NPC(O.Objects):
         loop.messages = []
         loop.npc_focus = self
         loop.change_loop("trade")
-
     def give_quest(self, loop):
         pass
-
     def give_item(self, loop, number):
         player = loop.player
         item = self.items[number]
         if player.character.get_item(loop, item):
             self.items.pop(number)
             loop.change_loop("trade")
-
     def continue_talking(self, loop):
         loop.add_message(self.talking_queue.pop(0))
         if len(self.talking_queue) == 0:
@@ -317,14 +314,6 @@ class Archmage(NPC):
     def talk(self, loop):
         if self.has_stuff_to_say:
             self.talking = True
-        #     loop.add_message("'Ah, the latest summon. Listen carefully. Beyond these rifts lies a chaotic realm where monsters originate.'")
-        #     self.talking_queue.append(
-        #         "Your task is to stem the tide of creatures and find a way to close the rifts. Each rift you seal will hopefully weaken the others.")
-        #     self.talking_queue.append("Or strengthen, we don't actually know.")
-        #     self.talking_queue.append("But be warned, the deeper you go, the more powerful the monsters become.")
-        # else:
-        #     loop.add_message(
-        #         "'Now hurry along before more beasts emerge.'")
 
     def give_quest(self, loop):
         if self.gave_quest == True:
@@ -342,3 +331,14 @@ class Archmage(NPC):
             loop.player.add_quest(quest.GoblinQuest())
             self.gave_quest = True
             self.has_stuff_to_say = False
+
+class ForestHermit(NPC):
+    def __init__(self, x=-1, y=-1, render_tag= 3100, name="Forest Hermit"):
+        super().__init__(x=x, y=y, render_tag = render_tag, name = name)
+        self.options = ["Talk"]
+        self.has_stuff_to_say = False
+        self.dialogue_file = "npc_dialogue/foresthermit.txt"
+        self.init_dialogue_queue()
+
+    def talk(self, loop):
+        self.talking = True

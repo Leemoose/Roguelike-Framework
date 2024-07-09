@@ -261,6 +261,8 @@ class TileDict():
 
         tiles[3001] = image.load('assets/npc/deactivated_campfire.png')
 
+        tiles[3100] = image.load('assets/interactables/forest_hermit.png')
+
         tiles[3900] = image.load('assets/interactables/forest_orb_pedastool.png')
         tiles[3901] = image.load('assets/interactables/forest_orb_pedastool_deactivated.png')
         tiles[3910] = image.load('assets/interactables/ocean_orb_pedastool.png')

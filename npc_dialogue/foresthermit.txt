@@ -1,0 +1,14 @@
+1 The monsters are strong these days... what do you want to know about?
+2 - !monster_check @13 Can you share more about the monsters?
+2 - @13 I've heard enough!
+3 ?monster_check Which ones?
+4 - ?monster_check !treant @13 Treants?
+4 - ?monster_check !spider @13 Spiders?
+4 - ?monster_check !metallicbear @13 Bears?
+4 - ?monster_check !insectnest @13 Insect nest?
+4 - ?monster_check !vinecrasher @13 Vinecrashers?
+5 ?treant Burn the big wooden brute, fire's the route! Watch out for roots, or you'll get the boot!
+5 ?spider Quick as a flash, those spiders dash! Carry antidotes, or you'll thrash and crash!
+5 ?metallicbear When the shiny bear’s enraged, stay off the stage! Enchanted blades cut through its metal cage.
+5 ?insectnest Hit the nest, out come the pests! Fire them quick, or you’ll itch like the rest!
+5 ?vinecrasher Burn the brambles, don't let them ramble! Dodge the jaggers, or you'll be in a shambles!
