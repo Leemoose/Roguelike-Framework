@@ -1,10 +1,11 @@
 import random
 
 class Fighter():
-    def __init__(self, parent, min_damage = 2, max_damage = 3, armor = 0, on_hit = []):
+    def __init__(self, parent, min_damage = 2, max_damage = 3, armor = 0, on_hit = [], on_damage_effect = []):
         self.parent = parent
 
         self.on_hit = on_hit
+        self.on_damage_effect = on_damage_effect
         self.base_damage = 0
         self.armor = armor
         self.unarmed_damage_min = min_damage
@@ -62,7 +63,6 @@ class Fighter():
             return 0
 
         effects = self.get_on_hit_effect()
-
         for effect in effects:
             effect = effect(self.parent)  # some effects need an inflictor
             defender.character.add_status_effect(effect)
@@ -81,6 +81,8 @@ class Fighter():
                             "The attack is effective against {} as it is a {} type.".format(defender.name, types))
 
         finalDamage = max(0, (int((damage + self.base_damage) * damage_shave) - defense) * (max(1, 1.5 * effectiveness)))
+        if finalDamage > 0:
+            defender.fighter.get_on_damaged_effect(loop)
         defender.character.take_damage(self.parent, finalDamage)
         return finalDamage
 
@@ -135,6 +137,9 @@ class Fighter():
                 damage, effect = weapon.attack()
         return [effect]
 
+    def get_on_damaged_effect(self, loop):
+        for fun in self.on_damage_effect:
+            fun(self.parent, loop)
 
     def get_armor_piercing(self):
         weapon = self.parent.body.get_weapon()

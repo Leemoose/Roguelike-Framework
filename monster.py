@@ -5,7 +5,7 @@ from character_implementation import Inventory, Body, Fighter
 import items as I
 import skills as S
 
-from spell_implementation import Poison, Rooted, Slow
+from spell_implementation import Poison, Rooted, Slow, Paralyze
 
 class Monster(O.Objects):
     def __init__(self, x=-1, y = -1, render_tag = -1, name="Unknown monster", experience_given = 0, brain = monster_ai.Monster_AI, rarity ="Common", health = 10, min_damage = 2, max_damage=3):
@@ -417,6 +417,17 @@ class BossOrb(Monster):
 """
 Forest Monsters: Generally wood or animal like. Grow stronger at night. Uses poison
 """
+class Twiggy(Monster):
+    def __init__(self, x=-1, y=-1, render_tag=1240, name="Twiggy"):
+        super().__init__(x=x, y=y, render_tag = render_tag, name = name)
+        self.brain = monster_ai.Stumpy_AI(self)
+        self.character.experience_given = 10
+        self.description = "It's a twig!"
+        self.character.health = 10
+        self.character.max_health = 10
+        self.fighter = Fighter(self, min_damage=1, max_damage=5, armor = 2)
+        self.attributes["wood"] = True
+        self.traits["twiggy"] = True
 
 class Stumpy(Monster):
     def __init__(self, x=-1, y=-1, render_tag=1100, name="Stumpy"):
@@ -491,12 +502,30 @@ class InsectNest(Monster):
         self.description = "Nestled within the forest, this immobile structure is a pulsating hive of malevolent activity. Each strike against the Insect Nest provokes a swarm of flying, poisonous insects that emerge in a frenzied cloud to defend their home. Though these insects are fragile and have low health, their venomous bites can quickly overwhelm and debilitate their attackers. The nest itself is otherwise powerless, relying entirely on the relentless defense of its swarming guardians to deter any who would seek to destroy it. Approach with caution, for disturbing the nest unleashes a torrent of venomous fury."
         self.character.health = 10
         self.character.max_health = 10
-        self.strength = 0
-        self.dexterity = 0
-        self.endurance = 0
-        self.intelligence = 0
-        self.character.armor = 0
         self.traits["insect_nest"] = True
+        self.fighter = Fighter(self, min_damage=0, max_damage=0, on_damage_effect=[hornet_summon])
+
+
+class Hornet(Monster):
+    def __init__(self, x=-1, y=-1, render_tag=1250, name="Hornet"):
+        super().__init__(x=x, y=y, render_tag=render_tag, name=name)
+        self.brain = monster_ai.Monster_AI(self)
+        self.character.experience_given = 15
+        self.description = "A bug"
+        self.character.health = 10
+        self.character.max_health = 10
+
+        self.fighter = Fighter(self, min_damage=3, max_damage=5, on_hit = [Paralyze]) #Poisonous spikes
+        self.character.change_action_cost("attack", 250)
+        self.traits["hornet"] = True
+
+def hornet_summon(entity, loop):
+    location = loop.generator.nearest_empty_tile(entity.get_location())
+    if location is not None:
+        monster = Hornet()
+        loop.generator.summoner.append((monster, location[0], location[1]))
+
+
 
 """
 Yellow Jacket Nest

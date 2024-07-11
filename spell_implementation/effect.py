@@ -73,6 +73,17 @@ class Petrify(StatusEffect):
     def remove(self, target):
         target.can_take_actions = True
 
+
+class Paralyze(StatusEffect):
+    def __init__(self, inflicator, duration = 1):
+        super().__init__(802, "Paralyze", "is Paralyzed", duration)
+
+    def apply_effect(self, target):
+        target.can_take_actions = False
+
+    def remove(self, target):
+        target.can_take_actions = True
+
 class Might(StatusEffect):
     def __init__(self, duration, strength):
         super().__init__(803, "Might", "feels strong", duration)

@@ -242,7 +242,8 @@ class TileDict():
         tiles[1210] = image.load('assets/monsters/spider.png')
         tiles[1220] = image.load('assets/monsters/insect_nest.png')
         tiles[1230] = image.load('assets/monsters/vinecrasher.png')
-
+        tiles[1240] = image.load('assets/monsters/twiggy.png')
+        tiles[1250] = image.load('assets/monsters/wasp.png')
         # ocean monsters (15xx)
 
 
@@ -255,13 +256,15 @@ class TileDict():
         tiles[2001] = image.load('assets/items/guard_corpse.png')
 
         # interactable assets
-        tiles[2100] = image.load('assets/interactable/campfire.png')
+        tiles[2100] = image.load('assets/interactables/campfire.png')
 
         #3000 -3999 all interactable objects
 
         tiles[3001] = image.load('assets/npc/deactivated_campfire.png')
 
         tiles[3100] = image.load('assets/interactables/forest_hermit.png')
+
+        tiles[3800] = image.load("assets/interactables/yellow_plant.png")
 
         tiles[3900] = image.load('assets/interactables/forest_orb_pedastool.png')
         tiles[3901] = image.load('assets/interactables/forest_orb_pedastool_deactivated.png')

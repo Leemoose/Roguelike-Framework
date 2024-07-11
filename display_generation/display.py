@@ -618,7 +618,7 @@ class Display:
             if item.attached_skill_exists:
                 entity_text += "Grants skill: " + item.get_attached_skill_description() + "<br>"
 
-        if entity.has_trait("monster"):
+        elif entity.has_trait("monster"):
             entity_text += "Health: " + str(entity.character.health) + " / " + str(entity.character.max_health) + "<br>"
             entity_text += "Attack: " + str(entity.fighter.get_damage_min()) + " - " + str(entity.fighter.get_damage_max()) + "<br>"
             entity_text += "Armor: " + str(entity.fighter.get_armor()) + "<br>"
@@ -632,6 +632,9 @@ class Display:
                     entity_text += skill.description()
                     if i < len(entity.character.skills) - 1:
                         entity_text += ", "
+
+        elif entity.has_trait("interactable"):
+            pass
 
         entity_text += "<br>" + entity.description
 

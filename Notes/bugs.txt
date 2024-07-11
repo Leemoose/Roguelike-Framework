@@ -32,8 +32,6 @@ font in dialogue interactions messes up apostrophes, if no fix found easily can 
 
 maybe make dialogue box limit based on number of lines instead of current system of number of messages
 
-interactable spawning over portal (no bueno)
-
 enchant scroll limit inventory needs to be slightly more specific
 
-get rid of stairs on final level of forest
+for some reason summon hornet not working on damage effect

@@ -6,6 +6,7 @@ class Interactable(Objects):
         super().__init__(x=x, y=y,id_tag=-1, render_tag= render_tag, name = name)
         self.name = name
         self.active = True
+        self.traits["interactable"] = True
 
     def interact(self, loop):
         pass
@@ -13,7 +14,7 @@ class Interactable(Objects):
 class Campfire(Interactable):
     def __init__(self, render_tag = 2100,x=-1, y = -1, name="Campfire"): #3000 is also render tag
         super().__init__(render_tag, x, y, name=name)
-        self.used = False
+        self.description = "It is a cozy fireplace"
 
     def interact(self, loop):
         if self.active and loop.get_daytime() == "Nighttime":
@@ -31,6 +32,7 @@ class OrbPedastool(Interactable):
         self.deactivated_render_tag = 0
         self.traits["orb_pedastool"] = True
         self.orb_type = "orb"
+        self.description = "You feel drawn to it..."
 
     def interact(self, loop):
         if self.active:
@@ -65,6 +67,16 @@ class OceanOrbPedastool(OrbPedastool):
         self.main_render_tag = 3910
         self.traits["ocean_orb_pedastool"] = True
         self.orb_type = "ocean_orb"
+
+class YellowPlant(Interactable):
+    def __init__(self, render_tag = 3800,x=-1, y = -1, name="Yellow Plant"): #3000 is also render tag
+        super().__init__(render_tag, x, y, name=name)
+        self.used = False
+        self.description = "Beautiful yellow plant. I wonder if I can pluck it?"
+
+    def interact(self, loop):
+        loop.generator.interact_map.remove_thing(self)
+
 
 
 

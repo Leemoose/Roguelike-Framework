@@ -7,6 +7,7 @@ InteractableSpawns.append(InteractableSpawnParams(Campfire(), minFloor=1, maxFlo
 InteractableSpawns.append(InteractableSpawnParams(ForestOrbPedastool(), minFloor=5, maxFloor=5,branch = "Forest"))
 
 InteractableSpawns.append(InteractableSpawnParams(ForestHermit(), minFloor=1, maxFloor=1,branch = "Forest"))
+InteractableSpawns.append(InteractableSpawnParams(YellowPlant(), minFloor=1, maxFloor=5,branch = "Forest"))
 
 
 InteractableSpawns.append(InteractableSpawnParams(OceanOrbPedastool(), minFloor=5, maxFloor=5,branch = "Ocean"))

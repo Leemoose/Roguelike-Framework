@@ -4,7 +4,7 @@ from .spawn_params import MonsterSpawnParams, BossSpawnParams
 MonsterSpawns = []
 
 # all branches
-MonsterSpawns.append(MonsterSpawnParams(M.Slime(), group="slime", minFloor=1, maxFloor=4, branch="all"))
+MonsterSpawns.append(MonsterSpawnParams(M.Slime(), group="slime", minFloor=1, maxFloor=4))
 
 # early floors dungeon only
 MonsterSpawns.append(MonsterSpawnParams(M.Kobold(-1, -1), minFloor=1, maxFloor=4))
@@ -23,7 +23,8 @@ MonsterSpawns.append(MonsterSpawnParams(M.Orc(-1, -1), group="orc", minFloor=5, 
 MonsterSpawns.append(MonsterSpawnParams(M.Bobby(), group="orc", rarity="rare", minFloor=5, maxFloor=7))
 
 # forest branch
-MonsterSpawns.append(MonsterSpawnParams(M.Stumpy(), minFloor=1, maxFloor=3, branch="Forest")) # maybe move to forest branch
+MonsterSpawns.append(MonsterSpawnParams(M.Twiggy(), minFloor=1, maxFloor=3, branch="Forest")) # maybe move to forest branch
+MonsterSpawns.append(MonsterSpawnParams(M.Stumpy(), minFloor=2, maxFloor=4, branch="Forest")) # maybe move to forest branch
 MonsterSpawns.append(MonsterSpawnParams(M.Treant(), minFloor=3, maxFloor=5, branch="Forest")) # maybe move to forest branch
 MonsterSpawns.append(MonsterSpawnParams(M.MetallicBear(), minFloor=3, maxFloor=5, branch="Forest")) # maybe move to forest branch
 MonsterSpawns.append(MonsterSpawnParams(M.Spider(), minFloor=1, maxFloor=5, branch="Forest")) # maybe move to forest branch

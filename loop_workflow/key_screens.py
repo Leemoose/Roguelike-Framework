@@ -74,6 +74,9 @@ def key_examine_screen(loop, key):
             if loop.generator.monster_map.track_map[x][y] != -1:
                 loop.screen_focus = loop.generator.monster_map.locate(x,y)
                 loop.change_loop(LoopType.specific_examine)
+            elif loop.generator.interact_map.track_map[x][y] != -1:
+                loop.screen_focus = loop.generator.interact_map.locate(x, y)
+                loop.change_loop(LoopType.specific_examine)
             elif loop.generator.item_map.track_map[x][y] != -1:
                 loop.screen_focus = loop.generator.item_map.locate(x,y)
                 loop.change_loop(LoopType.specific_examine)
