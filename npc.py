@@ -342,3 +342,15 @@ class ForestHermit(NPC):
 
     def talk(self, loop):
         self.talking = True
+
+class GrabExplainer(NPC):
+    def __init__(self, x=-1, y=-1, render_tag= 126, name="Friendly NPC"):
+        super().__init__(x=x, y=y, render_tag = render_tag, name = name)
+        self.options = ["Talk"]
+        self.has_stuff_to_say = True
+        self.dialogue_file = "npc_dialogue/grab_explainer.txt"
+        self.init_dialogue_queue()
+
+    def talk(self, loop):
+        self.talking = True
+        self.has_stuff_to_say = False

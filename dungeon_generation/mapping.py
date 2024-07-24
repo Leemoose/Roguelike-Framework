@@ -46,7 +46,7 @@ class DungeonGenerator():
             self.place_items(depth)
         if (self.depth != 1 or (branch != "Throne")):
             self.place_items(depth)
-        self.place_npcs(depth)
+        self.place_statics(depth)
         self.place_interactables(branch, depth)
 
     def get_random_location_basic(self, stairs_block = True):
@@ -237,13 +237,20 @@ class DungeonGenerator():
         creature.y = y
         self.monster_map.place_thing(creature)
 
-    def place_npcs(self, depth):
+    def place_item_at_location(self, item, x, y):
+        item.x = x
+        item.y = y
+        self.item_map.place_thing(item)
+
+    def place_statics(self, depth):
         for x in range(self.width):
             for y in range(self.height):
                 if self.tile_map.locate(x,y).has_trait("npc_spawn"):
                     self.interact_map.place_thing(self.tile_map.locate(x,y).spawn_entity())
-                if self.tile_map.locate(x,y).has_trait("monster_spawn"): # this is used for static monster spawns
+                elif self.tile_map.locate(x,y).has_trait("monster_spawn"): # this is used for static monster spawns
                     self.place_monster_at_location(self.tile_map.locate(x,y).spawn_entity(), x, y)
+                elif self.tile_map.locate(x,y).has_trait("item_spawn"): # this is used for static monster spawns
+                    self.place_item_at_location(self.tile_map.locate(x,y).spawn_entity(), x, y)
 
     def place_interactables(self, branch, depth):
         interactable_spawns = interactable_spawner.spawn_interactables(depth, branch)

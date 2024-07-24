@@ -38,7 +38,8 @@ class Character():
                              "unequip": 50,
                              "quaff": 10,
                              "read": 20,
-                             "drop": 10
+                             "drop": 10,
+                             "activate": 25
                             }
 
 
@@ -170,6 +171,12 @@ class Character():
         if potion.consumeable and potion.equipment_type == "Potiorb":
             potion.activate(self.parent)
             self.energy -= self.action_costs["quaff"]
+            return True
+
+    def activate(self, item, loop):
+        if item.consumeable:
+            item.activate(self.parent)
+            self.energy -= self.action_costs["activate"]
             return True
     
     def read(self, scroll, loop, item_dict, item_map):

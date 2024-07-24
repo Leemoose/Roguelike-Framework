@@ -1,5 +1,27 @@
 import random
 
+
+def create_castle(render_tile_map, image_map, width, height):
+    throneheight = height // 3
+    render_tile_map = throneify(0, 0, render_tile_map, image_map, width, throneheight)
+    midpoint = width // 2
+    render_tile_map[midpoint][throneheight-1] = "d"
+    for y in range(throneheight, height):
+        render_tile_map[midpoint][y] = "."
+    render_tile_map = create_grab_tutorial(0, throneheight + 2, midpoint - 1, 10, render_tile_map, image_map)
+    return render_tile_map
+
+def create_grab_tutorial(startx, starty, width, height, render_tile_map, image_map):
+    for x in range(startx, startx+ width):
+        for y in range(starty, starty + height):
+            render_tile_map[x][y] = "."
+    render_tile_map[width-1][starty + height // 2] = "."
+    render_tile_map[width][starty + height // 2] = "d"
+    render_tile_map[width - 1][starty + height // 2 - 1] = "GE"
+    render_tile_map[startx + (width) //2][(starty) + height // 2] = "bs"
+    return render_tile_map
+
+
 def throneify(startx, starty, render_tile_map, image_map, width, height):
     height = min(height, len(render_tile_map[0]) - starty)
     width = min(width, len(render_tile_map) - startx)
@@ -32,12 +54,9 @@ def throneify(startx, starty, render_tile_map, image_map, width, height):
                     render_tile_map[startx+x][starty+ y] = "d"
     render_tile_map[midpoint][top] = "g"
     render_tile_map[midpoint][top + 1] = "K"
-    render_tile_map[midpoint-1][top] = "M"
-    render_tile_map[midpoint+1][top] = "M"
+
     render_tile_map[midpoint][bottom] = "<"
 
-    render_tile_map[midpoint][starty+height-1] = "d"
-    render_tile_map[midpoint][starty + height] = "."
 
 
     for y in range(height):
@@ -45,8 +64,6 @@ def throneify(startx, starty, render_tile_map, image_map, width, height):
             image_map[midpoint][y] = 5
 
     return render_tile_map
-
-
 
 def pillerify(room, startx, starty):
     for row in range(2):

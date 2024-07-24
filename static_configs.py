@@ -271,8 +271,11 @@ class TileDict():
         tiles[3910] = image.load('assets/interactables/ocean_orb_pedastool.png')
         tiles[3911] = image.load('assets/interactables/ocean_orb_pedastool_deactivated.png')
 
+        #Items 4000+
         tiles[4000] = image.load("assets/items/orbs/forest_orb.png")
         tiles[4010] = image.load("assets/items/orbs/ocean_orb.png")
+
+        tiles[4200] = image.load("assets/items/consumeables/yello_flower_petal.png")
 
         self.tiles = tiles
 
@@ -296,7 +299,8 @@ class AscaiiTileDict():
         tiles["S"] = T.SenseiTile
         tiles["D"] = T.DummyTile
         tiles["A"] = T.ArchmageTile
-        tiles["M"] = T.MageTile
+        tiles["GE"] = T.GrabExplainerTile
+        tiles["bs"] = T.BasicShieldTile
         self.tiles = tiles
 
         self.image_mapping = {"Forest":

@@ -392,6 +392,9 @@ def key_item_screen(loop, key):
     elif key == "r":
         player.character.read(item, loop, item_dict, item_map)
         # loop.currentLoop = LoopType.action
+    elif key == "a":
+        if player.character.activate(item, loop):
+            loop.change_loop("inventory")
     loop.change_loop(loop.currentLoop)
 
 

@@ -525,8 +525,8 @@ class Armor(Equipment):
         return (entity.get_attribute("Strength")) >= self.required_strength and self.equipable
 
 class Shield(Armor):
-    def __init__(self, render_tag, name):
-        super().__init__(-1, -1, 0, render_tag, name)
+    def __init__(self, x=-1, y=-1, render_tag = 311, name = "Shield"):
+        super().__init__(x=x, y=y, id_tag = 0, render_tag=render_tag, name=name)
         self.equipment_type = "Shield"
         self.name = name
         self.shield = True
@@ -536,8 +536,8 @@ class Shield(Armor):
 
 
 class BasicShield(Shield):
-    def __init__(self, render_tag):
-        super().__init__(render_tag, "Shield")
+    def __init__(self, x=-1, y=-1, render_tag=311):
+        super().__init__(x=x, y=y, render_tag = render_tag, name = "Basic Shield")
         self.armor = 3
         self.description = "A shield that you can use to block things."
         self.stats = statUpgrades(base_end=1, max_end=3, base_arm=1, max_arm=6)
@@ -1907,6 +1907,50 @@ class OceanOrb(Orb):
     def __init__(self, x = -1, y=-1, id_tag = 4010, render_tag = 0, name = "Ocean Orb"):
         super().__init__(x,y, id_tag, render_tag, name)
         self.traits["ocean_orb"] = True
+
+
+####################################
+class Consumeable(O.Item):
+    def __init__(self, render_tag, name):
+        super().__init__(-1, -1, 0, render_tag, name)
+        self.consumeable = True
+        self.stackable = True
+        self.stacks = 1
+        self.equipable = False
+        self.can_be_levelled = False
+        self.attached_skill_exists = False
+        self.description = "A consumeable item."
+        self.action_description = "Something flows through your body"
+        self.rarity = "Common"
+        self.yendorb = False
+        self.traits["consumeable"] = True
+
+    def can_be_equipped(self, entity):
+        return False
+
+    def can_be_unequipped(self, entity):
+        return False
+
+    def activate_once(self, entity):
+        pass
+
+    def activate(self, entity):
+        self.activate_once(entity)
+        self.stacks -= 1
+        if self.stacks == 0:
+            self.destroy = True
+            entity.inventory.remove_item(self)
+
+
+class YellowFlowerPetal(Consumeable):
+    def __init__(self, render_tag = 4200):
+        super().__init__(render_tag, "Yellow Flower Petal")
+        self.description = "A yellow flower petal."
+        self.action_description = "Heal by 5."
+        self.rarity = "Common"
+
+    def activate_once(self, entity):
+        entity.character.gain_health(5 + (entity.character.get_max_health() // 50))
 
 
 

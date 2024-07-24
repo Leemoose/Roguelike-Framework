@@ -551,6 +551,10 @@ class Display:
                 pretext = "Read"
                 action = "r"
                 show = True
+            elif item.consumeable and item.has_trait("consumeable"):
+                pretext = "Activate"
+                action = "a"
+                show = True
             if create == True:
                 if show:
                     button = pygame_gui.elements.UIButton(

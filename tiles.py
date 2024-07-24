@@ -1,5 +1,6 @@
 import objects as O
 import monster as M
+from items import BasicShield
 from spell_implementation import Slow
 import npc
 import copy
@@ -23,6 +24,16 @@ class NPCSpawn(Floor):
         super().__init__(x, y,  render_tag = render_tag, passable = passable, id_tag = id_tag, type = "NPCSpawn")
         self.entity = entity(x, y)
         self.traits["npc_spawn"] = True
+
+    #Not currently supported
+    def spawn_entity(self):
+        return self.entity
+
+class ItemSpawn(Floor):
+    def __init__(self, x, y, render_tag = 2, passable = True, id_tag = 0, entity = None):
+        super().__init__(x, y,  render_tag = render_tag, passable = passable, id_tag = id_tag, type = "ItemSpawn")
+        self.entity = entity(x, y)
+        self.traits["item_spawn"] = True
 
     #Not currently supported
     def spawn_entity(self):
@@ -65,10 +76,13 @@ class ArchmageTile(NPCSpawn):
     def __init__(self, x, y, render_tag = 2, passable = True, id_tag = 0, entity = npc.Archmage):
         super().__init__(x, y,  render_tag = render_tag, passable = passable, id_tag = id_tag, entity=entity)
 
-class MageTile(NPCSpawn):
-    def __init__(self, x, y, render_tag = 2, passable = True, id_tag = 0, entity = npc.Mage):
+class GrabExplainerTile(NPCSpawn):
+    def __init__(self, x, y, render_tag = 2, passable = True, id_tag = 0, entity = npc.GrabExplainer):
         super().__init__(x, y,  render_tag = render_tag, passable = passable, id_tag = id_tag, entity=entity)
 
+class BasicShieldTile(ItemSpawn):
+    def __init__(self, x, y, render_tag = 2, passable = True, id_tag = 0, entity = BasicShield):
+        super().__init__(x, y,  render_tag = render_tag, passable = passable, id_tag = id_tag, entity=entity)
 
 
 class Stairs(O.Tile):

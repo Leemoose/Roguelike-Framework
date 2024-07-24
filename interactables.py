@@ -1,5 +1,5 @@
 from objects import Objects
-from items import ForestOrb, OceanOrb
+from items import ForestOrb, OceanOrb, YellowFlowerPetal
 
 class Interactable(Objects):
     def __init__(self, render_tag = 0, x=-1, y=-1, name="Interactable"):
@@ -73,9 +73,15 @@ class YellowPlant(Interactable):
         super().__init__(render_tag, x, y, name=name)
         self.used = False
         self.description = "Beautiful yellow plant. I wonder if I can pluck it?"
+        self.charges = 3
+        self.item = YellowFlowerPetal
 
     def interact(self, loop):
-        loop.generator.interact_map.remove_thing(self)
+        if self.charges > 0:
+            loop.player.inventory.get_item(self.item(), loop)
+            self.charges -= 1
+        if self.charges <= 0:
+            loop.generator.interact_map.remove_thing(self)
 
 
 
