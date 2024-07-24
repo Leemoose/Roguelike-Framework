@@ -285,7 +285,7 @@ class TileMap(TrackingMap):
     def in_squircle(self, room, circularity):
         return self.point_in_squircle(room.x, room.y, circularity) and self.point_in_squircle(room.x + room.width - 1,
                                                                                               room.y + room.width - 1,
-                                                                                              circularity)
+                                                                                           circularity)
     def place_room(self, rWidth, rHeight, circularity):
         MaxTries = 100
         startX = random.randint(1, self.width - rWidth - 1)
@@ -393,4 +393,7 @@ class TileMap(TrackingMap):
                 if self.track_map_render[x][y] == tile:
                     num += 1
         return num
+
+    def change_tile(self, x, y, tile):
+        self.track_map[x][y] = tile(x,y)
 

@@ -4,6 +4,7 @@ import static_configs
 from dungeon_generation import *
 from .spawning import branch_params, item_spawner, monster_spawner, interactable_spawner
 from .maps import TileMap, TrackingMap
+from tiles import DeepWater, Water
 
 from interactables import Campfire
 
@@ -40,6 +41,8 @@ class DungeonGenerator():
         self.player = player
         self.summoner = []
 
+        self.continue_flooding = True
+
 
         if (self.depth != 1 or (branch != "Throne" and branch != "Hub")): # prefab first floor of dungeon has no monsters and items
             self.place_monsters(depth)
@@ -49,13 +52,17 @@ class DungeonGenerator():
         self.place_statics(depth)
         self.place_interactables(branch, depth)
 
-    def get_random_location_basic(self, stairs_block = True):
+    def get_random_location_basic(self,stairs_block = True):
         start_x = random.randint(0, self.width - 1)
         start_y = random.randint(0, self.height - 1)
+        count = 0
 
         while (not self.get_passable((start_x, start_y))) or (not stairs_block or self.on_stairs(start_x, start_y)):
             start_x = random.randint(0, self.width - 1)
             start_y = random.randint(0, self.height - 1)
+            count += 1
+            if count > 1000:
+                raise Exception("Stuck in infinite loop for checking random location.")
 
         return start_x, start_y
 
@@ -351,6 +358,25 @@ class DungeonGenerator():
 
     def get_map(self):
         return self.tile_map
+
+    def water_rises(self):
+        changed = False
+        count = 0
+        while self.branch == "Ocean" and changed == False:
+            x, y = self.get_random_location_basic()
+            tile_old = self.tile_map.locate(x,y)
+            if tile_old.has_trait("deep_water"):
+                pass
+            elif tile_old.has_trait("water"):
+                self.tile_map.change_tile(x,y, DeepWater)
+                changed = True
+            else:
+                self.tile_map.change_tile(x,y,Water)
+                changed = True
+            count += 1
+            if count > 10:
+                break
+
 
 
 

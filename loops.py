@@ -619,6 +619,9 @@ class Loops():
                                                                         monster.y).get_status_effects():
                         monster.character.add_status_effect(status_effect)
 
+            if self.branch == "Ocean":
+                self.generator.water_rises()
+
         self.timer = self.timer % 100
 
     def change_daytime(self):
